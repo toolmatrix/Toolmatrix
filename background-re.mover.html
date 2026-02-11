@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background Remover | Tool Matrix</title>
+<meta name="description" content="Remove image background instantly with AI. Preview original and removed image.">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.container{
+  background:white;
+  width:100%;
+  max-width:900px;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+
+h1{text-align:center;margin-bottom:10px;}
+p{text-align:center;margin-bottom:20px;color:#64748b;}
+
+.preview{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.box{
+  flex:1;
+  min-width:280px;
+  text-align:center;
+}
+
+.box img{
+  max-width:100%;
+  border-radius:12px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+input, button{
+  display:block;
+  margin:15px auto;
+}
+
+button{
+  padding:10px 20px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>AI Background Remover</h1>
+  <p>Upload image and remove background instantly.</p>
+
+  <input type="file" id="imageInput" accept="image/*">
+  <button onclick="removeBackground()">Remove Background</button>
+
+  <div class="preview">
+    <div class="box">
+      <h3>Original</h3>
+      <img id="originalImage">
+    </div>
+    <div class="box">
+      <h3>Background Removed</h3>
+      <img id="removedImage">
+    </div>
+  </div>
+</div>
+
+<script>
+const apiKey = "4nPDu7HjAAWZYDbDJ2D2eZK9";
+
+let selectedFile;
+
+document.getElementById("imageInput").addEventListener("change", function(e){
+  selectedFile = e.target.files[0];
+  if(selectedFile){
+    document.getElementById("originalImage").src = URL.createObjectURL(selectedFile);
+  }
+});
+
+async function removeBackground(){
+  if(!selectedFile){
+    alert("Please upload image first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image_file", selectedFile);
+  formData.append("size", "auto");
+
+  const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": apiKey
+    },
+    body: formData
+  });
+
+  if(!response.ok){
+    alert("API Error. Check your API key.");
+    return;
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  document.getElementById("removedImage").src = url;
+}
+</script>
+
+</body>
+</html>
