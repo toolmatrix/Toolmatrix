@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Converter Tool - Convert to JPG, PNG, WEBP | Tool Matrix</title>
+<meta name="description" content="Free online image converter tool. Convert images to JPG, PNG, WEBP instantly. Fast, secure and 100% free.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body{
+  background: linear-gradient(135deg,#2563eb,#3b82f6);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.container{
+  background:white;
+  width:100%;
+  max-width:600px;
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  text-align:center;
+}
+
+h1{
+  font-size:26px;
+  margin-bottom:10px;
+  color:#1e293b;
+}
+
+p{
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:20px;
+}
+
+.upload-box{
+  border:2px dashed #2563eb;
+  padding:30px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.upload-box:hover{
+  background:#f1f5ff;
+}
+
+.upload-box input{
+  display:none;
+}
+
+.preview{
+  margin-top:20px;
+  display:none;
+}
+
+.preview img{
+  max-width:100%;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+select{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
+  margin-bottom:15px;
+  width:100%;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+  width:100%;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+
+.download-link{
+  display:none;
+  margin-top:15px;
+  text-decoration:none;
+  background:#16a34a;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  display:inline-block;
+}
+
+@media(max-width:500px){
+  .container{
+    padding:20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Image Converter Tool</h1>
+  <p>Convert images to JPG, PNG, WEBP instantly. 100% Free.</p>
+
+  <label class="upload-box">
+    Click or Drag & Drop Image
+    <input type="file" id="imageInput" accept="image/*">
+  </label>
+
+  <div class="preview" id="previewSection">
+    <img id="previewImage">
+    
+    <select id="formatSelect">
+      <option value="image/jpeg">Convert to JPG</option>
+      <option value="image/png">Convert to PNG</option>
+      <option value="image/webp">Convert to WEBP</option>
+    </select>
+
+    <button onclick="convertImage()">Convert Image</button>
+    <a id="downloadLink" class="download-link">Download Converted Image</a>
+  </div>
+</div>
+
+<script>
+let uploadedImage = null;
+
+const imageInput = document.getElementById("imageInput");
+const previewImage = document.getElementById("previewImage");
+const previewSection = document.getElementById("previewSection");
+const downloadLink = document.getElementById("downloadLink");
+
+imageInput.addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(event){
+      previewImage.src = event.target.result;
+      previewSection.style.display = "block";
+      uploadedImage = file;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+function convertImage(){
+  if(!uploadedImage) return;
+
+  const format = document.getElementById("formatSelect").value;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+
+  img.onload = function(){
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img,0,0);
+
+    const convertedData = canvas.toDataURL(format,1.0);
+    
+    downloadLink.href = convertedData;
+
+    let extension = format.split("/")[1];
+    if(extension === "jpeg") extension = "jpg";
+
+    downloadLink.download = "converted-image." + extension;
+    downloadLink.style.display = "inline-block";
+  }
+
+  img.src = URL.createObjectURL(uploadedImage);
+}
+</script>
+
+</body>
+</html>
