@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Remove Watermark Tool - Tool Matrix</title>
+<meta name="description" content="Remove text watermarks from PDF online for free. Fast, secure, mobile-friendly PDF watermark remover by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PDF Remove Watermark Tool</h1>
+<p class="text-gray-600 mt-2">Upload your PDF and remove editable text watermarks instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<input type="file" id="pdfInput" accept="application/pdf"
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<button onclick="removeWatermark()"
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Remove Watermark
+</button>
+
+<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download PDF</a>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+async function removeWatermark(){
+const file = document.getElementById("pdfInput").files[0];
+if(!file){ alert("Please select a PDF file!"); return; }
+
+const arrayBuffer = await file.arrayBuffer();
+const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+
+// Loop through pages and remove all text annotations / editable text
+const pages = pdfDoc.getPages();
+pages.forEach(page => {
+  const annotations = page.node.Annots ? page.node.Annots() : [];
+  annotations?.forEach((ann, idx) => {
+    page.node.removeAnnotation(idx);
+  });
+});
+
+// Save new PDF
+const pdfBytes = await pdfDoc.save();
+const blob = new Blob([pdfBytes], {type: "application/pdf"});
+const url = URL.createObjectURL(blob);
+
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = url;
+downloadBtn.download = "pdf_no_watermark.pdf";
+downloadBtn.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
