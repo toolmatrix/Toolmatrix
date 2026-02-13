@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backlink Checker - Tool Matrix</title>
+<meta name="description" content="Check backlinks of any website using free API. Mobile-friendly Backlink Checker tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Backlink Checker</h1>
+<p class="text-gray-600 mt-2">Check backlinks of your website instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<label class="block font-semibold text-gray-700">Enter Website URL:</label>
+<input type="text" id="websiteInput" class="w-full p-3 border rounded-lg" placeholder="https://example.com">
+
+<button onclick="checkBacklinks()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Check Backlinks
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<h3 class="font-semibold text-blue-700">Backlinks Found:</h3>
+<ul id="backlinkList" class="mt-2 text-gray-700 list-disc pl-6"></ul>
+<p id="backlinkCount" class="mt-2 font-semibold"></p>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+// Free basic backlink checker using a demo API (replace with real API key for production)
+async function checkBacklinks(){
+const website = document.getElementById("websiteInput").value.trim();
+if(!website){ alert("Please enter website URL!"); return; }
+
+try{
+const apiKey = "YOUR_API_KEY"; // Replace with API key from a free service
+// Example: Using OpenLinkProfiler free API
+const apiURL = `https://openlinkprofiler.org/api/v1/backlinks?domain=${website}&apikey=${apiKey}`;
+
+const response = await fetch(apiURL);
+const data = await response.json();
+
+// Example output structure (adjust according to API)
+const backlinks = data.backlinks || [];
+const listEl = document.getElementById("backlinkList");
+listEl.innerHTML = "";
+
+backlinks.slice(0,20).forEach(link=>{
+  const li = document.createElement("li");
+  li.textContent = `${link.source_url} → ${link.target_url}`;
+  listEl.appendChild(li);
+});
+
+document.getElementById("backlinkCount").innerText = `Total backlinks found: ${backlinks.length}`;
+document.getElementById("result").classList.remove("hidden");
+
+}catch(error){
+alert("Error fetching backlinks! Make sure to use a valid API key and endpoint.");
+}
+}
+</script>
+
+</body>
+</html>
