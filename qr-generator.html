@@ -1,125 +1,211 @@
-  
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Code Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef8ff;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced QR Code Generator – ToolMatrix</title>
 
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qr-code-styling/1.6.0/qr-code-styling.js"></script>
 
-    h2 {
-      color: #007bff;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #qrcode {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    #downloadBtn {
-      display: none;
-      margin-top: 15px;
-      background-color: #28a745;
-    }
-
-    #downloadBtn:hover {
-      background-color: #1e7e34;
-    }
-  </style>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#ffffff;
+    color:#111;
+}
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:40px 20px;
+}
+.card{
+    background:#f5f7fa;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.08);
+}
+h1{
+    text-align:center;
+    font-size:32px;
+    margin-bottom:25px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+input,select{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+button{
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+}
+#qrPreview{
+    display:flex;
+    justify-content:center;
+    margin-top:20px;
+}
+@media(max-width:768px){
+    .grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>QR Code Generator</h2>
-    <input type="text" id="qrText" placeholder="Enter text or URL" />
-    <button onclick="generateQR()">Generate QR</button>
-    <div id="qrcode"></div>
-    <button id="downloadBtn" onclick="downloadQR()">Download QR</button>
-  </div>
 
-  <!-- QRCode.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script>
-    let qr;
+<div class="container">
+<div class="card">
 
-    function generateQR() {
-      const text = document.getElementById("qrText").value.trim();
-      const qrContainer = document.getElementById("qrcode");
-      const downloadBtn = document.getElementById("downloadBtn");
-      qrContainer.innerHTML = "";
-      downloadBtn.style.display = "none";
+<h1>Advanced QR Code Generator</h1>
 
-      if (text === "") {
-        alert("Please enter some text.");
-        return;
-      }
+<div class="grid">
 
-      qr = new QRCode(qrContainer, {
-        text: text,
-        width: 200,
-        height: 200,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
+<div>
 
-      setTimeout(() => {
-        downloadBtn.style.display = "inline-block";
-      }, 500); // wait to ensure canvas is rendered
+<input type="text" id="qrText" placeholder="Enter URL or Text">
+
+<select id="gradient">
+<option value="none">No Gradient</option>
+<option value="blue">Blue Gradient</option>
+<option value="purple">Purple Gradient</option>
+<option value="red">Red Gradient</option>
+<option value="green">Green Gradient</option>
+<option value="orange">Orange Gradient</option>
+</select>
+
+<select id="bodyShape">
+<option value="square">Square Body</option>
+<option value="dots">Dots Body</option>
+<option value="rounded">Rounded Body</option>
+</select>
+
+<select id="eyeShape">
+<option value="square">Square Eye</option>
+<option value="circle">Circle Eye</option>
+<option value="extra-rounded">Extra Rounded Eye</option>
+</select>
+
+<input type="color" id="customColor" value="#000000">
+
+<input type="range" id="sizeRange" min="200" max="600" value="300">
+<label>Size: <span id="sizeValue">300</span>px</label>
+
+<select id="socialLogo">
+<option value="">No Social Logo</option>
+<option value="https://cdn-icons-png.flaticon.com/512/733/733547.png">Facebook</option>
+<option value="https://cdn-icons-png.flaticon.com/512/733/733558.png">Instagram</option>
+<option value="https://cdn-icons-png.flaticon.com/512/733/733579.png">Twitter</option>
+<option value="https://cdn-icons-png.flaticon.com/512/733/733609.png">YouTube</option>
+</select>
+
+<input type="file" id="logoUpload">
+
+<button onclick="generateQR()">Generate QR Code</button>
+<button onclick="downloadQR()">Download QR</button>
+
+</div>
+
+<div>
+<div id="qrPreview"></div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+let qrCode = new QRCodeStyling({
+    width:300,
+    height:300,
+    data:"https://toolmatrix.live",
+    image:"",
+    dotsOptions:{color:"#000",type:"square"},
+    backgroundOptions:{color:"#ffffff"},
+});
+
+qrCode.append(document.getElementById("qrPreview"));
+
+document.getElementById("sizeRange").addEventListener("input",function(){
+    document.getElementById("sizeValue").innerText=this.value;
+});
+
+function generateQR(){
+
+    let text = document.getElementById("qrText").value;
+    let gradientType = document.getElementById("gradient").value;
+    let bodyShape = document.getElementById("bodyShape").value;
+    let eyeShape = document.getElementById("eyeShape").value;
+    let customColor = document.getElementById("customColor").value;
+    let size = document.getElementById("sizeRange").value;
+    let socialLogo = document.getElementById("socialLogo").value;
+
+    let gradientColors = {
+        blue:["#2563eb","#60a5fa"],
+        purple:["#7c3aed","#c084fc"],
+        red:["#dc2626","#f87171"],
+        green:["#16a34a","#4ade80"],
+        orange:["#ea580c","#fdba74"]
+    };
+
+    let dotsOptions = {
+        type:bodyShape,
+        color:customColor
+    };
+
+    if(gradientType !== "none"){
+        dotsOptions = {
+            type:bodyShape,
+            gradient:{
+                type:"linear",
+                rotation:0,
+                colorStops:[
+                    {offset:0,color:gradientColors[gradientType][0]},
+                    {offset:1,color:gradientColors[gradientType][1]}
+                ]
+            }
+        };
     }
 
-    function downloadQR() {
-      const img = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
-      if (!img) return;
+    qrCode.update({
+        width:Number(size),
+        height:Number(size),
+        data:text,
+        image:socialLogo,
+        dotsOptions:dotsOptions,
+        cornersSquareOptions:{type:eyeShape},
+        cornersDotOptions:{type:eyeShape}
+    });
 
-      const link = document.createElement("a");
-      link.href = img.src || img.toDataURL("image/png");
-      link.download = "qr-code.png";
-      link.click();
+    let file = document.getElementById("logoUpload").files[0];
+    if(file){
+        let reader = new FileReader();
+        reader.onload=function(e){
+            qrCode.update({image:e.target.result});
+        }
+        reader.readAsDataURL(file);
     }
-  </script>
+
+}
+
+function downloadQR(){
+    qrCode.download({name:"custom-qr",extension:"png"});
+}
+
+</script>
+
 </body>
 </html>
-
-  
-  
