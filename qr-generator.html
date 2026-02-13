@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional QR Code Generator - ToolMatrix</title>
+<title>High Quality QR Code Generator</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
 body{
     font-family: Arial, sans-serif;
@@ -13,137 +15,146 @@ body{
     padding:20px;
 }
 .container{
-    max-width:1100px;
+    max-width:1000px;
     margin:auto;
 }
 h1{
     text-align:center;
     font-size:32px;
 }
-.tool-box{
+.wrapper{
     display:flex;
     flex-wrap:wrap;
-    gap:20px;
-    margin-top:20px;
+    gap:30px;
+    margin-top:30px;
 }
 .controls{
     flex:1;
-    min-width:300px;
+    min-width:320px;
 }
 .preview{
     flex:1;
-    min-width:300px;
+    min-width:320px;
     text-align:center;
     position:relative;
-}
-#qrcode{
-    margin-top:20px;
 }
 input,select{
     width:100%;
     padding:10px;
-    margin-top:8px;
-    margin-bottom:15px;
     font-size:16px;
+    margin-top:5px;
+    margin-bottom:15px;
 }
 button{
+    width:100%;
     padding:12px;
     font-size:16px;
-    cursor:pointer;
-    width:100%;
-    margin-top:10px;
     background:#007BFF;
     color:white;
     border:none;
+    cursor:pointer;
+    margin-top:10px;
 }
-canvas{
+button:hover{
+    background:#0056b3;
+}
+#qrcode canvas{
     max-width:100%;
 }
-.logo-preview{
+#logo{
     position:absolute;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:70px;
-    height:70px;
-    border-radius:10px;
+    width:80px;
+    height:80px;
+    display:none;
+    border-radius:8px;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h1>Advanced QR Code Generator</h1>
+<h1>Professional QR Code Generator</h1>
 
-<div class="tool-box">
+<div class="wrapper">
 
 <div class="controls">
 
-<label>Enter Text / URL</label>
-<input type="text" id="qrText" placeholder="https://example.com">
+<label>Text / URL</label>
+<input type="text" id="text" placeholder="https://yourwebsite.com">
 
 <label>QR Size (Pixel)</label>
-<select id="qrSize">
-<option value="200">200x200</option>
-<option value="300" selected>300x300</option>
-<option value="400">400x400</option>
+<select id="size">
+<option value="300">300x300</option>
+<option value="500" selected>500x500</option>
+<option value="700">700x700</option>
+<option value="1000">1000x1000 (Ultra HD)</option>
 </select>
 
-<label>Color 1</label>
-<input type="color" id="color1" value="#000000">
+<label>QR Color</label>
+<input type="color" id="color" value="#000000">
 
-<label>Color 2</label>
-<input type="color" id="color2" value="#007BFF">
+<label>Background Color</label>
+<input type="color" id="bgcolor" value="#ffffff">
 
-<label>Color 3</label>
-<input type="color" id="color3" value="#FF0000">
+<label>Margin (Padding)</label>
+<input type="number" id="margin" value="10">
 
-<label>Color 4</label>
-<input type="color" id="color4" value="#00FF00">
+<label>Error Correction</label>
+<select id="error">
+<option value="L">Low (L)</option>
+<option value="M" selected>Medium (M)</option>
+<option value="Q">Quartile (Q)</option>
+<option value="H">High (H)</option>
+</select>
 
-<label>Color 5</label>
-<input type="color" id="color5" value="#0000FF">
-
-<label>Upload Custom Logo</label>
+<label>Upload Logo (Optional)</label>
 <input type="file" id="logoUpload" accept="image/*">
 
 <button onclick="generateQR()">Generate QR</button>
-<button onclick="downloadQR()">Download PNG</button>
+<button onclick="downloadQR()">Download High Quality PNG</button>
 
 </div>
 
 <div class="preview">
 <div id="qrcode"></div>
-<img id="logoImage" class="logo-preview" style="display:none;">
+<img id="logo">
 </div>
 
 </div>
 </div>
 
 <script>
+
 let qr;
 
 function generateQR(){
-    let text=document.getElementById("qrText").value;
-    let size=document.getElementById("qrSize").value;
-    let c1=document.getElementById("color1").value;
+    let text=document.getElementById("text").value;
+    let size=parseInt(document.getElementById("size").value);
+    let color=document.getElementById("color").value;
+    let bg=document.getElementById("bgcolor").value;
+    let margin=parseInt(document.getElementById("margin").value);
+    let error=document.getElementById("error").value;
 
     document.getElementById("qrcode").innerHTML="";
+    document.getElementById("logo").style.display="none";
 
     qr=new QRCode(document.getElementById("qrcode"),{
         text:text,
-        width:parseInt(size),
-        height:parseInt(size),
-        colorDark:c1,
-        colorLight:"#ffffff",
-        correctLevel:QRCode.CorrectLevel.H
+        width:size,
+        height:size,
+        colorDark:color,
+        colorLight:bg,
+        correctLevel:QRCode.CorrectLevel[error]
     });
 }
 
 document.getElementById("logoUpload").addEventListener("change",function(e){
     let reader=new FileReader();
     reader.onload=function(){
-        let logo=document.getElementById("logoImage");
+        let logo=document.getElementById("logo");
         logo.src=reader.result;
         logo.style.display="block";
     }
@@ -157,6 +168,7 @@ function downloadQR(){
     link.download="qr-code.png";
     link.click();
 }
+
 </script>
 
 </body>
