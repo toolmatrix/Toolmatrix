@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Formatter - Tool Matrix</title>
+<meta name="description" content="Format your SQL queries online. Mobile-friendly SQL formatter tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">SQL Formatter</h1>
+<p class="text-gray-600 mt-2">Paste your SQL and format it properly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<label class="block font-semibold text-gray-700">Enter SQL Query:</label>
+<textarea id="sqlInput" rows="8" class="w-full p-4 border rounded-lg" placeholder="Paste your SQL query here..."></textarea>
+
+<button onclick="formatSQL()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Format SQL
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<h3 class="font-semibold text-blue-700">Formatted SQL:</h3>
+<pre id="formattedSQL" class="mt-2 text-gray-700 whitespace-pre-wrap"></pre>
+<button onclick="copySQL()" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold">
+Copy to Clipboard
+</button>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+// Basic SQL Formatter
+function formatSQL(){
+let sql = document.getElementById("sqlInput").value.trim();
+if(!sql){ alert("Please enter SQL query!"); return; }
+
+// Keywords list
+const keywords = ["SELECT","FROM","WHERE","JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","ON","GROUP BY","ORDER BY","HAVING","INSERT INTO","VALUES","UPDATE","SET","DELETE","CREATE TABLE","ALTER TABLE","DROP TABLE"];
+
+// Capitalize keywords
+keywords.forEach(keyword=>{
+  const regex = new RegExp("\\b"+keyword+"\\b","gi");
+  sql = sql.replace(regex, keyword);
+});
+
+// Add line breaks for main clauses
+sql = sql.replace(/\b(FROM|WHERE|JOIN|INNER JOIN|LEFT JOIN|RIGHT JOIN|GROUP BY|ORDER BY|HAVING|VALUES|SET)\b/g, "\n$1");
+
+// Indent subqueries (basic)
+sql = sql.replace(/\(/g,"(\n  ").replace(/\)/g,"\n)");
+
+// Display formatted SQL
+document.getElementById("formattedSQL").innerText = sql;
+document.getElementById("result").classList.remove("hidden");
+}
+
+// Copy to clipboard
+function copySQL(){
+const formatted = document.getElementById("formattedSQL").innerText;
+navigator.clipboard.writeText(formatted).then(()=>alert("SQL copied to clipboard!"));
+}
+</script>
+
+</body>
+</html>
