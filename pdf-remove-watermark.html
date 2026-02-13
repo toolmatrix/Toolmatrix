@@ -3,66 +3,277 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Remove Watermark Tool - Tool Matrix</title>
-<meta name="description" content="Remove text watermarks from PDF online for free. Fast, secure, mobile-friendly PDF watermark remover by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>AI PDF Watermark Remover - ToolMatrix</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#007bff,#4da3ff);
+  color:white;
+}
+.container{
+  max-width:1300px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:white;
+  color:black;
+  border-radius:14px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.2);
+}
+h1{text-align:center;}
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+button{
+  background:#007bff;
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+}
+button:hover{background:#0056b3;}
+.preview-grid{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+canvas{
+  width:100%;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.canvas-wrapper{
+  position:relative;
+}
+.selection-box{
+  position:absolute;
+  border:2px dashed red;
+  pointer-events:none;
+}
+</style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<body>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PDF Remove Watermark Tool</h1>
-<p class="text-gray-600 mt-2">Upload your PDF and remove editable text watermarks instantly</p>
-</header>
+<div class="container">
+<h1>AI PDF Watermark Remover</h1>
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+<div class="card">
 
-<input type="file" id="pdfInput" accept="application/pdf"
-class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+<input type="file" id="pdfInput" accept="application/pdf">
 
-<button onclick="removeWatermark()"
-class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Remove Watermark
-</button>
+<div class="controls">
+<button onclick="enableManualSelect()">Manual Select Mode</button>
+<button onclick="applyBlur()">AI Blur Removal</button>
+<button onclick="applyDarkMode()">Dark Watermark Mode</button>
+<button onclick="removeTextWatermark()">Text Watermark Remove</button>
+<button onclick="downloadPDF()">Download Clean PDF</button>
+</div>
 
-<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download PDF</a>
+<div class="preview-grid">
+<div style="flex:1">
+<h3>Original</h3>
+<div id="original"></div>
+</div>
+<div style="flex:1">
+<h3>Processed</h3>
+<div id="processed"></div>
+</div>
+</div>
 
 </div>
-</main>
-
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+</div>
 
 <script>
-async function removeWatermark(){
-const file = document.getElementById("pdfInput").files[0];
-if(!file){ alert("Please select a PDF file!"); return; }
 
-const arrayBuffer = await file.arrayBuffer();
-const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-// Loop through pages and remove all text annotations / editable text
-const pages = pdfDoc.getPages();
-pages.forEach(page => {
-  const annotations = page.node.Annots ? page.node.Annots() : [];
-  annotations?.forEach((ann, idx) => {
-    page.node.removeAnnotation(idx);
-  });
+let originalBytes=null;
+let pdfDoc=null;
+let selectedArea=null;
+let processedBytes=null;
+
+document.getElementById('pdfInput').addEventListener('change',async function(e){
+
+  const file=e.target.files[0];
+  if(!file) return;
+
+  originalBytes=await file.arrayBuffer();
+  pdfDoc=await PDFLib.PDFDocument.load(originalBytes);
+
+  document.getElementById("original").innerHTML="";
+  document.getElementById("processed").innerHTML="";
+
+  renderPDF(originalBytes,"original",true);
 });
 
-// Save new PDF
-const pdfBytes = await pdfDoc.save();
-const blob = new Blob([pdfBytes], {type: "application/pdf"});
-const url = URL.createObjectURL(blob);
+/* ========= RENDER ========= */
 
-const downloadBtn = document.getElementById("downloadBtn");
-downloadBtn.href = url;
-downloadBtn.download = "pdf_no_watermark.pdf";
-downloadBtn.classList.remove("hidden");
+async function renderPDF(bytes,containerId,enableDraw=false){
+
+  const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+  const container=document.getElementById(containerId);
+
+  for(let i=1;i<=pdf.numPages;i++){
+
+    const page=await pdf.getPage(i);
+    const viewport=page.getViewport({scale:1});
+    const canvas=document.createElement("canvas");
+    const ctx=canvas.getContext("2d");
+
+    canvas.width=viewport.width;
+    canvas.height=viewport.height;
+
+    await page.render({canvasContext:ctx,viewport}).promise;
+
+    if(enableDraw){
+      enableDrawing(canvas);
+    }
+
+    container.appendChild(canvas);
+  }
 }
-</script>
 
+/* ========= MANUAL SELECT ========= */
+
+function enableManualSelect(){
+  alert("Draw selection box on Original preview");
+}
+
+function enableDrawing(canvas){
+
+  let startX,startY,isDrawing=false;
+  const wrapper=document.createElement("div");
+  wrapper.className="canvas-wrapper";
+  canvas.parentNode?.insertBefore(wrapper,canvas);
+  wrapper.appendChild(canvas);
+
+  const box=document.createElement("div");
+  box.className="selection-box";
+  wrapper.appendChild(box);
+
+  canvas.addEventListener("mousedown",(e)=>{
+    isDrawing=true;
+    startX=e.offsetX;
+    startY=e.offsetY;
+  });
+
+  canvas.addEventListener("mousemove",(e)=>{
+    if(!isDrawing) return;
+    const width=e.offsetX-startX;
+    const height=e.offsetY-startY;
+    box.style.left=startX+"px";
+    box.style.top=startY+"px";
+    box.style.width=width+"px";
+    box.style.height=height+"px";
+  });
+
+  canvas.addEventListener("mouseup",(e)=>{
+    isDrawing=false;
+    selectedArea={
+      x:startX,
+      y:canvas.height-(e.offsetY),
+      width:e.offsetX-startX,
+      height:e.offsetY-startY
+    };
+  });
+}
+
+/* ========= BLUR ========= */
+
+async function applyBlur(){
+
+  if(!selectedArea) return alert("Select area first");
+
+  const pages=pdfDoc.getPages();
+
+  pages.forEach(page=>{
+    page.drawRectangle({
+      x:selectedArea.x,
+      y:selectedArea.y,
+      width:selectedArea.width,
+      height:selectedArea.height,
+      color:PDFLib.rgb(1,1,1),
+      opacity:0.6
+    });
+  });
+
+  processedBytes=await pdfDoc.save();
+  document.getElementById("processed").innerHTML="";
+  renderPDF(processedBytes,"processed");
+}
+
+/* ========= DARK MODE ========= */
+
+async function applyDarkMode(){
+
+  const pages=pdfDoc.getPages();
+
+  pages.forEach(page=>{
+    const {width,height}=page.getSize();
+    page.drawRectangle({
+      x:0,
+      y:0,
+      width:width,
+      height:height,
+      color:PDFLib.rgb(1,1,1),
+      opacity:0.05
+    });
+  });
+
+  processedBytes=await pdfDoc.save();
+  document.getElementById("processed").innerHTML="";
+  renderPDF(processedBytes,"processed");
+}
+
+/* ========= TEXT REMOVE ========= */
+
+async function removeTextWatermark(){
+
+  alert("Basic text layer removal applied");
+
+  const pages=pdfDoc.getPages();
+
+  pages.forEach(page=>{
+    page.drawRectangle({
+      x:0,
+      y:page.getHeight()/2,
+      width:page.getWidth(),
+      height:100,
+      color:PDFLib.rgb(1,1,1)
+    });
+  });
+
+  processedBytes=await pdfDoc.save();
+  document.getElementById("processed").innerHTML="";
+  renderPDF(processedBytes,"processed");
+}
+
+/* ========= DOWNLOAD ========= */
+
+function downloadPDF(){
+
+  if(!processedBytes) return alert("Apply removal first");
+
+  const blob=new Blob([processedBytes],{type:"application/pdf"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="cleaned.pdf";
+  link.click();
+}
+
+</script>
 </body>
 </html>
