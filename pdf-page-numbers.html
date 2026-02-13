@@ -3,95 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Page Number Adder - Tool Matrix</title>
-<meta name="description" content="Add page numbers to PDF online for free. Fast, mobile-friendly PDF page numbering tool by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>PDF Page Number Adder – ToolMatrix</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a);
+    color:#fff;
+}
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:40px 20px;
+}
+.card{
+    background:#111827;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 0 25px rgba(0,0,0,0.4);
+}
+h1{
+    text-align:center;
+    margin-bottom:25px;
+}
+input,select{
+    width:100%;
+    padding:10px;
+    margin-bottom:15px;
+    border-radius:8px;
+    border:none;
+    background:#1e293b;
+    color:#fff;
+}
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+button{
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    margin-top:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+.primary{background:#2563eb;color:#fff;}
+.success{background:#16a34a;color:#fff;}
+.status{
+    margin-top:15px;
+    font-weight:bold;
+    text-align:center;
+}
+@media(max-width:768px){
+    .row{grid-template-columns:1fr;}
+}
+</style>
 </head>
+<body>
 
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<div class="container">
+<div class="card">
+<h1>PDF Page Number Adder</h1>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PDF Page Number Adder</h1>
-<p class="text-gray-600 mt-2">Upload your PDF and add page numbers to all pages instantly</p>
-</header>
+<input type="file" id="pdfUpload" accept="application/pdf">
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
-
-<input type="file" id="pdfInput" accept="application/pdf"
-class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
-
-<label class="block mt-2 text-gray-700 font-semibold">Font size:</label>
-<input type="number" id="fontSize" value="12" class="w-full p-2 border rounded-lg">
-
-<label class="block mt-2 text-gray-700 font-semibold">Page number position:</label>
-<select id="position" class="w-full p-2 border rounded-lg">
-  <option value="bottom-center">Bottom Center</option>
-  <option value="bottom-right">Bottom Right</option>
-  <option value="bottom-left">Bottom Left</option>
+<div class="row">
+<select id="position">
+<option value="bottom-center">Bottom Center</option>
+<option value="bottom-left">Bottom Left</option>
+<option value="bottom-right">Bottom Right</option>
+<option value="top-center">Top Center</option>
+<option value="top-left">Top Left</option>
+<option value="top-right">Top Right</option>
 </select>
 
-<button onclick="addPageNumbers()" 
-class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold mt-4">
-Add Page Numbers
-</button>
+<select id="mode">
+<option value="all">All Pages</option>
+<option value="odd">Odd Pages</option>
+<option value="even">Even Pages</option>
+</select>
+</div>
 
-<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download PDF</a>
+<div class="row">
+<input type="number" id="startPage" placeholder="From Page (leave empty = 1)">
+<input type="number" id="endPage" placeholder="To Page (leave empty = last)">
+</div>
+
+<div class="row">
+<input type="number" id="marginX" placeholder="Margin X (default 30)">
+<input type="number" id="marginY" placeholder="Margin Y (default 30)">
+</div>
+
+<div class="row">
+<input type="number" id="fontSize" placeholder="Font Size (default 12)">
+<input type="text" id="textFormat" placeholder="Text Format (Example: Page {n} of {total})">
+</div>
+
+<button class="primary" onclick="addPageNumbers()">Add Page Numbers</button>
+<button class="success" onclick="downloadPDF()">Download PDF</button>
+
+<div class="status" id="status"></div>
 
 </div>
-</main>
-
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+</div>
 
 <script>
-async function addPageNumbers() {
-const file = document.getElementById("pdfInput").files[0];
-if(!file){ alert("Please select a PDF file!"); return; }
 
-const fontSize = parseInt(document.getElementById("fontSize").value) || 12;
-const position = document.getElementById("position").value;
+let modifiedPdfBytes = null;
 
-const arrayBuffer = await file.arrayBuffer();
-const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-const pages = pdfDoc.getPages();
-const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+async function addPageNumbers(){
 
-pages.forEach((page, idx) => {
-  const { width, height } = page.getSize();
-  let text = `${idx + 1}`;
-  let x, y;
+    const fileInput = document.getElementById('pdfUpload');
+    if(!fileInput.files.length){
+        alert("Upload PDF first");
+        return;
+    }
 
-  switch(position){
-    case "bottom-center":
-      x = width / 2;
-      y = 20;
-      page.drawText(text, { x: x, y: y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0), xSkew:0, ySkew:0, rotate: undefined, textAlign: PDFLib.TextAlignment.Center });
-      break;
-    case "bottom-right":
-      x = width - 40;
-      y = 20;
-      page.drawText(text, { x, y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0) });
-      break;
-    case "bottom-left":
-      x = 20;
-      y = 20;
-      page.drawText(text, { x, y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0) });
-      break;
-  }
-});
+    document.getElementById("status").innerText="Processing...";
 
-const pdfBytes = await pdfDoc.save();
-const blob = new Blob([pdfBytes], {type:'application/pdf'});
-const url = URL.createObjectURL(blob);
+    const file = fileInput.files[0];
+    const arrayBuffer = await file.arrayBuffer();
 
-const downloadBtn = document.getElementById("downloadBtn");
-downloadBtn.href = url;
-downloadBtn.download = "pdf_with_page_numbers.pdf";
-downloadBtn.classList.remove("hidden");
+    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    const pages = pdfDoc.getPages();
+    const total = pages.length;
+
+    const position = document.getElementById("position").value;
+    const mode = document.getElementById("mode").value;
+
+    let startPage = parseInt(document.getElementById("startPage").value) || 1;
+    let endPage = parseInt(document.getElementById("endPage").value) || total;
+
+    const marginX = parseInt(document.getElementById("marginX").value) || 30;
+    const marginY = parseInt(document.getElementById("marginY").value) || 30;
+    const fontSize = parseInt(document.getElementById("fontSize").value) || 12;
+    const format = document.getElementById("textFormat").value || "Page {n}";
+
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+    pages.forEach((page, index)=>{
+        const pageNum = index + 1;
+
+        if(pageNum < startPage || pageNum > endPage) return;
+        if(mode==="odd" && pageNum%2===0) return;
+        if(mode==="even" && pageNum%2!==0) return;
+
+        const { width, height } = page.getSize();
+
+        let x=marginX;
+        let y=marginY;
+
+        if(position.includes("top")) y = height - marginY;
+        if(position.includes("center")) x = width/2;
+        if(position.includes("right")) x = width - marginX;
+
+        let text = format.replace("{n}", pageNum).replace("{total}", total);
+
+        page.drawText(text,{
+            x:x,
+            y:y,
+            size:fontSize,
+            font:font
+        });
+    });
+
+    modifiedPdfBytes = await pdfDoc.save();
+    document.getElementById("status").innerText="Page Numbers Added Successfully!";
 }
+
+function downloadPDF(){
+    if(!modifiedPdfBytes){
+        alert("Generate PDF first");
+        return;
+    }
+    const blob = new Blob([modifiedPdfBytes],{type:"application/pdf"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download="page-numbered.pdf";
+    link.click();
+}
+
 </script>
 
 </body>
