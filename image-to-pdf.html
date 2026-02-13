@@ -3,144 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Image & PDF Converter - Tool Matrix</title>
-<meta name="description" content="Convert images to PDF or PDF to images online for free. Fast, mobile-friendly and secure converter tool by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Advanced Image ⇄ PDF Converter</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  margin:0;
+  background:#eef4ff;
+}
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+h1{
+  text-align:center;
+  color:#007bff;
+}
+.section{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+  box-shadow:0 0 15px rgba(0,0,0,0.08);
+}
+.preview-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
+}
+.preview-box{
+  width:140px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:5px;
+  background:#fafafa;
+  text-align:center;
+}
+.preview-box img, canvas{
+  width:100%;
+  border-radius:6px;
+}
+button{
+  background:#007bff;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  margin-top:10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+button:hover{background:#0056b3;}
+select,input{
+  margin-top:10px;
+}
+</style>
 </head>
+<body>
 
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<div class="container">
+<h1>Advanced Image ⇄ PDF Converter</h1>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Image & PDF Converter</h1>
-<p class="text-gray-600 mt-2">Convert Images to PDF or PDF to Images instantly</p>
-</header>
+<!-- IMAGE TO PDF -->
+<div class="section">
+<h2>Image → PDF</h2>
+<input type="file" id="imgInput" multiple accept="image/*">
 
-<main class="flex-grow flex flex-col items-center px-4">
+<select id="pageSize">
+<option value="original">Original Size</option>
+<option value="A4">A4</option>
+</select>
 
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-6">
+<input type="number" id="margin" placeholder="Margin (px)" value="10">
 
-<!-- Tabs -->
-<div class="flex justify-center gap-4 mb-6">
-<button onclick="showTab('img2pdf')" id="tabImg2Pdf" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">Image → PDF</button>
-<button onclick="showTab('pdf2img')" id="tabPdf2Img" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold">PDF → Image</button>
+<div class="preview-grid" id="imgPreview"></div>
+
+<button onclick="createPDF()">Download PDF</button>
 </div>
 
-<!-- Image to PDF -->
-<div id="img2pdf" class="space-y-4">
-<input type="file" id="imageInput" accept="image/*" multiple
-class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+<!-- PDF TO IMAGE -->
+<div class="section">
+<h2>PDF → Image</h2>
+<input type="file" id="pdfInput" accept="application/pdf">
 
-<button onclick="convertToPDF()"
-class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Convert to PDF
-</button>
-</div>
+<select id="imgFormat">
+<option value="image/png">PNG</option>
+<option value="image/jpeg">JPG</option>
+<option value="image/webp">WEBP</option>
+</select>
 
-<!-- PDF to Image -->
-<div id="pdf2img" class="hidden space-y-4">
-<input type="file" id="pdfInput" accept="application/pdf"
-class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+<input type="range" id="imgQuality" min="0.5" max="1" step="0.1" value="0.9">
 
-<button onclick="convertPDFToImages()"
-class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Convert to Images
-</button>
+<div class="preview-grid" id="pdfPreview"></div>
 
-<div id="output" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+<button onclick="downloadAllImages()">Download All Images</button>
 </div>
 
 </div>
-
-</main>
-
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
 
 <script>
-// Tab switching
-function showTab(tab) {
-if(tab === 'img2pdf'){
-document.getElementById('img2pdf').classList.remove('hidden');
-document.getElementById('pdf2img').classList.add('hidden');
-document.getElementById('tabImg2Pdf').classList.replace('bg-gray-300','bg-blue-600');
-document.getElementById('tabImg2Pdf').classList.replace('text-gray-800','text-white');
-document.getElementById('tabPdf2Img').classList.replace('bg-blue-600','bg-gray-300');
-document.getElementById('tabPdf2Img').classList.replace('text-white','text-gray-800');
-}else{
-document.getElementById('img2pdf').classList.add('hidden');
-document.getElementById('pdf2img').classList.remove('hidden');
-document.getElementById('tabPdf2Img').classList.replace('bg-gray-300','bg-blue-600');
-document.getElementById('tabPdf2Img').classList.replace('text-gray-800','text-white');
-document.getElementById('tabImg2Pdf').classList.replace('bg-blue-600','bg-gray-300');
-document.getElementById('tabImg2Pdf').classList.replace('text-white','text-gray-800');
-}
-}
 
-// Image → PDF
-async function convertToPDF() {
-const { jsPDF } = window.jspdf;
-const pdf = new jsPDF();
-const files = document.getElementById("imageInput").files;
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-if(files.length === 0){
-alert("Select at least one image!");
-return;
-}
+/* ================= IMAGE → PDF ================= */
 
-for (let i = 0; i < files.length; i++) {
-const reader = new FileReader();
-reader.readAsDataURL(files[i]);
+let imageFiles=[];
 
-await new Promise(resolve => {
-reader.onload = function(event) {
-if (i > 0) pdf.addPage();
-pdf.addImage(event.target.result, 'JPEG', 10, 10, 180, 160);
-resolve();
-}
+document.getElementById('imgInput').addEventListener('change',function(e){
+  imageFiles=[...e.target.files];
+  const preview=document.getElementById("imgPreview");
+  preview.innerHTML="";
+
+  imageFiles.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const box=document.createElement("div");
+      box.className="preview-box";
+      const img=document.createElement("img");
+      img.src=ev.target.result;
+      box.appendChild(img);
+      preview.appendChild(box);
+    }
+    reader.readAsDataURL(file);
+  });
 });
+
+async function createPDF(){
+
+  if(imageFiles.length===0) return alert("Upload images first");
+
+  const { PDFDocument } = PDFLib;
+  const pdfDoc=await PDFDocument.create();
+  const pageSize=document.getElementById("pageSize").value;
+  const margin=parseInt(document.getElementById("margin").value)||0;
+
+  for(let file of imageFiles){
+
+    const bytes=await file.arrayBuffer();
+    let img;
+
+    if(file.type.includes("png"))
+      img=await pdfDoc.embedPng(bytes);
+    else
+      img=await pdfDoc.embedJpg(bytes);
+
+    let page;
+    if(pageSize==="A4"){
+      page=pdfDoc.addPage([595,842]);
+    }else{
+      page=pdfDoc.addPage([img.width+margin*2,img.height+margin*2]);
+    }
+
+    const { width,height }=page.getSize();
+    page.drawImage(img,{
+      x:margin,
+      y:margin,
+      width:width-margin*2,
+      height:height-margin*2
+    });
+  }
+
+  const pdfBytes=await pdfDoc.save();
+  downloadFile(pdfBytes,"images.pdf","application/pdf");
 }
 
-pdf.save("converted.pdf");
+/* ================= PDF → IMAGE ================= */
+
+let renderedImages=[];
+
+document.getElementById('pdfInput').addEventListener('change',async function(e){
+
+  const file=e.target.files[0];
+  if(!file) return;
+
+  renderedImages=[];
+  document.getElementById("pdfPreview").innerHTML="";
+
+  const bytes=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const viewport=page.getViewport({scale:1.5});
+
+    const canvas=document.createElement("canvas");
+    const ctx=canvas.getContext("2d");
+    canvas.width=viewport.width;
+    canvas.height=viewport.height;
+
+    await page.render({canvasContext:ctx,viewport}).promise;
+
+    renderedImages.push(canvas);
+
+    const box=document.createElement("div");
+    box.className="preview-box";
+    box.appendChild(canvas);
+    document.getElementById("pdfPreview").appendChild(box);
+  }
+});
+
+function downloadAllImages(){
+
+  if(renderedImages.length===0) return alert("Upload PDF first");
+
+  const format=document.getElementById("imgFormat").value;
+  const quality=parseFloat(document.getElementById("imgQuality").value);
+  const ext=format.split("/")[1];
+
+  renderedImages.forEach((canvas,i)=>{
+    canvas.toBlob(function(blob){
+      const link=document.createElement("a");
+      link.href=URL.createObjectURL(blob);
+      link.download=`page-${i+1}.${ext}`;
+      link.click();
+    },format,quality);
+  });
 }
 
-// PDF → Image
-async function convertPDFToImages() {
-const file = document.getElementById("pdfInput").files[0];
-if(!file){
-alert("Select a PDF file!");
-return;
+/* ================= DOWNLOAD ================= */
+
+function downloadFile(bytes,filename,type){
+  const blob=new Blob([bytes],{type:type});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download=filename;
+  link.click();
 }
 
-const reader = new FileReader();
-reader.onload = async function() {
-const pdf = await pdfjsLib.getDocument({data: reader.result}).promise;
-const output = document.getElementById("output");
-output.innerHTML = "";
-
-for (let i = 1; i <= pdf.numPages; i++) {
-const page = await pdf.getPage(i);
-const viewport = page.getViewport({scale: 1.5});
-const canvas = document.createElement("canvas");
-const context = canvas.getContext("2d");
-canvas.height = viewport.height;
-canvas.width = viewport.width;
-
-await page.render({canvasContext: context, viewport: viewport}).promise;
-
-const img = document.createElement("img");
-img.src = canvas.toDataURL("image/png");
-img.className = "rounded-lg shadow-md w-full";
-
-output.appendChild(img);
-}
-};
-
-reader.readAsArrayBuffer(file);
-}
 </script>
-
 </body>
 </html>
