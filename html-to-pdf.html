@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML to PDF Converter - Tool Matrix</title>
+<meta name="description" content="Convert HTML content to PDF online for free. Fast, mobile-friendly HTML to PDF converter tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">HTML to PDF Converter</h1>
+<p class="text-gray-600 mt-2">Convert your HTML content into PDF instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<label class="block text-gray-700 font-semibold">Enter HTML content:</label>
+<textarea id="htmlContent" rows="10" class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Paste your HTML here..."></textarea>
+
+<button onclick="convertHTMLToPDF()" 
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold mt-2">
+Convert to PDF
+</button>
+
+<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download PDF</a>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+async function convertHTMLToPDF(){
+const htmlContent = document.getElementById("htmlContent").value;
+if(!htmlContent){ alert("Please enter HTML content!"); return; }
+
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+
+const lines = htmlContent.split("\n");
+
+// Add text line by line
+let y = 10;
+lines.forEach(line => {
+  doc.text(line, 10, y);
+  y += 10;
+});
+
+// Download
+const blobPDF = doc.output("blob");
+const url = URL.createObjectURL(blobPDF);
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = url;
+downloadBtn.download = "converted.pdf";
+downloadBtn.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
