@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiFi QR Code Generator - Tool Matrix</title>
+<meta name="description" content="Generate WiFi QR codes easily. Mobile-friendly WiFi QR Generator by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">WiFi QR Code Generator</h1>
+<p class="text-gray-600 mt-2">Generate QR code for your WiFi network instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
+
+<label class="block font-semibold text-gray-700">WiFi SSID (Network Name):</label>
+<input type="text" id="ssid" class="w-full p-3 border rounded-lg" placeholder="Your WiFi SSID">
+
+<label class="block font-semibold text-gray-700">Password:</label>
+<input type="text" id="password" class="w-full p-3 border rounded-lg" placeholder="WiFi Password">
+
+<label class="block font-semibold text-gray-700">Encryption Type:</label>
+<select id="encryption" class="w-full p-3 border rounded-lg">
+<option value="WPA">WPA/WPA2</option>
+<option value="WEP">WEP</option>
+<option value="nopass">None</option>
+</select>
+
+<button onclick="generateWiFiQR()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Generate QR Code
+</button>
+
+<div id="result" class="mt-4 flex flex-col items-center bg-gray-100 p-4 rounded-lg hidden">
+<canvas id="qrCanvas"></canvas>
+<a id="downloadLink" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold" download="wifi-qr.png">
+Download QR Code
+</a>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+function generateWiFiQR(){
+const ssid = document.getElementById("ssid").value.trim();
+const password = document.getElementById("password").value.trim();
+const encryption = document.getElementById("encryption").value;
+
+if(!ssid){ alert("Please enter WiFi SSID!"); return; }
+
+let qrText = `WIFI:T:${encryption};S:${ssid};`;
+if(encryption !== "nopass") qrText += `P:${password};`;
+qrText += ";";
+
+const qr = new QRious({
+  element: document.getElementById("qrCanvas"),
+  value: qrText,
+  size: 250
+});
+
+const downloadLink = document.getElementById("downloadLink");
+downloadLink.href = qr.toDataURL("image/png");
+
+document.getElementById("result").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
