@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebP Converter Tool - Convert JPG PNG to WebP Online</title>
+<meta name="description" content="Convert JPG, PNG to WebP and WebP to JPG with adjustable quality. Free online WebP converter with preview and manual download.">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#1e40af,#3b82f6);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    background:#ffffff;
+    width:100%;
+    height:100%;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+h1{
+    color:#1e40af;
+    margin-bottom:10px;
+    font-size:28px;
+}
+
+p{
+    color:#555;
+    margin-bottom:15px;
+}
+
+input[type="file"]{
+    margin:10px 0;
+}
+
+select, button{
+    width:100%;
+    max-width:400px;
+    padding:12px;
+    margin-top:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    border:none;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#1e3a8a;
+}
+
+button:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
+.preview{
+    margin-top:15px;
+    max-width:300px;
+    max-height:250px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    display:none;
+}
+
+@media(max-width:768px){
+    h1{
+        font-size:22px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>WebP Converter Tool</h1>
+    <p>Convert images with adjustable quality and preview.</p>
+
+    <input type="file" id="imageInput" accept="image/*">
+
+    <img id="previewImage" class="preview">
+
+    <select id="format">
+        <option value="image/webp">Convert to WebP</option>
+        <option value="image/jpeg">Convert to JPG</option>
+    </select>
+
+    <select id="quality">
+        <option value="0.5">Low Quality</option>
+        <option value="0.75" selected>Medium Quality</option>
+        <option value="0.95">High Quality</option>
+    </select>
+
+    <button onclick="convertImage()">Convert Image</button>
+    <button id="downloadBtn" onclick="downloadImage()" disabled>Download Image</button>
+</div>
+
+<script>
+let uploadedImage = null;
+let convertedBlob = null;
+
+const input = document.getElementById("imageInput");
+const preview = document.getElementById("previewImage");
+const downloadBtn = document.getElementById("downloadBtn");
+
+input.addEventListener("change", function(e){
+    uploadedImage = e.target.files[0];
+    convertedBlob = null;
+    downloadBtn.disabled = true;
+
+    if(uploadedImage){
+        const reader = new FileReader();
+        reader.onload = function(event){
+            preview.src = event.target.result;
+            preview.style.display = "block";
+        }
+        reader.readAsDataURL(uploadedImage);
+    }
+});
+
+function convertImage(){
+    if(!uploadedImage){
+        alert("Please upload an image first!");
+        return;
+    }
+
+    const format = document.getElementById("format").value;
+    const quality = parseFloat(document.getElementById("quality").value);
+
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+        img.src = e.target.result;
+    }
+
+    img.onload = function(){
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img,0,0);
+
+        canvas.toBlob(function(blob){
+            convertedBlob = blob;
+            downloadBtn.disabled = false;
+            alert("Image Converted Successfully! Now click Download.");
+        }, format, quality);
+    }
+
+    reader.readAsDataURL(uploadedImage);
+}
+
+function downloadImage(){
+    if(!convertedBlob) return;
+
+    const format = document.getElementById("format").value;
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(convertedBlob);
+    link.download = "converted-image." + (format === "image/webp" ? "webp" : "jpg");
+    link.click();
+}
+</script>
+
+</body>
+</html>
