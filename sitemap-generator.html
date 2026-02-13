@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sitemap Generator - Tool Matrix</title>
+<meta name="description" content="Generate XML sitemap for your website instantly. Mobile-friendly sitemap generator tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Sitemap Generator</h1>
+<p class="text-gray-600 mt-2">Generate XML sitemap for your website URLs instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<label class="block font-semibold text-gray-700">Enter website URLs (one per line):</label>
+<textarea id="urlInput" rows="10" class="w-full p-4 border rounded-lg" placeholder="https://example.com/page1&#10;https://example.com/page2"></textarea>
+
+<button onclick="generateSitemap()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Generate Sitemap
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<h3 class="font-semibold text-blue-700">Generated XML Sitemap:</h3>
+<pre id="sitemapOutput" class="mt-2 text-gray-700 whitespace-pre-wrap"></pre>
+<button onclick="downloadSitemap()" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold">
+Download Sitemap
+</button>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+function generateSitemap(){
+const urls = document.getElementById("urlInput").value.trim().split(/\n+/).filter(u=>u.length>0);
+
+if(urls.length === 0){ alert("Please enter at least one URL!"); return; }
+
+let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+urls.forEach(url=>{
+  sitemap += `  <url>\n    <loc>${url}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+});
+
+sitemap += `</urlset>`;
+
+document.getElementById("sitemapOutput").innerText = sitemap;
+document.getElementById("result").classList.remove("hidden");
+}
+
+// Download Sitemap
+function downloadSitemap(){
+const sitemap = document.getElementById("sitemapOutput").innerText;
+const blob = new Blob([sitemap], {type: "text/xml"});
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "sitemap.xml";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
