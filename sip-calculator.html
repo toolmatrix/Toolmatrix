@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP Calculator - Tool Matrix</title>
+<meta name="description" content="Calculate your SIP future value online. Mobile-friendly SIP calculator tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">SIP Calculator</h1>
+<p class="text-gray-600 mt-2">Calculate SIP future value and returns instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
+
+<label class="block font-semibold text-gray-700">Monthly SIP Amount</label>
+<input type="number" id="sipAmount" class="w-full p-2 border rounded-lg" placeholder="Enter SIP amount">
+
+<label class="block font-semibold text-gray-700">Expected Annual Rate of Return (%)</label>
+<input type="number" id="rate" class="w-full p-2 border rounded-lg" placeholder="Enter rate of return">
+
+<label class="block font-semibold text-gray-700">Investment Tenure (Years)</label>
+<input type="number" id="tenure" class="w-full p-2 border rounded-lg" placeholder="Enter tenure in years">
+
+<button onclick="calculateSIP()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Calculate SIP
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<p id="futureValueText" class="text-lg font-semibold text-blue-700"></p>
+<p id="totalInvestedText" class="text-gray-700"></p>
+<p id="totalReturnsText" class="text-gray-700"></p>
+</div>
+
+<canvas id="sipChart" class="mt-4 hidden"></canvas>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+function calculateSIP(){
+const P = parseFloat(document.getElementById("sipAmount").value);
+const r = parseFloat(document.getElementById("rate").value)/100/12;
+const n = parseFloat(document.getElementById("tenure").value)*12;
+
+if(!P || !r || !n){ alert("Please enter valid inputs!"); return; }
+
+const FV = P * (Math.pow(1+r,n)-1) * (1+r)/r;
+const totalInvested = P*n;
+const totalReturns = FV - totalInvested;
+
+document.getElementById("futureValueText").innerText = `Future Value: ₹${FV.toFixed(2)}`;
+document.getElementById("totalInvestedText").innerText = `Total Invested: ₹${totalInvested.toFixed(2)}`;
+document.getElementById("totalReturnsText").innerText = `Total Returns: ₹${totalReturns.toFixed(2)}`;
+document.getElementById("result").classList.remove("hidden");
+
+// Chart
+document.getElementById("sipChart").classList.remove("hidden");
+const ctx = document.getElementById("sipChart").getContext('2d');
+
+if(window.sipChartInstance) window.sipChartInstance.destroy();
+
+window.sipChartInstance = new Chart(ctx, {
+type: 'doughnut',
+data: {
+labels: ['Invested Amount', 'Returns'],
+datasets: [{
+data: [totalInvested, totalReturns],
+backgroundColor: ['#3B82F6','#60A5FA'],
+borderWidth: 1
+}]
+},
+options: {plugins:{legend:{position:'bottom'}}}
+});
+}
+</script>
+
+</body>
+</html>
