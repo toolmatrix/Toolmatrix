@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image & PDF Converter - Tool Matrix</title>
+<meta name="description" content="Convert images to PDF or PDF to images online for free. Fast, mobile-friendly and secure converter tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Image & PDF Converter</h1>
+<p class="text-gray-600 mt-2">Convert Images to PDF or PDF to Images instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-6">
+
+<!-- Tabs -->
+<div class="flex justify-center gap-4 mb-6">
+<button onclick="showTab('img2pdf')" id="tabImg2Pdf" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">Image → PDF</button>
+<button onclick="showTab('pdf2img')" id="tabPdf2Img" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold">PDF → Image</button>
+</div>
+
+<!-- Image to PDF -->
+<div id="img2pdf" class="space-y-4">
+<input type="file" id="imageInput" accept="image/*" multiple
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<button onclick="convertToPDF()"
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Convert to PDF
+</button>
+</div>
+
+<!-- PDF to Image -->
+<div id="pdf2img" class="hidden space-y-4">
+<input type="file" id="pdfInput" accept="application/pdf"
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<button onclick="convertPDFToImages()"
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Convert to Images
+</button>
+
+<div id="output" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+</div>
+
+</div>
+
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+// Tab switching
+function showTab(tab) {
+if(tab === 'img2pdf'){
+document.getElementById('img2pdf').classList.remove('hidden');
+document.getElementById('pdf2img').classList.add('hidden');
+document.getElementById('tabImg2Pdf').classList.replace('bg-gray-300','bg-blue-600');
+document.getElementById('tabImg2Pdf').classList.replace('text-gray-800','text-white');
+document.getElementById('tabPdf2Img').classList.replace('bg-blue-600','bg-gray-300');
+document.getElementById('tabPdf2Img').classList.replace('text-white','text-gray-800');
+}else{
+document.getElementById('img2pdf').classList.add('hidden');
+document.getElementById('pdf2img').classList.remove('hidden');
+document.getElementById('tabPdf2Img').classList.replace('bg-gray-300','bg-blue-600');
+document.getElementById('tabPdf2Img').classList.replace('text-gray-800','text-white');
+document.getElementById('tabImg2Pdf').classList.replace('bg-blue-600','bg-gray-300');
+document.getElementById('tabImg2Pdf').classList.replace('text-white','text-gray-800');
+}
+}
+
+// Image → PDF
+async function convertToPDF() {
+const { jsPDF } = window.jspdf;
+const pdf = new jsPDF();
+const files = document.getElementById("imageInput").files;
+
+if(files.length === 0){
+alert("Select at least one image!");
+return;
+}
+
+for (let i = 0; i < files.length; i++) {
+const reader = new FileReader();
+reader.readAsDataURL(files[i]);
+
+await new Promise(resolve => {
+reader.onload = function(event) {
+if (i > 0) pdf.addPage();
+pdf.addImage(event.target.result, 'JPEG', 10, 10, 180, 160);
+resolve();
+}
+});
+}
+
+pdf.save("converted.pdf");
+}
+
+// PDF → Image
+async function convertPDFToImages() {
+const file = document.getElementById("pdfInput").files[0];
+if(!file){
+alert("Select a PDF file!");
+return;
+}
+
+const reader = new FileReader();
+reader.onload = async function() {
+const pdf = await pdfjsLib.getDocument({data: reader.result}).promise;
+const output = document.getElementById("output");
+output.innerHTML = "";
+
+for (let i = 1; i <= pdf.numPages; i++) {
+const page = await pdf.getPage(i);
+const viewport = page.getViewport({scale: 1.5});
+const canvas = document.createElement("canvas");
+const context = canvas.getContext("2d");
+canvas.height = viewport.height;
+canvas.width = viewport.width;
+
+await page.render({canvasContext: context, viewport: viewport}).promise;
+
+const img = document.createElement("img");
+img.src = canvas.toDataURL("image/png");
+img.className = "rounded-lg shadow-md w-full";
+
+output.appendChild(img);
+}
+};
+
+reader.readAsArrayBuffer(file);
+}
+</script>
+
+</body>
+</html>
