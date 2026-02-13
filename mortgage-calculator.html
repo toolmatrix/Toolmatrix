@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Calculator - Tool Matrix</title>
+<meta name="description" content="Calculate your mortgage EMI, total interest, and total payment online. Mobile-friendly mortgage calculator tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Mortgage Calculator</h1>
+<p class="text-gray-600 mt-2">Calculate EMI, Total Interest & Total Payment for your home loan</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
+
+<label class="block font-semibold text-gray-700">Home Loan Amount (Principal)</label>
+<input type="number" id="principal" class="w-full p-2 border rounded-lg" placeholder="Enter loan amount">
+
+<label class="block font-semibold text-gray-700">Down Payment (Optional)</label>
+<input type="number" id="downPayment" class="w-full p-2 border rounded-lg" placeholder="Enter down payment">
+
+<label class="block font-semibold text-gray-700">Annual Interest Rate (%)</label>
+<input type="number" id="interest" class="w-full p-2 border rounded-lg" placeholder="Enter interest rate">
+
+<label class="block font-semibold text-gray-700">Loan Tenure (Years)</label>
+<input type="number" id="tenure" class="w-full p-2 border rounded-lg" placeholder="Enter tenure in years">
+
+<button onclick="calculateMortgage()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Calculate EMI
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<p id="emiText" class="text-lg font-semibold text-blue-700"></p>
+<p id="interestText" class="text-gray-700"></p>
+<p id="totalText" class="text-gray-700"></p>
+</div>
+
+<canvas id="mortgageChart" class="mt-4 hidden"></canvas>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+function calculateMortgage(){
+let P = parseFloat(document.getElementById("principal").value);
+const downPayment = parseFloat(document.getElementById("downPayment").value) || 0;
+P = P - downPayment;
+
+const R = parseFloat(document.getElementById("interest").value)/12/100;
+const N = parseFloat(document.getElementById("tenure").value)*12;
+
+if(!P || !R || !N){ alert("Please enter valid inputs!"); return; }
+
+const EMI = (P*R*Math.pow(1+R,N))/(Math.pow(1+R,N)-1);
+const totalPayment = EMI*N;
+const totalInterest = totalPayment - P;
+
+document.getElementById("emiText").innerText = `Monthly EMI: ₹${EMI.toFixed(2)}`;
+document.getElementById("interestText").innerText = `Total Interest: ₹${totalInterest.toFixed(2)}`;
+document.getElementById("totalText").innerText = `Total Payment: ₹${totalPayment.toFixed(2)}`;
+document.getElementById("result").classList.remove("hidden");
+
+// Chart
+document.getElementById("mortgageChart").classList.remove("hidden");
+const ctx = document.getElementById("mortgageChart").getContext('2d');
+
+if(window.mortgageChartInstance) window.mortgageChartInstance.destroy();
+
+window.mortgageChartInstance = new Chart(ctx, {
+type: 'doughnut',
+data: {
+labels: ['Principal', 'Interest'],
+datasets: [{
+data: [P, totalInterest],
+backgroundColor: ['#3B82F6','#60A5FA'],
+borderWidth: 1
+}]
+},
+options: {plugins:{legend:{position:'bottom'}}}
+});
+}
+</script>
+
+</body>
+</html>
