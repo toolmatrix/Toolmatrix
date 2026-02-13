@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Page Number Adder - Tool Matrix</title>
+<meta name="description" content="Add page numbers to PDF online for free. Fast, mobile-friendly PDF page numbering tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PDF Page Number Adder</h1>
+<p class="text-gray-600 mt-2">Upload your PDF and add page numbers to all pages instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<input type="file" id="pdfInput" accept="application/pdf"
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<label class="block mt-2 text-gray-700 font-semibold">Font size:</label>
+<input type="number" id="fontSize" value="12" class="w-full p-2 border rounded-lg">
+
+<label class="block mt-2 text-gray-700 font-semibold">Page number position:</label>
+<select id="position" class="w-full p-2 border rounded-lg">
+  <option value="bottom-center">Bottom Center</option>
+  <option value="bottom-right">Bottom Right</option>
+  <option value="bottom-left">Bottom Left</option>
+</select>
+
+<button onclick="addPageNumbers()" 
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold mt-4">
+Add Page Numbers
+</button>
+
+<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download PDF</a>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+async function addPageNumbers() {
+const file = document.getElementById("pdfInput").files[0];
+if(!file){ alert("Please select a PDF file!"); return; }
+
+const fontSize = parseInt(document.getElementById("fontSize").value) || 12;
+const position = document.getElementById("position").value;
+
+const arrayBuffer = await file.arrayBuffer();
+const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+const pages = pdfDoc.getPages();
+const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+pages.forEach((page, idx) => {
+  const { width, height } = page.getSize();
+  let text = `${idx + 1}`;
+  let x, y;
+
+  switch(position){
+    case "bottom-center":
+      x = width / 2;
+      y = 20;
+      page.drawText(text, { x: x, y: y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0), xSkew:0, ySkew:0, rotate: undefined, textAlign: PDFLib.TextAlignment.Center });
+      break;
+    case "bottom-right":
+      x = width - 40;
+      y = 20;
+      page.drawText(text, { x, y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0) });
+      break;
+    case "bottom-left":
+      x = 20;
+      y = 20;
+      page.drawText(text, { x, y, size: fontSize, font: helveticaFont, color: PDFLib.rgb(0,0,0) });
+      break;
+  }
+});
+
+const pdfBytes = await pdfDoc.save();
+const blob = new Blob([pdfBytes], {type:'application/pdf'});
+const url = URL.createObjectURL(blob);
+
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = url;
+downloadBtn.download = "pdf_with_page_numbers.pdf";
+downloadBtn.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
