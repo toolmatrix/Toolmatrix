@@ -1,187 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Screen QR Code Generator - ToolMatrix</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<style>
-html, body {
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    font-family: Arial, sans-serif;
-    background:#ffffff;
-    overflow:hidden;
-}
-.container{
-    display:flex;
-    flex-direction:row;
-    width:100%;
-    height:100%;
-}
-.controls{
-    flex:1;
-    min-width:300px;
-    padding:30px;
-    overflow-y:auto;
-    background:#f5f7fa;
-}
-.controls h1{
-    text-align:center;
-    margin-bottom:20px;
-    font-size:28px;
-}
-.controls label{
-    display:block;
-    margin-top:10px;
-    font-weight:bold;
-}
-.controls input, .controls select{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:10px;
-    font-size:16px;
-}
-.controls button{
-    width:100%;
-    padding:12px;
-    font-size:16px;
-    margin-top:10px;
-    background:#007BFF;
-    color:white;
-    border:none;
-    cursor:pointer;
-}
-.preview{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    position:relative;
-    background:#ffffff;
-}
-#qrcode canvas{
-    max-width:90%;
-    max-height:90%;
-}
-#logo{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:100px;
-    height:100px;
-    display:none;
-    border-radius:10px;
-}
-@media(max-width:900px){
-    .container{
-        flex-direction:column;
-    }
-    .controls{
-        height:auto;
-        max-height:50%;
-    }
-    .preview{
-        height:auto;
-        max-height:50%;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            background: #f0f4f8;
+        }
+        h1 {
+            color: #1e40af;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 90%;
+            max-width: 400px;
+            font-size: 16px;
+        }
+        canvas {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #1e40af;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3b82f6;
+        }
+    </style>
 </head>
 <body>
+    <h1>QR Code Generator</h1>
+    <input type="text" id="text" placeholder="Enter text or URL">
+    <button onclick="generateQR()">Generate QR Code</button>
+    <canvas id="qrcode"></canvas>
+    <button id="downloadBtn" style="display:none;">Download QR Code</button>
 
-<div class="container">
-<div class="controls">
-<h1>Full Screen QR Generator</h1>
+    <script>
+        const qr = new QRious({
+            element: document.getElementById('qrcode'),
+            size: 250,
+            value: ''
+        });
 
-<label>Text / URL</label>
-<input type="text" id="text" placeholder="https://example.com">
+        function generateQR() {
+            const text = document.getElementById('text').value;
+            if(!text) {
+                alert('Please enter some text or URL!');
+                return;
+            }
+            qr.value = text;
+            document.getElementById('downloadBtn').style.display = 'block';
+        }
 
-<label>QR Size (Pixel)</label>
-<select id="size">
-<option value="300">300x300</option>
-<option value="500" selected>500x500</option>
-<option value="700">700x700</option>
-<option value="1000">1000x1000</option>
-</select>
-
-<label>QR Color</label>
-<input type="color" id="color" value="#000000">
-
-<label>Background Color</label>
-<input type="color" id="bgcolor" value="#ffffff">
-
-<label>Margin (Padding)</label>
-<input type="number" id="margin" value="10">
-
-<label>Error Correction</label>
-<select id="error">
-<option value="L">Low (L)</option>
-<option value="M" selected>Medium (M)</option>
-<option value="Q">Quartile (Q)</option>
-<option value="H">High (H)</option>
-</select>
-
-<label>Upload Logo (Optional)</label>
-<input type="file" id="logoUpload" accept="image/*">
-
-<button onclick="generateQR()">Generate QR</button>
-<button onclick="downloadQR()">Download PNG</button>
-</div>
-
-<div class="preview">
-<div id="qrcode"></div>
-<img id="logo">
-</div>
-</div>
-
-<script>
-let qr;
-
-function generateQR(){
-    let text=document.getElementById("text").value;
-    let size=parseInt(document.getElementById("size").value);
-    let color=document.getElementById("color").value;
-    let bg=document.getElementById("bgcolor").value;
-    let error=document.getElementById("error").value;
-
-    document.getElementById("qrcode").innerHTML="";
-    document.getElementById("logo").style.display="none";
-
-    qr=new QRCode(document.getElementById("qrcode"),{
-        text:text,
-        width:size,
-        height:size,
-        colorDark:color,
-        colorLight:bg,
-        correctLevel:QRCode.CorrectLevel[error]
-    });
-}
-
-document.getElementById("logoUpload").addEventListener("change",function(e){
-    let reader=new FileReader();
-    reader.onload=function(){
-        let logo=document.getElementById("logo");
-        logo.src=reader.result;
-        logo.style.display="block";
-    }
-    reader.readAsDataURL(e.target.files[0]);
-});
-
-function downloadQR(){
-    let canvas=document.querySelector("#qrcode canvas");
-    let link=document.createElement("a");
-    link.href=canvas.toDataURL("image/png");
-    link.download="qr-code.png";
-    link.click();
-}
-</script>
-
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const canvas = document.getElementById('qrcode');
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL("image/png");
+            link.download = "qr-code.png";
+            link.click();
+        });
+    </script>
 </body>
 </html>
