@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IP Address Lookup - Tool Matrix</title>
+<meta name="description" content="Check IP address details including country, city, ISP and location. Free IP lookup tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">IP Address Lookup</h1>
+<p class="text-gray-600 mt-2">Find IP location, ISP & details instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-2xl space-y-4">
+
+<label class="block font-semibold text-gray-700">Enter IP Address:</label>
+<input type="text" id="ipInput" class="w-full p-3 border rounded-lg" placeholder="Leave blank to detect your IP">
+
+<button onclick="lookupIP()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Lookup IP
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<p><strong>IP:</strong> <span id="ip"></span></p>
+<p><strong>City:</strong> <span id="city"></span></p>
+<p><strong>Region:</strong> <span id="region"></span></p>
+<p><strong>Country:</strong> <span id="country"></span></p>
+<p><strong>ISP:</strong> <span id="org"></span></p>
+<p><strong>Timezone:</strong> <span id="timezone"></span></p>
+<a id="mapLink" href="#" target="_blank" class="text-blue-600 underline mt-2 block">
+View on Google Maps
+</a>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+async function lookupIP(){
+let ip = document.getElementById("ipInput").value.trim();
+let url = ip ? `https://ipapi.co/${ip}/json/` : `https://ipapi.co/json/`;
+
+try{
+const response = await fetch(url);
+const data = await response.json();
+
+if(data.error){
+alert("Invalid IP address!");
+return;
+}
+
+document.getElementById("ip").innerText = data.ip;
+document.getElementById("city").innerText = data.city;
+document.getElementById("region").innerText = data.region;
+document.getElementById("country").innerText = data.country_name;
+document.getElementById("org").innerText = data.org;
+document.getElementById("timezone").innerText = data.timezone;
+
+document.getElementById("mapLink").href =
+`https://www.google.com/maps?q=${data.latitude},${data.longitude}`;
+
+document.getElementById("result").classList.remove("hidden");
+
+}catch(error){
+alert("Error fetching IP data!");
+}
+}
+</script>
+
+</body>
+</html>
