@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paraphrasing Tool - Tool Matrix</title>
+<meta name="description" content="Paraphrase your text online for free. Mobile-friendly paraphrasing tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Paraphrasing Tool</h1>
+<p class="text-gray-600 mt-2">Reword your text automatically</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+
+<label class="block font-semibold text-gray-700">Enter your text:</label>
+<textarea id="originalText" rows="8" class="w-full p-4 border rounded-lg" placeholder="Paste or type your text here..."></textarea>
+
+<button onclick="paraphraseText()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Paraphrase
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<h3 class="font-semibold text-blue-700">Paraphrased Text:</h3>
+<p id="paraphrasedText" class="mt-2 text-gray-700"></p>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+// Simple synonym dictionary
+const synonyms = {
+"good": ["great","excellent","nice"],
+"bad": ["poor","terrible","awful"],
+"happy": ["pleased","joyful","delighted"],
+"sad": ["unhappy","down","miserable"],
+"fast": ["quick","rapid","swift"],
+"slow": ["sluggish","lethargic","unhurried"],
+"important": ["crucial","significant","vital"]
+};
+
+function paraphraseText(){
+let text = document.getElementById("originalText").value.trim();
+if(!text){ alert("Please enter text!"); return; }
+
+// Replace words with synonyms randomly
+const words = text.split(/\b/);
+const newWords = words.map(word=>{
+  const lower = word.toLowerCase();
+  if(synonyms[lower]){
+    const choices = synonyms[lower];
+    return choices[Math.floor(Math.random()*choices.length)];
+  }
+  return word;
+});
+
+const paraphrased = newWords.join("").replace(/\s+/g," ");
+document.getElementById("paraphrasedText").innerText = paraphrased;
+document.getElementById("result").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
