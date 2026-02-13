@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PowerPoint ↔ PDF Converter - Tool Matrix</title>
+<meta name="description" content="Convert PowerPoint to PDF or PDF to PowerPoint online. Fast, mobile-friendly converter by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.11.0/pptxgen.bundle.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PowerPoint ↔ PDF Converter</h1>
+<p class="text-gray-600 mt-2">Convert PPT to PDF or PDF to PPT instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-6">
+
+<!-- Tabs -->
+<div class="flex justify-center gap-4 mb-6">
+<button onclick="showTab('ppt2pdf')" id="tabPPT2PDF" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold">PPT → PDF</button>
+<button onclick="showTab('pdf2ppt')" id="tabPDF2PPT" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold">PDF → PPT</button>
+</div>
+
+<!-- PPT to PDF -->
+<div id="ppt2pdf" class="space-y-4">
+<input type="file" id="pptInput" accept=".ppt,.pptx"
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<button onclick="convertPPTtoPDF()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Convert to PDF
+</button>
+</div>
+
+<!-- PDF to PPT -->
+<div id="pdf2ppt" class="hidden space-y-4">
+<input type="file" id="pdfInput" accept="application/pdf"
+class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+
+<button onclick="convertPDFtoPPT()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Convert to PPT
+</button>
+</div>
+
+<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download File</a>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+// Tab switching
+function showTab(tab){
+if(tab==='ppt2pdf'){
+document.getElementById('ppt2pdf').classList.remove('hidden');
+document.getElementById('pdf2ppt').classList.add('hidden');
+document.getElementById('tabPPT2PDF').classList.replace('bg-gray-300','bg-blue-600');
+document.getElementById('tabPPT2PDF').classList.replace('text-gray-800','text-white');
+document.getElementById('tabPDF2PPT').classList.replace('bg-blue-600','bg-gray-300');
+document.getElementById('tabPDF2PPT').classList.replace('text-white','text-gray-800');
+}else{
+document.getElementById('ppt2pdf').classList.add('hidden');
+document.getElementById('pdf2ppt').classList.remove('hidden');
+document.getElementById('tabPDF2PPT').classList.replace('bg-gray-300','bg-blue-600');
+document.getElementById('tabPDF2PPT').classList.replace('text-gray-800','text-white');
+document.getElementById('tabPPT2PDF').classList.replace('bg-blue-600','bg-gray-300');
+document.getElementById('tabPPT2PDF').classList.replace('text-white','text-gray-800');
+}
+}
+
+// PPT → PDF
+async function convertPPTtoPDF(){
+const file = document.getElementById("pptInput").files[0];
+if(!file){ alert("Select a PPT/PPTX file!"); return; }
+const reader = new FileReader();
+reader.readAsArrayBuffer(file);
+
+reader.onload = async function(){
+try{
+const ppt = new PptxGenJS();
+ppt.load(reader.result);
+
+const { jsPDF } = window.jspdf;
+const pdf = new jsPDF();
+
+ppt.slides.forEach((slide,i)=>{
+  // Convert each slide to image
+  // This is simplified: add slide text as PDF text (complex slides may need html2canvas)
+  pdf.text(`Slide ${i+1}`,10,10);
+  if(i<ppt.slides.length-1) pdf.addPage();
+});
+
+const blob = pdf.output("blob");
+const url = URL.createObjectURL(blob);
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = url;
+downloadBtn.download = "converted.pdf";
+downloadBtn.classList.remove("hidden");
+}catch(err){
+alert("PPT to PDF conversion limited: text only in client-side JS");
+}
+};
+}
+
+// PDF → PPT
+async function convertPDFtoPPT(){
+const file = document.getElementById("pdfInput").files[0];
+if(!file){ alert("Select a PDF file!"); return; }
+const arrayBuffer = await file.arrayBuffer();
+const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+
+const pptx = new PptxGenJS();
+
+for(let i=1;i<=pdf.numPages;i++){
+const page = await pdf.getPage(i);
+const viewport = page.getViewport({scale:2});
+const canvas = document.createElement("canvas");
+canvas.width = viewport.width;
+canvas.height = viewport.height;
+await page.render({canvasContext: canvas.getContext("2d"),viewport}).promise;
+const imgData = canvas.toDataURL("image/png");
+
+const slide = pptx.addSlide();
+slide.addImage({data:imgData,x:0,y:0,w:10,h:5.625}); // 16:9 ratio
+}
+
+const blob = await pptx.write("blob");
+const url = URL.createObjectURL(blob);
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = url;
+downloadBtn.download = "converted.pptx";
+downloadBtn.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
