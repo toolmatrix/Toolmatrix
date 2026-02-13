@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Image ⇄ PDF Converter</title>
+<title>PDF Watermark Remover Tool</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -32,27 +32,23 @@ h1{
 }
 .preview-grid{
   display:flex;
+  gap:20px;
   flex-wrap:wrap;
-  gap:10px;
-  margin-top:15px;
 }
 .preview-box{
-  width:140px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  padding:5px;
-  background:#fafafa;
-  text-align:center;
+  flex:1;
+  min-width:300px;
 }
-.preview-box img, canvas{
+canvas{
   width:100%;
-  border-radius:6px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 button{
   background:#007bff;
   color:white;
   border:none;
-  padding:8px 12px;
+  padding:10px 15px;
   margin-top:10px;
   border-radius:6px;
   cursor:pointer;
@@ -66,43 +62,36 @@ select,input{
 <body>
 
 <div class="container">
-<h1>Advanced Image ⇄ PDF Converter</h1>
+<h1>PDF Watermark Remover Tool</h1>
 
-<!-- IMAGE TO PDF -->
 <div class="section">
-<h2>Image → PDF</h2>
-<input type="file" id="imgInput" multiple accept="image/*">
-
-<select id="pageSize">
-<option value="original">Original Size</option>
-<option value="A4">A4</option>
-</select>
-
-<input type="number" id="margin" placeholder="Margin (px)" value="10">
-
-<div class="preview-grid" id="imgPreview"></div>
-
-<button onclick="createPDF()">Download PDF</button>
-</div>
-
-<!-- PDF TO IMAGE -->
-<div class="section">
-<h2>PDF → Image</h2>
 <input type="file" id="pdfInput" accept="application/pdf">
 
-<select id="imgFormat">
-<option value="image/png">PNG</option>
-<option value="image/jpeg">JPG</option>
-<option value="image/webp">WEBP</option>
+<select id="position">
+<option value="top">Top</option>
+<option value="center">Center</option>
+<option value="bottom">Bottom</option>
 </select>
 
-<input type="range" id="imgQuality" min="0.5" max="1" step="0.1" value="0.9">
+<input type="number" id="boxHeight" placeholder="Watermark Area Height (px)" value="100">
 
-<div class="preview-grid" id="pdfPreview"></div>
+<button onclick="removeWatermark()">Remove Watermark</button>
 
-<button onclick="downloadAllImages()">Download All Images</button>
+<div class="preview-grid">
+<div class="preview-box">
+<h3>Original Preview</h3>
+<div id="originalPreview"></div>
 </div>
 
+<div class="preview-box">
+<h3>Watermark Removed Preview</h3>
+<div id="cleanPreview"></div>
+</div>
+</div>
+
+<button onclick="downloadCleanPDF()">Download Clean PDF</button>
+
+</div>
 </div>
 
 <script>
@@ -111,128 +100,79 @@ const pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-/* ================= IMAGE → PDF ================= */
-
-let imageFiles=[];
-
-document.getElementById('imgInput').addEventListener('change',function(e){
-  imageFiles=[...e.target.files];
-  const preview=document.getElementById("imgPreview");
-  preview.innerHTML="";
-
-  imageFiles.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(ev){
-      const box=document.createElement("div");
-      box.className="preview-box";
-      const img=document.createElement("img");
-      img.src=ev.target.result;
-      box.appendChild(img);
-      preview.appendChild(box);
-    }
-    reader.readAsDataURL(file);
-  });
-});
-
-async function createPDF(){
-
-  if(imageFiles.length===0) return alert("Upload images first");
-
-  const { PDFDocument } = PDFLib;
-  const pdfDoc=await PDFDocument.create();
-  const pageSize=document.getElementById("pageSize").value;
-  const margin=parseInt(document.getElementById("margin").value)||0;
-
-  for(let file of imageFiles){
-
-    const bytes=await file.arrayBuffer();
-    let img;
-
-    if(file.type.includes("png"))
-      img=await pdfDoc.embedPng(bytes);
-    else
-      img=await pdfDoc.embedJpg(bytes);
-
-    let page;
-    if(pageSize==="A4"){
-      page=pdfDoc.addPage([595,842]);
-    }else{
-      page=pdfDoc.addPage([img.width+margin*2,img.height+margin*2]);
-    }
-
-    const { width,height }=page.getSize();
-    page.drawImage(img,{
-      x:margin,
-      y:margin,
-      width:width-margin*2,
-      height:height-margin*2
-    });
-  }
-
-  const pdfBytes=await pdfDoc.save();
-  downloadFile(pdfBytes,"images.pdf","application/pdf");
-}
-
-/* ================= PDF → IMAGE ================= */
-
-let renderedImages=[];
+let originalBytes=null;
+let cleanPdfBytes=null;
 
 document.getElementById('pdfInput').addEventListener('change',async function(e){
 
   const file=e.target.files[0];
   if(!file) return;
 
-  renderedImages=[];
-  document.getElementById("pdfPreview").innerHTML="";
+  originalBytes=await file.arrayBuffer();
+  document.getElementById("originalPreview").innerHTML="";
+  document.getElementById("cleanPreview").innerHTML="";
 
-  const bytes=await file.arrayBuffer();
+  renderPDF(originalBytes,"originalPreview");
+});
+
+async function renderPDF(bytes,containerId){
+
   const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+  const container=document.getElementById(containerId);
 
   for(let i=1;i<=pdf.numPages;i++){
     const page=await pdf.getPage(i);
-    const viewport=page.getViewport({scale:1.5});
-
+    const viewport=page.getViewport({scale:1});
     const canvas=document.createElement("canvas");
     const ctx=canvas.getContext("2d");
     canvas.width=viewport.width;
     canvas.height=viewport.height;
 
     await page.render({canvasContext:ctx,viewport}).promise;
-
-    renderedImages.push(canvas);
-
-    const box=document.createElement("div");
-    box.className="preview-box";
-    box.appendChild(canvas);
-    document.getElementById("pdfPreview").appendChild(box);
+    container.appendChild(canvas);
   }
-});
-
-function downloadAllImages(){
-
-  if(renderedImages.length===0) return alert("Upload PDF first");
-
-  const format=document.getElementById("imgFormat").value;
-  const quality=parseFloat(document.getElementById("imgQuality").value);
-  const ext=format.split("/")[1];
-
-  renderedImages.forEach((canvas,i)=>{
-    canvas.toBlob(function(blob){
-      const link=document.createElement("a");
-      link.href=URL.createObjectURL(blob);
-      link.download=`page-${i+1}.${ext}`;
-      link.click();
-    },format,quality);
-  });
 }
 
-/* ================= DOWNLOAD ================= */
+async function removeWatermark(){
 
-function downloadFile(bytes,filename,type){
-  const blob=new Blob([bytes],{type:type});
+  if(!originalBytes) return alert("Upload PDF first");
+
+  const { PDFDocument, rgb } = PDFLib;
+  const pdfDoc=await PDFDocument.load(originalBytes);
+  const pages=pdfDoc.getPages();
+
+  const position=document.getElementById("position").value;
+  const boxHeight=parseInt(document.getElementById("boxHeight").value)||100;
+
+  pages.forEach(page=>{
+    const { width,height }=page.getSize();
+    let yPos=0;
+
+    if(position==="top") yPos=height-boxHeight;
+    if(position==="center") yPos=(height/2)-(boxHeight/2);
+    if(position==="bottom") yPos=0;
+
+    page.drawRectangle({
+      x:0,
+      y:yPos,
+      width:width,
+      height:boxHeight,
+      color:rgb(1,1,1)
+    });
+  });
+
+  cleanPdfBytes=await pdfDoc.save();
+  document.getElementById("cleanPreview").innerHTML="";
+  renderPDF(cleanPdfBytes,"cleanPreview");
+}
+
+function downloadCleanPDF(){
+  if(!cleanPdfBytes) return alert("Remove watermark first");
+
+  const blob=new Blob([cleanPdfBytes],{type:"application/pdf"});
   const link=document.createElement("a");
   link.href=URL.createObjectURL(blob);
-  link.download=filename;
+  link.download="cleaned.pdf";
   link.click();
 }
 
