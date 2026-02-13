@@ -1,120 +1,157 @@
-  
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image Resizer Tool</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e6f0ff;
-      color: #003366;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Image Resizer Tool</title>
 
-    .container {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #e6f0ff;
+  margin: 0;
+  padding: 0;
+}
 
-    h1 {
-      text-align: center;
-      color: #007bff;
-    }
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.08);
+}
 
-    input[type="file"], input[type="number"] {
-      display: block;
-      width: 100%;
-      margin: 1rem 0;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+h1 {
+  text-align: center;
+  color: #007bff;
+}
 
-    canvas {
-      max-width: 100%;
-      margin-top: 1rem;
-    }
+input, select {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.7rem 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
 
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 0.7rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 1rem;
-    }
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+button:hover {
+  background-color: #0056b3;
+}
 
-    @media (max-width: 600px) {
-      .container {
-        margin: 1rem;
-        padding: 1rem;
-      }
-    }
-  </style>
+canvas {
+  max-width: 100%;
+  margin-top: 1rem;
+  border-radius: 10px;
+}
+
+#downloadBtn {
+  display: none;
+  margin-top: 1rem;
+}
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Image Resizer</h1>
-    <input type="file" id="upload" accept="image/*" />
-    <input type="number" id="width" placeholder="Width (px)" />
-    <input type="number" id="height" placeholder="Height (px)" />
-    <button onclick="resizeImage()">Resize Image</button>
-    <canvas id="canvas"></canvas>
-    <a id="downloadLink" style="display:none;" download="resized-image.png">Download Resized Image</a>
-  </div>
 
-  <script>
-    let originalImage = new Image();
+<div class="container">
+  <h1>Image Resizer</h1>
 
-    document.getElementById('upload').addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+  <input type="file" id="upload" accept="image/*" />
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        originalImage.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
+  <input type="number" id="width" placeholder="Width (px)" />
+  <input type="number" id="height" placeholder="Height (px)" />
 
-    function resizeImage() {
-      const width = parseInt(document.getElementById('width').value);
-      const height = parseInt(document.getElementById('height').value);
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
+  <!-- Format Selection -->
+  <select id="formatSelect">
+    <option value="image/jpeg">JPG</option>
+    <option value="image/png">PNG</option>
+    <option value="image/webp">WEBP</option>
+    <option value="image/gif">GIF</option>
+  </select>
 
-      if (!width || !height || isNaN(width) || isNaN(height)) {
-        alert("Please enter valid width and height.");
-        return;
-      }
+  <!-- Quality Control -->
+  <label>Quality (Only JPG & WEBP)</label>
+  <input type="range" id="quality" min="0.1" max="1" step="0.1" value="0.8">
 
-      canvas.width = width;
-      canvas.height = height;
+  <button onclick="resizeImage()">Resize Image</button>
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(originalImage, 0, 0, width, height);
+  <canvas id="canvas"></canvas>
 
-      const downloadLink = document.getElementById('downloadLink');
-      downloadLink.href = canvas.toDataURL();
-      downloadLink.style.display = 'block';
-      downloadLink.textContent = 'Download Resized Image';
-    }
-  </script>
+  <button id="downloadBtn">Download Resized Image</button>
+
+</div>
+
+<script>
+
+let originalImage = new Image();
+let originalFileName = "";
+const downloadBtn = document.getElementById("downloadBtn");
+
+document.getElementById('upload').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  originalFileName = file.name.split('.')[0];
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    originalImage.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function resizeImage() {
+
+  const width = parseInt(document.getElementById('width').value);
+  const height = parseInt(document.getElementById('height').value);
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!width || !height || isNaN(width) || isNaN(height)) {
+    alert("Please enter valid width and height.");
+    return;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.drawImage(originalImage, 0, 0, width, height);
+
+  downloadBtn.style.display = "block";
+}
+
+downloadBtn.addEventListener("click", function() {
+
+  const canvas = document.getElementById('canvas');
+  const format = document.getElementById('formatSelect').value;
+  const quality = parseFloat(document.getElementById('quality').value);
+  const extension = format.split('/')[1];
+
+  canvas.toBlob(function(blob) {
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = originalFileName + "-resized." + extension;
+    link.click();
+
+  }, format, quality);
+
+});
+
+</script>
+
 </body>
 </html>
-
-  
-  
