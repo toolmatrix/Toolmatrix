@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Image Watermark Tool - Tool Matrix</title>
+<meta name="description" content="Add text watermark to your images online for free. Fast, secure and mobile friendly watermark tool by Tool Matrix.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Image Watermark Tool</h1>
+<p class="text-gray-600 mt-2">Add custom text watermark to your image instantly</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl">
+
+<input type="file" id="imageInput" accept="image/*" 
+class="mb-4 block w-full text-sm text-gray-600
+file:mr-4 file:py-2 file:px-4
+file:rounded-lg file:border-0
+file:text-sm file:font-semibold
+file:bg-blue-600 file:text-white
+hover:file:bg-blue-700"/>
+
+<input type="text" id="watermarkText" placeholder="Enter Watermark Text"
+class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+<div class="flex flex-col md:flex-row gap-4 mb-4">
+<input type="range" id="fontSize" min="20" max="100" value="40" class="w-full">
+<input type="range" id="opacity" min="0.1" max="1" step="0.1" value="0.5" class="w-full">
+</div>
+
+<button onclick="addWatermark()" 
+class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">
+Add Watermark
+</button>
+
+<div class="mt-6 text-center">
+<canvas id="canvas" class="max-w-full rounded-lg shadow-md"></canvas>
+</div>
+
+<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition">
+Download Image
+</a>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix - All Rights Reserved
+</footer>
+
+<script>
+let image = new Image();
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+document.getElementById("imageInput").addEventListener("change", function(e) {
+const reader = new FileReader();
+reader.onload = function(event) {
+image.onload = function() {
+canvas.width = image.width;
+canvas.height = image.height;
+ctx.drawImage(image, 0, 0);
+}
+image.src = event.target.result;
+}
+reader.readAsDataURL(e.target.files[0]);
+});
+
+function addWatermark() {
+const text = document.getElementById("watermarkText").value;
+const size = document.getElementById("fontSize").value;
+const opacity = document.getElementById("opacity").value;
+
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.drawImage(image, 0, 0);
+
+ctx.font = size + "px Arial";
+ctx.fillStyle = "rgba(0, 0, 0," + opacity + ")";
+ctx.textAlign = "center";
+
+ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+const downloadBtn = document.getElementById("downloadBtn");
+downloadBtn.href = canvas.toDataURL();
+downloadBtn.download = "watermarked-image.png";
+downloadBtn.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
