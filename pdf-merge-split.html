@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional PDF Merge & Split Tool</title>
+<title>Advanced PDF Merge & Split Tool</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 <style>
 body{
-  font-family: Arial;
+  font-family:Arial;
   margin:0;
   background:#eef4ff;
 }
 .container{
-  max-width:1100px;
+  max-width:1200px;
   margin:auto;
   padding:20px;
 }
@@ -30,18 +30,6 @@ h1{
   margin-top:20px;
   box-shadow:0 0 15px rgba(0,0,0,0.08);
 }
-button{
-  background:#007bff;
-  color:white;
-  border:none;
-  padding:10px 15px;
-  margin-top:10px;
-  border-radius:6px;
-  cursor:pointer;
-}
-button:hover{
-  background:#0056b3;
-}
 .preview-grid{
   display:flex;
   flex-wrap:wrap;
@@ -50,74 +38,140 @@ button:hover{
 }
 .page-box{
   border:1px solid #ccc;
-  padding:5px;
   border-radius:8px;
+  padding:5px;
   text-align:center;
   background:#fafafa;
+  width:130px;
+  cursor:grab;
 }
 canvas{
-  width:120px;
+  width:100%;
   border-radius:6px;
 }
-.controls button{
-  margin:3px;
-  padding:4px 8px;
-  font-size:12px;
+button{
+  background:#007bff;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  margin-top:10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+button:hover{background:#0056b3;}
+.controls{
+  margin-top:5px;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h1>PDF Merge & Split Tool</h1>
+<h1>Advanced PDF Merge & Split Tool</h1>
 
 <!-- MERGE SECTION -->
 <div class="section">
-<h2>Merge PDF Files</h2>
+<h2>Merge PDF</h2>
 <input type="file" id="mergeInput" multiple accept="application/pdf">
-<button onclick="mergePDFs()">Merge & Download</button>
+<div class="preview-grid" id="mergePreview"></div>
+<button onclick="mergeSelected()">Merge Selected Pages</button>
 </div>
 
 <!-- SPLIT SECTION -->
 <div class="section">
 <h2>Split PDF</h2>
 <input type="file" id="splitInput" accept="application/pdf">
-<div class="preview-grid" id="preview"></div>
-<button onclick="downloadSplit()">Download Split Pages</button>
+<div class="preview-grid" id="splitPreview"></div>
+
+<button onclick="downloadSeparate()">Download Selected as Separate PDFs</button>
+<button onclick="downloadCombined()">Download Selected as One PDF</button>
 </div>
 
 </div>
 
 <script>
 
-let splitPdfDoc = null;
-let splitPages = [];
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-/* ================= MERGE FUNCTION ================= */
+let mergeDocs = [];
+let splitDoc = null;
 
-async function mergePDFs(){
-  const { PDFDocument } = PDFLib;
-  const files = document.getElementById('mergeInput').files;
+/* ================= PREVIEW RENDER ================= */
 
-  if(files.length < 2){
-    alert("Select at least 2 PDFs");
-    return;
+async function renderPreview(bytes, containerId, docIndex=null){
+
+  const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+  const container = document.getElementById(containerId);
+
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale:0.5});
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({canvasContext:ctx, viewport}).promise;
+
+    const box = document.createElement('div');
+    box.className="page-box";
+    box.draggable=true;
+
+    box.dataset.page = i-1;
+    if(docIndex!==null) box.dataset.doc = docIndex;
+
+    const checkbox = document.createElement("input");
+    checkbox.type="checkbox";
+    checkbox.checked=true;
+
+    box.appendChild(canvas);
+    box.appendChild(checkbox);
+    container.appendChild(box);
+
+    addDragEvents(box, container);
   }
-
-  const mergedPdf = await PDFDocument.create();
-
-  for(let file of files){
-    const bytes = await file.arrayBuffer();
-    const pdf = await PDFDocument.load(bytes);
-    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-    pages.forEach(p => mergedPdf.addPage(p));
-  }
-
-  const mergedBytes = await mergedPdf.save();
-  downloadFile(mergedBytes, "merged.pdf");
 }
 
-/* ================= SPLIT FUNCTION ================= */
+/* ================= MERGE ================= */
+
+document.getElementById('mergeInput').addEventListener('change', async function(e){
+
+  const files = e.target.files;
+  mergeDocs=[];
+  document.getElementById("mergePreview").innerHTML="";
+
+  for(let i=0;i<files.length;i++){
+    const bytes = await files[i].arrayBuffer();
+    mergeDocs.push(await PDFLib.PDFDocument.load(bytes));
+    renderPreview(bytes,"mergePreview",i);
+  }
+});
+
+async function mergeSelected(){
+
+  const { PDFDocument } = PDFLib;
+  const newPdf = await PDFDocument.create();
+
+  const boxes = document.querySelectorAll("#mergePreview .page-box");
+
+  for(let box of boxes){
+    if(box.querySelector("input").checked){
+      const docIndex=parseInt(box.dataset.doc);
+      const pageIndex=parseInt(box.dataset.page);
+
+      const [page] = await newPdf.copyPages(mergeDocs[docIndex],[pageIndex]);
+      newPdf.addPage(page);
+    }
+  }
+
+  const bytes = await newPdf.save();
+  downloadFile(bytes,"merged.pdf");
+}
+
+/* ================= SPLIT ================= */
 
 document.getElementById('splitInput').addEventListener('change', async function(e){
 
@@ -125,100 +179,88 @@ document.getElementById('splitInput').addEventListener('change', async function(
   if(!file) return;
 
   const bytes = await file.arrayBuffer();
-  splitPdfDoc = await PDFLib.PDFDocument.load(bytes);
+  splitDoc = await PDFLib.PDFDocument.load(bytes);
 
-  const pdfjsLib = window['pdfjs-dist/build/pdf'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-  const loadingTask = pdfjsLib.getDocument({data:bytes});
-  const pdf = await loadingTask.promise;
-
-  splitPages = [];
-  document.getElementById('preview').innerHTML = "";
-
-  for(let i=1;i<=pdf.numPages;i++){
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({scale:1});
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    await page.render({canvasContext:context, viewport:viewport}).promise;
-
-    addPreview(canvas, i-1);
-  }
+  document.getElementById("splitPreview").innerHTML="";
+  renderPreview(bytes,"splitPreview");
 });
 
-function addPreview(canvas, index){
+async function downloadSeparate(){
 
-  splitPages.push(index);
-
-  const box = document.createElement('div');
-  box.className = "page-box";
-  box.dataset.index = index;
-
-  const controls = document.createElement('div');
-  controls.className = "controls";
-
-  const up = document.createElement('button');
-  up.innerText = "↑";
-  up.onclick = () => movePage(box, -1);
-
-  const down = document.createElement('button');
-  down.innerText = "↓";
-  down.onclick = () => movePage(box, 1);
-
-  controls.appendChild(up);
-  controls.appendChild(down);
-
-  box.appendChild(canvas);
-  box.appendChild(controls);
-
-  document.getElementById('preview').appendChild(box);
-}
-
-function movePage(box, direction){
-  const container = document.getElementById('preview');
-  if(direction === -1 && box.previousElementSibling){
-    container.insertBefore(box, box.previousElementSibling);
-  }
-  if(direction === 1 && box.nextElementSibling){
-    container.insertBefore(box.nextElementSibling, box);
-  }
-}
-
-/* DOWNLOAD SPLIT */
-
-async function downloadSplit(){
-  if(!splitPdfDoc){
-    alert("Upload a PDF first");
-    return;
-  }
-
-  const { PDFDocument } = PDFLib;
-  const container = document.getElementById('preview');
-  const boxes = container.querySelectorAll('.page-box');
+  const boxes=document.querySelectorAll("#splitPreview .page-box");
 
   for(let i=0;i<boxes.length;i++){
-    const pageIndex = parseInt(boxes[i].dataset.index);
+    if(boxes[i].querySelector("input").checked){
+      const pageIndex=parseInt(boxes[i].dataset.page);
 
-    const newPdf = await PDFDocument.create();
-    const [page] = await newPdf.copyPages(splitPdfDoc, [pageIndex]);
-    newPdf.addPage(page);
+      const newPdf=await PDFLib.PDFDocument.create();
+      const [page]=await newPdf.copyPages(splitDoc,[pageIndex]);
+      newPdf.addPage(page);
 
-    const bytes = await newPdf.save();
-    downloadFile(bytes, `page-${i+1}.pdf`);
+      const bytes=await newPdf.save();
+      downloadFile(bytes,`page-${i+1}.pdf`);
+    }
   }
 }
 
-function downloadFile(bytes, filename){
-  const blob = new Blob([bytes], {type:"application/pdf"});
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
+async function downloadCombined(){
+
+  const { PDFDocument } = PDFLib;
+  const newPdf=await PDFDocument.create();
+
+  const boxes=document.querySelectorAll("#splitPreview .page-box");
+
+  for(let box of boxes){
+    if(box.querySelector("input").checked){
+      const pageIndex=parseInt(box.dataset.page);
+      const [page]=await newPdf.copyPages(splitDoc,[pageIndex]);
+      newPdf.addPage(page);
+    }
+  }
+
+  const bytes=await newPdf.save();
+  downloadFile(bytes,"selected-pages.pdf");
+}
+
+/* ================= DRAG DROP ================= */
+
+function addDragEvents(box,container){
+
+  box.addEventListener('dragstart',()=>box.classList.add("dragging"));
+  box.addEventListener('dragend',()=>box.classList.remove("dragging"));
+
+  container.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const dragging=document.querySelector(".dragging");
+    const afterElement=getDragAfterElement(container,e.clientX);
+    if(afterElement==null){
+      container.appendChild(dragging);
+    }else{
+      container.insertBefore(dragging,afterElement);
+    }
+  });
+}
+
+function getDragAfterElement(container,x){
+  const elements=[...container.querySelectorAll(".page-box:not(.dragging)")];
+  return elements.reduce((closest,child)=>{
+    const box=child.getBoundingClientRect();
+    const offset=x-box.left-box.width/2;
+    if(offset<0 && offset>closest.offset){
+      return {offset:offset,element:child};
+    }else{
+      return closest;
+    }
+  },{offset:Number.NEGATIVE_INFINITY}).element;
+}
+
+/* ================= DOWNLOAD ================= */
+
+function downloadFile(bytes,filename){
+  const blob=new Blob([bytes],{type:"application/pdf"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download=filename;
   link.click();
 }
 
