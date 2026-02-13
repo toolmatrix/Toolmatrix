@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robots.txt Generator - Tool Matrix</title>
+<meta name="description" content="Generate robots.txt for your website instantly. Mobile-friendly robots.txt generator tool by Tool Matrix.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="text-center py-6">
+<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Robots.txt Generator</h1>
+<p class="text-gray-600 mt-2">Create your robots.txt file for search engines easily</p>
+</header>
+
+<main class="flex-grow flex flex-col items-center px-4">
+<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-2xl space-y-4">
+
+<label class="block font-semibold text-gray-700">User-agent (e.g., *)</label>
+<input type="text" id="userAgent" class="w-full p-3 border rounded-lg" placeholder="*">
+
+<label class="block font-semibold text-gray-700">Disallow URLs (one per line)</label>
+<textarea id="disallowUrls" rows="5" class="w-full p-4 border rounded-lg" placeholder="/private&#10;/admin"></textarea>
+
+<label class="block font-semibold text-gray-700">Allow URLs (one per line)</label>
+<textarea id="allowUrls" rows="5" class="w-full p-4 border rounded-lg" placeholder="/public&#10;/images"></textarea>
+
+<label class="block font-semibold text-gray-700">Sitemap URL (optional)</label>
+<input type="text" id="sitemapUrl" class="w-full p-3 border rounded-lg" placeholder="https://example.com/sitemap.xml">
+
+<button onclick="generateRobots()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+Generate Robots.txt
+</button>
+
+<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
+<h3 class="font-semibold text-blue-700">Generated robots.txt:</h3>
+<pre id="robotsOutput" class="mt-2 text-gray-700 whitespace-pre-wrap"></pre>
+<button onclick="downloadRobots()" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold">
+Download robots.txt
+</button>
+</div>
+
+</div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm">
+© 2026 Tool Matrix
+</footer>
+
+<script>
+function generateRobots(){
+const userAgent = document.getElementById("userAgent").value.trim() || "*";
+const disallow = document.getElementById("disallowUrls").value.trim().split(/\n/).filter(u=>u);
+const allow = document.getElementById("allowUrls").value.trim().split(/\n/).filter(u=>u);
+const sitemap = document.getElementById("sitemapUrl").value.trim();
+
+let robots = `User-agent: ${userAgent}\n`;
+
+disallow.forEach(url=>robots += `Disallow: ${url}\n`);
+allow.forEach(url=>robots += `Allow: ${url}\n`);
+if(sitemap) robots += `Sitemap: ${sitemap}\n`;
+
+document.getElementById("robotsOutput").innerText = robots;
+document.getElementById("result").classList.remove("hidden");
+}
+
+// Download robots.txt
+function downloadRobots(){
+const robots = document.getElementById("robotsOutput").innerText;
+const blob = new Blob([robots], {type:"text/plain"});
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "robots.txt";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
