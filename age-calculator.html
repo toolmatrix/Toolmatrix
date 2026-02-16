@@ -1,130 +1,178 @@
-  
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="favicon-32x32.png" type="image/x-icon">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Age Calculator</title>
-  <style>
-    body {
-      background: #f4f9ff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Age Calculator Tool – Toolmatrix</title>
+<meta name="description" content="Free online age calculator. Calculate your exact age in years, months and days instantly.">
 
-    .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
+<link rel="icon" href="favicon-32x32.png">
 
-    h1 {
-      color: #007bff;
-      margin-bottom: 20px;
-    }
+<style>
 
-    input[type="date"] {
-      padding: 10px;
-      width: 100%;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: #fff;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+html,body{
+  width:100%;
+  height:100%;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#eaf4ff,#ffffff);
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+/* FULL SCREEN WRAPPER */
+.wrapper{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:40px 20px;
+}
 
-    #result {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #333;
-    }
+/* TOOL BOX */
+.tool-box{
+  width:100%;
+  max-width:600px;
+  background:#ffffff;
+  padding:40px;
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,123,255,0.1);
+}
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-    }
-  </style>
-  
+h1{
+  text-align:center;
+  color:#007bff;
+  margin-bottom:30px;
+  font-size:32px;
+}
+
+.input-group{
+  margin-bottom:20px;
+}
+
+input[type="date"]{
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border:1px solid #ccc;
+  border-radius:12px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  background:#007bff;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#0056b3;
+}
+
+#result{
+  margin-top:25px;
+  font-size:18px;
+  font-weight:bold;
+  text-align:center;
+  color:#333;
+}
+
+/* ADS SECTION */
+.ads-section{
+  width:100%;
+  max-width:600px;
+  margin-top:40px;
+  text-align:center;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .tool-box{
+    padding:25px;
+  }
+  h1{
+    font-size:24px;
+  }
+}
+
+</style>
 </head>
 <body>
 
-  <div class="container">
+<div class="wrapper">
+
+  <div class="tool-box">
     <h1>Age Calculator</h1>
-    <input type="date" id="dob" />
+
+    <div class="input-group">
+      <input type="date" id="dob">
+    </div>
+
     <button onclick="calculateAge()">Calculate Age</button>
-    <div id="result">
-  
+
+    <div id="result"></div>
+  </div>
+
+  <!-- Adsterra Ads Section -->
+  <div class="ads-section">
+
+    <script>
+      atOptions = {
+        'key' : 'YOUR_ADSTERRA_KEY',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="//YOUR_ADSTERRA_SCRIPT_LINK/invoke.js"></script>
+
+  </div>
+
+</div>
+
 <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-  </div>
+function calculateAge(){
+
+  const dob = document.getElementById("dob").value;
+
+  if(!dob){
+    document.getElementById("result").innerText="Please select your date of birth.";
+    return;
+  }
+
+  const birthDate = new Date(dob);
+  const today = new Date();
+
+  let years = today.getFullYear() - birthDate.getFullYear();
+  let months = today.getMonth() - birthDate.getMonth();
+  let days = today.getDate() - birthDate.getDate();
+
+  if(days < 0){
+    months--;
+    days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+  }
+
+  if(months < 0){
+    years--;
+    months += 12;
+  }
+
+  document.getElementById("result").innerText =
+  `You are ${years} years, ${months} months and ${days} days old.`;
+}
 </script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-<script src="https://logshandgripquarterback.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-  
-  </div>
-
-  <script>
-    function calculateAge() {
-      const dob = document.getElementById("dob").value;
-      if (!dob) {
-        document.getElementById("result").innerText = "Please select your date of birth.";
-        return;
-      }
-
-      const birthDate = new Date(dob);
-      const today = new Date();
-
-      let ageYears = today.getFullYear() - birthDate.getFullYear();
-      let ageMonths = today.getMonth() - birthDate.getMonth();
-      let ageDays = today.getDate() - birthDate.getDate();
-
-      if (ageDays < 0) {
-        ageMonths--;
-        ageDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-      }
-
-      if (ageMonths < 0) {
-        ageYears--;
-        ageMonths += 12;
-      }
-
-      document.getElementById("result").innerText = `You are ${ageYears} years, ${ageMonths} months, and ${ageDays} days old.`;
-    }
-  </script>
 
 </body>
 </html>
-
-  
