@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free HEIC to JPG Converter | Fast & Secure Online Tool</title>
+    <meta name="description" content="Convert HEIC to JPG online for free. Best mobile-friendly tool to convert iPhone photos to JPEG format instantly without uploading to a server.">
+    <meta name="keywords" content="HEIC to JPG, convert HEIC, iPhone photo converter, HEIC to JPEG online, free image converter">
+    <meta name="author" content="Your Brand Name">
+    <meta name="theme-color" content="#3b82f6">
+
+    <!-- Open Graph for Social Media -->
+    <meta property="og:title" content="Free HEIC to JPG Converter">
+    <meta property="og:description" content="Convert Apple HEIC photos to JPG instantly on any device.">
+    <meta property="og:type" content="website">
+
+    <!-- Schema.org JSON-LD for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "HEIC to JPG Converter",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": "Convert HEIC to JPG, Drag and Drop Support, Light/Dark Mode"
+    }
+    </script>
+
+    <!-- Tailwind CSS for Professional Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e293b',
+                        darkbg: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- heic2any Library for Conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+
+    <style>
+        /* Custom Animations */
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .drag-active { border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); }
+        
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-200 transition-colors duration-300 font-sans flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white dark:bg-secondary shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <h1 class="text-xl font-bold tracking-tight">HEIC<span class="text-primary">Convert</span></h1>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                <!-- Sun Icon -->
+                <svg id="sunIcon" class="w-6 h-6 hidden dark:block text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <!-- Moon Icon -->
+                <svg id="moonIcon" class="w-6 h-6 block dark:hidden text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <!-- Tool Section -->
+        <section class="max-w-3xl mx-auto bg-white dark:bg-secondary rounded-2xl shadow-xl p-6 md:p-10 text-center fade-in">
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Convert HEIC to JPG</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">Free, fast, and secure. Your photos stay on your device.</p>
+
+            <!-- Drop Zone -->
+            <div id="dropZone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-10 md:p-16 cursor-pointer hover:border-primary transition-colors duration-300 relative group">
+                <input type="file" id="fileInput" accept=".heic,.HEIC" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                <div class="space-y-4">
+                    <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-lg font-semibold">Click to upload or drag and drop</p>
+                        <p class="text-sm text-gray-400 mt-1">HEIC files only</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="hidden mt-8">
+                <div class="loader mx-auto mb-4"></div>
+                <p class="text-primary font-medium animate-pulse">Converting your image...</p>
+            </div>
+
+            <!-- Result Area -->
+            <div id="resultArea" class="hidden mt-8 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4 border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-4">
+                    <img id="previewImg" src="" alt="Preview" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+                    <div class="text-left">
+                        <p id="fileName" class="font-bold truncate max-w-[150px] md:max-w-xs">image.jpg</p>
+                        <p class="text-xs text-green-500 font-semibold">Conversion Successful</p>
+                    </div>
+                </div>
+                <a id="downloadBtn" href="#" class="bg-primary hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium transition shadow-lg flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download JPG
+                </a>
+            </div>
+        </section>
+
+        <!-- SEO Content Section -->
+        <article class="max-w-4xl mx-auto mt-16 prose dark:prose-invert">
+            <h3 class="text-2xl font-bold mb-4">Why Use Our HEIC to JPG Converter?</h3>
+            <p>Apple's HEIC format is efficient, but it is not compatible with all devices. Our tool allows you to convert your iPhone or iPad photos to the universally accepted JPG format instantly.</p>
+            
+            <div class="grid md:grid-cols-3 gap-6 mt-8">
+                <div class="p-4 bg-white dark:bg-secondary rounded-lg shadow-sm">
+                    <h4 class="font-bold text-primary mb-2">🔒 100% Secure</h4>
+                    <p class="text-sm text-gray-500">We do not upload your images to any server. All conversions happen locally in your browser.</p>
+                </div>
+                <div class="p-4 bg-white dark:bg-secondary rounded-lg shadow-sm">
+                    <h4 class="font-bold text-primary mb-2">⚡ Super Fast</h4>
+                    <p class="text-sm text-gray-500">No upload time means instant conversion. Works even without an internet connection.</p>
+                </div>
+                <div class="p-4 bg-white dark:bg-secondary rounded-lg shadow-sm">
+                    <h4 class="font-bold text-primary mb-2">📱 Mobile Friendly</h4>
+                    <p class="text-sm text-gray-500">Designed specifically for mobile phones and tablets with a responsive layout.</p>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-secondary border-t border-gray-200 dark:border-gray-800 mt-auto">
+        <div class="container mx-auto px-4 py-6 text-center text-sm text-gray-500">
+            <p>&copy; 2023 HEICConvert Tool. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Theme Logic ---
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // --- Conversion Logic ---
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const resultArea = document.getElementById('resultArea');
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Drag and Drop Visuals
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-active');
+            }, false);
+        });
+
+        // Handle File Drop
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        });
+
+        // Handle File Select
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+                    convertHeicToJpg(file);
+                } else {
+                    alert("Please upload a valid .HEIC file.");
+                }
+            }
+        }
+
+        function convertHeicToJpg(file) {
+            // UI Updates
+            loading.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+
+            // Use heic2any library
+            heic2any({
+                blob: file,
+                toType: "image/jpeg",
+                quality: 0.9 // High quality
+            })
+            .then((conversionResult) => {
+                // Conversion Success
+                loading.classList.add('hidden');
+                
+                // Create URL for download
+                const url = URL.createObjectURL(conversionResult);
+                
+                // Update UI
+                previewImg.src = url;
+                fileName.textContent = file.name.replace(/\.heic$/i, '.jpg');
+                downloadBtn.href = url;
+                downloadBtn.download = file.name.replace(/\.heic$/i, '.jpg');
+                
+                resultArea.classList.remove('hidden');
+                resultArea.classList.add('fade-in');
+            })
+            .catch((e) => {
+                loading.classList.add('hidden');
+                alert("Error converting file. Please try a different image.");
+                console.error(e);
+            });
+        }
+    </script>
+</body>
+</html>
