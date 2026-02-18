@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool-Matrix.space — Workflow Builder</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/workflow.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="wf-page">
+
+<!-- ========== TOP BAR ========== -->
+<header class="wf-topbar">
+    <div class="tb-left">
+        <a href="index.html" class="tb-logo">
+            <div class="logo-icon sm"><i class="fas fa-th"></i></div>
+            <span>Tool-Matrix</span>
+        </a>
+        <div class="tb-sep"></div>
+        <div class="wf-name-box">
+            <input type="text" class="wf-name" id="wfName" value="Untitled Workflow" spellcheck="false">
+            <i class="fas fa-pen"></i>
+        </div>
+        <span class="save-badge" id="saveBadge"><i class="fas fa-check-circle"></i> Saved</span>
+    </div>
+    <div class="tb-center">
+        <button class="tb-btn" id="undoBtn" title="Undo (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+        <button class="tb-btn" id="redoBtn" title="Redo (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+        <span class="zoom-text" id="zoomText">100%</span>
+        <button class="tb-btn" id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
+        <button class="tb-btn" id="fitBtn" title="Fit View"><i class="fas fa-expand"></i></button>
+    </div>
+    <div class="tb-right">
+        <button class="tb-btn" id="clearAllBtn" title="Clear All"><i class="fas fa-trash-alt"></i></button>
+        <button class="tb-btn" id="saveWorkflowBtn" title="Save (Ctrl+S)"><i class="fas fa-save"></i></button>
+        <button class="run-btn" id="runBtn"><i class="fas fa-play"></i> Run Workflow</button>
+        <div class="avatar-menu" id="avatarMenu">
+            <div class="avatar" id="avatar">JD</div>
+            <div class="avatar-dropdown hidden" id="avatarDrop">
+                <div class="drop-head">
+                    <div class="avatar lg" id="avatarLg">JD</div>
+                    <div><strong id="dispName">John Doe</strong><br><small id="dispEmail">john@example.com</small></div>
+                </div>
+                <div class="drop-sep"></div>
+                <a class="drop-item"><i class="fas fa-folder"></i> My Workflows</a>
+                <a class="drop-item"><i class="fas fa-cog"></i> Settings</a>
+                <a class="drop-item"><i class="fas fa-question-circle"></i> Help</a>
+                <div class="drop-sep"></div>
+                <a class="drop-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="wf-body">
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="wf-sidebar" id="sidebar">
+        <div class="sb-head">
+            <h3><i class="fas fa-toolbox"></i> Tools</h3>
+            <button class="sb-toggle" id="sbToggle"><i class="fas fa-chevron-left"></i></button>
+        </div>
+        <div class="sb-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="toolSearch" placeholder="Search tools...">
+        </div>
+        <div class="sb-tools" id="sbTools">
+
+            <!-- Input/Output -->
+            <div class="tool-cat">
+                <div class="cat-head" data-open="true"><i class="fas fa-chevron-down"></i><span>Input / Output</span><span class="cat-count">3</span></div>
+                <div class="cat-body">
+                    <div class="sb-tool" draggable="true" data-tool="file-upload"><div class="dot" style="background:#4facfe"></div><i class="fas fa-cloud-upload-alt"></i><span>File Upload</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="url-input"><div class="dot" style="background:#4facfe"></div><i class="fas fa-link"></i><span>URL Input</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="download"><div class="dot" style="background:#43e97b"></div><i class="fas fa-cloud-download-alt"></i><span>Download</span></div>
+                </div>
+            </div>
+
+            <!-- PDF Tools -->
+            <div class="tool-cat">
+                <div class="cat-head" data-open="true"><i class="fas fa-chevron-down"></i><span>PDF Tools</span><span class="cat-count">8</span></div>
+                <div class="cat-body">
+                    <div class="sb-tool" draggable="true" data-tool="compress-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-compress-arrows-alt"></i><span>Compress PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="merge-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-object-ungroup"></i><span>Merge PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="split-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-cut"></i><span>Split PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="protect-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-lock"></i><span>Protect PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="unlock-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-unlock"></i><span>Unlock PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="rotate-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-sync-alt"></i><span>Rotate PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="watermark-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-stamp"></i><span>Watermark PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="ocr-pdf"><div class="dot" style="background:#f5576c"></div><i class="fas fa-text-height"></i><span>OCR Extract</span></div>
+                </div>
+            </div>
+
+            <!-- Image Tools -->
+            <div class="tool-cat">
+                <div class="cat-head" data-open="true"><i class="fas fa-chevron-down"></i><span>Image Tools</span><span class="cat-count">5</span></div>
+                <div class="cat-body">
+                    <div class="sb-tool" draggable="true" data-tool="compress-image"><div class="dot" style="background:#a18cd1"></div><i class="fas fa-compress"></i><span>Compress Image</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="resize-image"><div class="dot" style="background:#a18cd1"></div><i class="fas fa-expand-arrows-alt"></i><span>Resize Image</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="crop-image"><div class="dot" style="background:#a18cd1"></div><i class="fas fa-crop-alt"></i><span>Crop Image</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="rotate-image"><div class="dot" style="background:#a18cd1"></div><i class="fas fa-sync"></i><span>Rotate Image</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="watermark-image"><div class="dot" style="background:#a18cd1"></div><i class="fas fa-tint"></i><span>Watermark Image</span></div>
+                </div>
+            </div>
+
+            <!-- Convert -->
+            <div class="tool-cat">
+                <div class="cat-head" data-open="true"><i class="fas fa-chevron-down"></i><span>Convert</span><span class="cat-count">6</span></div>
+                <div class="cat-body">
+                    <div class="sb-tool" draggable="true" data-tool="pdf-to-word"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-file-word"></i><span>PDF to Word</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="pdf-to-excel"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-file-excel"></i><span>PDF to Excel</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="pdf-to-jpg"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-file-image"></i><span>PDF to JPG</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="word-to-pdf"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-file-pdf"></i><span>Word to PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="jpg-to-pdf"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-file-pdf"></i><span>JPG to PDF</span></div>
+                    <div class="sb-tool" draggable="true" data-tool="html-to-pdf"><div class="dot" style="background:#fbc2eb"></div><i class="fas fa-code"></i><span>HTML to PDF</span></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ========== CANVAS ========== -->
+    <main class="wf-canvas-wrap" id="canvasWrap">
+        <div class="canvas" id="canvas">
+            <svg class="svg-connections" id="svgConn"></svg>
+            <div class="canvas-nodes" id="canvasNodes">
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon"><i class="fas fa-project-diagram"></i></div>
+                    <h3>Start Building Your Workflow</h3>
+                    <p>Drag tools from the left panel and drop them here<br>to create your automation pipeline.</p>
+                    <div class="empty-btns">
+                        <button class="btn-primary" id="emptyAddBtn"><i class="fas fa-plus"></i> Add First Tool</button>
+                        <button class="btn-outline" id="emptyTemplateBtn"><i class="fas fa-magic"></i> Use Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== PROPERTIES PANEL ========== -->
+    <aside class="props-panel hidden" id="propsPanel">
+        <div class="pp-head">
+            <h3 id="ppTitle"><i class="fas fa-cog"></i> Properties</h3>
+            <button class="pp-close" id="ppClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pp-body" id="ppBody"></div>
+    </aside>
+</div>
+
+<!-- ========== RUN MODAL ========== -->
+<div class="modal-bg hidden" id="runModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3><i class="fas fa-play-circle"></i> Run Workflow</h3>
+            <button class="modal-x" id="closeRun"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="runSteps"></div>
+            <div class="run-done hidden" id="runDone">
+                <div class="done-icon"><i class="fas fa-check-circle"></i></div>
+                <h3>Workflow Completed!</h3>
+                <p>All steps processed successfully.</p>
+                <button class="btn-primary btn-lg" id="downloadResult"><i class="fas fa-download"></i> Download Result</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== TEMPLATE MODAL ========== -->
+<div class="modal-bg hidden" id="templateModal">
+    <div class="modal modal-wide">
+        <div class="modal-head">
+            <h3><i class="fas fa-magic"></i> Workflow Templates</h3>
+            <button class="modal-x" id="closeTemplate"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="templates-grid">
+                <div class="tmpl-card" data-tmpl="compress-protect">
+                    <div class="tmpl-icon" style="background:linear-gradient(135deg,#f5576c,#ff6f91)"><i class="fas fa-file-pdf"></i></div>
+                    <h4>Compress & Protect PDF</h4>
+                    <p>Upload → Compress → Password → Download</p>
+                    <span class="tmpl-badge">4 steps</span>
+                </div>
+                <div class="tmpl-card" data-tmpl="image-convert">
+                    <div class="tmpl-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-image"></i></div>
+                    <h4>Resize & Convert Images</h4>
+                    <p>Upload → Resize → To PDF → Download</p>
+                    <span class="tmpl-badge">4 steps</span>
+                </div>
+                <div class="tmpl-card" data-tmpl="pdf-word">
+                    <div class="tmpl-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-exchange-alt"></i></div>
+                    <h4>PDF to Word Converter</h4>
+                    <p>Upload → OCR → Convert → Download</p>
+                    <span class="tmpl-badge">4 steps</span>
+                </div>
+                <div class="tmpl-card" data-tmpl="watermark">
+                    <div class="tmpl-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-stamp"></i></div>
+                    <h4>Batch Watermark</h4>
+                    <p>Upload → Watermark → Compress → Download</p>
+                    <span class="tmpl-badge">4 steps</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="js/workflow.js"></script>
+</body>
+</html>
