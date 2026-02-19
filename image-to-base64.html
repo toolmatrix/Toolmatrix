@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Image to Base64 Converter - Free Online Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:#f5f7fa;color:#333;min-height:100vh;display:flex;flex-direction:column
+}
+
+/* NAV */
+nav{
+  background:#fff;padding:13px 24px;display:flex;align-items:center;
+  border-bottom:1px solid #e8ecf0;box-shadow:0 1px 3px rgba(0,0,0,.04);
+  position:sticky;top:0;z-index:100
+}
+.nav-logo{
+  width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:.8rem;margin-right:10px;flex-shrink:0
+}
+.nav-title{font-weight:700;font-size:1.05rem;color:#4f46e5}
+.nav-sub{color:#aaa;font-size:.76rem;margin-left:8px;font-weight:500}
+.nav-right{margin-left:auto;display:flex;gap:8px}
+.nav-btn{
+  padding:8px 16px;border:none;border-radius:8px;font-size:.82rem;
+  font-weight:600;cursor:pointer;transition:all .15s;display:flex;
+  align-items:center;gap:5px;white-space:nowrap
+}
+.nav-btn.sec{background:#f0f2f5;color:#666}
+.nav-btn.sec:hover{background:#e4e6e9}
+.nav-btn.pri{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  box-shadow:0 2px 8px rgba(79,70,229,.2)}
+.nav-btn.pri:hover{box-shadow:0 4px 14px rgba(79,70,229,.3);transform:translateY(-1px)}
+
+/* HERO */
+.hero{
+  text-align:center;padding:44px 20px 28px;
+  background:linear-gradient(180deg,#f0ecff 0%,#f5f7fa 100%)
+}
+.hero-icon{
+  width:68px;height:68px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  border-radius:18px;display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 18px;box-shadow:0 8px 28px rgba(79,70,229,.18)
+}
+.hero h1{font-size:1.9rem;font-weight:800;color:#222;margin-bottom:8px}
+.hero h1 span{color:#4f46e5}
+.hero p{color:#888;font-size:.95rem;max-width:500px;margin:0 auto;line-height:1.5}
+
+/* UPLOAD */
+.upload-wrap{display:flex;justify-content:center;padding:10px 20px 36px}
+#dropZone{
+  width:100%;max-width:600px;padding:44px 28px;border:2.5px dashed #c7c4f0;
+  border-radius:16px;background:#fff;text-align:center;cursor:pointer;
+  transition:all .25s
+}
+#dropZone:hover,#dropZone.dragover{
+  border-color:#4f46e5;background:#faf9ff;transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(79,70,229,.07)
+}
+.dz-icon{font-size:2.8rem;margin-bottom:10px;opacity:.55}
+.dz-text{font-size:1rem;color:#666;font-weight:500;margin-bottom:3px}
+.dz-hint{font-size:.82rem;color:#bbb;margin-bottom:16px}
+.dz-btn{
+  display:inline-block;padding:11px 32px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;
+  border-radius:30px;font-size:.93rem;font-weight:700;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 14px rgba(79,70,229,.22)
+}
+.dz-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.3)}
+.dz-fmt{font-size:.72rem;color:#ccc;margin-top:14px}
+#fileInput{display:none}
+
+/* RESULT SECTION */
+#resultSection{display:none;padding:0 20px 40px}
+#resultSection.show{display:block}
+
+.result-container{max-width:900px;margin:0 auto}
+
+/* INFO CARD */
+.info-card{
+  background:#fff;border-radius:14px;border:1px solid #eef0f3;
+  padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;
+  gap:18px;box-shadow:0 1px 4px rgba(0,0,0,.03);flex-wrap:wrap
+}
+.preview-box{
+  width:80px;height:80px;border-radius:10px;background:#f5f7fa;
+  border:1px solid #e8ecf0;overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center
+}
+.preview-box img{width:100%;height:100%;object-fit:cover}
+.info-details{flex:1;min-width:200px}
+.info-name{font-size:.95rem;font-weight:700;color:#333;margin-bottom:6px;
+  word-break:break-all}
+.info-grid{display:flex;gap:16px;flex-wrap:wrap}
+.info-item{font-size:.78rem;color:#888}
+.info-item span{font-weight:700;color:#4f46e5}
+.info-actions{display:flex;gap:8px;flex-wrap:wrap}
+.info-btn{
+  padding:8px 16px;border:1.5px solid #e0e3e7;border-radius:8px;
+  background:#fff;color:#555;font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all .15s;white-space:nowrap
+}
+.info-btn:hover{border-color:#4f46e5;color:#4f46e5;background:#faf9ff}
+.info-btn.danger{border-color:#fde2e2;color:#e74c3c}
+.info-btn.danger:hover{background:#fdf2f2;border-color:#e74c3c}
+
+/* FORMAT TABS */
+.format-bar{
+  background:#fff;border-radius:14px;border:1px solid #eef0f3;
+  margin-bottom:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.03)
+}
+.format-tabs{
+  display:flex;border-bottom:1px solid #eef0f3;overflow-x:auto;background:#fafbfc
+}
+.ftab{
+  flex:1;min-width:100px;padding:12px 10px;border:none;background:none;
+  color:#999;cursor:pointer;font-size:.78rem;font-weight:600;
+  transition:all .15s;text-align:center;white-space:nowrap;
+  border-bottom:2.5px solid transparent
+}
+.ftab:hover{color:#4f46e5;background:#faf9ff}
+.ftab.active{color:#4f46e5;border-bottom-color:#4f46e5;background:#fff}
+.format-content{padding:16px 20px}
+.format-label{font-size:.78rem;color:#999;font-weight:600;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center}
+.format-label .char-count{font-size:.72rem;color:#bbb;font-weight:500}
+.code-box{
+  position:relative;background:#f8f9fb;border:1px solid #e8ecf0;
+  border-radius:10px;overflow:hidden
+}
+.code-area{
+  width:100%;min-height:140px;max-height:300px;padding:14px 16px;
+  font-family:'Courier New',monospace;font-size:.78rem;color:#444;
+  border:none;background:transparent;resize:vertical;outline:none;
+  line-height:1.6;word-break:break-all
+}
+.code-actions{
+  display:flex;gap:6px;padding:8px 12px;border-top:1px solid #eef0f3;
+  background:#fafbfc
+}
+.code-btn{
+  padding:6px 14px;border:1.5px solid #e0e3e7;border-radius:6px;
+  background:#fff;color:#555;font-size:.75rem;font-weight:600;
+  cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px
+}
+.code-btn:hover{border-color:#4f46e5;color:#4f46e5}
+.code-btn.copied{border-color:#10b981;color:#10b981;background:#ecfdf5}
+
+/* BASE64 TO IMAGE (REVERSE) */
+.reverse-card{
+  background:#fff;border-radius:14px;border:1px solid #eef0f3;
+  padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.03)
+}
+.reverse-title{font-size:.92rem;font-weight:700;color:#333;margin-bottom:4px;
+  display:flex;align-items:center;gap:6px}
+.reverse-desc{font-size:.78rem;color:#999;margin-bottom:12px}
+.reverse-input{
+  width:100%;min-height:100px;padding:12px 14px;border:1.5px solid #e0e3e7;
+  border-radius:10px;background:#fafafa;color:#333;font-family:'Courier New',monospace;
+  font-size:.78rem;resize:vertical;outline:none;line-height:1.5
+}
+.reverse-input:focus{border-color:#4f46e5;background:#fff}
+.reverse-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.reverse-preview{
+  margin-top:12px;display:none;text-align:center;padding:14px;
+  background:#f8f9fb;border-radius:10px;border:1px solid #eef0f3
+}
+.reverse-preview.show{display:block}
+.reverse-preview img{
+  max-width:100%;max-height:300px;border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08)
+}
+
+/* FEATURES */
+.features{
+  max-width:900px;margin:0 auto 40px;padding:0 20px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px
+}
+.feat{
+  background:#fff;border-radius:12px;border:1px solid #eef0f3;
+  padding:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.02)
+}
+.feat-icon{font-size:1.6rem;margin-bottom:8px}
+.feat-title{font-size:.88rem;font-weight:700;color:#333;margin-bottom:4px}
+.feat-desc{font-size:.76rem;color:#999;line-height:1.4}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#fff;color:#333;padding:12px 22px;border-radius:10px;
+  font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.1);
+  z-index:300;transition:transform .3s;border-left:4px solid #4f46e5;
+  display:flex;align-items:center;gap:6px
+}
+.toast.err{border-left-color:#e74c3c}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* FOOTER */
+footer{
+  margin-top:auto;text-align:center;padding:18px;color:#bbb;
+  font-size:.76rem;border-top:1px solid #eef0f3;background:#fff
+}
+footer span{color:#4f46e5;font-weight:600}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero{padding:30px 16px 20px}
+  .hero h1{font-size:1.45rem}
+  .hero-icon{width:56px;height:56px;font-size:1.5rem;border-radius:14px}
+  .info-card{padding:16px;gap:12px}
+  .preview-box{width:60px;height:60px}
+  .format-content{padding:12px 14px}
+  .nav-sub{display:none}
+  .nav-btn span{display:none}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.25rem}
+  #dropZone{padding:30px 18px}
+  .dz-icon{font-size:2.2rem}
+  .ftab{min-width:70px;padding:10px 6px;font-size:.7rem}
+  .info-grid{gap:10px}
+  .code-area{font-size:.7rem;min-height:100px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">B64</div>
+  <span class="nav-title">Image to Base64</span>
+  <span class="nav-sub">Free Converter</span>
+  <div class="nav-right" id="navBtns" style="display:none">
+    <button class="nav-btn sec" onclick="clearAll()">✕ <span>Clear</span></button>
+    <button class="nav-btn pri" onclick="document.getElementById('fileInput').click()">+ <span>New Image</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <div class="hero-icon">{ }</div>
+  <h1>Image to <span>Base64</span></h1>
+  <p>Convert any image to Base64 encoded string instantly. Get Data URI, raw Base64, CSS, or HTML code.</p>
+</div>
+
+<!-- UPLOAD -->
+<div class="upload-wrap" id="uploadWrap">
+  <div id="dropZone">
+    <div class="dz-icon">🖼️</div>
+    <div class="dz-text">Drag & drop your image here</div>
+    <div class="dz-hint">or</div>
+    <button class="dz-btn" onclick="document.getElementById('fileInput').click()">Select Image</button>
+    <div class="dz-fmt">JPG, PNG, WEBP, GIF, BMP, SVG, ICO</div>
+  </div>
+  <input type="file" id="fileInput" accept="image/*">
+</div>
+
+<!-- RESULT -->
+<div id="resultSection">
+  <div class="result-container">
+
+    <!-- IMAGE INFO -->
+    <div class="info-card" id="infoCard">
+      <div class="preview-box"><img id="previewImg" src="" alt=""></div>
+      <div class="info-details">
+        <div class="info-name" id="fileName">-</div>
+        <div class="info-grid">
+          <div class="info-item">Type: <span id="fileType">-</span></div>
+          <div class="info-item">Size: <span id="fileSize">-</span></div>
+          <div class="info-item">Dimensions: <span id="fileDims">-</span></div>
+          <div class="info-item">Base64 Size: <span id="b64Size">-</span></div>
+        </div>
+      </div>
+      <div class="info-actions">
+        <button class="info-btn" onclick="copyAll()">📋 Copy Base64</button>
+        <button class="info-btn" onclick="downloadTxt()">⤓ Save as .txt</button>
+        <button class="info-btn danger" onclick="clearAll()">✕ Clear</button>
+      </div>
+    </div>
+
+    <!-- FORMAT TABS -->
+    <div class="format-bar">
+      <div class="format-tabs">
+        <button class="ftab active" data-f="datauri" onclick="switchFormat(this)">Data URI</button>
+        <button class="ftab" data-f="raw" onclick="switchFormat(this)">Raw Base64</button>
+        <button class="ftab" data-f="css" onclick="switchFormat(this)">CSS Code</button>
+        <button class="ftab" data-f="html" onclick="switchFormat(this)">HTML &lt;img&gt;</button>
+        <button class="ftab" data-f="markdown" onclick="switchFormat(this)">Markdown</button>
+        <button class="ftab" data-f="json" onclick="switchFormat(this)">JSON</button>
+      </div>
+      <div class="format-content">
+        <div class="format-label">
+          <span id="formatTitle">Data URI</span>
+          <span class="char-count" id="charCount">0 characters</span>
+        </div>
+        <div class="code-box">
+          <textarea class="code-area" id="codeArea" readonly></textarea>
+          <div class="code-actions">
+            <button class="code-btn" onclick="copyCode(this)">📋 Copy</button>
+            <button class="code-btn" onclick="selectAll()">☐ Select All</button>
+            <button class="code-btn" onclick="downloadCode()">⤓ Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVERSE: Base64 to Image -->
+    <div class="reverse-card">
+      <div class="reverse-title">🔄 Base64 to Image</div>
+      <div class="reverse-desc">Paste a Base64 string to convert back to image</div>
+      <textarea class="reverse-input" id="reverseInput" placeholder="Paste Base64 or Data URI here..."></textarea>
+      <div class="reverse-actions">
+        <button class="info-btn" onclick="decodeBase64()">🔄 Convert to Image</button>
+        <button class="info-btn" onclick="downloadDecoded()">⤓ Download Image</button>
+        <button class="info-btn" onclick="clearReverse()">✕ Clear</button>
+      </div>
+      <div class="reverse-preview" id="reversePreview">
+        <img id="reverseImg" src="" alt="">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features" id="featuresSection">
+  <div class="feat">
+    <div class="feat-icon">⚡</div>
+    <div class="feat-title">Instant Conversion</div>
+    <div class="feat-desc">Convert images to Base64 in milliseconds, right in your browser</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🔒</div>
+    <div class="feat-title">100% Private</div>
+    <div class="feat-desc">Your images never leave your device. No server uploads</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">📋</div>
+    <div class="feat-title">Multiple Formats</div>
+    <div class="feat-desc">Get Data URI, raw Base64, CSS, HTML, Markdown & JSON output</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🔄</div>
+    <div class="feat-title">Reverse Convert</div>
+    <div class="feat-desc">Convert Base64 strings back to downloadable images</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">📱</div>
+    <div class="feat-title">Works Everywhere</div>
+    <div class="feat-desc">Desktop, tablet, mobile — fully responsive design</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🆓</div>
+    <div class="feat-title">Free & Unlimited</div>
+    <div class="feat-desc">No limits, no watermarks, no registration required</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>Image to Base64</span> — Free online converter. No upload, 100% browser-based.
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// State
+let currentData = {
+  file: null,
+  dataUri: '',
+  rawBase64: '',
+  mimeType: '',
+  width: 0,
+  height: 0
+};
+let currentFormat = 'datauri';
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  const fi = document.getElementById('fileInput');
+  const dz = document.getElementById('dropZone');
+
+  fi.addEventListener('change', e => {
+    if (e.target.files[0]) processFile(e.target.files[0]);
+    fi.value = '';
+  });
+
+  dz.addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') fi.click();
+  });
+
+  ['dragenter','dragover'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); })
+  );
+  ['dragleave','drop'].forEach(ev =>
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); })
+  );
+  dz.addEventListener('drop', e => {
+    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+  });
+
+  // Paste support
+  document.addEventListener('paste', e => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        processFile(item.getAsFile());
+        break;
+      }
+    }
+  });
+});
+
+// Process file
+function processFile(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    showToast('Please select a valid image file', true);
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    showToast('File too large. Max 50MB', true);
+    return;
+  }
+
+  currentData.file = file;
+  currentData.mimeType = file.type;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUri = e.target.result;
+    currentData.dataUri = dataUri;
+    currentData.rawBase64 = dataUri.split(',')[1];
+
+    // Get dimensions
+    const img = new Image();
+    img.onload = () => {
+      currentData.width = img.naturalWidth;
+      currentData.height = img.naturalHeight;
+      showResult();
+    };
+    img.onerror = () => {
+      currentData.width = 0;
+      currentData.height = 0;
+      showResult();
+    };
+    img.src = dataUri;
+  };
+  reader.onerror = () => {
+    showToast('Failed to read file', true);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showResult() {
+  // Update info
+  document.getElementById('previewImg').src = currentData.dataUri;
+  document.getElementById('fileName').textContent = currentData.file.name;
+  document.getElementById('fileType').textContent = currentData.mimeType;
+  document.getElementById('fileSize').textContent = formatSize(currentData.file.size);
+  document.getElementById('fileDims').textContent =
+    currentData.width && currentData.height
+      ? currentData.width + ' × ' + currentData.height + ' px'
+      : 'Unknown';
+  document.getElementById('b64Size').textContent = formatSize(currentData.rawBase64.length);
+
+  // Show result
+  document.getElementById('resultSection').classList.add('show');
+  document.getElementById('navBtns').style.display = 'flex';
+  document.getElementById('featuresSection').style.display = 'none';
+
+  // Minimize hero
+  document.getElementById('heroSection').style.padding = '20px 20px 14px';
+  document.getElementById('heroSection').querySelector('p').style.display = 'none';
+  document.getElementById('heroSection').querySelector('.hero-icon').style.display = 'none';
+
+  // Minimize upload
+  const dz = document.getElementById('dropZone');
+  dz.style.padding = '20px';
+  document.querySelector('.dz-icon').style.display = 'none';
+  document.querySelector('.dz-hint').style.display = 'none';
+  document.querySelector('.dz-fmt').style.display = 'none';
+  document.querySelector('.dz-text').textContent = 'Drop another image or';
+
+  // Set default format
+  updateCodeArea();
+
+  showToast('✓ Converted to Base64 successfully!');
+
+  // Scroll to result
+  document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Format switching
+function switchFormat(btn) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentFormat = btn.dataset.f;
+  updateCodeArea();
+}
+
+function updateCodeArea() {
+  const area = document.getElementById('codeArea');
+  let code = '';
+  let title = '';
+
+  switch (currentFormat) {
+    case 'datauri':
+      code = currentData.dataUri;
+      title = 'Data URI';
+      break;
+    case 'raw':
+      code = currentData.rawBase64;
+      title = 'Raw Base64';
+      break;
+    case 'css':
+      code = `.element {\n  background-image: url("${currentData.dataUri}");\n  background-size: cover;\n  background-position: center;\n  width: ${currentData.width}px;\n  height: ${currentData.height}px;\n}`;
+      title = 'CSS Background';
+      break;
+    case 'html':
+      code = `<img src="${currentData.dataUri}" alt="${escHTML(currentData.file.name)}" width="${currentData.width}" height="${currentData.height}" />`;
+      title = 'HTML <img> Tag';
+      break;
+    case 'markdown':
+      code = `![${currentData.file.name}](${currentData.dataUri})`;
+      title = 'Markdown';
+      break;
+    case 'json':
+      code = JSON.stringify({
+        filename: currentData.file.name,
+        mimeType: currentData.mimeType,
+        width: currentData.width,
+        height: currentData.height,
+        fileSize: currentData.file.size,
+        base64: currentData.rawBase64
+      }, null, 2);
+      title = 'JSON';
+      break;
+  }
+
+  area.value = code;
+  document.getElementById('formatTitle').textContent = title;
+  document.getElementById('charCount').textContent = code.length.toLocaleString() + ' characters';
+}
+
+// Copy
+function copyCode(btn) {
+  const area = document.getElementById('codeArea');
+  navigator.clipboard.writeText(area.value).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '✓ Copied!';
+    showToast('✓ Copied to clipboard!');
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '📋 Copy';
+    }, 2000);
+  }).catch(() => {
+    area.select();
+    document.execCommand('copy');
+    showToast('✓ Copied!');
+  });
+}
+
+function copyAll() {
+  navigator.clipboard.writeText(currentData.dataUri).then(() => {
+    showToast('✓ Full Data URI copied!');
+  }).catch(() => {
+    showToast('Copy failed', true);
+  });
+}
+
+function selectAll() {
+  const area = document.getElementById('codeArea');
+  area.select();
+  area.setSelectionRange(0, area.value.length);
+  showToast('All text selected');
+}
+
+// Download
+function downloadTxt() {
+  const blob = new Blob([currentData.dataUri], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = currentData.file.name.replace(/\.[^.]+$/, '') + '-base64.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('⤓ Downloaded as text file');
+}
+
+function downloadCode() {
+  const code = document.getElementById('codeArea').value;
+  let ext = 'txt';
+  if (currentFormat === 'css') ext = 'css';
+  else if (currentFormat === 'html') ext = 'html';
+  else if (currentFormat === 'json') ext = 'json';
+  else if (currentFormat === 'markdown') ext = 'md';
+
+  const blob = new Blob([code], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = currentData.file.name.replace(/\.[^.]+$/, '') + '-base64.' + ext;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('⤓ Downloaded');
+}
+
+// Clear
+function clearAll() {
+  currentData = { file: null, dataUri: '', rawBase64: '', mimeType: '', width: 0, height: 0 };
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('navBtns').style.display = 'none';
+  document.getElementById('featuresSection').style.display = '';
+
+  // Restore hero
+  const hero = document.getElementById('heroSection');
+  hero.style.padding = '';
+  hero.querySelector('p').style.display = '';
+  hero.querySelector('.hero-icon').style.display = '';
+
+  // Restore upload
+  const dz = document.getElementById('dropZone');
+  dz.style.padding = '';
+  document.querySelector('.dz-icon').style.display = '';
+  document.querySelector('.dz-hint').style.display = '';
+  document.querySelector('.dz-fmt').style.display = '';
+  document.querySelector('.dz-text').textContent = 'Drag & drop your image here';
+
+  document.getElementById('codeArea').value = '';
+  clearReverse();
+  showToast('Cleared');
+}
+
+// ===== REVERSE: Base64 → Image =====
+function decodeBase64() {
+  let input = document.getElementById('reverseInput').value.trim();
+  if (!input) { showToast('Paste a Base64 string first', true); return; }
+
+  // Auto-detect if raw base64 or data URI
+  let src = input;
+  if (!input.startsWith('data:')) {
+    // Try to detect mime from magic bytes
+    let mime = 'image/png';
+    if (input.startsWith('/9j/')) mime = 'image/jpeg';
+    else if (input.startsWith('iVBOR')) mime = 'image/png';
+    else if (input.startsWith('R0lGOD')) mime = 'image/gif';
+    else if (input.startsWith('UklGR')) mime = 'image/webp';
+    else if (input.startsWith('PHN2Z') || input.startsWith('PD94b')) mime = 'image/svg+xml';
+    src = `data:${mime};base64,${input}`;
+  }
+
+  const img = document.getElementById('reverseImg');
+  img.onload = () => {
+    document.getElementById('reversePreview').classList.add('show');
+    showToast('✓ Image decoded successfully!');
+  };
+  img.onerror = () => {
+    document.getElementById('reversePreview').classList.remove('show');
+    showToast('Invalid Base64 string', true);
+  };
+  img.src = src;
+}
+
+function downloadDecoded() {
+  const img = document.getElementById('reverseImg');
+  if (!img.src || img.src === window.location.href) {
+    showToast('Decode an image first', true); return;
+  }
+
+  const a = document.createElement('a');
+  a.href = img.src;
+
+  // Determine extension
+  let ext = 'png';
+  if (img.src.includes('image/jpeg')) ext = 'jpg';
+  else if (img.src.includes('image/gif')) ext = 'gif';
+  else if (img.src.includes('image/webp')) ext = 'webp';
+  else if (img.src.includes('image/svg')) ext = 'svg';
+
+  a.download = 'decoded-image.' + ext;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('⤓ Image downloaded');
+}
+
+function clearReverse() {
+  document.getElementById('reverseInput').value = '';
+  document.getElementById('reversePreview').classList.remove('show');
+  document.getElementById('reverseImg').src = '';
+}
+
+// ===== UTILS =====
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(2) + ' MB';
+}
+
+function escHTML(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isErr ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
