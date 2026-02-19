@@ -3,354 +3,303 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>📸 Photo Editor Pro</title>
+<title>Photo Editor Pro</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0f0f1a;--surface:#1a1a2e;--surface2:#16213e;--primary:#e94560;
-  --primary-hover:#ff6b81;--accent:#0f3460;--text:#eee;--text2:#aaa;
-  --success:#00d2d3;--warning:#feca57;--radius:12px;--shadow:0 8px 32px rgba(0,0,0,.4)
-}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f5;color:#333}
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f0f0f0}
+::-webkit-scrollbar-thumb{background:#bbb;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#999}
 
-/* UPLOAD SCREEN */
+/* ===== UPLOAD SCREEN ===== */
 #uploadScreen{
   position:fixed;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;z-index:100;
-  background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 50%,#16213e 100%)
+  background:linear-gradient(145deg,#e8f5e9 0%,#ffffff 40%,#f0f7ff 100%)
 }
 #uploadScreen.hidden{display:none}
-.upload-logo{font-size:3rem;margin-bottom:1rem;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.upload-title{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;
-  background:linear-gradient(135deg,var(--primary),var(--success));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.upload-subtitle{color:var(--text2);margin-bottom:2rem;font-size:1rem;text-align:center;padding:0 1rem}
+.upload-logo{
+  width:80px;height:80px;background:linear-gradient(135deg,#1d9c73,#27ae60);
+  border-radius:20px;display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;margin-bottom:20px;box-shadow:0 8px 30px rgba(29,156,115,.25)
+}
+.upload-title{font-size:2rem;font-weight:800;color:#1d9c73;margin-bottom:6px}
+.upload-subtitle{color:#777;margin-bottom:30px;font-size:1rem;text-align:center;padding:0 20px}
 #dropZone{
-  width:min(90vw,550px);height:280px;border:3px dashed var(--primary);
-  border-radius:var(--radius);display:flex;flex-direction:column;
+  width:min(90vw,560px);padding:50px 30px;border:3px dashed #c8e6c9;
+  border-radius:16px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;cursor:pointer;
-  transition:all .3s;background:rgba(233,69,96,.05);position:relative
+  transition:all .3s;background:#fff;position:relative
 }
-#dropZone:hover,#dropZone.dragover{
-  border-color:var(--success);background:rgba(0,210,211,.08);transform:scale(1.02)
-}
-#dropZone .drop-icon{font-size:4rem;margin-bottom:1rem}
-#dropZone .drop-text{font-size:1.1rem;color:var(--text2);text-align:center;padding:0 1rem}
-#dropZone .drop-btn{
-  margin-top:1rem;padding:.7rem 2rem;background:var(--primary);color:#fff;
+#dropZone:hover,#dropZone.dragover{border-color:#1d9c73;background:#f0faf5;transform:scale(1.01)}
+#dropZone .drop-icon{font-size:3.5rem;margin-bottom:12px;opacity:.7}
+#dropZone .drop-text{font-size:1.05rem;color:#888;text-align:center;margin-bottom:6px}
+#dropZone .drop-hint{font-size:.85rem;color:#aaa;margin-bottom:16px}
+.drop-btn{
+  padding:12px 36px;background:linear-gradient(135deg,#1d9c73,#27ae60);color:#fff;
   border:none;border-radius:30px;font-size:1rem;cursor:pointer;
-  font-weight:600;transition:all .3s
+  font-weight:700;transition:all .3s;box-shadow:0 4px 15px rgba(29,156,115,.3)
 }
-#dropZone .drop-btn:hover{background:var(--primary-hover);transform:scale(1.05)}
-.supported{color:var(--text2);font-size:.8rem;margin-top:1rem}
+.drop-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(29,156,115,.4)}
+.supported{color:#aaa;font-size:.8rem;margin-top:16px}
 #fileInput{display:none}
 
-/* EDITOR */
+/* ===== EDITOR ===== */
 #editor{display:none;width:100%;height:100%;flex-direction:column}
 #editor.active{display:flex}
 
 /* TOP BAR */
 #topBar{
-  height:56px;min-height:56px;background:var(--surface);display:flex;
-  align-items:center;padding:0 12px;gap:8px;border-bottom:1px solid rgba(255,255,255,.06);
-  z-index:50
+  height:54px;min-height:54px;background:#fff;display:flex;
+  align-items:center;padding:0 14px;gap:8px;
+  border-bottom:1px solid #e5e7eb;z-index:50;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)
 }
-#topBar .logo{font-weight:800;font-size:1.1rem;margin-right:auto;
-  display:flex;align-items:center;gap:6px;white-space:nowrap}
-#topBar .logo span{
-  background:linear-gradient(135deg,var(--primary),var(--success));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent
+.logo-area{display:flex;align-items:center;gap:8px;margin-right:auto}
+.logo-icon{
+  width:32px;height:32px;background:linear-gradient(135deg,#1d9c73,#27ae60);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:.85rem
 }
-.top-btn{
-  padding:6px 14px;border:none;border-radius:8px;cursor:pointer;
-  font-size:.85rem;font-weight:600;transition:all .2s;display:flex;
-  align-items:center;gap:5px;white-space:nowrap
-}
-.top-btn.undo-redo{background:var(--surface2);color:var(--text)}
-.top-btn.undo-redo:hover{background:var(--accent)}
-.top-btn.undo-redo:disabled{opacity:.3;cursor:default}
-.top-btn.reset{background:var(--surface2);color:var(--warning)}
-.top-btn.reset:hover{background:rgba(254,202,87,.15)}
-.top-btn.new{background:var(--surface2);color:var(--success)}
-.top-btn.new:hover{background:rgba(0,210,211,.15)}
-.top-btn.download{background:var(--primary);color:#fff}
-.top-btn.download:hover{background:var(--primary-hover);transform:scale(1.03)}
+.logo-text{font-weight:800;font-size:1.05rem;color:#1d9c73}
 
-/* MAIN AREA */
+.tb{
+  padding:7px 14px;border:none;border-radius:8px;cursor:pointer;
+  font-size:.82rem;font-weight:600;transition:all .15s;display:flex;
+  align-items:center;gap:5px;white-space:nowrap;background:#f5f5f5;color:#555
+}
+.tb:hover{background:#e8e8e8}
+.tb:disabled{opacity:.35;cursor:default;background:#f5f5f5}
+.tb.dl{background:linear-gradient(135deg,#1d9c73,#27ae60);color:#fff;box-shadow:0 2px 8px rgba(29,156,115,.25)}
+.tb.dl:hover{box-shadow:0 4px 12px rgba(29,156,115,.35);transform:translateY(-1px)}
+.tb.rst{color:#e74c3c}
+.tb svg{width:16px;height:16px;fill:currentColor}
+
+/* MAIN */
 #mainArea{display:flex;flex:1;overflow:hidden}
 
 /* SIDEBAR */
 #sidebar{
-  width:280px;min-width:280px;background:var(--surface);overflow-y:auto;
-  border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column
+  width:290px;min-width:290px;background:#fff;overflow-y:auto;
+  border-right:1px solid #e5e7eb;display:flex;flex-direction:column
 }
-.tool-tabs{
-  display:flex;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.08);
-  min-height:46px;background:var(--surface2)
+.stabs{
+  display:flex;overflow-x:auto;border-bottom:1px solid #e5e7eb;
+  min-height:50px;background:#fafafa
 }
-.tool-tab{
-  flex:1;min-width:60px;padding:10px 6px;border:none;background:none;
-  color:var(--text2);cursor:pointer;font-size:.7rem;display:flex;
-  flex-direction:column;align-items:center;gap:3px;transition:all .2s;
-  white-space:nowrap;border-bottom:2px solid transparent
+.stab{
+  flex:1;min-width:55px;padding:8px 4px 6px;border:none;background:none;
+  color:#999;cursor:pointer;font-size:.68rem;display:flex;
+  flex-direction:column;align-items:center;gap:2px;transition:all .15s;
+  white-space:nowrap;border-bottom:2.5px solid transparent;font-weight:600
 }
-.tool-tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.tool-tab.active{color:var(--primary);border-bottom-color:var(--primary);background:rgba(233,69,96,.08)}
-.tool-tab .tab-icon{font-size:1.2rem}
+.stab:hover{color:#1d9c73;background:#f0faf5}
+.stab.active{color:#1d9c73;border-bottom-color:#1d9c73;background:#f0faf5}
+.stab svg{width:20px;height:20px}
 
-.tool-panel{display:none;padding:16px;flex-direction:column;gap:14px;flex:1}
-.tool-panel.active{display:flex}
-.panel-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:4px}
-.panel-desc{font-size:.75rem;color:var(--text2);margin-bottom:8px}
+.tpanel{display:none;padding:16px;flex-direction:column;gap:12px;flex:1;overflow-y:auto}
+.tpanel.active{display:flex}
+.pt{font-size:.92rem;font-weight:700;color:#333;display:flex;align-items:center;gap:6px}
+.pd{font-size:.78rem;color:#999}
 
-/* SLIDER CONTROL */
-.slider-group{display:flex;flex-direction:column;gap:4px}
-.slider-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text2)}
-.slider-label span:last-child{color:var(--primary);font-weight:600}
+/* SLIDER */
+.sg{display:flex;flex-direction:column;gap:5px}
+.sl{display:flex;justify-content:space-between;font-size:.8rem;color:#666}
+.sl span:last-child{color:#1d9c73;font-weight:700;min-width:42px;text-align:right}
 input[type="range"]{
-  -webkit-appearance:none;width:100%;height:6px;border-radius:3px;
-  background:var(--surface2);outline:none;cursor:pointer
+  -webkit-appearance:none;width:100%;height:5px;border-radius:3px;
+  background:#e0e0e0;outline:none;cursor:pointer
 }
 input[type="range"]::-webkit-slider-thumb{
   -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
-  background:var(--primary);cursor:pointer;border:2px solid #fff;
-  box-shadow:0 2px 6px rgba(0,0,0,.3)
+  background:#1d9c73;cursor:pointer;border:3px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.2)
 }
 
-/* FILTER PRESETS */
-.filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.filter-preset{
-  padding:8px 4px;border:2px solid var(--surface2);border-radius:8px;
-  background:var(--surface2);color:var(--text);cursor:pointer;
-  font-size:.72rem;text-align:center;transition:all .2s;font-weight:500
+/* FILTER GRID */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fp{
+  padding:4px;border:2px solid #eee;border-radius:8px;background:#fafafa;
+  color:#555;cursor:pointer;font-size:.7rem;text-align:center;transition:all .15s;font-weight:600;overflow:hidden
 }
-.filter-preset:hover{border-color:var(--primary);background:rgba(233,69,96,.1)}
-.filter-preset.active{border-color:var(--primary);background:rgba(233,69,96,.15)}
-.filter-preset .preview{
-  width:100%;aspect-ratio:1;border-radius:4px;margin-bottom:4px;
-  background-size:cover;background-position:center
-}
+.fp:hover{border-color:#1d9c73}
+.fp.active{border-color:#1d9c73;background:#f0faf5}
+.fp canvas{width:100%;border-radius:4px;display:block;margin-bottom:3px}
 
-/* ACTION BUTTONS IN PANELS */
-.panel-btn{
+/* BUTTONS */
+.pbtn{
   padding:10px;border:none;border-radius:8px;cursor:pointer;
-  font-size:.85rem;font-weight:600;transition:all .2s;display:flex;
+  font-size:.85rem;font-weight:600;transition:all .15s;display:flex;
   align-items:center;justify-content:center;gap:6px
 }
-.panel-btn.primary{background:var(--primary);color:#fff}
-.panel-btn.primary:hover{background:var(--primary-hover)}
-.panel-btn.secondary{background:var(--surface2);color:var(--text)}
-.panel-btn.secondary:hover{background:var(--accent)}
+.pbtn.pri{background:linear-gradient(135deg,#1d9c73,#27ae60);color:#fff}
+.pbtn.pri:hover{box-shadow:0 3px 10px rgba(29,156,115,.3);transform:translateY(-1px)}
+.pbtn.sec{background:#f0f0f0;color:#555}
+.pbtn.sec:hover{background:#e0e0e0}
+.brow{display:flex;gap:8px}
+.brow .pbtn{flex:1}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-.btn-row{display:flex;gap:8px}
-.btn-row .panel-btn{flex:1}
-
-/* ROTATE BUTTONS */
-.rotate-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-/* TEXT TOOL */
-.text-input{
-  width:100%;padding:10px;border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;background:var(--surface2);color:var(--text);
-  font-size:.9rem;resize:vertical;min-height:60px;font-family:inherit
+/* TEXT */
+.tinp{
+  width:100%;padding:10px;border:1.5px solid #e0e0e0;border-radius:8px;
+  background:#fafafa;color:#333;font-size:.9rem;resize:vertical;
+  min-height:60px;font-family:inherit
 }
-.text-input:focus{outline:none;border-color:var(--primary)}
-.color-row{display:flex;align-items:center;gap:8px}
-.color-row label{font-size:.8rem;color:var(--text2);min-width:50px}
-input[type="color"]{
-  width:40px;height:32px;border:none;border-radius:6px;cursor:pointer;
-  background:none;padding:0
-}
+.tinp:focus{outline:none;border-color:#1d9c73}
+.crow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.crow label{font-size:.8rem;color:#777;min-width:44px}
+input[type="color"]{width:36px;height:30px;border:1.5px solid #ddd;border-radius:6px;cursor:pointer;background:#fff;padding:2px}
 select{
-  width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;background:var(--surface2);color:var(--text);font-size:.85rem;
-  cursor:pointer
+  width:100%;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;
+  background:#fafafa;color:#333;font-size:.85rem;cursor:pointer
 }
-select:focus{outline:none;border-color:var(--primary)}
+select:focus{outline:none;border-color:#1d9c73}
 
-/* DRAW TOOL */
-.size-preview{
-  width:100%;height:40px;display:flex;align-items:center;justify-content:center;
-  background:var(--surface2);border-radius:8px
+/* RESIZE */
+.rrow{display:flex;gap:8px;align-items:center}
+.rinp{
+  flex:1;padding:8px;border:1.5px solid #e0e0e0;border-radius:8px;
+  background:#fafafa;color:#333;font-size:.9rem;text-align:center
 }
-.size-dot{background:var(--text);border-radius:50%}
-
-/* RESIZE INPUTS */
-.resize-row{display:flex;gap:8px;align-items:center}
-.resize-input{
-  flex:1;padding:8px 10px;border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;background:var(--surface2);color:var(--text);
-  font-size:.9rem;text-align:center
+.rinp:focus{outline:none;border-color:#1d9c73}
+.rx{color:#aaa;font-weight:700;font-size:1.1rem}
+.lbtn{
+  width:34px;height:34px;border:1.5px solid #e0e0e0;border-radius:8px;
+  background:#fafafa;color:#aaa;cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;transition:all .15s
 }
-.resize-input:focus{outline:none;border-color:var(--primary)}
-.resize-x{color:var(--text2);font-weight:700;font-size:1.1rem}
-.lock-btn{
-  width:36px;height:36px;border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;background:var(--surface2);color:var(--text);
-  cursor:pointer;font-size:1rem;display:flex;align-items:center;
-  justify-content:center;transition:all .2s
-}
-.lock-btn.locked{color:var(--primary);border-color:var(--primary)}
+.lbtn.on{color:#1d9c73;border-color:#1d9c73;background:#f0faf5}
 
 /* CANVAS AREA */
 #canvasArea{
   flex:1;display:flex;align-items:center;justify-content:center;
-  overflow:hidden;position:relative;background:#0a0a15;
-  background-image:radial-gradient(circle at 50% 50%,rgba(233,69,96,.03) 0%,transparent 70%)
+  overflow:hidden;position:relative;
+  background:#f0f2f5;
+  background-image:
+    linear-gradient(45deg,#e8e8e8 25%,transparent 25%),
+    linear-gradient(-45deg,#e8e8e8 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#e8e8e8 75%),
+    linear-gradient(-45deg,transparent 75%,#e8e8e8 75%);
+  background-size:20px 20px;
+  background-position:0 0,0 10px,10px -10px,-10px 0
 }
-#canvasContainer{
-  position:relative;display:inline-block;
-  box-shadow:0 4px 40px rgba(0,0,0,.5)
-}
-#mainCanvas{display:block;max-width:100%;max-height:100%}
-#overlayCanvas{
-  position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair
-}
-.zoom-controls{
-  position:absolute;bottom:16px;right:16px;display:flex;gap:6px;
-  background:var(--surface);border-radius:10px;padding:4px;
-  box-shadow:var(--shadow)
-}
-.zoom-btn{
-  width:36px;height:36px;border:none;border-radius:8px;
-  background:var(--surface2);color:var(--text);cursor:pointer;
-  font-size:1rem;display:flex;align-items:center;justify-content:center;
-  transition:all .2s
-}
-.zoom-btn:hover{background:var(--primary);color:#fff}
-.zoom-info{
-  display:flex;align-items:center;padding:0 8px;font-size:.8rem;
-  color:var(--text2);font-weight:600
-}
-.img-info{
-  position:absolute;bottom:16px;left:16px;background:var(--surface);
-  padding:6px 14px;border-radius:8px;font-size:.75rem;color:var(--text2);
-  box-shadow:var(--shadow)
-}
+#canvasWrap{position:relative;display:inline-block;box-shadow:0 2px 20px rgba(0,0,0,.12);background:#fff}
+#mainCanvas{display:block}
+#overlayCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
 
-/* CROP OVERLAY */
-#cropOverlay{
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  display:none;cursor:crosshair;z-index:10
+.zc{
+  position:absolute;bottom:14px;right:14px;display:flex;gap:4px;
+  background:#fff;border-radius:10px;padding:4px;
+  box-shadow:0 2px 10px rgba(0,0,0,.1);border:1px solid #e5e7eb
 }
-#cropOverlay.active{display:block}
-.crop-selection{
-  position:absolute;border:2px dashed var(--success);
-  background:rgba(0,210,211,.1);z-index:11
+.zb{
+  width:32px;height:32px;border:none;border-radius:6px;
+  background:#f5f5f5;color:#555;cursor:pointer;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;transition:all .15s
 }
-.crop-handle{
-  position:absolute;width:12px;height:12px;background:var(--success);
-  border:2px solid #fff;border-radius:2px;z-index:12
+.zb:hover{background:#1d9c73;color:#fff}
+.zi{display:flex;align-items:center;padding:0 8px;font-size:.78rem;color:#888;font-weight:700}
+.ii{
+  position:absolute;bottom:14px;left:14px;background:#fff;
+  padding:5px 12px;border-radius:8px;font-size:.75rem;color:#888;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);border:1px solid #e5e7eb;font-weight:600
 }
 
 /* DOWNLOAD MODAL */
-#downloadModal{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;
-  align-items:center;justify-content:center;z-index:200;
-  backdrop-filter:blur(8px)
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;
+  align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)
 }
-#downloadModal.active{display:flex}
-.modal-content{
-  background:var(--surface);border-radius:16px;padding:32px;
-  width:min(90vw,420px);box-shadow:var(--shadow)
+.modal-bg.active{display:flex}
+.modal{
+  background:#fff;border-radius:16px;padding:28px;
+  width:min(92vw,420px);box-shadow:0 10px 40px rgba(0,0,0,.15)
 }
-.modal-title{font-size:1.3rem;font-weight:700;margin-bottom:8px}
-.modal-desc{font-size:.85rem;color:var(--text2);margin-bottom:20px}
-.format-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.format-opt{
-  padding:14px;border:2px solid var(--surface2);border-radius:10px;
-  cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s
+.mt{font-size:1.2rem;font-weight:700;color:#333;margin-bottom:6px}
+.md{font-size:.82rem;color:#999;margin-bottom:18px}
+.fmts{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.fopt{
+  padding:12px;border:2px solid #eee;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;transition:all .15s
 }
-.format-opt:hover{border-color:var(--primary)}
-.format-opt.selected{border-color:var(--primary);background:rgba(233,69,96,.1)}
-.format-opt .fmt-icon{font-size:1.5rem}
-.format-opt .fmt-name{font-weight:600;font-size:.95rem}
-.format-opt .fmt-desc{font-size:.75rem;color:var(--text2)}
-.quality-section{margin-bottom:20px}
-.modal-actions{display:flex;gap:10px}
-.modal-actions .panel-btn{flex:1;padding:12px}
+.fopt:hover{border-color:#1d9c73}
+.fopt.sel{border-color:#1d9c73;background:#f0faf5}
+.fopt .fi{font-size:1.4rem}
+.fopt .fn{font-weight:600;font-size:.9rem;color:#333}
+.fopt .fd{font-size:.72rem;color:#999}
+.qs{margin-bottom:18px}
+.macts{display:flex;gap:10px}
+.macts .pbtn{flex:1;padding:12px}
 
 /* TOAST */
 .toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:var(--surface);color:var(--text);padding:12px 24px;
-  border-radius:10px;font-size:.9rem;font-weight:500;box-shadow:var(--shadow);
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#fff;color:#333;padding:12px 24px;border-radius:10px;
+  font-size:.88rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.12);
   z-index:300;transition:transform .3s ease;display:flex;align-items:center;gap:8px;
-  border-left:4px solid var(--success)
+  border-left:4px solid #1d9c73
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* MOBILE BOTTOM TABS */
-#mobileTabBar{display:none}
+/* LOADING */
+.lov{
+  position:fixed;inset:0;background:rgba(255,255,255,.85);display:none;
+  align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:14px
+}
+.lov.active{display:flex}
+.spin{
+  width:44px;height:44px;border:4px solid #e0e0e0;
+  border-top-color:#1d9c73;border-radius:50%;animation:sp .7s linear infinite
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+.lt{color:#888;font-size:.9rem;font-weight:500}
 
 /* RESPONSIVE */
 @media(max-width:900px){
   #sidebar{
-    position:fixed;bottom:0;left:0;right:0;width:100%;min-width:unset;
+    position:fixed;bottom:0;left:0;right:0;width:100%!important;min-width:unset!important;
     height:auto;max-height:55vh;z-index:60;border-right:none;
-    border-top:1px solid rgba(255,255,255,.1);
-    border-radius:20px 20px 0 0;
-    transform:translateY(calc(100% - 52px));transition:transform .3s ease
+    border-top:1px solid #e5e7eb;border-radius:16px 16px 0 0;
+    transform:translateY(calc(100% - 50px));transition:transform .3s ease;
+    box-shadow:0 -4px 20px rgba(0,0,0,.08)
   }
   #sidebar.expanded{transform:translateY(0)}
-  .tool-tabs{
-    position:sticky;top:0;z-index:5;background:var(--surface);
-    border-radius:20px 20px 0 0
-  }
-  .tool-tabs::before{
-    content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
-    width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px
+  .stabs{border-radius:16px 16px 0 0;position:sticky;top:0;z-index:5;background:#fff}
+  .stabs::before{
+    content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);
+    width:36px;height:4px;background:#ddd;border-radius:2px;z-index:6
   }
   #mainArea{flex-direction:column}
-  .upload-title{font-size:1.6rem}
-  #dropZone{height:220px}
-  .top-btn span.btn-text{display:none}
-  #topBar{padding:0 8px;gap:4px}
-  .top-btn{padding:6px 10px}
+  .btn-text{display:none!important}
+  .tb{padding:7px 10px}
 }
 @media(max-width:480px){
-  .upload-title{font-size:1.3rem}
-  .upload-logo{font-size:2.2rem}
-  #dropZone{width:92vw;height:200px}
-  #dropZone .drop-icon{font-size:3rem}
-  .filter-grid{grid-template-columns:repeat(3,1fr);gap:6px}
-  .top-btn{padding:5px 8px;font-size:.78rem}
-  .tool-tab{padding:8px 4px;font-size:.65rem}
-  .tool-tab .tab-icon{font-size:1rem}
-  .modal-content{padding:20px}
+  .upload-title{font-size:1.5rem}
+  .upload-logo{width:60px;height:60px;font-size:2rem;border-radius:14px}
+  #dropZone{padding:30px 20px}
+  #dropZone .drop-icon{font-size:2.8rem}
+  .fg{grid-template-columns:repeat(3,1fr);gap:5px}
+  .tb{padding:5px 8px;font-size:.78rem}
+  .modal{padding:20px}
+  #topBar{padding:0 8px;gap:5px}
 }
-
-/* LOADING */
-.loading-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;
-  align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:16px
-}
-.loading-overlay.active{display:flex}
-.spinner{
-  width:50px;height:50px;border:4px solid var(--surface2);
-  border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{color:var(--text2);font-size:.9rem}
 </style>
 </head>
 <body>
 
 <!-- UPLOAD SCREEN -->
 <div id="uploadScreen">
-  <div class="upload-logo">📸</div>
-  <div class="upload-title">Photo Editor Pro</div>
-  <div class="upload-subtitle">Professional photo editing tool — Free & Fast</div>
+  <div class="upload-logo">✎</div>
+  <div class="upload-title">Photo Editor</div>
+  <div class="upload-subtitle">Edit your images online — Free, fast, and easy to use</div>
   <div id="dropZone">
-    <div class="drop-icon">🖼️</div>
+    <div class="drop-icon">📁</div>
     <div class="drop-text">Drag & drop your image here</div>
-    <button class="drop-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Image</button>
+    <div class="drop-hint">or</div>
+    <button class="drop-btn" onclick="document.getElementById('fileInput').click()">Select Image</button>
   </div>
   <div class="supported">Supports: JPG, PNG, WEBP, GIF, BMP, SVG</div>
   <input type="file" id="fileInput" accept="image/*">
@@ -358,1124 +307,944 @@ select:focus{outline:none;border-color:var(--primary)}
 
 <!-- EDITOR -->
 <div id="editor">
-  <!-- TOP BAR -->
   <div id="topBar">
-    <div class="logo">📸 <span>PhotoEditor</span></div>
-    <button class="top-btn undo-redo" id="undoBtn" disabled onclick="undo()" title="Undo">↩️ <span class="btn-text">Undo</span></button>
-    <button class="top-btn undo-redo" id="redoBtn" disabled onclick="redo()" title="Redo">↪️ <span class="btn-text">Redo</span></button>
-    <button class="top-btn reset" onclick="resetAll()" title="Reset">🔄 <span class="btn-text">Reset</span></button>
-    <button class="top-btn new" onclick="newImage()" title="New Image">➕ <span class="btn-text">New</span></button>
-    <button class="top-btn download" onclick="openDownload()" title="Download">💾 <span class="btn-text">Download</span></button>
+    <div class="logo-area">
+      <div class="logo-icon">PE</div>
+      <span class="logo-text">Photo Editor</span>
+    </div>
+    <button class="tb" id="undoBtn" disabled onclick="undo()">↩ <span class="btn-text">Undo</span></button>
+    <button class="tb" id="redoBtn" disabled onclick="redo()">↪ <span class="btn-text">Redo</span></button>
+    <button class="tb rst" onclick="resetAll()">⟲ <span class="btn-text">Reset</span></button>
+    <button class="tb" onclick="newImage()">+ <span class="btn-text">New</span></button>
+    <button class="tb dl" onclick="openDownload()">⤓ <span class="btn-text">Download</span></button>
   </div>
 
-  <!-- MAIN -->
   <div id="mainArea">
-    <!-- SIDEBAR -->
-    <div id="sidebar" id="sidebar">
-      <div class="tool-tabs" id="toolTabs">
-        <button class="tool-tab active" data-panel="adjust" onclick="switchTab(this)">
-          <span class="tab-icon">🎨</span>Adjust
+    <div id="sidebar">
+      <div class="stabs" id="stabs">
+        <button class="stab active" data-p="adjust" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3-8c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z" fill="currentColor"/></svg>
+          Adjust
         </button>
-        <button class="tool-tab" data-panel="filters" onclick="switchTab(this)">
-          <span class="tab-icon">✨</span>Filters
+        <button class="stab" data-p="filters" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z" fill="currentColor"/></svg>
+          Filters
         </button>
-        <button class="tool-tab" data-panel="crop" onclick="switchTab(this)">
-          <span class="tab-icon">✂️</span>Crop
+        <button class="stab" data-p="crop" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z" fill="currentColor"/></svg>
+          Crop
         </button>
-        <button class="tool-tab" data-panel="rotate" onclick="switchTab(this)">
-          <span class="tab-icon">🔄</span>Rotate
+        <button class="stab" data-p="rotate" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M15.55 5.55L11 1v3.07C7.06 4.56 4 7.92 4 12s3.05 7.44 7 7.93v-2.02c-2.84-.48-5-2.94-5-5.91s2.16-5.43 5-5.91V10l4.55-4.45zM19.93 11a7.906 7.906 0 00-1.62-3.89l-1.42 1.42c.54.75.88 1.6 1.02 2.47h2.02zM13 17.9v2.02c1.39-.17 2.74-.71 3.9-1.61l-1.44-1.44c-.75.54-1.59.89-2.46 1.03zm3.89-2.42l1.42 1.41A7.96 7.96 0 0019.93 13h-2.02a5.9 5.9 0 01-1.02 2.48z" fill="currentColor"/></svg>
+          Rotate
         </button>
-        <button class="tool-tab" data-panel="resize" onclick="switchTab(this)">
-          <span class="tab-icon">📐</span>Resize
+        <button class="stab" data-p="resize" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M21 15h2v2h-2v-2zm0-4h2v2h-2v-2zm2 8h-2v2c1 0 2-1 2-2zM13 3h2v2h-2V3zm8 4h2v2h-2V7zm0-4v2h2c0-1-1-2-2-2zM1 7h2v2H1V7zm16-4h2v2h-2V3zm0 16h2v2h-2v-2zM3 3C2 3 1 4 1 5h2V3zm6 0h2v2H9V3zM5 3h2v2H5V3zm-4 8h2v2H1v-2zm0 8c0 1 1 2 2 2v-2H1zm2-4H1v2h2v-2zm4 4h2v2H7v-2zm-4 0h2v2H3v-2zm0-8h18v8H3v-8z" fill="currentColor"/></svg>
+          Resize
         </button>
-        <button class="tool-tab" data-panel="text" onclick="switchTab(this)">
-          <span class="tab-icon">🔤</span>Text
+        <button class="stab" data-p="text" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4H5z" fill="currentColor"/></svg>
+          Text
         </button>
-        <button class="tool-tab" data-panel="draw" onclick="switchTab(this)">
-          <span class="tab-icon">🖌️</span>Draw
+        <button class="stab" data-p="draw" onclick="switchTab(this)">
+          <svg viewBox="0 0 24 24"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.996.996 0 00-1.41 0L9 12.25 11.75 15l8.96-8.96a.996.996 0 000-1.41z" fill="currentColor"/></svg>
+          Draw
         </button>
       </div>
 
-      <!-- ADJUST PANEL -->
-      <div class="tool-panel active" id="panel-adjust">
-        <div class="panel-title">🎨 Adjustments</div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Brightness</span><span id="brightnessVal">100%</span></div>
-          <input type="range" min="0" max="200" value="100" id="brightness" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Contrast</span><span id="contrastVal">100%</span></div>
-          <input type="range" min="0" max="200" value="100" id="contrast" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Saturation</span><span id="saturationVal">100%</span></div>
-          <input type="range" min="0" max="200" value="100" id="saturation" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Hue Rotate</span><span id="hueVal">0°</span></div>
-          <input type="range" min="0" max="360" value="0" id="hue" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Blur</span><span id="blurVal">0px</span></div>
-          <input type="range" min="0" max="20" value="0" step="0.5" id="blur" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Opacity</span><span id="opacityVal">100%</span></div>
-          <input type="range" min="10" max="100" value="100" id="opacity" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Grayscale</span><span id="grayscaleVal">0%</span></div>
-          <input type="range" min="0" max="100" value="0" id="grayscale" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Sepia</span><span id="sepiaVal">0%</span></div>
-          <input type="range" min="0" max="100" value="0" id="sepia" oninput="updateAdjust()">
-        </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Invert</span><span id="invertVal">0%</span></div>
-          <input type="range" min="0" max="100" value="0" id="invert" oninput="updateAdjust()">
-        </div>
-        <button class="panel-btn primary" onclick="applyAdjustments()">✅ Apply Adjustments</button>
-        <button class="panel-btn secondary" onclick="resetAdjustments()">🔄 Reset Sliders</button>
+      <!-- ADJUST -->
+      <div class="tpanel active" id="panel-adjust">
+        <div class="pt">☀ Adjustments</div>
+        <div class="sg"><div class="sl"><span>Brightness</span><span id="vBri">0</span></div>
+        <input type="range" min="-100" max="100" value="0" id="sBri" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Contrast</span><span id="vCon">0</span></div>
+        <input type="range" min="-100" max="100" value="0" id="sCon" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Saturation</span><span id="vSat">0</span></div>
+        <input type="range" min="-100" max="100" value="0" id="sSat" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Hue Rotate</span><span id="vHue">0°</span></div>
+        <input type="range" min="0" max="360" value="0" id="sHue" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Blur</span><span id="vBlu">0px</span></div>
+        <input type="range" min="0" max="20" value="0" step="0.5" id="sBlu" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Grayscale</span><span id="vGra">0%</span></div>
+        <input type="range" min="0" max="100" value="0" id="sGra" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Sepia</span><span id="vSep">0%</span></div>
+        <input type="range" min="0" max="100" value="0" id="sSep" oninput="livePreview()"></div>
+        <div class="sg"><div class="sl"><span>Invert</span><span id="vInv">0%</span></div>
+        <input type="range" min="0" max="100" value="0" id="sInv" oninput="livePreview()"></div>
+        <button class="pbtn pri" onclick="applyAdjust()">✓ Apply</button>
+        <button class="pbtn sec" onclick="resetSliders()">↺ Reset Sliders</button>
       </div>
 
-      <!-- FILTERS PANEL -->
-      <div class="tool-panel" id="panel-filters">
-        <div class="panel-title">✨ Filter Presets</div>
-        <div class="panel-desc">Click a filter to preview, then apply</div>
-        <div class="filter-grid" id="filterGrid"></div>
-        <button class="panel-btn primary" onclick="applyFilter()">✅ Apply Filter</button>
-        <button class="panel-btn secondary" onclick="removeFilter()">🔄 Remove Filter</button>
+      <!-- FILTERS -->
+      <div class="tpanel" id="panel-filters">
+        <div class="pt">✦ Filters</div>
+        <div class="pd">Select a filter and click Apply</div>
+        <div class="fg" id="filterGrid"></div>
+        <button class="pbtn pri" onclick="applyFilter()">✓ Apply Filter</button>
+        <button class="pbtn sec" onclick="removeFilter()">↺ Remove</button>
       </div>
 
-      <!-- CROP PANEL -->
-      <div class="tool-panel" id="panel-crop">
-        <div class="panel-title">✂️ Crop Image</div>
-        <div class="panel-desc">Click and drag on the image to select crop area</div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Aspect Ratio</span></div>
-          <select id="aspectRatio" onchange="updateAspectRatio()">
-            <option value="free">Free</option>
-            <option value="1:1">1:1 Square</option>
-            <option value="4:3">4:3</option>
-            <option value="3:4">3:4</option>
-            <option value="16:9">16:9 Widescreen</option>
-            <option value="9:16">9:16 Portrait</option>
-            <option value="3:2">3:2</option>
-            <option value="2:3">2:3</option>
-          </select>
-        </div>
-        <div class="btn-row">
-          <button class="panel-btn primary" onclick="applyCrop()">✅ Crop</button>
-          <button class="panel-btn secondary" onclick="cancelCrop()">❌ Cancel</button>
-        </div>
-      </div>
-
-      <!-- ROTATE PANEL -->
-      <div class="tool-panel" id="panel-rotate">
-        <div class="panel-title">🔄 Rotate & Flip</div>
-        <div class="rotate-grid">
-          <button class="panel-btn secondary" onclick="rotateImage(-90)">↺ Left 90°</button>
-          <button class="panel-btn secondary" onclick="rotateImage(90)">↻ Right 90°</button>
-          <button class="panel-btn secondary" onclick="flipImage('h')">↔️ Flip H</button>
-          <button class="panel-btn secondary" onclick="flipImage('v')">↕️ Flip V</button>
-        </div>
-        <div class="slider-group" style="margin-top:10px">
-          <div class="slider-label"><span>Free Rotate</span><span id="freeRotateVal">0°</span></div>
-          <input type="range" min="-180" max="180" value="0" id="freeRotate" oninput="freeRotateImage()">
-        </div>
-        <button class="panel-btn primary" onclick="applyFreeRotate()">✅ Apply Rotation</button>
-      </div>
-
-      <!-- RESIZE PANEL -->
-      <div class="tool-panel" id="panel-resize">
-        <div class="panel-title">📐 Resize Image</div>
-        <div class="panel-desc">Enter new dimensions</div>
-        <div class="resize-row">
-          <input type="number" class="resize-input" id="resizeW" placeholder="Width" oninput="resizeChanged('w')">
-          <span class="resize-x">×</span>
-          <input type="number" class="resize-input" id="resizeH" placeholder="Height" oninput="resizeChanged('h')">
-          <button class="lock-btn locked" id="lockAspect" onclick="toggleLock()" title="Lock Aspect Ratio">🔗</button>
-        </div>
-        <div style="font-size:.75rem;color:var(--text2);text-align:center" id="origSize">Original: -- × --</div>
-        <div class="btn-row" style="margin-top:6px">
-          <button class="panel-btn secondary" onclick="setResizePercent(25)">25%</button>
-          <button class="panel-btn secondary" onclick="setResizePercent(50)">50%</button>
-          <button class="panel-btn secondary" onclick="setResizePercent(75)">75%</button>
-          <button class="panel-btn secondary" onclick="setResizePercent(150)">150%</button>
-        </div>
-        <button class="panel-btn primary" onclick="applyResize()">✅ Resize</button>
-      </div>
-
-      <!-- TEXT PANEL -->
-      <div class="tool-panel" id="panel-text">
-        <div class="panel-title">🔤 Add Text</div>
-        <textarea class="text-input" id="textInput" placeholder="Type your text here..."></textarea>
-        <div class="slider-group">
-          <div class="slider-label"><span>Font Size</span><span id="fontSizeVal">32px</span></div>
-          <input type="range" min="8" max="200" value="32" id="fontSize" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'">
-        </div>
-        <select id="fontFamily">
-          <option value="Arial">Arial</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Courier New">Courier New</option>
-          <option value="Verdana">Verdana</option>
-          <option value="Impact">Impact</option>
-          <option value="Comic Sans MS">Comic Sans MS</option>
-          <option value="Trebuchet MS">Trebuchet MS</option>
+      <!-- CROP -->
+      <div class="tpanel" id="panel-crop">
+        <div class="pt">✂ Crop</div>
+        <div class="pd">Draw on the image to select crop area</div>
+        <select id="aratio" onchange="updateAR()">
+          <option value="free">Free</option>
+          <option value="1">1:1 Square</option>
+          <option value="1.333">4:3</option>
+          <option value="0.75">3:4</option>
+          <option value="1.778">16:9</option>
+          <option value="0.5625">9:16</option>
         </select>
-        <div class="color-row">
-          <label>Color:</label>
-          <input type="color" id="textColor" value="#ffffff">
-          <label>Stroke:</label>
-          <input type="color" id="strokeColor" value="#000000">
+        <div class="brow">
+          <button class="pbtn pri" onclick="applyCrop()">✓ Crop</button>
+          <button class="pbtn sec" onclick="cancelCrop()">✕ Cancel</button>
         </div>
-        <div class="btn-row">
-          <button class="panel-btn secondary" id="boldBtn" onclick="toggleBold()"><b>B</b></button>
-          <button class="panel-btn secondary" id="italicBtn" onclick="toggleItalic()"><i>I</i></button>
-          <button class="panel-btn secondary" onclick="toggleStroke()">Stroke</button>
-        </div>
-        <div class="panel-desc">Click on the image where you want to place the text</div>
-        <button class="panel-btn primary" id="placeTextBtn" onclick="enableTextPlace()">📍 Place Text on Image</button>
       </div>
 
-      <!-- DRAW PANEL -->
-      <div class="tool-panel" id="panel-draw">
-        <div class="panel-title">🖌️ Drawing Tool</div>
-        <div class="btn-row">
-          <button class="panel-btn secondary active" id="penBtn" onclick="setDrawTool('pen')">✏️ Pen</button>
-          <button class="panel-btn secondary" id="eraserBtn" onclick="setDrawTool('eraser')">🧹 Eraser</button>
+      <!-- ROTATE -->
+      <div class="tpanel" id="panel-rotate">
+        <div class="pt">↻ Rotate & Flip</div>
+        <div class="rgrid">
+          <button class="pbtn sec" onclick="rotate(-90)">↺ Left 90°</button>
+          <button class="pbtn sec" onclick="rotate(90)">↻ Right 90°</button>
+          <button class="pbtn sec" onclick="flip('h')">↔ Flip H</button>
+          <button class="pbtn sec" onclick="flip('v')">↕ Flip V</button>
         </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Brush Size</span><span id="brushSizeVal">4px</span></div>
-          <input type="range" min="1" max="50" value="4" id="brushSize" oninput="updateBrushSize()">
+        <div class="sg" style="margin-top:8px">
+          <div class="sl"><span>Free Rotate</span><span id="vFR">0°</span></div>
+          <input type="range" min="-180" max="180" value="0" id="sFR" oninput="previewRotate()">
         </div>
-        <div class="color-row">
-          <label>Color:</label>
-          <input type="color" id="drawColor" value="#ff0000">
+        <button class="pbtn pri" onclick="applyFreeRotate()">✓ Apply Rotation</button>
+      </div>
+
+      <!-- RESIZE -->
+      <div class="tpanel" id="panel-resize">
+        <div class="pt">⬜ Resize</div>
+        <div class="rrow">
+          <input type="number" class="rinp" id="rW" placeholder="W" oninput="rChanged('w')">
+          <span class="rx">×</span>
+          <input type="number" class="rinp" id="rH" placeholder="H" oninput="rChanged('h')">
+          <button class="lbtn on" id="lockBtn" onclick="toggleLock()">🔗</button>
         </div>
-        <div class="slider-group">
-          <div class="slider-label"><span>Opacity</span><span id="drawOpacityVal">100%</span></div>
-          <input type="range" min="10" max="100" value="100" id="drawOpacity" oninput="document.getElementById('drawOpacityVal').textContent=this.value+'%'">
+        <div style="font-size:.75rem;color:#aaa;text-align:center" id="origSz"></div>
+        <div class="brow">
+          <button class="pbtn sec" onclick="rPct(25)">25%</button>
+          <button class="pbtn sec" onclick="rPct(50)">50%</button>
+          <button class="pbtn sec" onclick="rPct(75)">75%</button>
+          <button class="pbtn sec" onclick="rPct(150)">150%</button>
         </div>
-        <div class="btn-row">
-          <button class="panel-btn primary" onclick="applyDrawing()">✅ Apply</button>
-          <button class="panel-btn secondary" onclick="clearDrawing()">🗑️ Clear</button>
+        <button class="pbtn pri" onclick="applyResize()">✓ Resize</button>
+      </div>
+
+      <!-- TEXT -->
+      <div class="tpanel" id="panel-text">
+        <div class="pt">T Text</div>
+        <textarea class="tinp" id="txtInp" placeholder="Type text here..."></textarea>
+        <div class="sg"><div class="sl"><span>Size</span><span id="vFS">32px</span></div>
+        <input type="range" min="8" max="200" value="32" id="sFS" oninput="document.getElementById('vFS').textContent=this.value+'px'"></div>
+        <select id="fontFam">
+          <option>Arial</option><option>Georgia</option><option>Times New Roman</option>
+          <option>Courier New</option><option>Verdana</option><option>Impact</option>
+          <option>Trebuchet MS</option><option>Comic Sans MS</option>
+        </select>
+        <div class="crow">
+          <label>Color</label><input type="color" id="txtCol" value="#ffffff">
+          <label>Stroke</label><input type="color" id="stkCol" value="#000000">
+        </div>
+        <div class="brow">
+          <button class="pbtn sec" id="bbtn" onclick="tBold=!tBold;this.style.background=tBold?'#d4edda':'#f0f0f0'"><b>B</b></button>
+          <button class="pbtn sec" id="ibtn" onclick="tItalic=!tItalic;this.style.background=tItalic?'#d4edda':'#f0f0f0'"><i>I</i></button>
+          <button class="pbtn sec" id="sbtn" onclick="tStroke=!tStroke;this.style.background=tStroke?'#d4edda':'#f0f0f0'">Stroke</button>
+        </div>
+        <div class="pd">Click on image to place text</div>
+        <button class="pbtn pri" id="placeTxtBtn" onclick="startTextPlace()">📍 Place Text</button>
+      </div>
+
+      <!-- DRAW -->
+      <div class="tpanel" id="panel-draw">
+        <div class="pt">🖌 Draw</div>
+        <div class="brow">
+          <button class="pbtn sec" id="penB" style="background:#d4edda" onclick="setDraw('pen')">✏ Pen</button>
+          <button class="pbtn sec" id="eraserB" onclick="setDraw('eraser')">⌫ Eraser</button>
+        </div>
+        <div class="sg"><div class="sl"><span>Size</span><span id="vBS">4px</span></div>
+        <input type="range" min="1" max="50" value="4" id="sBS" oninput="document.getElementById('vBS').textContent=this.value+'px'"></div>
+        <div class="crow"><label>Color</label><input type="color" id="drawCol" value="#e74c3c"></div>
+        <div class="brow">
+          <button class="pbtn pri" onclick="applyDraw()">✓ Apply</button>
+          <button class="pbtn sec" onclick="clearDraw()">✕ Clear</button>
         </div>
       </div>
     </div>
 
     <!-- CANVAS AREA -->
     <div id="canvasArea">
-      <div id="canvasContainer">
+      <div id="canvasWrap">
         <canvas id="mainCanvas"></canvas>
         <canvas id="overlayCanvas"></canvas>
-        <div id="cropOverlay"></div>
       </div>
-      <div class="zoom-controls">
-        <button class="zoom-btn" onclick="zoomCanvas(-10)">➖</button>
-        <div class="zoom-info" id="zoomInfo">100%</div>
-        <button class="zoom-btn" onclick="zoomCanvas(10)">➕</button>
-        <button class="zoom-btn" onclick="zoomFit()">⊡</button>
+      <div class="zc">
+        <button class="zb" onclick="doZoom(-10)">−</button>
+        <div class="zi" id="zoomLbl">100%</div>
+        <button class="zb" onclick="doZoom(10)">+</button>
+        <button class="zb" onclick="fitZoom()">⊡</button>
       </div>
-      <div class="img-info" id="imgInfo">-- × --</div>
+      <div class="ii" id="imgInfo">-- × --</div>
     </div>
   </div>
 </div>
 
 <!-- DOWNLOAD MODAL -->
-<div id="downloadModal">
-  <div class="modal-content">
-    <div class="modal-title">💾 Download Image</div>
-    <div class="modal-desc">Choose format and quality</div>
-    <div class="format-options">
-      <div class="format-opt selected" onclick="selectFormat(this,'png')">
-        <span class="fmt-icon">🖼️</span>
-        <div><div class="fmt-name">PNG</div><div class="fmt-desc">Lossless, transparent background</div></div>
+<div class="modal-bg" id="dlModal">
+  <div class="modal">
+    <div class="mt">Download Image</div>
+    <div class="md">Choose format and quality</div>
+    <div class="fmts">
+      <div class="fopt sel" onclick="selFmt(this,'png')">
+        <span class="fi">🖼</span>
+        <div><div class="fn">PNG</div><div class="fd">Lossless, supports transparency</div></div>
       </div>
-      <div class="format-opt" onclick="selectFormat(this,'jpeg')">
-        <span class="fmt-icon">📷</span>
-        <div><div class="fmt-name">JPEG</div><div class="fmt-desc">Compressed, smaller file size</div></div>
+      <div class="fopt" onclick="selFmt(this,'jpeg')">
+        <span class="fi">📷</span>
+        <div><div class="fn">JPEG</div><div class="fd">Smaller file, no transparency</div></div>
       </div>
-      <div class="format-opt" onclick="selectFormat(this,'webp')">
-        <span class="fmt-icon">🌐</span>
-        <div><div class="fmt-name">WEBP</div><div class="fmt-desc">Modern format, best compression</div></div>
-      </div>
-    </div>
-    <div class="quality-section" id="qualitySection" style="display:none">
-      <div class="slider-group">
-        <div class="slider-label"><span>Quality</span><span id="qualityVal">92%</span></div>
-        <input type="range" min="10" max="100" value="92" id="quality" oninput="document.getElementById('qualityVal').textContent=this.value+'%'">
+      <div class="fopt" onclick="selFmt(this,'webp')">
+        <span class="fi">🌐</span>
+        <div><div class="fn">WEBP</div><div class="fd">Modern, best compression</div></div>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="panel-btn secondary" onclick="closeDownload()">Cancel</button>
-      <button class="panel-btn primary" onclick="downloadImage()">💾 Download</button>
+    <div class="qs" id="qualSec" style="display:none">
+      <div class="sg"><div class="sl"><span>Quality</span><span id="vQ">92%</span></div>
+      <input type="range" min="10" max="100" value="92" id="sQ" oninput="document.getElementById('vQ').textContent=this.value+'%'"></div>
+    </div>
+    <div class="macts">
+      <button class="pbtn sec" onclick="closeDL()">Cancel</button>
+      <button class="pbtn pri" onclick="doDownload()">⤓ Download</button>
     </div>
   </div>
 </div>
 
 <!-- LOADING -->
-<div class="loading-overlay" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-text">Processing...</div>
-</div>
+<div class="lov" id="loading"><div class="spin"></div><div class="lt">Processing...</div></div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ===== STATE =====
-let originalImage = null;
-let currentImage = null;
-let canvas, ctx, overlay, octx;
-let history = [], historyIndex = -1;
-let zoom = 100;
-let currentTool = 'adjust';
-let isDrawing = false;
-let drawTool = 'pen';
-let isCropping = false;
-let cropStart = null, cropEnd = null;
-let textPlacing = false;
-let isBold = false, isItalic = false, hasStroke = false;
-let lockAspect = true;
-let selectedFormat = 'png';
-let selectedFilter = null;
-let aspectRatio = null;
+let origImg=null, C, X, OC, OX;
+let hist=[], hIdx=-1, zoom=100;
+let curTool='adjust', drawMode='pen';
+let isDrawing=false, isCropping=false;
+let cropS=null, cropE=null;
+let textPlacing=false;
+let tBold=false, tItalic=false, tStroke=false;
+let lockAR=true, selFormat='png', selFilterIdx=-1;
+let arVal=null, baseW=0, baseH=0;
 
-// FILTER PRESETS
-const FILTERS = [
-  {name:'Normal',filter:'none'},
-  {name:'Vivid',filter:'saturate(1.5) contrast(1.1)'},
-  {name:'Warm',filter:'sepia(0.3) saturate(1.4) brightness(1.05)'},
-  {name:'Cool',filter:'saturate(0.8) hue-rotate(20deg) brightness(1.05)'},
-  {name:'B&W',filter:'grayscale(1)'},
-  {name:'Vintage',filter:'sepia(0.6) contrast(1.1) brightness(0.9)'},
-  {name:'Drama',filter:'contrast(1.5) saturate(1.3) brightness(0.95)'},
-  {name:'Fade',filter:'contrast(0.8) brightness(1.1) saturate(0.7)'},
-  {name:'Noir',filter:'grayscale(1) contrast(1.4) brightness(0.9)'},
-  {name:'Pop',filter:'saturate(1.8) contrast(1.2)'},
-  {name:'Muted',filter:'saturate(0.5) brightness(1.05)'},
-  {name:'Sunset',filter:'sepia(0.2) saturate(1.5) hue-rotate(-10deg)'},
-  {name:'Ocean',filter:'hue-rotate(180deg) saturate(0.8)'},
-  {name:'Forest',filter:'hue-rotate(90deg) saturate(0.7) brightness(0.95)'},
-  {name:'Purple',filter:'hue-rotate(270deg) saturate(1.2)'},
-  {name:'Invert',filter:'invert(1)'},
-  {name:'Bright',filter:'brightness(1.4)'},
-  {name:'Shadow',filter:'brightness(0.6) contrast(1.3)'},
+const FILTERS=[
+  {n:'Normal',f:'none'},
+  {n:'Vivid',f:'saturate(150%) contrast(110%)'},
+  {n:'Warm',f:'sepia(30%) saturate(140%) brightness(105%)'},
+  {n:'Cool',f:'saturate(80%) hue-rotate(20deg) brightness(105%)'},
+  {n:'B&W',f:'grayscale(100%)'},
+  {n:'Vintage',f:'sepia(60%) contrast(110%) brightness(90%)'},
+  {n:'Drama',f:'contrast(150%) saturate(130%) brightness(95%)'},
+  {n:'Fade',f:'contrast(80%) brightness(110%) saturate(70%)'},
+  {n:'Noir',f:'grayscale(100%) contrast(140%) brightness(90%)'},
+  {n:'Pop',f:'saturate(180%) contrast(120%)'},
+  {n:'Muted',f:'saturate(50%) brightness(105%)'},
+  {n:'Sunset',f:'sepia(20%) saturate(150%) hue-rotate(-10deg)'},
+  {n:'Ocean',f:'hue-rotate(180deg) saturate(80%)'},
+  {n:'Forest',f:'hue-rotate(90deg) saturate(70%) brightness(95%)'},
+  {n:'Purple',f:'hue-rotate(270deg) saturate(120%)'},
+  {n:'Invert',f:'invert(100%)'},
+  {n:'Bright',f:'brightness(140%)'},
+  {n:'Shadow',f:'brightness(60%) contrast(130%)'}
 ];
 
 // ===== INIT =====
-window.addEventListener('DOMContentLoaded', () => {
-  canvas = document.getElementById('mainCanvas');
-  ctx = canvas.getContext('2d');
-  overlay = document.getElementById('overlayCanvas');
-  octx = overlay.getContext('2d');
+window.addEventListener('DOMContentLoaded',()=>{
+  C=document.getElementById('mainCanvas');
+  X=C.getContext('2d');
+  OC=document.getElementById('overlayCanvas');
+  OX=OC.getContext('2d');
 
   // Build filter grid
-  const grid = document.getElementById('filterGrid');
-  FILTERS.forEach((f, i) => {
-    const div = document.createElement('div');
-    div.className = 'filter-preset';
-    div.innerHTML = `<div class="preview" id="fprev${i}"></div>${f.name}`;
-    div.onclick = () => selectFilterPreset(i, div);
-    grid.appendChild(div);
+  const g=document.getElementById('filterGrid');
+  FILTERS.forEach((f,i)=>{
+    const d=document.createElement('div');
+    d.className='fp';
+    d.dataset.idx=i;
+    const cv=document.createElement('canvas');
+    cv.width=60;cv.height=60;cv.id='fpv'+i;
+    d.appendChild(cv);
+    d.appendChild(document.createTextNode(f.n));
+    d.onclick=()=>pickFilter(i,d);
+    g.appendChild(d);
   });
 
   // File input
-  document.getElementById('fileInput').addEventListener('change', e => {
-    if(e.target.files[0]) loadImage(e.target.files[0]);
+  document.getElementById('fileInput').addEventListener('change',e=>{
+    if(e.target.files[0])loadFile(e.target.files[0]);
   });
 
-  // Drag & drop
-  const dz = document.getElementById('dropZone');
-  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.classList.add('dragover');
-  }));
-  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.classList.remove('dragover');
-  }));
-  dz.addEventListener('drop', e => {
-    if(e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
-  });
-  dz.addEventListener('click', e => {
-    if(e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click();
-  });
+  // Drop zone
+  const dz=document.getElementById('dropZone');
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));
+  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));
+  dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
 
-  // Overlay events
-  overlay.addEventListener('mousedown', onPointerDown);
-  overlay.addEventListener('mousemove', onPointerMove);
-  overlay.addEventListener('mouseup', onPointerUp);
-  overlay.addEventListener('mouseleave', onPointerUp);
-  overlay.addEventListener('touchstart', e => { e.preventDefault(); onPointerDown(getTouchEvent(e)); }, {passive:false});
-  overlay.addEventListener('touchmove', e => { e.preventDefault(); onPointerMove(getTouchEvent(e)); }, {passive:false});
-  overlay.addEventListener('touchend', e => { e.preventDefault(); onPointerUp(getTouchEvent(e)); }, {passive:false});
+  // Canvas pointer events
+  setupPointer();
 
-  // Sidebar swipe on mobile
-  const sidebar = document.getElementById('sidebar');
-  let touchY = 0;
-  sidebar.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; });
-  sidebar.addEventListener('touchmove', e => {
-    const dy = e.touches[0].clientY - touchY;
-    if(dy < -30) sidebar.classList.add('expanded');
-    if(dy > 30) sidebar.classList.remove('expanded');
+  // Sidebar swipe (mobile)
+  const sb=document.getElementById('sidebar');
+  let ty=0;
+  sb.addEventListener('touchstart',e=>{ty=e.touches[0].clientY},{passive:true});
+  sb.addEventListener('touchmove',e=>{
+    const d=e.touches[0].clientY-ty;
+    if(d<-30)sb.classList.add('expanded');
+    if(d>30)sb.classList.remove('expanded');
+  },{passive:true});
+
+  // Modal close
+  document.getElementById('dlModal').addEventListener('click',e=>{
+    if(e.target.id==='dlModal')closeDL();
   });
 
-  // Click outside modal
-  document.getElementById('downloadModal').addEventListener('click', e => {
-    if(e.target.id === 'downloadModal') closeDownload();
-  });
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', e => {
-    if(e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-    if(e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
-    if(e.ctrlKey && e.key === 's') { e.preventDefault(); openDownload(); }
+  // Keyboard
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey&&e.key==='z'){e.preventDefault();undo()}
+    if(e.ctrlKey&&e.key==='y'){e.preventDefault();redo()}
+    if(e.ctrlKey&&e.key==='s'){e.preventDefault();openDownload()}
   });
 });
 
-function getTouchEvent(e) {
-  const t = e.changedTouches[0] || e.touches[0];
-  return { clientX: t.clientX, clientY: t.clientY, target: e.target };
+function setupPointer(){
+  const el=OC;
+  // Mouse
+  el.addEventListener('mousedown',e=>pDown(getPos(e)));
+  el.addEventListener('mousemove',e=>pMove(getPos(e)));
+  el.addEventListener('mouseup',()=>pUp());
+  el.addEventListener('mouseleave',()=>pUp());
+  // Touch
+  el.addEventListener('touchstart',e=>{e.preventDefault();pDown(getTPos(e))},{passive:false});
+  el.addEventListener('touchmove',e=>{e.preventDefault();pMove(getTPos(e))},{passive:false});
+  el.addEventListener('touchend',e=>{e.preventDefault();pUp()},{passive:false});
 }
 
-// ===== LOAD IMAGE =====
-function loadImage(file) {
-  showLoading();
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      originalImage = img;
-      currentImage = img;
-      initCanvas(img);
+function getPos(e){
+  const r=OC.getBoundingClientRect();
+  return{x:(e.clientX-r.left)*(OC.width/r.width), y:(e.clientY-r.top)*(OC.height/r.height)};
+}
+function getTPos(e){
+  const t=e.touches[0]||e.changedTouches[0];
+  const r=OC.getBoundingClientRect();
+  return{x:(t.clientX-r.left)*(OC.width/r.width), y:(t.clientY-r.top)*(OC.height/r.height)};
+}
+
+// ===== LOAD =====
+function loadFile(file){
+  showLoad();
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      origImg=img;
+      baseW=img.width;baseH=img.height;
+      C.width=img.width;C.height=img.height;
+      X.clearRect(0,0,C.width,C.height);
+      X.drawImage(img,0,0);
+      OC.width=img.width;OC.height=img.height;
+      OX.clearRect(0,0,OC.width,OC.height);
       document.getElementById('uploadScreen').classList.add('hidden');
       document.getElementById('editor').classList.add('active');
-      saveHistory();
-      hideLoading();
-      updateImageInfo();
-      updateResizeInputs();
-      updateFilterPreviews();
-      showToast('✅ Image loaded successfully!');
+      hist=[];hIdx=-1;
+      saveHist();
+      fitZoom();
+      updInfo();
+      updResize();
+      updFilterPrev();
+      hideLoad();
+      toast('✓ Image loaded successfully!');
     };
-    img.src = e.target.result;
+    img.src=e.target.result;
   };
-  reader.readAsDataURL(file);
-}
-
-function initCanvas(img) {
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, 0, 0);
-  overlay.width = img.width;
-  overlay.height = img.height;
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  zoomFit();
+  r.readAsDataURL(file);
 }
 
 // ===== HISTORY =====
-function saveHistory() {
-  historyIndex++;
-  history = history.slice(0, historyIndex);
-  history.push(canvas.toDataURL());
-  if(history.length > 30) { history.shift(); historyIndex--; }
-  updateHistoryBtns();
+function saveHist(){
+  hIdx++;
+  hist=hist.slice(0,hIdx);
+  hist.push({d:C.toDataURL(),w:C.width,h:C.height});
+  if(hist.length>30){hist.shift();hIdx--}
+  updHBtn();
 }
-
-function undo() {
-  if(historyIndex <= 0) return;
-  historyIndex--;
-  restoreHistory();
-}
-
-function redo() {
-  if(historyIndex >= history.length - 1) return;
-  historyIndex++;
-  restoreHistory();
-}
-
-function restoreHistory() {
-  const img = new Image();
-  img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-    overlay.width = img.width;
-    overlay.height = img.height;
-    octx.clearRect(0, 0, overlay.width, overlay.height);
-    updateHistoryBtns();
-    updateImageInfo();
-    updateResizeInputs();
+function undo(){if(hIdx<=0)return;hIdx--;restHist()}
+function redo(){if(hIdx>=hist.length-1)return;hIdx++;restHist()}
+function restHist(){
+  const s=hist[hIdx];
+  const img=new Image();
+  img.onload=()=>{
+    C.width=img.width;C.height=img.height;
+    X.clearRect(0,0,C.width,C.height);
+    X.drawImage(img,0,0);
+    OC.width=img.width;OC.height=img.height;
+    OX.clearRect(0,0,OC.width,OC.height);
+    updHBtn();updInfo();updResize();
+    baseW=C.width;baseH=C.height;
   };
-  img.src = history[historyIndex];
+  img.src=s.d;
 }
-
-function updateHistoryBtns() {
-  document.getElementById('undoBtn').disabled = historyIndex <= 0;
-  document.getElementById('redoBtn').disabled = historyIndex >= history.length - 1;
+function updHBtn(){
+  document.getElementById('undoBtn').disabled=hIdx<=0;
+  document.getElementById('redoBtn').disabled=hIdx>=hist.length-1;
 }
 
 // ===== ZOOM =====
-function zoomCanvas(delta) {
-  zoom = Math.max(10, Math.min(500, zoom + delta));
-  applyZoom();
+function doZoom(d){zoom=Math.max(10,Math.min(400,zoom+d));applyZ()}
+function fitZoom(){
+  const a=document.getElementById('canvasArea');
+  const mw=a.clientWidth-32, mh=a.clientHeight-32;
+  zoom=Math.round(Math.min(mw/C.width,mh/C.height)*100);
+  zoom=Math.max(10,Math.min(400,zoom));
+  applyZ();
 }
-
-function zoomFit() {
-  const area = document.getElementById('canvasArea');
-  const maxW = area.clientWidth - 40;
-  const maxH = area.clientHeight - 40;
-  const scaleW = maxW / canvas.width;
-  const scaleH = maxH / canvas.height;
-  zoom = Math.round(Math.min(scaleW, scaleH) * 100);
-  zoom = Math.max(10, Math.min(500, zoom));
-  applyZoom();
-}
-
-function applyZoom() {
-  const container = document.getElementById('canvasContainer');
-  const scale = zoom / 100;
-  container.style.transform = `scale(${scale})`;
-  container.style.transformOrigin = 'center center';
-  document.getElementById('zoomInfo').textContent = zoom + '%';
+function applyZ(){
+  const w=document.getElementById('canvasWrap');
+  const s=zoom/100;
+  w.style.width=(C.width*s)+'px';
+  w.style.height=(C.height*s)+'px';
+  C.style.width='100%';C.style.height='100%';
+  OC.style.width='100%';OC.style.height='100%';
+  document.getElementById('zoomLbl').textContent=zoom+'%';
 }
 
 // ===== TABS =====
-function switchTab(btn) {
-  document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+function switchTab(btn){
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  const panel = document.getElementById('panel-' + btn.dataset.panel);
-  if(panel) panel.classList.add('active');
-  currentTool = btn.dataset.panel;
+  const p=document.getElementById('panel-'+btn.dataset.p);
+  if(p)p.classList.add('active');
+  const prev=curTool;
+  curTool=btn.dataset.p;
 
-  // Cancel crop if switching away
-  if(currentTool !== 'crop') cancelCrop();
+  // Cancel crop if leaving crop
+  if(prev==='crop'&&curTool!=='crop')cancelCrop();
 
-  // Toggle drawing
-  overlay.style.pointerEvents = (currentTool === 'draw' || currentTool === 'text' || currentTool === 'crop') ? 'auto' : 'none';
+  // Reset filter preview if leaving filters
+  if(prev==='filters'&&curTool!=='filters'){C.style.filter='';selFilterIdx=-1;document.querySelectorAll('.fp').forEach(f=>f.classList.remove('active'))}
 
-  // Expand sidebar on mobile
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.add('expanded');
+  // Reset adjust preview if leaving adjust
+  if(prev==='adjust'&&curTool!=='adjust'){C.style.filter=''}
 
-  // Reset canvas filter preview
-  if(currentTool !== 'adjust' && currentTool !== 'filters') {
-    canvas.style.filter = 'none';
-    canvas.style.opacity = '1';
-  }
+  // Reset free rotate preview
+  if(prev==='rotate'){C.style.transform=''}
+
+  // Overlay pointer
+  OC.style.pointerEvents=(curTool==='draw'||curTool==='text'||curTool==='crop')?'auto':'none';
+  OC.style.cursor=curTool==='text'?'text':curTool==='draw'?'crosshair':curTool==='crop'?'crosshair':'default';
+
+  // Mobile expand
+  document.getElementById('sidebar').classList.add('expanded');
 }
 
-// ===== ADJUSTMENTS =====
-function updateAdjust() {
-  const b = document.getElementById('brightness').value;
-  const c = document.getElementById('contrast').value;
-  const s = document.getElementById('saturation').value;
-  const h = document.getElementById('hue').value;
-  const bl = document.getElementById('blur').value;
-  const o = document.getElementById('opacity').value;
-  const g = document.getElementById('grayscale').value;
-  const sp = document.getElementById('sepia').value;
-  const inv = document.getElementById('invert').value;
-
-  document.getElementById('brightnessVal').textContent = b + '%';
-  document.getElementById('contrastVal').textContent = c + '%';
-  document.getElementById('saturationVal').textContent = s + '%';
-  document.getElementById('hueVal').textContent = h + '°';
-  document.getElementById('blurVal').textContent = bl + 'px';
-  document.getElementById('opacityVal').textContent = o + '%';
-  document.getElementById('grayscaleVal').textContent = g + '%';
-  document.getElementById('sepiaVal').textContent = sp + '%';
-  document.getElementById('invertVal').textContent = inv + '%';
-
-  canvas.style.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${h}deg) blur(${bl}px) grayscale(${g}%) sepia(${sp}%) invert(${inv}%)`;
-  canvas.style.opacity = o / 100;
+// ===== ADJUST =====
+function getFilterStr(){
+  const b=100+parseInt(document.getElementById('sBri').value);
+  const c=100+parseInt(document.getElementById('sCon').value);
+  const s=100+parseInt(document.getElementById('sSat').value);
+  const h=document.getElementById('sHue').value;
+  const bl=document.getElementById('sBlu').value;
+  const g=document.getElementById('sGra').value;
+  const sp=document.getElementById('sSep').value;
+  const inv=document.getElementById('sInv').value;
+  return`brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${h}deg) blur(${bl}px) grayscale(${g}%) sepia(${sp}%) invert(${inv}%)`;
 }
 
-function applyAdjustments() {
-  showLoading();
-  setTimeout(() => {
-    const tmpCanvas = document.createElement('canvas');
-    tmpCanvas.width = canvas.width;
-    tmpCanvas.height = canvas.height;
-    const tmpCtx = tmpCanvas.getContext('2d');
-    tmpCtx.filter = canvas.style.filter || 'none';
-    tmpCtx.globalAlpha = parseFloat(canvas.style.opacity) || 1;
-    tmpCtx.drawImage(canvas, 0, 0);
-
-    canvas.width = tmpCanvas.width;
-    canvas.height = tmpCanvas.height;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(tmpCanvas, 0, 0);
-    canvas.style.filter = 'none';
-    canvas.style.opacity = '1';
-
-    resetAdjustments();
-    saveHistory();
-    hideLoading();
-    showToast('✅ Adjustments applied!');
-  }, 100);
+function livePreview(){
+  document.getElementById('vBri').textContent=document.getElementById('sBri').value;
+  document.getElementById('vCon').textContent=document.getElementById('sCon').value;
+  document.getElementById('vSat').textContent=document.getElementById('sSat').value;
+  document.getElementById('vHue').textContent=document.getElementById('sHue').value+'°';
+  document.getElementById('vBlu').textContent=document.getElementById('sBlu').value+'px';
+  document.getElementById('vGra').textContent=document.getElementById('sGra').value+'%';
+  document.getElementById('vSep').textContent=document.getElementById('sSep').value+'%';
+  document.getElementById('vInv').textContent=document.getElementById('sInv').value+'%';
+  C.style.filter=getFilterStr();
 }
 
-function resetAdjustments() {
-  document.getElementById('brightness').value = 100;
-  document.getElementById('contrast').value = 100;
-  document.getElementById('saturation').value = 100;
-  document.getElementById('hue').value = 0;
-  document.getElementById('blur').value = 0;
-  document.getElementById('opacity').value = 100;
-  document.getElementById('grayscale').value = 0;
-  document.getElementById('sepia').value = 0;
-  document.getElementById('invert').value = 0;
-  canvas.style.filter = 'none';
-  canvas.style.opacity = '1';
-  updateAdjust();
+function applyAdjust(){
+  showLoad();
+  setTimeout(()=>{
+    const t=document.createElement('canvas');
+    t.width=C.width;t.height=C.height;
+    const tx=t.getContext('2d');
+    tx.filter=getFilterStr();
+    tx.drawImage(C,0,0);
+    X.clearRect(0,0,C.width,C.height);
+    X.drawImage(t,0,0);
+    C.style.filter='';
+    resetSliders();
+    saveHist();
+    hideLoad();
+    toast('✓ Adjustments applied!');
+  },50);
+}
+
+function resetSliders(){
+  ['sBri','sCon','sSat'].forEach(id=>document.getElementById(id).value=0);
+  document.getElementById('sHue').value=0;
+  document.getElementById('sBlu').value=0;
+  document.getElementById('sGra').value=0;
+  document.getElementById('sSep').value=0;
+  document.getElementById('sInv').value=0;
+  C.style.filter='';
+  livePreview();
 }
 
 // ===== FILTERS =====
-function updateFilterPreviews() {
-  // Generate small previews
-  FILTERS.forEach((f, i) => {
-    const prev = document.getElementById('fprev' + i);
-    if(prev) {
-      const small = document.createElement('canvas');
-      small.width = 60; small.height = 60;
-      const sctx = small.getContext('2d');
-      sctx.filter = f.filter === 'none' ? 'none' : f.filter;
-      sctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 60, 60);
-      prev.style.backgroundImage = `url(${small.toDataURL()})`;
-    }
+function updFilterPrev(){
+  FILTERS.forEach((f,i)=>{
+    const cv=document.getElementById('fpv'+i);
+    if(!cv)return;
+    const cx=cv.getContext('2d');
+    cx.clearRect(0,0,60,60);
+    cx.filter=f.f==='none'?'none':f.f;
+    cx.drawImage(C,0,0,C.width,C.height,0,0,60,60);
+    cx.filter='none';
   });
 }
 
-function selectFilterPreset(index, el) {
-  document.querySelectorAll('.filter-preset').forEach(f => f.classList.remove('active'));
+function pickFilter(i,el){
+  document.querySelectorAll('.fp').forEach(f=>f.classList.remove('active'));
   el.classList.add('active');
-  selectedFilter = FILTERS[index];
-  canvas.style.filter = selectedFilter.filter;
+  selFilterIdx=i;
+  C.style.filter=FILTERS[i].f;
 }
 
-function applyFilter() {
-  if(!selectedFilter || selectedFilter.filter === 'none') {
-    canvas.style.filter = 'none';
-    return;
-  }
-  showLoading();
-  setTimeout(() => {
-    const tmp = document.createElement('canvas');
-    tmp.width = canvas.width;
-    tmp.height = canvas.height;
-    const tctx = tmp.getContext('2d');
-    tctx.filter = selectedFilter.filter;
-    tctx.drawImage(canvas, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(tmp, 0, 0);
-    canvas.style.filter = 'none';
-    selectedFilter = null;
-    document.querySelectorAll('.filter-preset').forEach(f => f.classList.remove('active'));
-    saveHistory();
-    updateFilterPreviews();
-    hideLoading();
-    showToast('✅ Filter applied!');
-  }, 100);
+function applyFilter(){
+  if(selFilterIdx<0||FILTERS[selFilterIdx].f==='none'){C.style.filter='';return}
+  showLoad();
+  setTimeout(()=>{
+    const t=document.createElement('canvas');
+    t.width=C.width;t.height=C.height;
+    const tx=t.getContext('2d');
+    tx.filter=FILTERS[selFilterIdx].f;
+    tx.drawImage(C,0,0);
+    X.clearRect(0,0,C.width,C.height);
+    X.drawImage(t,0,0);
+    C.style.filter='';
+    selFilterIdx=-1;
+    document.querySelectorAll('.fp').forEach(f=>f.classList.remove('active'));
+    saveHist();updFilterPrev();
+    hideLoad();
+    toast('✓ Filter applied!');
+  },50);
 }
 
-function removeFilter() {
-  canvas.style.filter = 'none';
-  selectedFilter = null;
-  document.querySelectorAll('.filter-preset').forEach(f => f.classList.remove('active'));
+function removeFilter(){
+  C.style.filter='';
+  selFilterIdx=-1;
+  document.querySelectorAll('.fp').forEach(f=>f.classList.remove('active'));
 }
 
 // ===== CROP =====
-function updateAspectRatio() {
-  const val = document.getElementById('aspectRatio').value;
-  if(val === 'free') { aspectRatio = null; return; }
-  const parts = val.split(':');
-  aspectRatio = parseFloat(parts[0]) / parseFloat(parts[1]);
+function updateAR(){
+  const v=document.getElementById('aratio').value;
+  arVal=v==='free'?null:parseFloat(v);
 }
 
-function startCrop(x, y) {
-  isCropping = true;
-  cropStart = { x, y };
-  cropEnd = { x, y };
-}
+function drawCropBox(){
+  OX.clearRect(0,0,OC.width,OC.height);
+  if(!cropS||!cropE)return;
+  let x=Math.min(cropS.x,cropE.x), y=Math.min(cropS.y,cropE.y);
+  let w=Math.abs(cropE.x-cropS.x), h=Math.abs(cropE.y-cropS.y);
+  if(w<2||h<2)return;
 
-function updateCrop(x, y) {
-  if(!isCropping) return;
-  cropEnd = { x, y };
-  if(aspectRatio) {
-    const w = cropEnd.x - cropStart.x;
-    cropEnd.y = cropStart.y + w / aspectRatio;
-  }
-  drawCropOverlay();
-}
-
-function drawCropOverlay() {
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  if(!cropStart || !cropEnd) return;
-
-  let x = Math.min(cropStart.x, cropEnd.x);
-  let y = Math.min(cropStart.y, cropEnd.y);
-  let w = Math.abs(cropEnd.x - cropStart.x);
-  let h = Math.abs(cropEnd.y - cropStart.y);
-
-  // Dim outside
-  octx.fillStyle = 'rgba(0,0,0,0.6)';
-  octx.fillRect(0, 0, overlay.width, overlay.height);
-
-  // Clear inside
-  octx.clearRect(x, y, w, h);
+  // Dim
+  OX.fillStyle='rgba(0,0,0,0.45)';
+  OX.fillRect(0,0,OC.width,OC.height);
+  OX.clearRect(x,y,w,h);
 
   // Border
-  octx.strokeStyle = '#00d2d3';
-  octx.lineWidth = 2;
-  octx.setLineDash([6, 4]);
-  octx.strokeRect(x, y, w, h);
-  octx.setLineDash([]);
+  OX.strokeStyle='#1d9c73';
+  OX.lineWidth=2;
+  OX.setLineDash([6,4]);
+  OX.strokeRect(x,y,w,h);
+  OX.setLineDash([]);
 
-  // Grid lines (rule of thirds)
-  octx.strokeStyle = 'rgba(255,255,255,0.3)';
-  octx.lineWidth = 1;
-  octx.beginPath();
-  octx.moveTo(x + w/3, y); octx.lineTo(x + w/3, y + h);
-  octx.moveTo(x + 2*w/3, y); octx.lineTo(x + 2*w/3, y + h);
-  octx.moveTo(x, y + h/3); octx.lineTo(x + w, y + h/3);
-  octx.moveTo(x, y + 2*h/3); octx.lineTo(x + w, y + 2*h/3);
-  octx.stroke();
+  // Grid
+  OX.strokeStyle='rgba(255,255,255,0.35)';
+  OX.lineWidth=1;
+  OX.beginPath();
+  for(let i=1;i<3;i++){
+    OX.moveTo(x+w*i/3,y);OX.lineTo(x+w*i/3,y+h);
+    OX.moveTo(x,y+h*i/3);OX.lineTo(x+w,y+h*i/3);
+  }
+  OX.stroke();
 
-  // Size text
-  octx.fillStyle = '#00d2d3';
-  octx.font = '14px sans-serif';
-  octx.fillText(`${Math.round(w)} × ${Math.round(h)}`, x + 5, y - 8);
+  // Corners
+  const cs=8;
+  OX.fillStyle='#1d9c73';
+  [[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(([cx,cy])=>{
+    OX.fillRect(cx-cs/2,cy-cs/2,cs,cs);
+  });
+
+  // Size label
+  OX.fillStyle='#1d9c73';
+  OX.font='bold 13px sans-serif';
+  OX.fillText(`${Math.round(w)} × ${Math.round(h)}`,x+4,y>20?y-6:y+h+16);
 }
 
-function applyCrop() {
-  if(!cropStart || !cropEnd) { showToast('⚠️ Select an area first!'); return; }
+function applyCrop(){
+  if(!cropS||!cropE){toast('⚠ Draw a crop area first!');return}
+  let x=Math.min(cropS.x,cropE.x), y=Math.min(cropS.y,cropE.y);
+  let w=Math.abs(cropE.x-cropS.x), h=Math.abs(cropE.y-cropS.y);
+  x=Math.max(0,Math.round(x));y=Math.max(0,Math.round(y));
+  w=Math.round(w);h=Math.round(h);
+  if(w<5||h<5){toast('⚠ Area too small!');return}
+  w=Math.min(w,C.width-x);h=Math.min(h,C.height-y);
 
-  let x = Math.min(cropStart.x, cropEnd.x);
-  let y = Math.min(cropStart.y, cropEnd.y);
-  let w = Math.abs(cropEnd.x - cropStart.x);
-  let h = Math.abs(cropEnd.y - cropStart.y);
-
-  if(w < 5 || h < 5) { showToast('⚠️ Area too small!'); return; }
-
-  showLoading();
-  setTimeout(() => {
-    const imgData = ctx.getImageData(x, y, w, h);
-    canvas.width = w;
-    canvas.height = h;
-    ctx.putImageData(imgData, 0, 0);
-    overlay.width = w;
-    overlay.height = h;
-    octx.clearRect(0, 0, w, h);
-    cropStart = cropEnd = null;
-    isCropping = false;
-    saveHistory();
-    zoomFit();
-    updateImageInfo();
-    updateResizeInputs();
-    hideLoading();
-    showToast('✅ Image cropped!');
-  }, 100);
+  showLoad();
+  setTimeout(()=>{
+    const id=X.getImageData(x,y,w,h);
+    C.width=w;C.height=h;
+    X.putImageData(id,0,0);
+    OC.width=w;OC.height=h;
+    OX.clearRect(0,0,w,h);
+    cropS=cropE=null;isCropping=false;
+    baseW=w;baseH=h;
+    saveHist();fitZoom();updInfo();updResize();updFilterPrev();
+    hideLoad();
+    toast('✓ Image cropped!');
+  },50);
 }
 
-function cancelCrop() {
-  isCropping = false;
-  cropStart = cropEnd = null;
-  octx.clearRect(0, 0, overlay.width, overlay.height);
+function cancelCrop(){
+  isCropping=false;cropS=cropE=null;
+  OX.clearRect(0,0,OC.width,OC.height);
 }
 
-// ===== ROTATE & FLIP =====
-function rotateImage(deg) {
-  showLoading();
-  setTimeout(() => {
-    const tmp = document.createElement('canvas');
-    const tctx = tmp.getContext('2d');
-    if(Math.abs(deg) === 90) {
-      tmp.width = canvas.height;
-      tmp.height = canvas.width;
-    } else {
-      tmp.width = canvas.width;
-      tmp.height = canvas.height;
-    }
-    tctx.translate(tmp.width / 2, tmp.height / 2);
-    tctx.rotate(deg * Math.PI / 180);
-    tctx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
-    canvas.width = tmp.width;
-    canvas.height = tmp.height;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(tmp, 0, 0);
-    overlay.width = canvas.width;
-    overlay.height = canvas.height;
-    saveHistory();
-    zoomFit();
-    updateImageInfo();
-    updateResizeInputs();
-    hideLoading();
-    showToast('✅ Rotated ' + deg + '°');
-  }, 100);
+// ===== ROTATE =====
+function rotate(deg){
+  showLoad();
+  setTimeout(()=>{
+    const t=document.createElement('canvas');
+    const tx=t.getContext('2d');
+    if(Math.abs(deg)===90){t.width=C.height;t.height=C.width}
+    else{t.width=C.width;t.height=C.height}
+    tx.translate(t.width/2,t.height/2);
+    tx.rotate(deg*Math.PI/180);
+    tx.drawImage(C,-C.width/2,-C.height/2);
+    C.width=t.width;C.height=t.height;
+    X.clearRect(0,0,C.width,C.height);
+    X.drawImage(t,0,0);
+    OC.width=C.width;OC.height=C.height;
+    baseW=C.width;baseH=C.height;
+    saveHist();fitZoom();updInfo();updResize();updFilterPrev();
+    hideLoad();
+    toast('✓ Rotated '+deg+'°');
+  },50);
 }
 
-function flipImage(dir) {
-  showLoading();
-  setTimeout(() => {
-    const tmp = document.createElement('canvas');
-    tmp.width = canvas.width;
-    tmp.height = canvas.height;
-    const tctx = tmp.getContext('2d');
-    if(dir === 'h') {
-      tctx.translate(canvas.width, 0);
-      tctx.scale(-1, 1);
-    } else {
-      tctx.translate(0, canvas.height);
-      tctx.scale(1, -1);
-    }
-    tctx.drawImage(canvas, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(tmp, 0, 0);
-    saveHistory();
-    hideLoading();
-    showToast('✅ Flipped ' + (dir === 'h' ? 'Horizontally' : 'Vertically'));
-  }, 100);
+function flip(d){
+  showLoad();
+  setTimeout(()=>{
+    const t=document.createElement('canvas');
+    t.width=C.width;t.height=C.height;
+    const tx=t.getContext('2d');
+    if(d==='h'){tx.translate(C.width,0);tx.scale(-1,1)}
+    else{tx.translate(0,C.height);tx.scale(1,-1)}
+    tx.drawImage(C,0,0);
+    X.clearRect(0,0,C.width,C.height);
+    X.drawImage(t,0,0);
+    saveHist();hideLoad();
+    toast('✓ Flipped '+(d==='h'?'horizontally':'vertically'));
+  },50);
 }
 
-function freeRotateImage() {
-  const val = document.getElementById('freeRotate').value;
-  document.getElementById('freeRotateVal').textContent = val + '°';
-  // Preview using CSS transform
-  canvas.style.transform = `rotate(${val}deg)`;
+function previewRotate(){
+  const v=document.getElementById('sFR').value;
+  document.getElementById('vFR').textContent=v+'°';
+  C.style.transform='rotate('+v+'deg)';
 }
 
-function applyFreeRotate() {
-  const deg = parseInt(document.getElementById('freeRotate').value);
-  if(deg === 0) return;
-  canvas.style.transform = '';
-
-  showLoading();
-  setTimeout(() => {
-    const rad = deg * Math.PI / 180;
-    const sin = Math.abs(Math.sin(rad));
-    const cos = Math.abs(Math.cos(rad));
-    const newW = Math.ceil(canvas.width * cos + canvas.height * sin);
-    const newH = Math.ceil(canvas.width * sin + canvas.height * cos);
-
-    const tmp = document.createElement('canvas');
-    tmp.width = newW;
-    tmp.height = newH;
-    const tctx = tmp.getContext('2d');
-    tctx.translate(newW / 2, newH / 2);
-    tctx.rotate(rad);
-    tctx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
-
-    canvas.width = newW;
-    canvas.height = newH;
-    ctx.clearRect(0, 0, newW, newH);
-    ctx.drawImage(tmp, 0, 0);
-    overlay.width = newW;
-    overlay.height = newH;
-
-    document.getElementById('freeRotate').value = 0;
-    document.getElementById('freeRotateVal').textContent = '0°';
-    saveHistory();
-    zoomFit();
-    updateImageInfo();
-    updateResizeInputs();
-    hideLoading();
-    showToast('✅ Rotation applied!');
-  }, 100);
+function applyFreeRotate(){
+  const deg=parseInt(document.getElementById('sFR').value);
+  C.style.transform='';
+  if(deg===0)return;
+  showLoad();
+  setTimeout(()=>{
+    const rad=deg*Math.PI/180;
+    const sin=Math.abs(Math.sin(rad)), cos=Math.abs(Math.cos(rad));
+    const nw=Math.ceil(C.width*cos+C.height*sin);
+    const nh=Math.ceil(C.width*sin+C.height*cos);
+    const t=document.createElement('canvas');
+    t.width=nw;t.height=nh;
+    const tx=t.getContext('2d');
+    tx.translate(nw/2,nh/2);
+    tx.rotate(rad);
+    tx.drawImage(C,-C.width/2,-C.height/2);
+    C.width=nw;C.height=nh;
+    X.clearRect(0,0,nw,nh);
+    X.drawImage(t,0,0);
+    OC.width=nw;OC.height=nh;
+    baseW=nw;baseH=nh;
+    document.getElementById('sFR').value=0;
+    document.getElementById('vFR').textContent='0°';
+    saveHist();fitZoom();updInfo();updResize();updFilterPrev();
+    hideLoad();
+    toast('✓ Rotation applied!');
+  },50);
 }
 
 // ===== RESIZE =====
-function updateResizeInputs() {
-  document.getElementById('resizeW').value = canvas.width;
-  document.getElementById('resizeH').value = canvas.height;
-  document.getElementById('origSize').textContent = `Original: ${canvas.width} × ${canvas.height}`;
+function updResize(){
+  document.getElementById('rW').value=C.width;
+  document.getElementById('rH').value=C.height;
+  document.getElementById('origSz').textContent='Current: '+C.width+' × '+C.height+' px';
 }
 
-function resizeChanged(dim) {
-  if(!lockAspect) return;
-  const ratio = canvas.width / canvas.height;
-  if(dim === 'w') {
-    const w = parseInt(document.getElementById('resizeW').value) || 1;
-    document.getElementById('resizeH').value = Math.round(w / ratio);
-  } else {
-    const h = parseInt(document.getElementById('resizeH').value) || 1;
-    document.getElementById('resizeW').value = Math.round(h * ratio);
+function rChanged(d){
+  if(!lockAR)return;
+  const ratio=baseW/baseH;
+  if(d==='w'){
+    const w=parseInt(document.getElementById('rW').value)||1;
+    document.getElementById('rH').value=Math.round(w/ratio);
+  }else{
+    const h=parseInt(document.getElementById('rH').value)||1;
+    document.getElementById('rW').value=Math.round(h*ratio);
   }
 }
 
-function toggleLock() {
-  lockAspect = !lockAspect;
-  const btn = document.getElementById('lockAspect');
-  btn.classList.toggle('locked');
-  btn.textContent = lockAspect ? '🔗' : '🔓';
+function toggleLock(){
+  lockAR=!lockAR;
+  const b=document.getElementById('lockBtn');
+  b.classList.toggle('on');
+  b.textContent=lockAR?'🔗':'🔓';
 }
 
-function setResizePercent(pct) {
-  const w = Math.round(canvas.width * pct / 100);
-  const h = Math.round(canvas.height * pct / 100);
-  document.getElementById('resizeW').value = w;
-  document.getElementById('resizeH').value = h;
+function rPct(p){
+  document.getElementById('rW').value=Math.round(baseW*p/100);
+  document.getElementById('rH').value=Math.round(baseH*p/100);
 }
 
-function applyResize() {
-  const w = parseInt(document.getElementById('resizeW').value);
-  const h = parseInt(document.getElementById('resizeH').value);
-  if(!w || !h || w < 1 || h < 1) { showToast('⚠️ Invalid dimensions!'); return; }
-  if(w > 10000 || h > 10000) { showToast('⚠️ Max 10000px!'); return; }
-
-  showLoading();
-  setTimeout(() => {
-    const tmp = document.createElement('canvas');
-    tmp.width = w;
-    tmp.height = h;
-    const tctx = tmp.getContext('2d');
-    tctx.drawImage(canvas, 0, 0, w, h);
-    canvas.width = w;
-    canvas.height = h;
-    ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(tmp, 0, 0);
-    overlay.width = w;
-    overlay.height = h;
-    saveHistory();
-    zoomFit();
-    updateImageInfo();
-    updateResizeInputs();
-    hideLoading();
-    showToast(`✅ Resized to ${w} × ${h}`);
-  }, 100);
+function applyResize(){
+  const w=parseInt(document.getElementById('rW').value);
+  const h=parseInt(document.getElementById('rH').value);
+  if(!w||!h||w<1||h<1){toast('⚠ Invalid size!');return}
+  if(w>10000||h>10000){toast('⚠ Max 10000px!');return}
+  showLoad();
+  setTimeout(()=>{
+    const t=document.createElement('canvas');
+    t.width=w;t.height=h;
+    const tx=t.getContext('2d');
+    tx.drawImage(C,0,0,w,h);
+    C.width=w;C.height=h;
+    X.clearRect(0,0,w,h);
+    X.drawImage(t,0,0);
+    OC.width=w;OC.height=h;
+    baseW=w;baseH=h;
+    saveHist();fitZoom();updInfo();updResize();updFilterPrev();
+    hideLoad();
+    toast('✓ Resized to '+w+' × '+h);
+  },50);
 }
 
-// ===== TEXT TOOL =====
-function toggleBold() { isBold = !isBold; document.getElementById('boldBtn').classList.toggle('active'); }
-function toggleItalic() { isItalic = !isItalic; document.getElementById('italicBtn').classList.toggle('active'); }
-function toggleStroke() { hasStroke = !hasStroke; }
-
-function enableTextPlace() {
-  const text = document.getElementById('textInput').value.trim();
-  if(!text) { showToast('⚠️ Enter text first!'); return; }
-  textPlacing = true;
-  overlay.style.cursor = 'text';
-  overlay.style.pointerEvents = 'auto';
-  showToast('📍 Click on image to place text');
+// ===== TEXT =====
+function startTextPlace(){
+  const txt=document.getElementById('txtInp').value.trim();
+  if(!txt){toast('⚠ Enter text first!');return}
+  textPlacing=true;
+  OC.style.pointerEvents='auto';
+  OC.style.cursor='text';
+  toast('📍 Click on image to place text');
 }
 
-function placeText(x, y) {
-  const text = document.getElementById('textInput').value.trim();
-  if(!text) return;
+function placeText(pos){
+  const txt=document.getElementById('txtInp').value.trim();
+  if(!txt)return;
+  const sz=document.getElementById('sFS').value;
+  const fam=document.getElementById('fontFam').value;
+  const col=document.getElementById('txtCol').value;
+  const stk=document.getElementById('stkCol').value;
 
-  const size = document.getElementById('fontSize').value;
-  const font = document.getElementById('fontFamily').value;
-  const color = document.getElementById('textColor').value;
-  const stroke = document.getElementById('strokeColor').value;
+  let fs='';
+  if(tItalic)fs+='italic ';
+  if(tBold)fs+='bold ';
+  fs+=sz+'px '+fam;
 
-  let fontStr = '';
-  if(isItalic) fontStr += 'italic ';
-  if(isBold) fontStr += 'bold ';
-  fontStr += size + 'px ' + font;
+  X.font=fs;
+  X.textBaseline='top';
 
-  ctx.font = fontStr;
-  ctx.textBaseline = 'top';
-
-  const lines = text.split('\n');
-  lines.forEach((line, i) => {
-    const ly = y + i * size * 1.2;
-    if(hasStroke) {
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = Math.max(2, size / 10);
-      ctx.strokeText(line, x, ly);
+  const lines=txt.split('\n');
+  lines.forEach((line,i)=>{
+    const ly=pos.y+i*sz*1.2;
+    if(tStroke){
+      X.strokeStyle=stk;
+      X.lineWidth=Math.max(1,sz/12);
+      X.strokeText(line,pos.x,ly);
     }
-    ctx.fillStyle = color;
-    ctx.fillText(line, x, ly);
+    X.fillStyle=col;
+    X.fillText(line,pos.x,ly);
   });
 
-  textPlacing = false;
-  overlay.style.cursor = 'crosshair';
-  saveHistory();
-  showToast('✅ Text added!');
+  textPlacing=false;
+  OC.style.cursor='crosshair';
+  saveHist();
+  toast('✓ Text added!');
 }
 
-// ===== DRAW TOOL =====
-function setDrawTool(tool) {
-  drawTool = tool;
-  document.getElementById('penBtn').classList.toggle('active', tool === 'pen');
-  document.getElementById('eraserBtn').classList.toggle('active', tool === 'eraser');
+// ===== DRAW =====
+function setDraw(m){
+  drawMode=m;
+  document.getElementById('penB').style.background=m==='pen'?'#d4edda':'#f0f0f0';
+  document.getElementById('eraserB').style.background=m==='eraser'?'#d4edda':'#f0f0f0';
 }
 
-function updateBrushSize() {
-  const s = document.getElementById('brushSize').value;
-  document.getElementById('brushSizeVal').textContent = s + 'px';
+function applyDraw(){
+  X.drawImage(OC,0,0);
+  OX.clearRect(0,0,OC.width,OC.height);
+  saveHist();
+  toast('✓ Drawing applied!');
 }
 
-function applyDrawing() {
-  ctx.drawImage(overlay, 0, 0);
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  saveHistory();
-  showToast('✅ Drawing applied!');
+function clearDraw(){
+  OX.clearRect(0,0,OC.width,OC.height);
+  toast('Drawing cleared');
 }
 
-function clearDrawing() {
-  octx.clearRect(0, 0, overlay.width, overlay.height);
-  showToast('🗑️ Drawing cleared');
-}
-
-// ===== POINTER EVENTS =====
-function getCanvasPos(e) {
-  const rect = overlay.getBoundingClientRect();
-  const scaleX = overlay.width / rect.width;
-  const scaleY = overlay.height / rect.height;
-  return {
-    x: (e.clientX - rect.left) * scaleX,
-    y: (e.clientY - rect.top) * scaleY
-  };
-}
-
-function onPointerDown(e) {
-  const pos = getCanvasPos(e);
-
-  if(currentTool === 'crop') {
-    startCrop(pos.x, pos.y);
+// ===== POINTER HANDLERS =====
+function pDown(pos){
+  if(curTool==='crop'){
+    isCropping=true;
+    cropS={x:pos.x,y:pos.y};
+    cropE={x:pos.x,y:pos.y};
     return;
   }
-
-  if(currentTool === 'text' && textPlacing) {
-    placeText(pos.x, pos.y);
+  if(curTool==='text'&&textPlacing){
+    placeText(pos);
     return;
   }
-
-  if(currentTool === 'draw') {
-    isDrawing = true;
-    const size = document.getElementById('brushSize').value;
-    const color = document.getElementById('drawColor').value;
-    const opacity = document.getElementById('drawOpacity').value / 100;
-
-    octx.lineCap = 'round';
-    octx.lineJoin = 'round';
-    octx.lineWidth = size;
-    octx.globalAlpha = opacity;
-
-    if(drawTool === 'eraser') {
-      octx.globalCompositeOperation = 'destination-out';
-      octx.strokeStyle = 'rgba(0,0,0,1)';
-    } else {
-      octx.globalCompositeOperation = 'source-over';
-      octx.strokeStyle = color;
+  if(curTool==='draw'){
+    isDrawing=true;
+    const sz=document.getElementById('sBS').value;
+    const col=document.getElementById('drawCol').value;
+    OX.lineCap='round';
+    OX.lineJoin='round';
+    OX.lineWidth=sz;
+    if(drawMode==='eraser'){
+      OX.globalCompositeOperation='destination-out';
+      OX.strokeStyle='rgba(0,0,0,1)';
+    }else{
+      OX.globalCompositeOperation='source-over';
+      OX.strokeStyle=col;
     }
-
-    octx.beginPath();
-    octx.moveTo(pos.x, pos.y);
+    OX.beginPath();
+    OX.moveTo(pos.x,pos.y);
   }
 }
 
-function onPointerMove(e) {
-  const pos = getCanvasPos(e);
-
-  if(currentTool === 'crop' && isCropping) {
-    updateCrop(pos.x, pos.y);
+function pMove(pos){
+  if(curTool==='crop'&&isCropping){
+    cropE={x:pos.x,y:pos.y};
+    if(arVal){
+      const w=cropE.x-cropS.x;
+      const dir=w>=0?1:-1;
+      cropE.y=cropS.y+Math.abs(w)/arVal*(cropE.y>=cropS.y?1:-1);
+    }
+    drawCropBox();
     return;
   }
-
-  if(currentTool === 'draw' && isDrawing) {
-    octx.lineTo(pos.x, pos.y);
-    octx.stroke();
+  if(curTool==='draw'&&isDrawing){
+    OX.lineTo(pos.x,pos.y);
+    OX.stroke();
   }
 }
 
-function onPointerUp(e) {
-  if(currentTool === 'crop') {
-    isCropping = false;
-    return;
-  }
-
-  if(currentTool === 'draw') {
-    isDrawing = false;
-    octx.globalAlpha = 1;
-    octx.globalCompositeOperation = 'source-over';
+function pUp(){
+  if(curTool==='crop')isCropping=false;
+  if(curTool==='draw'){
+    isDrawing=false;
+    OX.globalCompositeOperation='source-over';
   }
 }
 
 // ===== RESET =====
-function resetAll() {
-  if(!originalImage) return;
-  initCanvas(originalImage);
-  resetAdjustments();
-  cancelCrop();
-  history = [];
-  historyIndex = -1;
-  saveHistory();
-  showToast('🔄 Reset to original!');
+function resetAll(){
+  if(!origImg)return;
+  C.width=origImg.width;C.height=origImg.height;
+  X.clearRect(0,0,C.width,C.height);
+  X.drawImage(origImg,0,0);
+  OC.width=C.width;OC.height=C.height;
+  OX.clearRect(0,0,OC.width,OC.height);
+  C.style.filter='';C.style.transform='';
+  baseW=C.width;baseH=C.height;
+  resetSliders();cancelCrop();
+  hist=[];hIdx=-1;saveHist();
+  fitZoom();updInfo();updResize();updFilterPrev();
+  toast('↺ Reset to original');
 }
 
-function newImage() {
+function newImage(){
   document.getElementById('editor').classList.remove('active');
   document.getElementById('uploadScreen').classList.remove('hidden');
-  history = [];
-  historyIndex = -1;
-  originalImage = null;
-  document.getElementById('fileInput').value = '';
-  resetAdjustments();
+  hist=[];hIdx=-1;origImg=null;
+  document.getElementById('fileInput').value='';
+  C.style.filter='';C.style.transform='';
 }
 
 // ===== DOWNLOAD =====
-function openDownload() {
-  document.getElementById('downloadModal').classList.add('active');
+function openDownload(){document.getElementById('dlModal').classList.add('active')}
+function closeDL(){document.getElementById('dlModal').classList.remove('active')}
+
+function selFmt(el,f){
+  document.querySelectorAll('.fopt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  selFormat=f;
+  document.getElementById('qualSec').style.display=(f==='jpeg'||f==='webp')?'block':'none';
 }
 
-function closeDownload() {
-  document.getElementById('downloadModal').classList.remove('active');
-}
+function doDownload(){
+  showLoad();
+  setTimeout(()=>{
+    const q=parseInt(document.getElementById('sQ').value)/100;
+    let mime='image/png',ext='png';
+    if(selFormat==='jpeg'){mime='image/jpeg';ext='jpg'}
+    if(selFormat==='webp'){mime='image/webp';ext='webp'}
 
-function selectFormat(el, fmt) {
-  document.querySelectorAll('.format-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedFormat = fmt;
-  document.getElementById('qualitySection').style.display = (fmt === 'jpeg' || fmt === 'webp') ? 'block' : 'none';
-}
+    // Merge overlay
+    const fin=document.createElement('canvas');
+    fin.width=C.width;fin.height=C.height;
+    const fx=fin.getContext('2d');
+    fx.drawImage(C,0,0);
+    fx.drawImage(OC,0,0);
 
-function downloadImage() {
-  showLoading();
-  setTimeout(() => {
-    const quality = parseInt(document.getElementById('quality').value) / 100;
-    let mimeType = 'image/png';
-    let ext = 'png';
-    if(selectedFormat === 'jpeg') { mimeType = 'image/jpeg'; ext = 'jpg'; }
-    if(selectedFormat === 'webp') { mimeType = 'image/webp'; ext = 'webp'; }
-
-    // Create final canvas with overlay merged
-    const final = document.createElement('canvas');
-    final.width = canvas.width;
-    final.height = canvas.height;
-    const fctx = final.getContext('2d');
-    fctx.drawImage(canvas, 0, 0);
-    fctx.drawImage(overlay, 0, 0);
-
-    const dataUrl = selectedFormat === 'png' ? final.toDataURL(mimeType) : final.toDataURL(mimeType, quality);
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = `edited-image.${ext}`;
+    const url=selFormat==='png'?fin.toDataURL(mime):fin.toDataURL(mime,q);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='edited-image.'+ext;
+    document.body.appendChild(a);
     a.click();
-    closeDownload();
-    hideLoading();
-    showToast('💾 Image downloaded!');
-  }, 100);
+    document.body.removeChild(a);
+    closeDL();hideLoad();
+    toast('⤓ Image downloaded!');
+  },50);
 }
 
 // ===== UTILS =====
-function updateImageInfo() {
-  document.getElementById('imgInfo').textContent = `${canvas.width} × ${canvas.height} px`;
-}
-
-function showLoading() { document.getElementById('loading').classList.add('active'); }
-function hideLoading() { document.getElementById('loading').classList.remove('active'); }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+function updInfo(){document.getElementById('imgInfo').textContent=C.width+' × '+C.height+' px'}
+function showLoad(){document.getElementById('loading').classList.add('active')}
+function hideLoad(){document.getElementById('loading').classList.remove('active')}
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 </script>
 </body>
