@@ -1,185 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="favicon-32x32.png" type="image/x-icon">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Background Remover | Tool Matrix</title>
-<meta name="description" content="Free AI background remover. Download as JPG, PNG or WEBP.">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Remove Background - Free Online Tool</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f5f7fa;color:#333;min-height:100vh;display:flex;flex-direction:column}
 
-body{
-  background:linear-gradient(135deg,#2563eb,#3b82f6);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
+nav{background:#fff;padding:13px 24px;display:flex;align-items:center;border-bottom:1px solid #e0ece5;box-shadow:0 1px 3px rgba(0,0,0,.03);position:sticky;top:0;z-index:100}
+.nt{font-weight:700;font-size:1.08rem;color:#1d9c73}
+.ns{color:#aaa;font-size:.76rem;margin-left:8px;font-weight:500}
+.nr{margin-left:auto;display:flex;gap:8px}
+.nb{padding:8px 18px;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nb.sec{background:#f0f5f2;color:#555}
+.nb.sec:hover{background:#e0ece5}
+.nb.pri{background:linear-gradient(135deg,#1d9c73,#27ae60);color:#fff;box-shadow:0 2px 8px rgba(29,156,115,.2)}
+.nb.pri:hover{box-shadow:0 4px 14px rgba(29,156,115,.3);transform:translateY(-1px)}
+
+/* UPLOAD */
+#uploadScreen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(180deg,#e8f6ef 0%,#f5f7fa 100%)}
+#uploadScreen.hidden{display:none}
+.ut{font-size:1.75rem;font-weight:800;color:#222;margin-bottom:8px;text-align:center}
+.ut span{color:#1d9c73}
+.ud{color:#888;font-size:.92rem;margin-bottom:28px;text-align:center;max-width:520px;line-height:1.5}
+
+#dropZone{width:100%;max-width:600px;padding:50px 28px;border:2.5px dashed #b8dfc9;border-radius:16px;background:#fff;text-align:center;cursor:pointer;transition:all .25s}
+#dropZone:hover,#dropZone.dragover{border-color:#1d9c73;background:#f0faf5;transform:translateY(-2px);box-shadow:0 8px 25px rgba(29,156,115,.07)}
+.dzi{font-size:3.2rem;margin-bottom:12px;opacity:.5}
+.dzt{font-size:1rem;color:#666;font-weight:500;margin-bottom:3px}
+.dzh{font-size:.82rem;color:#bbb;margin-bottom:16px}
+.dzb{display:inline-block;padding:12px 36px;background:linear-gradient(135deg,#1d9c73,#27ae60);color:#fff;border:none;border-radius:30px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(29,156,115,.22)}
+.dzb:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(29,156,115,.3)}
+.dzf{font-size:.72rem;color:#ccc;margin-top:14px}
+#fileInput{display:none}
+
+/* RESULT */
+#resultScreen{display:none;flex:1;flex-direction:column}
+#resultScreen.active{display:flex}
+
+/* RESULT TOP BAR */
+.rtop{background:#fff;border-bottom:1px solid #e0ece5;padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rtop-label{font-size:.82rem;font-weight:600;color:#888}
+.bg-opts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.bgo{width:30px;height:30px;border-radius:8px;cursor:pointer;border:2.5px solid #e0ece5;transition:all .12s;position:relative;overflow:hidden;flex-shrink:0}
+.bgo:hover{border-color:#1d9c73;transform:scale(1.08)}
+.bgo.active{border-color:#1d9c73;box-shadow:0 0 0 2px rgba(29,156,115,.2)}
+.bgo.checker{
+  background-image:linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%);
+  background-size:8px 8px;background-position:0 0,0 4px,4px -4px,-4px 0
 }
+.bgo-color{padding:0;border:2.5px solid #e0ece5}
+input[type="color"]{width:30px;height:30px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+.bgo-blur{background:linear-gradient(135deg,#a8d8c8,#7bc4a8);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;font-weight:700}
 
-.container{
-  background:white;
-  width:100%;
-  max-width:900px;
-  padding:30px;
-  border-radius:16px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+/* COMPARE AREA */
+.compare-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#e8ecf0;
+  background-image:linear-gradient(45deg,#dfe3e8 25%,transparent 25%),linear-gradient(-45deg,#dfe3e8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#dfe3e8 75%),linear-gradient(-45deg,transparent 75%,#dfe3e8 75%);
+  background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+
+.compare-box{position:relative;display:inline-block;box-shadow:0 4px 30px rgba(0,0,0,.1);max-width:90%;max-height:80vh;user-select:none}
+
+.compare-result{position:relative;display:block}
+.compare-result .checker-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(45deg,#d0d0d0 25%,transparent 25%),linear-gradient(-45deg,#d0d0d0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d0d0d0 75%),linear-gradient(-45deg,transparent 75%,#d0d0d0 75%);
+  background-size:14px 14px;background-position:0 0,0 7px,7px -7px,-7px 0;z-index:0;border-radius:4px
 }
+.compare-result .color-bg{position:absolute;inset:0;z-index:0;border-radius:4px}
+.compare-result img{position:relative;display:block;width:100%;height:100%;object-fit:contain;z-index:1}
 
-h1{text-align:center;margin-bottom:10px;}
-p{text-align:center;margin-bottom:20px;color:#64748b;}
+.compare-original{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:5}
+.compare-original img{display:block;width:100%;height:100%;object-fit:contain}
 
-input{
-  display:block;
-  margin:15px auto;
+/* SLIDER */
+.compare-slider{position:absolute;top:0;bottom:0;width:3px;background:#fff;z-index:10;cursor:ew-resize;box-shadow:0 0 6px rgba(0,0,0,.3)}
+.slider-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:ew-resize}
+.slider-handle::before{content:'◀▶';font-size:.6rem;color:#1d9c73;font-weight:700;letter-spacing:2px}
+.slider-label{position:absolute;top:12px;padding:4px 10px;border-radius:6px;font-size:.68rem;font-weight:700;pointer-events:none}
+.label-before{left:12px;background:rgba(0,0,0,.55);color:#fff}
+.label-after{right:12px;background:rgba(29,156,115,.85);color:#fff}
+
+/* BOTTOM BAR */
+.bbar{background:#fff;border-top:1px solid #e0ece5;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.bbar-info{font-size:.78rem;color:#999;margin-right:auto}
+.bbar-info span{color:#1d9c73;font-weight:700}
+
+/* PROCESSING MODAL */
+.proc-overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(6px);flex-direction:column}
+.proc-overlay.active{display:flex}
+.proc-card{background:#fff;border-radius:20px;padding:40px 50px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.08);max-width:420px;width:90%}
+.proc-spinner{width:60px;height:60px;border:5px solid #e0ece5;border-top-color:#1d9c73;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-title{font-size:1.1rem;font-weight:700;color:#333;margin-bottom:6px}
+.proc-step{font-size:.82rem;color:#888;margin-bottom:16px}
+.proc-bar{width:100%;height:6px;background:#e0ece5;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.proc-fill{height:100%;background:linear-gradient(90deg,#1d9c73,#27ae60);border-radius:3px;transition:width .4s ease;width:0}
+.proc-pct{font-size:.78rem;color:#1d9c73;font-weight:700}
+.proc-tip{font-size:.72rem;color:#bbb;margin-top:16px;line-height:1.4}
+.proc-steps{display:flex;justify-content:center;gap:20px;margin-bottom:20px}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pstep-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #e0ece5;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#bbb;font-weight:700;transition:all .3s}
+.pstep-dot.active{border-color:#1d9c73;color:#1d9c73;background:#eef9f3}
+.pstep-dot.done{border-color:#1d9c73;background:#1d9c73;color:#fff}
+.pstep-label{font-size:.65rem;color:#aaa;font-weight:600}
+.pstep-label.active{color:#1d9c73}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;color:#333;padding:12px 22px;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 4px 18px rgba(0,0,0,.1);z-index:600;transition:transform .3s;border-left:4px solid #1d9c73;max-width:90vw}
+.toast.err{border-left-color:#e74c3c}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{text-align:center;padding:14px;color:#bbb;font-size:.72rem;border-top:1px solid #e0ece5;background:#fff}
+footer span{color:#1d9c73;font-weight:600}
+
+/* ERROR CARD */
+.err-card{display:none;background:#fff;border-radius:16px;padding:30px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.06);max-width:400px;width:90%;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:550}
+.err-card.active{display:block}
+.err-icon{font-size:2.5rem;margin-bottom:12px}
+.err-title{font-size:1.05rem;font-weight:700;color:#333;margin-bottom:6px}
+.err-desc{font-size:.82rem;color:#999;margin-bottom:16px;line-height:1.5}
+.err-card .nb{width:100%;justify-content:center}
+
+@media(max-width:768px){
+  .ut{font-size:1.35rem}
+  #dropZone{padding:34px 20px}
+  .nb span.txt{display:none}
+  .nb{padding:8px 12px}
+  .ns{display:none}
+  .compare-box{max-width:96%;max-height:65vh}
+  .slider-handle{width:30px;height:30px}
+  .rtop{padding:8px 12px;gap:6px}
+  .bgo{width:26px;height:26px}
+  .proc-card{padding:28px 24px}
+  .proc-steps{gap:12px}
+  .bbar{padding:10px 14px}
 }
-
-button{
-  padding:10px 18px;
-  margin:5px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:600;
-}
-
-.primary{
-  background:#2563eb;
-  color:white;
-}
-
-.format{
-  background:#16a34a;
-  color:white;
-}
-
-.preview{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-top:20px;
-}
-
-.box{
-  flex:1;
-  min-width:280px;
-  text-align:center;
-}
-
-.box img{
-  max-width:100%;
-  border-radius:12px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+@media(max-width:480px){
+  .ut{font-size:1.1rem}
+  #dropZone{padding:26px 14px}
+  .dzi{font-size:2.4rem}
+  .proc-card{padding:24px 18px}
+  .pstep-label{font-size:.58rem}
+  .bbar-info{width:100%;text-align:center;margin:0}
 }
 </style>
-  
 </head>
 <body>
 
-<div class="container">
-  <h1>AI Background Remover</h1>
-  <p>Remove background and download in JPG, PNG or WEBP format.</p>
-
-  <input type="file" id="imageInput" accept="image/*">
-  <button class="primary" onclick="removeBackground()">Remove Background</button>
-
-  <div class="preview">
-    <div class="box">
-      <h3>Original</h3>
-      <img id="originalImage">
-    </div>
-    <div class="box">
-      <h3>Background Removed</h3>
-      <img id="removedImage">
-    </div>
+<nav>
+  <span class="nt">Remove Background</span>
+  <span class="ns">Free Online Tool</span>
+  <div class="nr" id="navBtns" style="display:none">
+    <button class="nb sec" onclick="newImage()">+ <span class="txt">New Image</span></button>
+    <button class="nb pri" id="dlBtn" onclick="downloadResult()">⤓ <span class="txt">Download PNG</span></button>
   </div>
+</nav>
 
-  <div style="text-align:center;margin-top:20px;">
-    <button class="format" onclick="downloadImage('png')">Download PNG</button>
-    <button class="format" onclick="downloadImage('jpg')">Download JPG</button>
-    <button class="format" onclick="downloadImage('webp')">Download WEBP</button>
+<!-- UPLOAD -->
+<div id="uploadScreen">
+  <div class="ut">Remove <span>Background</span></div>
+  <div class="ud">Remove image backgrounds automatically with AI. 100% free, works entirely in your browser — your images never leave your device.</div>
+  <div id="dropZone">
+    <div class="dzi">🖼️</div>
+    <div class="dzt">Drag & drop your image here</div>
+    <div class="dzh">or</div>
+    <button class="dzb" onclick="document.getElementById('fileInput').click()">Select Image</button>
+    <div class="dzf">JPG, PNG, WEBP — Up to 10MB</div>
   </div>
-<script async="async" data-cfasync="false" src="https://pl28710290.effectivegatecpm.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
+  <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp">
 </div>
 
+<!-- RESULT -->
+<div id="resultScreen">
+  <!-- BG OPTIONS -->
+  <div class="rtop">
+    <span class="rtop-label">Background:</span>
+    <div class="bg-opts">
+      <div class="bgo checker active" title="Transparent" onclick="setBg('transparent',this)"></div>
+      <div class="bgo" style="background:#ffffff" title="White" onclick="setBg('#ffffff',this)"></div>
+      <div class="bgo" style="background:#000000" title="Black" onclick="setBg('#000000',this)"></div>
+      <div class="bgo" style="background:#f44336" title="Red" onclick="setBg('#f44336',this)"></div>
+      <div class="bgo" style="background:#2196f3" title="Blue" onclick="setBg('#2196f3',this)"></div>
+      <div class="bgo" style="background:#4caf50" title="Green" onclick="setBg('#4caf50',this)"></div>
+      <div class="bgo" style="background:#ff9800" title="Orange" onclick="setBg('#ff9800',this)"></div>
+      <div class="bgo" style="background:#9c27b0" title="Purple" onclick="setBg('#9c27b0',this)"></div>
+      <div class="bgo-color"><input type="color" id="customBg" value="#e0e0e0" title="Custom Color" onchange="setBg(this.value,this.parentElement)"></div>
+      <div class="bgo bgo-blur" title="Blur Background" onclick="setBg('blur',this)">BL</div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="compare-wrap">
+    <div class="compare-box" id="compareBox">
+      <!-- Result layer (bottom) -->
+      <div class="compare-result" id="resultLayer">
+        <div class="checker-bg" id="checkerBg"></div>
+        <div class="color-bg" id="colorBg" style="display:none"></div>
+        <img id="resultImg" src="" alt="Result">
+      </div>
+      <!-- Original layer (top, clipped) -->
+      <div class="compare-original" id="originalLayer">
+        <img id="originalImg" src="" alt="Original">
+      </div>
+      <!-- Slider -->
+      <div class="compare-slider" id="compareSlider">
+        <div class="slider-handle"></div>
+      </div>
+      <div class="slider-label label-before">BEFORE</div>
+      <div class="slider-label label-after">AFTER</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bbar">
+    <div class="bbar-info" id="bbarInfo">Original: <span>--</span> | Result: <span>--</span></div>
+    <button class="nb sec" onclick="newImage()">+ New Image</button>
+    <button class="nb pri" onclick="downloadResult()">⤓ Download PNG</button>
+  </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="proc-overlay" id="procOverlay">
+  <div class="proc-card">
+    <div class="proc-spinner"></div>
+    <div class="proc-steps">
+      <div class="pstep"><div class="pstep-dot" id="ps1">1</div><div class="pstep-label" id="pl1">Load AI</div></div>
+      <div class="pstep"><div class="pstep-dot" id="ps2">2</div><div class="pstep-label" id="pl2">Analyze</div></div>
+      <div class="pstep"><div class="pstep-dot" id="ps3">3</div><div class="pstep-label" id="pl3">Remove</div></div>
+    </div>
+    <div class="proc-title" id="procTitle">Loading AI Model...</div>
+    <div class="proc-step" id="procStep">Preparing background removal engine</div>
+    <div class="proc-bar"><div class="proc-fill" id="procFill"></div></div>
+    <div class="proc-pct" id="procPct">0%</div>
+    <div class="proc-tip" id="procTip">⏳ First time may take 30-60 seconds as the AI model downloads. It will be cached for future use.</div>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div class="err-card" id="errCard">
+  <div class="err-icon">⚠️</div>
+  <div class="err-title" id="errTitle">Something went wrong</div>
+  <div class="err-desc" id="errDesc">Could not process the image. Please try again with a different image.</div>
+  <button class="nb pri" onclick="closeError()">Try Again</button>
+</div>
+
+<footer><span>Remove Background</span> — 100% free, private, and browser-based. No uploads to any server.</footer>
+<div class="toast" id="toast"></div>
+
 <script>
-const apiKey = "4nPDu7HjAAWZYDbDJ2D2eZK9";
+let originalFile=null,originalUrl=null,resultBlobData=null,resultUrl=null;
+let removeBgFn=null;
+let sliderPos=50;
+let currentBg='transparent';
+let blurCanvas=null;
+let originalImgEl=null;
 
-let selectedFile;
-let removedBlob;
+document.addEventListener('DOMContentLoaded',()=>{
+  const fi=document.getElementById('fileInput'),dz=document.getElementById('dropZone');
+  fi.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);fi.value=''});
+  dz.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')fi.click()});
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));
+  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));
+  dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
 
-document.getElementById("imageInput").addEventListener("change", function(e){
-  selectedFile = e.target.files[0];
-  if(selectedFile){
-    document.getElementById("originalImage").src = URL.createObjectURL(selectedFile);
-  }
-});
-
-async function removeBackground(){
-  if(!selectedFile){
-    alert("Please upload image first.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image_file", selectedFile);
-  formData.append("size", "auto");
-
-  const response = await fetch("https://api.remove.bg/v1.0/removebg", {
-    method: "POST",
-    headers: { "X-Api-Key": apiKey },
-    body: formData
+  document.addEventListener('paste',e=>{
+    const items=e.clipboardData?.items;if(!items)return;
+    for(let item of items){if(item.type.startsWith('image/')){e.preventDefault();handleFile(item.getAsFile());break}}
   });
 
-  if(!response.ok){
-    alert("API Error. Check API key.");
-    return;
-  }
+  setupSlider();
+});
 
-  removedBlob = await response.blob();
-  const url = URL.createObjectURL(removedBlob);
-  document.getElementById("removedImage").src = url;
+// ===== FILE HANDLING =====
+function handleFile(file){
+  if(!file.type.startsWith('image/')){toast('Please select an image file',true);return}
+  if(file.size>10*1024*1024){toast('Image too large. Max 10MB',true);return}
+  originalFile=file;
+  originalUrl=URL.createObjectURL(file);
+  processImage(file);
 }
 
-function downloadImage(format){
-  if(!removedBlob){
-    alert("Remove background first.");
-    return;
-  }
+// ===== PROCESS IMAGE =====
+async function processImage(file){
+  showProc();
+  setStep(1,'Loading AI Model...','Downloading background removal engine');
 
-  const img = new Image();
-  img.onload = function(){
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-
-    if(format === "jpg"){
-      ctx.fillStyle = "white";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
+  try{
+    // Load library
+    if(!removeBgFn){
+      try{
+        const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+        removeBgFn=module.default||module.removeBackground;
+      }catch(loadErr){
+        console.error('Primary CDN failed, trying fallback...',loadErr);
+        try{
+          const module2=await import('https://unpkg.com/@imgly/background-removal@1.5.5/dist/index.mjs');
+          removeBgFn=module2.default||module2.removeBackground;
+        }catch(loadErr2){
+          console.error('Fallback CDN also failed',loadErr2);
+          throw new Error('LOAD_FAIL');
+        }
+      }
     }
 
-    ctx.drawImage(img,0,0);
+    setStep(2,'Analyzing Image...','AI is detecting the subject');
+    updateBar(30);
 
-    let mimeType = "image/png";
-    if(format === "jpg") mimeType = "image/jpeg";
-    if(format === "webp") mimeType = "image/webp";
+    // Resize if needed for performance
+    const processBlob=await prepareImage(file);
 
-    const link = document.createElement("a");
-    link.download = "background-removed." + format;
-    link.href = canvas.toDataURL(mimeType, 0.95);
-    link.click();
-  };
+    setStep(2,'Removing Background...','This may take a moment');
+    updateBar(40);
 
-  img.src = URL.createObjectURL(removedBlob);
+    let lastProg=40;
+    const resultBlob=await removeBgFn(processBlob,{
+      model:'medium',
+      output:{format:'image/png',quality:1},
+      progress:(key,current,total)=>{
+        if(total>0){
+          const p=current/total;
+          if(key.includes('fetch')){
+            updateBar(Math.round(10+p*25));
+            document.getElementById('procStep').textContent='Downloading model: '+Math.round(p*100)+'%';
+          }else{
+            const prog=Math.round(40+p*55);
+            if(prog>lastProg){lastProg=prog;updateBar(prog)}
+          }
+        }
+      }
+    });
+
+    setStep(3,'Finalizing...','Almost done');
+    updateBar(95);
+
+    resultBlobData=resultBlob;
+    resultUrl=URL.createObjectURL(resultBlob);
+
+    // Create blur background
+    await createBlurBg(originalUrl);
+
+    // Show result
+    showResult();
+    updateBar(100);
+
+    setTimeout(()=>{
+      hideProc();
+      toast('✓ Background removed successfully!');
+    },400);
+
+  }catch(err){
+    console.error('Processing error:',err);
+    hideProc();
+    if(err.message==='LOAD_FAIL'){
+      showError('Failed to Load AI Model','The AI engine could not be loaded. Please check your internet connection and try again. The model requires ~40MB download on first use.');
+    }else{
+      showError('Processing Failed','Could not remove the background. The image may be too complex or in an unsupported format. Please try a different image.');
+    }
+  }
 }
-</script>
 
+async function prepareImage(file){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=2048;
+      let w=img.naturalWidth,h=img.naturalHeight;
+      if(w<=MAX&&h<=MAX){resolve(file);return}
+      const scale=Math.min(MAX/w,MAX/h);
+      w=Math.round(w*scale);h=Math.round(h*scale);
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      const ctx=c.getContext('2d');
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,w,h);
+      c.toBlob(blob=>resolve(blob),'image/png');
+    };
+    img.src=URL.createObjectURL(file);
+  });
+}
+
+async function createBlurBg(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      blurCanvas=document.createElement('canvas');
+      const scale=0.25;
+      blurCanvas.width=img.naturalWidth*scale;
+      blurCanvas.height=img.naturalHeight*scale;
+      const ctx=blurCanvas.getContext('2d');
+      ctx.filter='blur(20px) brightness(0.8)';
+      ctx.drawImage(img,0,0,blurCanvas.width,blurCanvas.height);
+      resolve();
+    };
+    img.onerror=()=>resolve();
+    img.src=url;
+  });
+}
+
+// ===== SHOW RESULT =====
+function showResult(){
+  document.getElementById('uploadScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.add('active');
+  document.getElementById('navBtns').style.display='flex';
+
+  document.getElementById('originalImg').src=originalUrl;
+  document.getElementById('resultImg').src=resultUrl;
+
+  originalImgEl=document.getElementById('originalImg');
+
+  // Size info
+  const origSize=fmtSz(originalFile.size);
+  const resSize=fmtSz(resultBlobData.size);
+  document.getElementById('bbarInfo').innerHTML=`Original: <span>${origSize}</span> | Result: <span>${resSize}</span>`;
+
+  // Reset slider
+  sliderPos=50;
+  updateSlider();
+  setBg('transparent',document.querySelector('.bgo.checker'));
+}
+
+// ===== COMPARISON SLIDER =====
+function setupSlider(){
+  const box=document.getElementById('compareBox');
+  let dragging=false;
+
+  function getPos(e){
+    const rect=box.getBoundingClientRect();
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    return Math.max(0,Math.min(100,((clientX-rect.left)/rect.width)*100));
+  }
+
+  function start(e){dragging=true;sliderPos=getPos(e);updateSlider()}
+  function move(e){if(!dragging)return;e.preventDefault();sliderPos=getPos(e);updateSlider()}
+  function end(){dragging=false}
+
+  box.addEventListener('mousedown',start);
+  window.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',end);
+  box.addEventListener('touchstart',e=>{dragging=true;sliderPos=getPos(e);updateSlider()},{passive:true});
+  window.addEventListener('touchmove',e=>{if(dragging){sliderPos=getPos(e);updateSlider()}},{passive:true});
+  window.addEventListener('touchend',end);
+}
+
+function updateSlider(){
+  const orig=document.getElementById('originalLayer');
+  const slider=document.getElementById('compareSlider');
+  orig.style.clipPath=`inset(0 ${100-sliderPos}% 0 0)`;
+  slider.style.left=sliderPos+'%';
+}
+
+// ===== BACKGROUND =====
+function setBg(color,el){
+  document.querySelectorAll('.bgo,.bgo-color').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  currentBg=color;
+
+  const checker=document.getElementById('checkerBg');
+  const colorLayer=document.getElementById('colorBg');
+  const resultLayer=document.getElementById('resultLayer');
+
+  if(color==='transparent'){
+    checker.style.display='block';
+    colorLayer.style.display='none';
+    colorLayer.style.backgroundImage='none';
+  }else if(color==='blur'){
+    checker.style.display='none';
+    colorLayer.style.display='block';
+    if(blurCanvas){
+      colorLayer.style.backgroundImage=`url(${blurCanvas.toDataURL()})`;
+      colorLayer.style.backgroundSize='cover';
+      colorLayer.style.backgroundPosition='center';
+      colorLayer.style.backgroundColor='transparent';
+    }else{
+      colorLayer.style.backgroundImage='none';
+      colorLayer.style.backgroundColor='#666';
+    }
+  }else{
+    checker.style.display='none';
+    colorLayer.style.display='block';
+    colorLayer.style.backgroundImage='none';
+    colorLayer.style.backgroundColor=color;
+  }
+}
+
+// ===== DOWNLOAD =====
+function downloadResult(){
+  if(!resultBlobData)return;
+
+  if(currentBg==='transparent'){
+    // Download as-is (PNG with alpha)
+    dlBlob(resultBlobData,'removed-background.png');
+  }else{
+    // Composite with background
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth;c.height=img.naturalHeight;
+      const ctx=c.getContext('2d');
+
+      if(currentBg==='blur'&&blurCanvas){
+        ctx.drawImage(blurCanvas,0,0,c.width,c.height);
+      }else{
+        ctx.fillStyle=currentBg;
+        ctx.fillRect(0,0,c.width,c.height);
+      }
+      ctx.drawImage(img,0,0);
+
+      c.toBlob(blob=>{
+        dlBlob(blob,'removed-background.png');
+      },'image/png');
+    };
+    img.src=resultUrl;
+  }
+}
+
+function dlBlob(blob,name){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('⤓ Image downloaded!');
+}
+
+// ===== NEW IMAGE =====
+function newImage(){
+  document.getElementById('resultScreen').classList.remove('active');
+  document.getElementById('uploadScreen').classList.remove('hidden');
+  document.getElementById('navBtns').style.display='none';
+  if(resultUrl)URL.revokeObjectURL(resultUrl);
+  if(originalUrl)URL.revokeObjectURL(originalUrl);
+  originalFile=null;originalUrl=null;resultBlobData=null;resultUrl=null;
+  blurCanvas=null;currentBg='transparent';
+}
+
+// ===== PROCESSING UI =====
+function showProc(){document.getElementById('procOverlay').classList.add('active')}
+function hideProc(){document.getElementById('procOverlay').classList.remove('active')}
+
+function setStep(n,title,desc){
+  document.getElementById('procTitle').textContent=title;
+  document.getElementById('procStep').textContent=desc;
+  for(let i=1;i<=3;i++){
+    const dot=document.getElementById('ps'+i);
+    const lab=document.getElementById('pl'+i);
+    dot.classList.remove('active','done');
+    lab.classList.remove('active');
+    if(i<n){dot.classList.add('done');dot.textContent='✓'}
+    else if(i===n){dot.classList.add('active');lab.classList.add('active');dot.textContent=i}
+    else{dot.textContent=i}
+  }
+  if(n>=2)document.getElementById('procTip').textContent='🧠 AI is processing your image...';
+  if(n>=3)document.getElementById('procTip').textContent='✨ Almost there!';
+}
+
+function updateBar(pct){
+  document.getElementById('procFill').style.width=pct+'%';
+  document.getElementById('procPct').textContent=pct+'%';
+}
+
+// ===== ERROR =====
+function showError(title,desc){
+  document.getElementById('errTitle').textContent=title;
+  document.getElementById('errDesc').textContent=desc;
+  document.getElementById('errCard').classList.add('active');
+}
+function closeError(){
+  document.getElementById('errCard').classList.remove('active');
+  newImage();
+}
+
+// ===== UTILS =====
+function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB'}
+function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+</script>
 </body>
 </html>
