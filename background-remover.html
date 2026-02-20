@@ -1,430 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Background Remover</title>
-    <!-- Pro-Level AI Model for Background Removal -->
-    <script src="https://unpkg.com/@imgly/background-removal@1.3.0/dist/browser/imglyRemoveBackground.umd.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Remove Background — Free Online Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f4f6f8;color:#333;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-        body {
-            background-color: #F1F8E9; /* Light Green Background */
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+/* NAV */
+nav{background:#fff;height:52px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #e2ebe5;flex-shrink:0;z-index:50}
+.logo{font-weight:800;font-size:1rem;color:#1a9c6e;letter-spacing:-.3px}
+.nav-r{margin-left:auto;display:flex;gap:6px}
+.btn{padding:7px 15px;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-o{background:#eef5f0;color:#555}
+.btn-o:hover{background:#dceee3}
+.btn-g{background:linear-gradient(135deg,#1a9c6e,#24a85c);color:#fff;box-shadow:0 2px 8px rgba(26,156,110,.18)}
+.btn-g:hover{box-shadow:0 4px 16px rgba(26,156,110,.28);transform:translateY(-1px)}
 
-        /* Header like iloveimage */
-        .header {
-            background-color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 40px;
-        }
+/* SCREENS */
+.scr{display:none;flex:1;flex-direction:column;overflow:hidden}
+.scr.active{display:flex}
 
-        .header h1 {
-            color: #2E7D32;
-            font-size: 32px;
-            font-weight: 800;
-        }
+/* ============ SCREEN: UPLOAD ============ */
+#screenUpload{align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,#e6f5ed 0%,#f4f6f8 100%)}
+.upload-hero{text-align:center;margin-bottom:22px}
+.upload-hero h1{font-size:1.5rem;font-weight:800;color:#1e1e1e;margin-bottom:5px}
+.upload-hero h1 span{color:#1a9c6e}
+.upload-hero p{color:#999;font-size:.84rem;max-width:420px;margin:0 auto;line-height:1.5}
 
-        .header p {
-            color: #666;
-            margin-top: 5px;
-            font-size: 16px;
-        }
+.dropzone{width:100%;max-width:500px;padding:40px 20px;border:2.5px dashed #a8d4bc;border-radius:16px;background:#fff;text-align:center;cursor:pointer;transition:all .25s}
+.dropzone:hover,.dropzone.drag{border-color:#1a9c6e;background:#f1fbf5;transform:translateY(-2px);box-shadow:0 8px 20px rgba(26,156,110,.05)}
+.dropzone .icon{font-size:2.4rem;margin-bottom:8px;opacity:.45}
+.dropzone .text{font-size:.88rem;color:#666;font-weight:500;margin-bottom:2px}
+.dropzone .hint{font-size:.74rem;color:#c0c0c0;margin-bottom:12px}
+.dropzone .selbtn{padding:10px 28px;background:linear-gradient(135deg,#1a9c6e,#24a85c);color:#fff;border:none;border-radius:26px;font-size:.86rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(26,156,110,.18)}
+.dropzone .selbtn:hover{transform:translateY(-1px)}
+.dropzone .formats{font-size:.64rem;color:#d0d0d0;margin-top:10px}
+.upload-note{margin-top:14px;padding:9px 14px;background:#fff8e1;border:1px solid #ffecb3;border-radius:8px;font-size:.68rem;color:#a07800;max-width:500px;text-align:center;line-height:1.45}
+#fileInput{display:none}
 
-        .container {
-            flex: 1;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+/* ============ SCREEN: PROCESSING ============ */
+#screenProcess{align-items:center;justify-content:center;padding:20px;background:#fff}
+.proc-card{text-align:center;max-width:380px;width:100%}
+.proc-thumb{width:120px;height:120px;border-radius:12px;background:#f0f5f2;margin:0 auto 14px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.04);position:relative}
+.proc-thumb img{width:100%;height:100%;object-fit:cover}
+.proc-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);animation:glide 1.4s ease infinite}
+@keyframes glide{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
-        /* Upload Area */
-        .upload-section {
-            background: white;
-            border-radius: 12px;
-            padding: 50px 30px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
+.proc-dots{display:flex;justify-content:center;align-items:center;gap:4px;margin-bottom:14px}
+.dot{width:26px;height:26px;border-radius:50%;border:2.5px solid #dce8e0;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#c0c0c0;font-weight:700;transition:all .3s}
+.dot.now{border-color:#1a9c6e;color:#1a9c6e;background:#eef9f2;animation:pulse 1s infinite}
+.dot.done{border-color:#1a9c6e;background:#1a9c6e;color:#fff}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.dot-line{width:20px;height:2px;background:#dce8e0;border-radius:1px}
+.dot-line.done{background:#1a9c6e}
 
-        .drop-zone {
-            border: 3px dashed #81C784;
-            border-radius: 12px;
-            padding: 60px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #F9FBE7;
-        }
+.proc-title{font-size:.98rem;font-weight:700;color:#333;margin-bottom:4px}
+.proc-desc{font-size:.76rem;color:#999;margin-bottom:12px}
+.prog-bar{width:100%;height:5px;background:#e4ede7;border-radius:3px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1a9c6e,#24a85c);border-radius:3px;transition:width .35s;width:0}
+.prog-pct{font-size:.7rem;color:#1a9c6e;font-weight:700;margin-bottom:10px}
+.proc-tip{font-size:.64rem;color:#c0c0c0;line-height:1.35}
 
-        .drop-zone:hover, .drop-zone.dragover {
-            background-color: #E8F5E9;
-            border-color: #4CAF50;
-        }
+/* ============ SCREEN: RESULT ============ */
+#screenResult{overflow:hidden}
 
-        .upload-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
+/* Toolbar */
+.toolbar{background:#fff;border-bottom:1px solid #dce8e0;padding:6px 10px;display:flex;align-items:center;gap:4px;overflow-x:auto;flex-shrink:0}
+.toolbar::-webkit-scrollbar{height:0}
+.tbtn{padding:5px 10px;border:1.5px solid #dce8e0;border-radius:7px;background:#fff;color:#666;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .1s;white-space:nowrap;display:flex;align-items:center;gap:3px}
+.tbtn:hover{border-color:#1a9c6e;color:#1a9c6e}
+.tbtn.on{background:#eef9f2;border-color:#1a9c6e;color:#1a9c6e}
+.tbtn.r{color:#d32f2f;border-color:#ffcdd2}
+.tbtn.r:hover{background:#ffebee}
+.tsep{width:1px;height:18px;background:#dce8e0;flex-shrink:0}
+.trng{display:flex;align-items:center;gap:3px}
+.trng label{font-size:.62rem;font-weight:600;color:#bbb}
+.trng input[type=range]{width:54px;-webkit-appearance:none;height:3px;border-radius:2px;background:#d4ede2;outline:none;cursor:pointer}
+.trng input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#1a9c6e;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.trng span{font-size:.6rem;color:#1a9c6e;font-weight:700;min-width:14px;text-align:right}
 
-        .upload-title {
-            font-size: 24px;
-            color: #2E7D32;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+/* Compare Area */
+.compare-area{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:#e4e8ec;
+  background-image:linear-gradient(45deg,#dadddf 25%,transparent 25%),linear-gradient(-45deg,#dadddf 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#dadddf 75%),linear-gradient(-45deg,transparent 75%,#dadddf 75%);
+  background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
 
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: inline-block;
-            text-decoration: none;
-        }
+.compare-box{position:relative;display:inline-block;box-shadow:0 2px 20px rgba(0,0,0,.07);max-width:94%;max-height:76vh}
+.compare-result{position:relative}
+.checker-layer{position:absolute;inset:0;
+  background-image:linear-gradient(45deg,#c6c6c6 25%,transparent 25%),linear-gradient(-45deg,#c6c6c6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c6c6c6 75%),linear-gradient(-45deg,transparent 75%,#c6c6c6 75%);
+  background-size:12px 12px;background-position:0 0,0 6px,6px -6px,-6px 0;z-index:0;border-radius:2px}
+.color-layer{position:absolute;inset:0;z-index:0;border-radius:2px;display:none}
+#canvasResult{position:relative;display:block;z-index:1}
 
-        .btn:hover {
-            background-color: #388E3C;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
-        }
+.original-layer{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:5}
+.original-layer img{display:block;width:100%;height:100%;object-fit:contain}
 
-        .btn-outline {
-            background-color: transparent;
-            color: #4CAF50;
-            border: 2px solid #4CAF50;
-        }
+.slider-bar{position:absolute;top:0;bottom:0;width:3px;background:#fff;z-index:10;cursor:ew-resize;box-shadow:0 0 6px rgba(0,0,0,.12)}
+.slider-knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:#fff;border-radius:50%;box-shadow:0 1px 6px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;cursor:ew-resize}
+.slider-knob::after{content:'◂ ▸';font-size:.4rem;color:#1a9c6e;font-weight:900;letter-spacing:1px}
+.label-tag{position:absolute;top:7px;padding:3px 7px;border-radius:4px;font-size:.56rem;font-weight:700;pointer-events:none;z-index:12}
+.label-tag.l{left:7px;background:rgba(0,0,0,.45);color:#fff}
+.label-tag.r{right:7px;background:rgba(26,156,110,.7);color:#fff}
 
-        .btn-outline:hover {
-            background-color: #E8F5E9;
-            box-shadow: none;
-        }
+.zoom-bar{position:absolute;bottom:8px;right:8px;display:flex;gap:2px;background:#fff;border-radius:6px;padding:2px;box-shadow:0 1px 6px rgba(0,0,0,.05);border:1px solid #e2e5e8;z-index:20}
+.zbtn{width:24px;height:24px;border:none;border-radius:4px;background:#f4f4f4;color:#555;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.zbtn:hover{background:#1a9c6e;color:#fff}
+.zlbl{display:flex;align-items:center;padding:0 4px;font-size:.6rem;color:#999;font-weight:700}
 
-        #file-input {
-            display: none;
-        }
+/* Bottom Bar */
+.bottom-bar{background:#fff;border-top:1px solid #dce8e0;padding:7px 10px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.bb-label{font-size:.64rem;font-weight:600;color:#bbb}
+.bg-options{display:flex;gap:3px;align-items:center}
+.bg-opt{width:20px;height:20px;border-radius:5px;cursor:pointer;border:2px solid #dce8e0;transition:all .1s;flex-shrink:0}
+.bg-opt:hover{border-color:#1a9c6e;transform:scale(1.08)}
+.bg-opt.on{border-color:#1a9c6e;box-shadow:0 0 0 1.5px rgba(26,156,110,.12)}
+.bg-opt.ck{background-image:linear-gradient(45deg,#bbb 25%,transparent 25%),linear-gradient(-45deg,#bbb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#bbb 75%),linear-gradient(-45deg,transparent 75%,#bbb 75%);background-size:5px 5px;background-position:0 0,0 2.5px,2.5px -2.5px,-2.5px 0}
+.bg-cc{overflow:hidden;width:20px;height:20px;border-radius:5px;border:2px solid #dce8e0}
+.bg-cc input{width:100%;height:100%;border:none;cursor:pointer;padding:0;background:none}
+.bb-right{margin-left:auto;display:flex;gap:5px;align-items:center}
+.bb-info{font-size:.62rem;color:#ccc}
+.bb-info b{color:#1a9c6e}
 
-        /* Loading Area */
-        .loading-section {
-            display: none;
-            text-align: center;
-            background: white;
-            padding: 60px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
+/* Brush cursor */
+.brush-cursor{position:fixed;pointer-events:none;border-radius:50%;z-index:200;display:none}
 
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 8px solid #E8F5E9;
-            border-top: 8px solid #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 30px;
-        }
+/* Toast */
+.toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;color:#333;padding:8px 16px;border-radius:8px;font-size:.76rem;font-weight:500;box-shadow:0 3px 14px rgba(0,0,0,.08);z-index:300;transition:transform .3s;border-left:4px solid #1a9c6e;max-width:92vw}
+.toast.err{border-left-color:#d32f2f}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+footer{text-align:center;padding:6px;color:#ccc;font-size:.58rem;border-top:1px solid #eee;background:#fff;flex-shrink:0}
+footer b{color:#1a9c6e}
 
-        .progress-bar-container {
-            width: 100%;
-            max-width: 400px;
-            background-color: #E8F5E9;
-            border-radius: 10px;
-            height: 12px;
-            margin: 20px auto;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #4CAF50;
-            transition: width 0.3s ease;
-        }
-
-        .loading-text {
-            font-size: 20px;
-            color: #2E7D32;
-            font-weight: 600;
-        }
-        
-        .loading-subtext {
-            color: #666;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        /* Result Area */
-        .result-section {
-            display: none;
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .image-box {
-            text-align: center;
-        }
-
-        .image-box h3 {
-            color: #2E7D32;
-            margin-bottom: 15px;
-        }
-
-        .img-container {
-            width: 100%;
-            height: 350px;
-            border: 2px solid #E8F5E9;
-            border-radius: 10px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .transparent-bg {
-            background-image: 
-                linear-gradient(45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(-45deg, #ccc 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #ccc 75%), 
-                linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: white;
-        }
-
-        .img-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .actions {
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-            .img-container {
-                height: 250px;
-            }
-            .actions {
-                flex-direction: column;
-            }
-        }
-    </style>
+@media(max-width:768px){
+  .btn span.txt{display:none}
+  .compare-box{max-width:97%;max-height:65vh}
+  .toolbar{padding:5px 6px;gap:3px}
+  .tbtn{padding:4px 7px;font-size:.62rem}
+  .tsep{display:none}
+  .trng label{display:none}
+  .trng input{width:42px}
+  .bb-info{display:none}
+}
+@media(max-width:480px){
+  .upload-hero h1{font-size:1.15rem}
+  .dropzone{padding:28px 14px}
+  .dropzone .icon{font-size:1.9rem}
+  .tbtn{padding:3px 5px;font-size:.58rem;gap:1px}
+  .slider-knob{width:24px;height:24px}
+  .bg-opt{width:18px;height:18px}
+}
+</style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Remove Image Background</h1>
-        <p>Pro-Level AI tool to remove backgrounds in 1 click. 100% Free & Auto.</p>
+<nav>
+  <span class="logo">Remove Background</span>
+  <div class="nav-r" id="navButtons" style="display:none">
+    <button class="btn btn-o" onclick="W.newImg()">+ <span class="txt">New</span></button>
+    <button class="btn btn-g" onclick="W.download()">⤓ <span class="txt">Download PNG</span></button>
+  </div>
+</nav>
+
+<!-- ========== UPLOAD ========== -->
+<div class="scr active" id="screenUpload">
+  <div class="upload-hero">
+    <h1>Remove Image <span>Background</span></h1>
+    <p>AI-powered professional background removal. Works perfectly with people, products, animals and more.</p>
+  </div>
+  <div class="dropzone" id="dropzone">
+    <div class="icon">🖼️</div>
+    <div class="text">Drag & drop your image here</div>
+    <div class="hint">or</div>
+    <button class="selbtn" onclick="document.getElementById('fileInput').click()">Select Image</button>
+    <div class="formats">JPG, PNG, WEBP — Max 20MB</div>
+  </div>
+  <div class="upload-note">⚡ First use downloads a small AI model (~5MB). After that, background removal takes only <b>3-8 seconds</b>.</div>
+  <input type="file" id="fileInput" accept="image/*">
+</div>
+
+<!-- ========== PROCESSING ========== -->
+<div class="scr" id="screenProcess">
+  <div class="proc-card">
+    <div class="proc-thumb" id="procThumb"></div>
+    <div class="proc-dots">
+      <div class="dot" id="dot1">1</div>
+      <div class="dot-line" id="line1"></div>
+      <div class="dot" id="dot2">2</div>
+      <div class="dot-line" id="line2"></div>
+      <div class="dot" id="dot3">3</div>
     </div>
+    <div class="proc-title" id="procTitle">Starting...</div>
+    <div class="proc-desc" id="procDesc">Please wait</div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-pct" id="progPct">0%</div>
+    <div class="proc-tip" id="procTip"></div>
+  </div>
+</div>
 
-    <div class="container">
-        <!-- STEP 1: UPLOAD -->
-        <div id="upload-section" class="upload-section">
-            <div id="drop-zone" class="drop-zone">
-                <div class="upload-icon">☁️</div>
-                <div class="upload-title">Select Image</div>
-                <p style="margin-bottom: 25px; color: #666;">Drag and drop your image here</p>
-                <button class="btn" onclick="document.getElementById('file-input').click()">Select from computer</button>
-                <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp">
-            </div>
-        </div>
-
-        <!-- STEP 2: LOADING -->
-        <div id="loading-section" class="loading-section">
-            <div class="loader"></div>
-            <div class="loading-text" id="loading-title">Processing Image...</div>
-            
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            
-            <div class="loading-subtext" id="loading-status">
-                Loading AI Model (this takes a few seconds the first time)
-            </div>
-        </div>
-
-        <!-- STEP 3: RESULT -->
-        <div id="result-section" class="result-section">
-            <div class="result-grid">
-                <div class="image-box">
-                    <h3>Original</h3>
-                    <div class="img-container">
-                        <img id="original-img" src="" alt="Original">
-                    </div>
-                </div>
-                <div class="image-box">
-                    <h3>Background Removed</h3>
-                    <div class="img-container transparent-bg">
-                        <img id="result-img" src="" alt="Removed Background">
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions">
-                <button class="btn btn-outline" onclick="resetTool()">Remove Another Image</button>
-                <button class="btn" id="download-btn">Download HD PNG</button>
-            </div>
-        </div>
+<!-- ========== RESULT ========== -->
+<div class="scr" id="screenResult">
+  <div class="toolbar">
+    <button class="tbtn on" id="btnView" onclick="W.tool('view')">👁 Compare</button>
+    <button class="tbtn" id="btnWand" onclick="W.tool('wand')">🪄 Remove</button>
+    <button class="tbtn" id="btnErase" onclick="W.tool('erase')">🧹 Erase</button>
+    <button class="tbtn" id="btnRestore" onclick="W.tool('restore')">✏️ Restore</button>
+    <div class="tsep"></div>
+    <div class="trng">
+      <label>Tol</label>
+      <input type="range" min="5" max="80" value="30" id="rngTol" oninput="document.getElementById('valTol').textContent=this.value">
+      <span id="valTol">30</span>
     </div>
+    <div class="trng">
+      <label>Size</label>
+      <input type="range" min="4" max="80" value="20" id="rngBrush" oninput="document.getElementById('valBrush').textContent=this.value">
+      <span id="valBrush">20</span>
+    </div>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="W.undo()">↩</button>
+    <button class="tbtn" onclick="W.redo()">↪</button>
+    <button class="tbtn r" onclick="W.newImg()">↺ New</button>
+  </div>
 
-    <script>
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        
-        const uploadSection = document.getElementById('upload-section');
-        const loadingSection = document.getElementById('loading-section');
-        const resultSection = document.getElementById('result-section');
-        
-        const progressBar = document.getElementById('progress-bar');
-        const loadingStatus = document.getElementById('loading-status');
-        
-        const originalImg = document.getElementById('original-img');
-        const resultImg = document.getElementById('result-img');
-        const downloadBtn = document.getElementById('download-btn');
+  <div class="compare-area" id="compareArea">
+    <div class="compare-box" id="compareBox">
+      <div class="compare-result">
+        <div class="checker-layer" id="layerChecker"></div>
+        <div class="color-layer" id="layerColor"></div>
+        <canvas id="canvasResult"></canvas>
+      </div>
+      <div class="original-layer" id="layerOriginal">
+        <img id="imgOriginal" src="">
+      </div>
+      <div class="slider-bar" id="sliderBar">
+        <div class="slider-knob"></div>
+      </div>
+      <div class="label-tag l">BEFORE</div>
+      <div class="label-tag r">AFTER</div>
+    </div>
+    <div class="zoom-bar">
+      <button class="zbtn" onclick="W.zoom(-10)">−</button>
+      <div class="zlbl" id="zoomLabel">100%</div>
+      <button class="zbtn" onclick="W.zoom(10)">+</button>
+      <button class="zbtn" onclick="W.zoomFit()">⊡</button>
+    </div>
+  </div>
 
-        let originalFileName = "image";
+  <div class="bottom-bar">
+    <span class="bb-label">BG:</span>
+    <div class="bg-options">
+      <div class="bg-opt ck on" onclick="W.bg('ck',this)"></div>
+      <div class="bg-opt" style="background:#fff" onclick="W.bg('#fff',this)"></div>
+      <div class="bg-opt" style="background:#000" onclick="W.bg('#000',this)"></div>
+      <div class="bg-opt" style="background:#e53935" onclick="W.bg('#e53935',this)"></div>
+      <div class="bg-opt" style="background:#1e88e5" onclick="W.bg('#1e88e5',this)"></div>
+      <div class="bg-opt" style="background:#43a047" onclick="W.bg('#43a047',this)"></div>
+      <div class="bg-opt" style="background:#fb8c00" onclick="W.bg('#fb8c00',this)"></div>
+      <div class="bg-cc"><input type="color" value="#cccccc" onchange="W.bg(this.value,this.parentElement)"></div>
+    </div>
+    <div class="bb-right">
+      <span class="bb-info" id="resultInfo"></span>
+      <button class="btn btn-o" onclick="W.newImg()">+ New</button>
+      <button class="btn btn-g" onclick="W.download()">⤓ Download</button>
+    </div>
+  </div>
+</div>
 
-        // Drag & Drop Events
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+<div class="brush-cursor" id="brushCursor"></div>
+<footer><b>Remove Background</b> — AI-powered, free & 100% private. Images never leave your browser.</footer>
+<div class="toast" id="toastEl"></div>
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
+<script type="module">
+// ===== GLOBALS =====
+const E = id => document.getElementById(id);
+const W = window;
 
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFile(e.dataTransfer.files[0]);
-            }
-        });
+let aiRemoveBg = null;
+let sourceImage = null;
+let sourceUrl = null;
+let sourcePixels = null;
+let canvas, ctx;
+let imgW = 0, imgH = 0, zoomLevel = 100;
+let currentTool = 'view';
+let isPainting = false, lastPoint = null;
+let history = [], historyIdx = -1;
+let currentBg = 'ck';
 
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
+// Expose functions to window for onclick handlers
+W.newImg = newImg;
+W.download = downloadPNG;
+W.tool = setTool;
+W.undo = undoAction;
+W.redo = redoAction;
+W.bg = setBackground;
+W.zoom = doZoom;
+W.zoomFit = fitZoom;
 
-        function handleFile(file) {
-            if (!file.type.startsWith('image/')) {
-                alert("Please upload a valid image file.");
-                return;
-            }
+// ===== INIT =====
+canvas = E('canvasResult');
+ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-            originalFileName = file.name.split('.')[0];
-            
-            // Show Original Image Preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                originalImg.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+// File input
+E('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) processFile(e.target.files[0]);
+  e.target.value = '';
+});
 
-            // Start AI Background Removal
-            processImage(file);
+// Dropzone
+const dz = E('dropzone');
+dz.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') E('fileInput').click(); });
+['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => { if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+
+// Paste
+document.addEventListener('paste', e => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (let item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      processFile(item.getAsFile());
+      break;
+    }
+  }
+});
+
+// Canvas pointer events
+canvas.addEventListener('mousedown', e => { if (currentTool !== 'view') pointerDown(getCanvasPos(e)); });
+canvas.addEventListener('mousemove', e => { pointerMove(getCanvasPos(e)); showBrushCursor(e); });
+canvas.addEventListener('mouseup', pointerUp);
+canvas.addEventListener('mouseleave', () => { pointerUp(); E('brushCursor').style.display = 'none'; });
+canvas.addEventListener('touchstart', e => { if (currentTool !== 'view') { e.preventDefault(); pointerDown(getTouchPos(e)); } }, { passive: false });
+canvas.addEventListener('touchmove', e => { if (currentTool !== 'view') { e.preventDefault(); pointerMove(getTouchPos(e)); } }, { passive: false });
+canvas.addEventListener('touchend', e => { if (currentTool !== 'view') { e.preventDefault(); pointerUp(); } }, { passive: false });
+
+// Comparison slider
+initCompareSlider();
+
+// Resize
+window.addEventListener('resize', () => { if (sourceImage) fitZoom(); });
+
+// ===== HELPERS =====
+function getCanvasPos(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: Math.round((e.clientX - r.left) * (imgW / r.width)), y: Math.round((e.clientY - r.top) * (imgH / r.height)) };
+}
+function getTouchPos(e) {
+  const t = e.touches[0], r = canvas.getBoundingClientRect();
+  return { x: Math.round((t.clientX - r.left) * (imgW / r.width)), y: Math.round((t.clientY - r.top) * (imgH / r.height)) };
+}
+
+// ===== MAIN PROCESS =====
+async function processFile(file) {
+  if (!file.type.startsWith('image/')) { toast('Please select an image file', true); return; }
+  if (file.size > 20 * 1024 * 1024) { toast('File too large (max 20MB)', true); return; }
+
+  sourceUrl = URL.createObjectURL(file);
+  E('procThumb').innerHTML = `<img src="${sourceUrl}">`;
+  showScreen('process');
+
+  setStep(1, 'Loading AI Engine...', 'Preparing background removal model', 5);
+  E('procTip').textContent = '⏳ AI model loads once and is cached for future use.';
+
+  try {
+    // STEP 1: Load AI library
+    if (!aiRemoveBg) {
+      setStep(1, 'Downloading AI Model...', 'This only happens on first use', 8);
+
+      try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+        aiRemoveBg = mod.removeBackground || mod.default;
+      } catch (err1) {
+        console.warn('Primary CDN failed:', err1);
+        try {
+          const mod2 = await import('https://unpkg.com/@imgly/background-removal@1.5.5/dist/index.mjs');
+          aiRemoveBg = mod2.removeBackground || mod2.default;
+        } catch (err2) {
+          throw new Error('Could not load AI model. Please check your internet and try again.');
         }
+      }
+    }
 
-        async function processImage(file) {
-            // Switch UI to Loading
-            uploadSection.style.display = 'none';
-            loadingSection.style.display = 'block';
-            progressBar.style.width = '0%';
+    setStep(1, 'AI Engine Ready ✓', 'Loading your image...', 20);
 
-            try {
-                // Call Imgly AI Model (Runs 100% in your browser)
-                const imageBlob = await imglyRemoveBackground(file, {
-                    progress: (key, current, total) => {
-                        // Update Progress Bar
-                        if (key.includes("compute")) {
-                            loadingStatus.innerText = "Removing Background...";
-                            const percent = Math.round((current / total) * 100);
-                            progressBar.style.width = percent + '%';
-                        } else {
-                            loadingStatus.innerText = "Preparing AI Assets...";
-                            progressBar.style.width = '30%';
-                        }
-                    }
-                });
+    // Load image
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = sourceUrl;
+    });
+    sourceImage = img;
 
-                // Success
-                progressBar.style.width = '100%';
-                loadingStatus.innerText = "Done!";
+    imgW = img.naturalWidth;
+    imgH = img.naturalHeight;
+    const MAX_DIM = 2048;
+    if (imgW > MAX_DIM || imgH > MAX_DIM) {
+      const scale = Math.min(MAX_DIM / imgW, MAX_DIM / imgH);
+      imgW = Math.round(imgW * scale);
+      imgH = Math.round(imgH * scale);
+    }
 
-                // Convert Blob to Image URL
-                const url = URL.createObjectURL(imageBlob);
-                resultImg.src = url;
+    // Store original pixels
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = imgW;
+    tempCanvas.height = imgH;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(img, 0, 0, imgW, imgH);
+    sourcePixels = tempCtx.getImageData(0, 0, imgW, imgH);
 
-                // Setup Download Button
-                downloadBtn.onclick = () => {
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${originalFileName}-removebg.png`;
-                    a.click();
-                };
+    // Create blob for AI processing
+    const blob = await new Promise(r => tempCanvas.toBlob(r, 'image/png'));
 
-                // Show Results UI
-                setTimeout(() => {
-                    loadingSection.style.display = 'none';
-                    resultSection.style.display = 'block';
-                }, 500);
+    // STEP 2: AI removal
+    setStep(2, 'Removing Background...', 'AI is analyzing your image', 30);
+    E('procTip').textContent = '🧠 Neural network is detecting the subject...';
 
-            } catch (error) {
-                console.error("Error removing background:", error);
-                alert("An error occurred. Please try a different image.");
-                resetTool();
-            }
+    let lastProgress = 30;
+
+    const resultBlob = await aiRemoveBg(blob, {
+      output: { format: 'image/png', quality: 1 },
+      progress: (key, current, total) => {
+        if (!total) return;
+        const ratio = current / total;
+
+        if (key.includes('fetch') || key.includes('load') || key.includes('download')) {
+          const pct = Math.round(8 + ratio * 18);
+          if (pct > lastProgress) { lastProgress = pct; setProgress(pct); }
+          E('procDesc').textContent = `Downloading model: ${Math.round(ratio * 100)}%`;
+        } else {
+          const pct = Math.round(30 + ratio * 65);
+          if (pct > lastProgress) { lastProgress = pct; setProgress(pct); }
+          if (ratio > 0.3) setStep(2, 'Processing...', 'Separating foreground from background', pct);
+          if (ratio > 0.7) setStep(3, 'Finalizing...', 'Creating transparent image', pct);
         }
+      }
+    });
 
-        function resetTool() {
-            fileInput.value = '';
-            uploadSection.style.display = 'block';
-            resultSection.style.display = 'none';
-            loadingSection.style.display = 'none';
-            progressBar.style.width = '0%';
+    setStep(3, 'Almost Done!', 'Preparing result...', 96);
+
+    // Draw result to canvas
+    const resultImg = new Image();
+    const resultUrl = URL.createObjectURL(resultBlob);
+    await new Promise((resolve, reject) => {
+      resultImg.onload = resolve;
+      resultImg.onerror = reject;
+      resultImg.src = resultUrl;
+    });
+
+    canvas.width = imgW;
+    canvas.height = imgH;
+    ctx.clearRect(0, 0, imgW, imgH);
+    ctx.drawImage(resultImg, 0, 0, imgW, imgH);
+    URL.revokeObjectURL(resultUrl);
+
+    // Setup result view
+    E('imgOriginal').src = sourceUrl;
+    E('resultInfo').innerHTML = `<b>${imgW}×${imgH}</b>`;
+    E('navButtons').style.display = 'flex';
+
+    history = [];
+    historyIdx = -1;
+    saveHistory();
+    setProgress(100);
+
+    setTimeout(() => {
+      showScreen('result');
+      fitZoom();
+      updateSlider(50);
+      setTool('view');
+      toast('✓ Background removed successfully!');
+    }, 300);
+
+  } catch (error) {
+    console.error('Error:', error);
+    showScreen('upload');
+    toast('Error: ' + (error.message || 'Something went wrong. Please try again.'), true);
+  }
+}
+
+// ===== PROCESSING UI =====
+function setStep(num, title, desc, pct) {
+  E('procTitle').textContent = title;
+  E('procDesc').textContent = desc;
+  if (pct !== undefined) setProgress(pct);
+
+  for (let i = 1; i <= 3; i++) {
+    const dot = E('dot' + i);
+    dot.classList.remove('now', 'done');
+    if (i < num) { dot.classList.add('done'); dot.textContent = '✓'; }
+    else if (i === num) { dot.classList.add('now'); dot.textContent = i; }
+    else dot.textContent = i;
+  }
+  E('line1').classList.toggle('done', num > 1);
+  E('line2').classList.toggle('done', num > 2);
+}
+
+function setProgress(pct) {
+  E('progFill').style.width = pct + '%';
+  E('progPct').textContent = pct + '%';
+}
+
+// ===== SCREENS =====
+function showScreen(name) {
+  E('screenUpload').classList.toggle('active', name === 'upload');
+  E('screenProcess').classList.toggle('active', name === 'process');
+  E('screenResult').classList.toggle('active', name === 'result');
+}
+
+function newImg() {
+  showScreen('upload');
+  E('navButtons').style.display = 'none';
+  sourceImage = null;
+  sourcePixels = null;
+  history = [];
+  historyIdx = -1;
+  if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+  sourceUrl = null;
+  currentBg = 'ck';
+  setBackground('ck', document.querySelector('.bg-opt.ck'));
+  setTool('view');
+}
+
+// ===== TOOLS =====
+function setTool(name) {
+  currentTool = name;
+  ['View','Wand','Erase','Restore'].forEach(n => {
+    const el = E('btn' + n);
+    if (el) el.classList.toggle('on', name === n.toLowerCase());
+  });
+
+  const isCompare = name === 'view';
+  E('layerOriginal').style.display = isCompare ? '' : 'none';
+  E('sliderBar').style.display = isCompare ? '' : 'none';
+  document.querySelectorAll('.label-tag').forEach(l => l.style.display = isCompare ? '' : 'none');
+
+  canvas.style.cursor = (name === 'erase' || name === 'restore') ? 'none' : name === 'wand' ? 'crosshair' : 'default';
+  E('brushCursor').style.display = 'none';
+}
+
+function showBrushCursor(e) {
+  if (currentTool !== 'erase' && currentTool !== 'restore') return;
+  const cur = E('brushCursor');
+  const size = parseInt(E('rngBrush').value) * zoomLevel / 100;
+  cur.style.display = 'block';
+  cur.style.width = size + 'px';
+  cur.style.height = size + 'px';
+  cur.style.left = (e.clientX - size / 2) + 'px';
+  cur.style.top = (e.clientY - size / 2) + 'px';
+  cur.style.border = `2px solid ${currentTool === 'erase' ? '#d32f2f' : '#1a9c6e'}`;
+  cur.style.background = currentTool === 'erase' ? 'rgba(211,47,47,.05)' : 'rgba(26,156,110,.05)';
+}
+
+// ===== POINTER HANDLERS =====
+function pointerDown(pt) {
+  if (currentTool === 'wand') { magicWand(pt); return; }
+  isPainting = true;
+  lastPoint = pt;
+  brushStroke(pt);
+}
+
+function pointerMove(pt) {
+  if (!isPainting) return;
+  brushLine(lastPoint, pt);
+  lastPoint = pt;
+}
+
+function pointerUp() {
+  if (isPainting) { isPainting = false; lastPoint = null; saveHistory(); }
+}
+
+// Magic Wand
+function magicWand(pt) {
+  if (pt.x < 0 || pt.x >= imgW || pt.y < 0 || pt.y >= imgH) return;
+  const tolerance = parseInt(E('rngTol').value);
+  const imageData = ctx.getImageData(0, 0, imgW, imgH);
+  const data = imageData.data;
+  const startIdx = (pt.y * imgW + pt.x) * 4;
+
+  if (data[startIdx + 3] === 0) { toast('Already transparent'); return; }
+
+  const targetR = data[startIdx], targetG = data[startIdx + 1], targetB = data[startIdx + 2];
+  const tolSq = tolerance * tolerance * 3;
+
+  const visited = new Uint8Array(imgW * imgH);
+  const toRemove = [];
+  const queue = [pt.y * imgW + pt.x];
+
+  while (queue.length) {
+    const idx = queue.pop();
+    if (visited[idx]) continue;
+    visited[idx] = 1;
+    const pixIdx = idx * 4;
+    if (data[pixIdx + 3] === 0) continue;
+    const dr = data[pixIdx] - targetR, dg = data[pixIdx + 1] - targetG, db = data[pixIdx + 2] - targetB;
+    if (dr * dr + dg * dg + db * db > tolSq) continue;
+
+    toRemove.push(idx);
+    const x = idx % imgW, y = (idx / imgW) | 0;
+    if (x > 0 && !visited[idx - 1]) queue.push(idx - 1);
+    if (x < imgW - 1 && !visited[idx + 1]) queue.push(idx + 1);
+    if (y > 0 && !visited[idx - imgW]) queue.push(idx - imgW);
+    if (y < imgH - 1 && !visited[idx + imgW]) queue.push(idx + imgW);
+  }
+
+  toRemove.forEach(i => { imageData.data[i * 4 + 3] = 0; });
+  ctx.putImageData(imageData, 0, 0);
+  saveHistory();
+  toast(`✓ Removed ${toRemove.length.toLocaleString()} pixels`);
+}
+
+// Brush
+function brushStroke(pt) {
+  const size = parseInt(E('rngBrush').value), radius = size / 2;
+
+  if (currentTool === 'erase') {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (currentTool === 'restore' && sourcePixels) {
+    const x0 = Math.max(0, (pt.x - radius) | 0);
+    const y0 = Math.max(0, (pt.y - radius) | 0);
+    const x1 = Math.min(imgW, Math.ceil(pt.x + radius));
+    const y1 = Math.min(imgH, Math.ceil(pt.y + radius));
+    if (x1 <= x0 || y1 <= y0) return;
+
+    const region = ctx.getImageData(x0, y0, x1 - x0, y1 - y0);
+    const rd = region.data, od = sourcePixels.data;
+
+    for (let y = y0; y < y1; y++) {
+      for (let x = x0; x < x1; x++) {
+        const dx = x - pt.x, dy = y - pt.y;
+        if (dx * dx + dy * dy <= radius * radius) {
+          const ri = ((y - y0) * (x1 - x0) + (x - x0)) * 4;
+          const oi = (y * imgW + x) * 4;
+          rd[ri] = od[oi]; rd[ri + 1] = od[oi + 1]; rd[ri + 2] = od[oi + 2]; rd[ri + 3] = od[oi + 3];
         }
-    </script>
+      }
+    }
+    ctx.putImageData(region, x0, y0);
+  }
+}
+
+function brushLine(a, b) {
+  if (!a || !b) return;
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const steps = Math.max(1, (dist / 2) | 0);
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    brushStroke({ x: Math.round(a.x + dx * t), y: Math.round(a.y + dy * t) });
+  }
+}
+
+// ===== HISTORY =====
+function saveHistory() {
+  historyIdx++;
+  history = history.slice(0, historyIdx);
+  history.push(ctx.getImageData(0, 0, imgW, imgH));
+  if (history.length > 20) { history.shift(); historyIdx--; }
+}
+
+function undoAction() {
+  if (historyIdx <= 0) return;
+  historyIdx--;
+  ctx.putImageData(history[historyIdx], 0, 0);
+  toast('↩ Undo');
+}
+
+function redoAction() {
+  if (historyIdx >= history.length - 1) return;
+  historyIdx++;
+  ctx.putImageData(history[historyIdx], 0, 0);
+  toast('↪ Redo');
+}
+
+// ===== COMPARE SLIDER =====
+function initCompareSlider() {
+  const box = E('compareBox');
+  let dragging = false;
+
+  function getSliderPos(e) {
+    const rect = box.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+  }
+
+  box.addEventListener('mousedown', e => { if (currentTool === 'view') { dragging = true; updateSlider(getSliderPos(e)); } });
+  window.addEventListener('mousemove', e => { if (dragging) { e.preventDefault(); updateSlider(getSliderPos(e)); } });
+  window.addEventListener('mouseup', () => dragging = false);
+  box.addEventListener('touchstart', e => { if (currentTool === 'view') { dragging = true; updateSlider(getSliderPos(e)); } }, { passive: true });
+  window.addEventListener('touchmove', e => { if (dragging) updateSlider(getSliderPos(e)); }, { passive: true });
+  window.addEventListener('touchend', () => dragging = false);
+}
+
+function updateSlider(pct) {
+  E('layerOriginal').style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+  E('sliderBar').style.left = pct + '%';
+}
+
+// ===== ZOOM =====
+function doZoom(delta) {
+  zoomLevel = Math.max(20, Math.min(400, zoomLevel + delta));
+  applyZoom();
+}
+
+function fitZoom() {
+  const area = E('compareArea');
+  zoomLevel = Math.round(Math.min((area.clientWidth - 20) / imgW, (area.clientHeight - 20) / imgH) * 100);
+  zoomLevel = Math.max(20, Math.min(400, zoomLevel));
+  applyZoom();
+}
+
+function applyZoom() {
+  const box = E('compareBox');
+  box.style.width = Math.round(imgW * zoomLevel / 100) + 'px';
+  box.style.height = Math.round(imgH * zoomLevel / 100) + 'px';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  E('zoomLabel').textContent = zoomLevel + '%';
+}
+
+// ===== BACKGROUND =====
+function setBackground(bg, el) {
+  document.querySelectorAll('.bg-opt,.bg-cc').forEach(b => b.classList.remove('on'));
+  if (el) el.classList.add('on');
+  currentBg = bg;
+  E('layerChecker').style.display = bg === 'ck' ? 'block' : 'none';
+  E('layerColor').style.display = bg === 'ck' ? 'none' : 'block';
+  if (bg !== 'ck') E('layerColor').style.backgroundColor = bg;
+}
+
+// ===== DOWNLOAD =====
+function downloadPNG() {
+  if (!sourceImage) return;
+  const c = document.createElement('canvas');
+  c.width = imgW; c.height = imgH;
+  const cx = c.getContext('2d');
+  if (currentBg !== 'ck') { cx.fillStyle = currentBg; cx.fillRect(0, 0, imgW, imgH); }
+  cx.drawImage(canvas, 0, 0);
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'no-background.png';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('⤓ Downloaded!');
+  }, 'image/png');
+}
+
+// ===== TOAST =====
+function toast(msg, isError) {
+  const t = E('toastEl');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
 </body>
 </html>
