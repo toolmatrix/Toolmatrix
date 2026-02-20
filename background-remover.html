@@ -1,415 +1,567 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iLoveBG - Fast Background Remover</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Remove Background — Free AI Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f8;color:#333;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-        body {
-            background-color: #f4fbf4; /* Light Green Background */
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+nav{background:#fff;height:48px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #dde6df;flex-shrink:0;z-index:50}
+.logo{font-weight:800;font-size:.95rem;color:#1a9c6e}
+.navr{margin-left:auto;display:flex;gap:5px}
+.bt{padding:6px 13px;border:none;border-radius:7px;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.bt1{background:#ecf4ee;color:#444}.bt1:hover{background:#dceee2}
+.bt2{background:linear-gradient(135deg,#1a9c6e,#20a558);color:#fff;box-shadow:0 2px 8px rgba(26,156,110,.16)}
+.bt2:hover{box-shadow:0 4px 14px rgba(26,156,110,.26);transform:translateY(-1px)}
 
-        /* iLoveIMG Style Navbar */
-        .navbar {
-            background-color: #fff;
-            height: 65px;
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            font-size: 24px;
-            color: #4CAF50;
-        }
+.pg{display:none;flex:1;flex-direction:column;overflow:hidden}
+.pg.on{display:flex}
 
-        .navbar i {
-            margin-right: 10px;
-            font-size: 28px;
-        }
+/* ===== UPLOAD ===== */
+#pgU{align-items:center;justify-content:center;padding:16px;background:linear-gradient(180deg,#e4f2eb,#f4f6f8)}
+.uh{text-align:center;margin-bottom:18px}
+.uh h1{font-size:1.4rem;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+.uh h1 span{color:#1a9c6e}
+.uh p{color:#999;font-size:.8rem;max-width:400px;margin:0 auto;line-height:1.5}
 
-        .navbar span {
-            font-weight: 900;
-        }
+.dz{width:100%;max-width:480px;padding:36px 16px;border:2.5px dashed #a5d3ba;border-radius:14px;background:#fff;text-align:center;cursor:pointer;transition:all .25s}
+.dz:hover,.dz.ov{border-color:#1a9c6e;background:#f0faf4;transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,156,110,.05)}
+.dz .ic{font-size:2.2rem;margin-bottom:6px;opacity:.4}
+.dz .tx{font-size:.84rem;color:#666;font-weight:500;margin-bottom:2px}
+.dz .hn{font-size:.72rem;color:#c5c5c5;margin-bottom:10px}
+.dz .sb{padding:9px 24px;background:linear-gradient(135deg,#1a9c6e,#20a558);color:#fff;border:none;border-radius:22px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(26,156,110,.18)}
+.dz .sb:hover{transform:translateY(-1px)}
+.dz .fm{font-size:.6rem;color:#d0d0d0;margin-top:9px}
+#fi{display:none}
 
-        /* Main Container */
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-            text-align: center;
-        }
+.speed-info{margin-top:14px;max-width:480px;width:100%}
+.si-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.si-card{background:#fff;border:1px solid #e8f0ea;border-radius:10px;padding:10px 14px;text-align:center;flex:1;min-width:120px}
+.si-card .si-emoji{font-size:1.2rem;margin-bottom:3px}
+.si-card .si-title{font-size:.7rem;font-weight:700;color:#333;margin-bottom:1px}
+.si-card .si-desc{font-size:.58rem;color:#aaa;line-height:1.3}
 
-        h1 {
-            font-size: 42px;
-            color: #2E7D32;
-            margin-bottom: 15px;
-            font-weight: 800;
-        }
+/* ===== PROCESSING ===== */
+#pgP{align-items:center;justify-content:center;padding:20px;background:#fff}
+.pc{text-align:center;max-width:360px;width:100%}
+.pc-img{width:110px;height:110px;border-radius:12px;background:#eff4f1;margin:0 auto 12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.04);position:relative}
+.pc-img img{width:100%;height:100%;object-fit:cover}
+.pc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shm 1.2s ease infinite}
+@keyframes shm{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
-        p.subtitle {
-            font-size: 20px;
-            color: #555;
-            margin-bottom: 40px;
-            max-width: 700px;
-        }
+.dots{display:flex;justify-content:center;align-items:center;gap:3px;margin-bottom:12px}
+.dot{width:22px;height:22px;border-radius:50%;border:2.5px solid #d8e6dc;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#c5c5c5;font-weight:700;transition:all .3s}
+.dot.now{border-color:#1a9c6e;color:#1a9c6e;background:#edf8f1;animation:pl 1s infinite}
+.dot.ok{border-color:#1a9c6e;background:#1a9c6e;color:#fff}
+@keyframes pl{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.dln{width:16px;height:2px;background:#d8e6dc;border-radius:1px}.dln.ok{background:#1a9c6e}
 
-        /* Workspace Card */
-        .workspace {
-            width: 100%;
-            max-width: 900px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(76, 175, 80, 0.15);
-            overflow: hidden;
-            position: relative;
-        }
+.pc h2{font-size:.9rem;font-weight:700;color:#333;margin-bottom:3px}
+.pc .dd{font-size:.72rem;color:#aaa;margin-bottom:8px}
+.pb{width:100%;height:5px;background:#e2ebe5;border-radius:3px;overflow:hidden;margin-bottom:3px}
+.pf{height:100%;background:linear-gradient(90deg,#1a9c6e,#20a558);border-radius:3px;transition:width .3s;width:0}
+.pp{font-size:.66rem;color:#1a9c6e;font-weight:700;margin-bottom:6px}
+.pt{font-size:.6rem;color:#c5c5c5;line-height:1.3}
 
-        /* Setup Section */
-        .api-setup {
-            background: #E8F5E9;
-            padding: 15px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            border-bottom: 1px solid #C8E6C9;
-        }
+/* TIME INDICATOR */
+.timer{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:4px 10px;background:#f0faf4;border-radius:6px;font-size:.6rem;color:#1a9c6e;font-weight:600}
+.timer-dot{width:6px;height:6px;border-radius:50%;background:#1a9c6e;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-        .api-setup input {
-            padding: 10px 15px;
-            border: 1px solid #4CAF50;
-            border-radius: 6px;
-            width: 300px;
-            font-size: 14px;
-            outline: none;
-        }
+/* ===== RESULT ===== */
+#pgR{overflow:hidden}
 
-        .api-setup a {
-            color: #2E7D32;
-            font-size: 14px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+.tbar{background:#fff;border-bottom:1px solid #d8e6dc;padding:5px 8px;display:flex;align-items:center;gap:3px;overflow-x:auto;flex-shrink:0}
+.tbar::-webkit-scrollbar{height:0}
+.tb{padding:4px 8px;border:1.5px solid #d8e6dc;border-radius:6px;background:#fff;color:#666;font-size:.64rem;font-weight:600;cursor:pointer;transition:all .1s;white-space:nowrap;display:flex;align-items:center;gap:2px}
+.tb:hover{border-color:#1a9c6e;color:#1a9c6e}
+.tb.on{background:#edf8f1;border-color:#1a9c6e;color:#1a9c6e}
+.tb.rd{color:#c62828;border-color:#ffcdd2}.tb.rd:hover{background:#ffebee}
+.sp{width:1px;height:15px;background:#d8e6dc;flex-shrink:0}
+.rg{display:flex;align-items:center;gap:2px}
+.rg label{font-size:.56rem;font-weight:600;color:#bbb}
+.rg input[type=range]{width:46px;-webkit-appearance:none;height:3px;border-radius:2px;background:#d0e6d8;outline:none;cursor:pointer}
+.rg input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#1a9c6e;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.rg span{font-size:.56rem;color:#1a9c6e;font-weight:700;min-width:12px;text-align:right}
 
-        .api-setup a:hover {
-            text-decoration: underline;
-        }
+/* COMPARE */
+.ca{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:#e2e6ea;
+  background-image:linear-gradient(45deg,#d8dbde 25%,transparent 25%),linear-gradient(-45deg,#d8dbde 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8dbde 75%),linear-gradient(-45deg,transparent 75%,#d8dbde 75%);
+  background-size:14px 14px;background-position:0 0,0 7px,7px -7px,-7px 0}
 
-        /* Upload Area */
-        .upload-area {
-            padding: 80px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.3s;
-        }
+.cb{position:relative;display:inline-block;box-shadow:0 2px 16px rgba(0,0,0,.06);max-width:94%;max-height:76vh}
+.cr{position:relative}
+.ck{position:absolute;inset:0;
+  background-image:linear-gradient(45deg,#c2c2c2 25%,transparent 25%),linear-gradient(-45deg,#c2c2c2 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c2c2c2 75%),linear-gradient(-45deg,transparent 75%,#c2c2c2 75%);
+  background-size:10px 10px;background-position:0 0,0 5px,5px -5px,-5px 0;z-index:0;border-radius:2px}
+.cl{position:absolute;inset:0;z-index:0;border-radius:2px;display:none}
+#cv{position:relative;display:block;z-index:1}
 
-        .upload-area.dragover {
-            background-color: #F1F8E9;
-        }
+.ov{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:5}
+.ov img{display:block;width:100%;height:100%;object-fit:contain}
 
-        .btn-huge {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 20px 50px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-        }
+.sbar{position:absolute;top:0;bottom:0;width:3px;background:#fff;z-index:10;cursor:ew-resize;box-shadow:0 0 5px rgba(0,0,0,.1)}
+.sk{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;background:#fff;border-radius:50%;box-shadow:0 1px 5px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;cursor:ew-resize}
+.sk::after{content:'◂ ▸';font-size:.36rem;color:#1a9c6e;font-weight:900;letter-spacing:1px}
+.stg{position:absolute;top:5px;padding:2px 5px;border-radius:3px;font-size:.5rem;font-weight:700;pointer-events:none;z-index:12}
+.stg.l{left:5px;background:rgba(0,0,0,.4);color:#fff}
+.stg.r{right:5px;background:rgba(26,156,110,.7);color:#fff}
 
-        .btn-huge:hover {
-            background-color: #388E3C;
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-        }
+.zr{position:absolute;bottom:6px;right:6px;display:flex;gap:2px;background:#fff;border-radius:5px;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,.04);border:1px solid #e0e3e5;z-index:20}
+.zb{width:22px;height:22px;border:none;border-radius:4px;background:#f2f2f2;color:#555;cursor:pointer;font-size:.64rem;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.zb:hover{background:#1a9c6e;color:#fff}
+.zi{display:flex;align-items:center;padding:0 3px;font-size:.56rem;color:#999;font-weight:700}
 
-        .drop-text {
-            margin-top: 25px;
-            font-size: 18px;
-            color: #777;
-        }
+/* BOTTOM */
+.bb{background:#fff;border-top:1px solid #d8e6dc;padding:6px 8px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;flex-shrink:0}
+.bbl{font-size:.6rem;font-weight:600;color:#bbb}
+.bgr{display:flex;gap:3px;align-items:center}
+.bg{width:18px;height:18px;border-radius:4px;cursor:pointer;border:2px solid #d8e6dc;transition:all .1s;flex-shrink:0}
+.bg:hover{border-color:#1a9c6e;transform:scale(1.08)}
+.bg.on{border-color:#1a9c6e;box-shadow:0 0 0 1px rgba(26,156,110,.12)}
+.bg.chk{background-image:linear-gradient(45deg,#bbb 25%,transparent 25%),linear-gradient(-45deg,#bbb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#bbb 75%),linear-gradient(-45deg,transparent 75%,#bbb 75%);background-size:5px 5px;background-position:0 0,0 2.5px,2.5px -2.5px,-2.5px 0}
+.bgc{overflow:hidden;width:18px;height:18px;border-radius:4px;border:2px solid #d8e6dc}
+.bgc input{width:100%;height:100%;border:none;cursor:pointer;padding:0;background:none}
+.bbr{margin-left:auto;display:flex;gap:4px;align-items:center}
 
-        #file-input {
-            display: none;
-        }
+.bcur{position:fixed;pointer-events:none;border-radius:50%;z-index:200;display:none}
 
-        /* Processing Area */
-        .processing-area {
-            display: none;
-            padding: 100px 20px;
-        }
+.toast{position:fixed;bottom:10px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;color:#333;padding:7px 14px;border-radius:7px;font-size:.72rem;font-weight:500;box-shadow:0 3px 10px rgba(0,0,0,.06);z-index:300;transition:transform .3s;border-left:4px solid #1a9c6e;max-width:92vw}
+.toast.er{border-left-color:#c62828}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-        .spinner {
-            width: 70px;
-            height: 70px;
-            border: 6px solid #E8F5E9;
-            border-top: 6px solid #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
+footer{text-align:center;padding:4px;color:#ccc;font-size:.52rem;border-top:1px solid #eee;background:#fff;flex-shrink:0}
+footer b{color:#1a9c6e}
 
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-        .processing-text {
-            font-size: 26px;
-            color: #2E7D32;
-            font-weight: bold;
-        }
-
-        /* Result Area */
-        .result-area {
-            display: none;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .result-preview {
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            margin: 0 auto 30px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #E8F5E9;
-            
-            /* Checkerboard Background */
-            background-image: 
-                linear-gradient(45deg, #e0e0e0 25%, transparent 25%), 
-                linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #e0e0e0 75%), 
-                linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: white;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        .result-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .btn-download {
-            background-color: #4CAF50;
-            color: white;
-            padding: 18px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-download:hover {
-            background-color: #388E3C;
-            transform: translateY(-2px);
-        }
-
-        .btn-restart {
-            background-color: white;
-            color: #4CAF50;
-            padding: 18px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            border: 2px solid #4CAF50;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-restart:hover {
-            background-color: #E8F5E9;
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 32px; }
-            .api-setup { flex-direction: column; }
-            .api-setup input { width: 100%; }
-            .btn-huge { font-size: 20px; padding: 15px 30px; }
-            .action-buttons { flex-direction: column; }
-            .btn-download, .btn-restart { width: 100%; }
-            .result-preview { height: 300px; }
-        }
-    </style>
+@media(max-width:768px){.bt span.x{display:none}.cb{max-width:97%;max-height:66vh}.tbar{gap:2px}.tb{padding:3px 6px;font-size:.58rem}.sp{display:none}.rg label{display:none}.rg input{width:36px}}
+@media(max-width:480px){.uh h1{font-size:1.08rem}.dz{padding:24px 10px}.dz .ic{font-size:1.7rem}.tb{padding:3px 4px;font-size:.52rem}.sk{width:20px;height:20px}.bg{width:16px;height:16px}.si-card{padding:7px 10px;min-width:90px}}
+</style>
 </head>
 <body>
 
-    <div class="navbar">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>iLove</span>BG
+<nav>
+  <span class="logo">Remove Background</span>
+  <div class="navr" id="nb" style="display:none">
+    <button class="bt bt1" onclick="R.back()">+ <span class="x">New</span></button>
+    <button class="bt bt2" onclick="R.dl()">⤓ <span class="x">Download PNG</span></button>
+  </div>
+</nav>
+
+<!-- UPLOAD -->
+<div class="pg on" id="pgU">
+  <div class="uh">
+    <h1>Remove Image <span>Background</span></h1>
+    <p>AI-powered background removal. Works with people, products, animals — free & private.</p>
+  </div>
+  <div class="dz" id="dz">
+    <div class="ic">🖼️</div>
+    <div class="tx">Drag & drop your image here</div>
+    <div class="hn">or</div>
+    <button class="sb" onclick="E('fi').click()">Select Image</button>
+    <div class="fm">JPG, PNG, WEBP — Max 20MB</div>
+  </div>
+
+  <div class="speed-info">
+    <div class="si-row">
+      <div class="si-card">
+        <div class="si-emoji">🚀</div>
+        <div class="si-title">First Time: ~10-15s</div>
+        <div class="si-desc">AI model downloads once (5MB) then cached forever</div>
+      </div>
+      <div class="si-card">
+        <div class="si-emoji">⚡</div>
+        <div class="si-title">After Cache: 3-5s</div>
+        <div class="si-desc">Model already saved — instant AI processing</div>
+      </div>
+      <div class="si-card">
+        <div class="si-emoji">🔒</div>
+        <div class="si-title">100% Private</div>
+        <div class="si-desc">Everything runs in your browser — no upload to server</div>
+      </div>
     </div>
+  </div>
+  <input type="file" id="fi" accept="image/*">
+</div>
 
-    <div class="main-container">
-        <h1>Remove Image Background</h1>
-        <p class="subtitle">Canva & Remove.bg jaisi Super Fast Speed! 100% automatically in 3 seconds.</p>
-
-        <div class="workspace">
-            
-            <!-- API Setup (For Lightning Fast Cloud Processing) -->
-            <div class="api-setup">
-                <i class="fa-solid fa-bolt" style="color: #F57F17; font-size: 20px;"></i>
-                <input type="password" id="api-key" placeholder="4nPDu7HjAAWZYDbDJ2D2eZK9">
-                <a href="https://www.remove.bg/api" target="_blank">Get Free API Key</a>
-            </div>
-
-            <!-- Upload Area -->
-            <div id="upload-area" class="upload-area">
-                <button class="btn-huge" onclick="document.getElementById('file-input').click()">
-                    <i class="fa-solid fa-upload"></i> Select Image
-                </button>
-                <div class="drop-text">or drop images here</div>
-                <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp">
-            </div>
-
-            <!-- Fast Processing Area -->
-            <div id="processing-area" class="processing-area">
-                <div class="spinner"></div>
-                <div class="processing-text">Removing Background...</div>
-                <p style="color: #666; margin-top: 10px;">Cloud AI is working. It takes only 3 to 5 seconds!</p>
-            </div>
-
-            <!-- Result Area -->
-            <div id="result-area" class="result-area">
-                <h2 style="color: #2E7D32; margin-bottom: 20px;">Success! Background Removed.</h2>
-                <div class="result-preview">
-                    <img id="result-image" src="" alt="Transparent Image">
-                </div>
-                <div class="action-buttons">
-                    <button class="btn-restart" onclick="location.reload()">
-                        <i class="fa-solid fa-redo"></i> Remove Another
-                    </button>
-                    <button class="btn-download" id="download-btn">
-                        <i class="fa-solid fa-download"></i> Download HD PNG
-                    </button>
-                </div>
-            </div>
-
-        </div>
+<!-- PROCESSING -->
+<div class="pg" id="pgP">
+  <div class="pc">
+    <div class="pc-img" id="pImg"></div>
+    <div class="dots">
+      <div class="dot" id="d1">1</div><div class="dln" id="l1"></div>
+      <div class="dot" id="d2">2</div><div class="dln" id="l2"></div>
+      <div class="dot" id="d3">3</div>
     </div>
+    <h2 id="pH">Starting...</h2>
+    <div class="dd" id="pD">Please wait</div>
+    <div class="pb"><div class="pf" id="pF"></div></div>
+    <div class="pp" id="pC">0%</div>
+    <div class="pt" id="pT"></div>
+    <div class="timer"><div class="timer-dot"></div><span id="timerTxt">0s elapsed</span></div>
+  </div>
+</div>
 
-    <script>
-        const uploadArea = document.getElementById('upload-area');
-        const processingArea = document.getElementById('processing-area');
-        const resultArea = document.getElementById('result-area');
-        const fileInput = document.getElementById('file-input');
-        const apiKeyInput = document.getElementById('api-key');
-        const resultImage = document.getElementById('result-image');
-        const downloadBtn = document.getElementById('download-btn');
+<!-- RESULT -->
+<div class="pg" id="pgR">
+  <div class="tbar">
+    <button class="tb on" id="tV" onclick="R.tool('view')">👁 Compare</button>
+    <button class="tb" id="tW" onclick="R.tool('wand')">🪄 Remove</button>
+    <button class="tb" id="tE" onclick="R.tool('erase')">🧹 Erase</button>
+    <button class="tb" id="tR" onclick="R.tool('restore')">✏️ Restore</button>
+    <div class="sp"></div>
+    <div class="rg"><label>Tol</label><input type="range" min="5" max="80" value="30" id="rTol" oninput="E('vTol').textContent=this.value"><span id="vTol">30</span></div>
+    <div class="rg"><label>Brush</label><input type="range" min="3" max="80" value="16" id="rBr" oninput="E('vBr').textContent=this.value"><span id="vBr">16</span></div>
+    <div class="sp"></div>
+    <button class="tb" onclick="R.undo()">↩</button>
+    <button class="tb" onclick="R.redo()">↪</button>
+    <button class="tb rd" onclick="R.back()">↺ New</button>
+  </div>
 
-        let originalFileName = "image";
+  <div class="ca" id="cA">
+    <div class="cb" id="cB">
+      <div class="cr">
+        <div class="ck" id="lCk"></div>
+        <div class="cl" id="lCl"></div>
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="ov" id="lOv"><img id="iO"></div>
+      <div class="sbar" id="sB"><div class="sk"></div></div>
+      <div class="stg l">BEFORE</div>
+      <div class="stg r">AFTER</div>
+    </div>
+    <div class="zr">
+      <button class="zb" onclick="R.zm(-10)">−</button>
+      <div class="zi" id="zL">100%</div>
+      <button class="zb" onclick="R.zm(10)">+</button>
+      <button class="zb" onclick="R.zf()">⊡</button>
+    </div>
+  </div>
 
-        // Drag and Drop Logic
-        document.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-        document.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
-        document.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-        });
+  <div class="bb">
+    <span class="bbl">BG:</span>
+    <div class="bgr">
+      <div class="bg chk on" onclick="R.bg('ck',this)"></div>
+      <div class="bg" style="background:#fff" onclick="R.bg('#fff',this)"></div>
+      <div class="bg" style="background:#000" onclick="R.bg('#000',this)"></div>
+      <div class="bg" style="background:#e53935" onclick="R.bg('#e53935',this)"></div>
+      <div class="bg" style="background:#1e88e5" onclick="R.bg('#1e88e5',this)"></div>
+      <div class="bg" style="background:#43a047" onclick="R.bg('#43a047',this)"></div>
+      <div class="bg" style="background:#ff8f00" onclick="R.bg('#ff8f00',this)"></div>
+      <div class="bgc"><input type="color" value="#ccc" onchange="R.bg(this.value,this.parentElement)"></div>
+    </div>
+    <div class="bbr">
+      <button class="bt bt1" onclick="R.back()">+ New</button>
+      <button class="bt bt2" onclick="R.dl()">⤓ Download</button>
+    </div>
+  </div>
+</div>
 
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) handleFile(e.target.files[0]);
-        });
+<div class="bcur" id="bcur"></div>
+<footer><b>Remove Background</b> — AI-powered, free, 100% private</footer>
+<div class="toast" id="tst"></div>
 
-        function handleFile(file) {
-            // Check if API Key is entered
-            if(apiKeyInput.value.trim() === "") {
-                alert("Bhai, Canva jaisi fast speed ke liye Remove.bg ki API key zaroori hai. Upar box me API key dalein.");
-                apiKeyInput.focus();
-                return;
-            }
+<script type="module">
+const E=id=>document.getElementById(id);
+const R=window.R={};
 
-            if (!file.type.startsWith('image/')) {
-                alert("Please select a valid JPG or PNG image.");
-                return;
-            }
+let AI=null,oImg=null,oUrl=null,oPx=null;
+let C,X,W=0,H=0,Z=100,T='view';
+let paint=false,lp=null,hist=[],hi=-1,cBg='ck';
+let timerInterval=null,startTime=0;
 
-            originalFileName = file.name.split('.')[0];
-            
-            // Switch to Processing UI
-            uploadArea.style.display = 'none';
-            document.querySelector('.api-setup').style.display = 'none';
-            processingArea.style.display = 'block';
+C=E('cv');X=C.getContext('2d',{willReadFrequently:true});
 
-            // Send to Cloud API (Super Fast)
-            removeBackgroundWithCloud(file);
+// File
+E('fi').addEventListener('change',e=>{if(e.target.files[0])go(e.target.files[0]);e.target.value=''});
+const dz=E('dz');
+dz.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')E('fi').click()});
+['dragenter','dragover'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.add('ov')}));
+['dragleave','drop'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.remove('ov')}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])go(e.dataTransfer.files[0])});
+document.addEventListener('paste',e=>{
+  const it=e.clipboardData?.items;if(!it)return;
+  for(let i of it)if(i.type.startsWith('image/')){e.preventDefault();go(i.getAsFile());break}
+});
+
+// Canvas
+C.addEventListener('mousedown',e=>{if(T!=='view')pd(gp(e))});
+C.addEventListener('mousemove',e=>{pm(gp(e));bc(e)});
+C.addEventListener('mouseup',pu);
+C.addEventListener('mouseleave',()=>{pu();E('bcur').style.display='none'});
+C.addEventListener('touchstart',e=>{if(T!=='view'){e.preventDefault();pd(gtp(e))}},{passive:false});
+C.addEventListener('touchmove',e=>{if(T!=='view'){e.preventDefault();pm(gtp(e))}},{passive:false});
+C.addEventListener('touchend',e=>{if(T!=='view'){e.preventDefault();pu()}},{passive:false});
+
+initSl();
+window.addEventListener('resize',()=>{if(oImg)R.zf()});
+
+function gp(e){const r=C.getBoundingClientRect();return{x:Math.round((e.clientX-r.left)*(W/r.width)),y:Math.round((e.clientY-r.top)*(H/r.height))}}
+function gtp(e){const t=e.touches[0],r=C.getBoundingClientRect();return{x:Math.round((t.clientX-r.left)*(W/r.width)),y:Math.round((t.clientY-r.top)*(H/r.height))}}
+
+// Timer
+function startTimer(){
+  startTime=Date.now();
+  timerInterval=setInterval(()=>{
+    const s=((Date.now()-startTime)/1000).toFixed(1);
+    E('timerTxt').textContent=s+'s elapsed';
+  },100);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  const s=((Date.now()-startTime)/1000).toFixed(1);
+  E('timerTxt').textContent=s+'s total';
+}
+
+// ===== MAIN =====
+async function go(file){
+  if(!file.type.startsWith('image/')){toast('Select an image',1);return}
+  if(file.size>20*1024*1024){toast('Max 20MB',1);return}
+
+  oUrl=URL.createObjectURL(file);
+  E('pImg').innerHTML=`<img src="${oUrl}">`;
+  pg(2);
+  startTimer();
+
+  sp(1,'Loading AI Engine...',AI?'Using cached model...':'Downloading small AI model (~5MB)...',5);
+  E('pT').textContent=AI?'⚡ Model already cached — will be fast!':'⏳ One-time download, cached for future use';
+
+  try{
+    if(!AI){
+      sp(1,'Downloading AI...','One-time: ~5MB model download',8);
+      let mod;
+      try{mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm')}
+      catch(e1){
+        console.warn('CDN1:',e1);
+        try{mod=await import('https://unpkg.com/@imgly/background-removal@1.5.5/dist/index.mjs')}
+        catch(e2){throw new Error('Cannot load AI. Check your internet.')}
+      }
+      AI=mod.removeBackground||mod.default;
+    }
+
+    sp(1,'AI Ready ✓','Loading your image...',18);
+
+    const img=new Image();
+    await new Promise((ok,no)=>{img.onload=ok;img.onerror=()=>no(new Error('Image load failed'));img.src=oUrl});
+    oImg=img;
+
+    // ⚡⚡⚡ KEY SPEED: Resize to MAX 640px
+    W=img.naturalWidth;H=img.naturalHeight;
+    const MAX=640;
+    if(W>MAX||H>MAX){const s=Math.min(MAX/W,MAX/H);W=Math.round(W*s);H=Math.round(H*s)}
+
+    const tc=document.createElement('canvas');tc.width=W;tc.height=H;
+    const tx=tc.getContext('2d');
+    tx.drawImage(img,0,0,W,H);
+    oPx=tx.getImageData(0,0,W,H);
+
+    const blob=await new Promise(r=>tc.toBlob(r,'image/png'));
+
+    sp(2,'Removing Background...','AI analyzing image...',25);
+    E('pT').textContent='🧠 Neural network detecting subject...';
+
+    let lastP=25;
+    const result=await AI(blob,{
+      output:{format:'image/png',quality:0.8},
+      progress:(key,cur,tot)=>{
+        if(!tot)return;
+        const r=cur/tot;
+        if(key.includes('fetch')||key.includes('load')||key.includes('download')){
+          const p=Math.round(8+r*14);
+          if(p>lastP){lastP=p;pr(p)}
+          E('pD').textContent=`Model: ${Math.round(r*100)}%`;
+        }else{
+          const p=Math.round(25+r*70);
+          if(p>lastP){lastP=p;pr(p)}
+          if(r>.2)sp(2,'Processing...','Separating foreground...',p);
+          if(r>.6)sp(3,'Finalizing...','Creating transparent image...',p);
         }
+      }
+    });
 
-        function removeBackgroundWithCloud(file) {
-            const apiKey = apiKeyInput.value.trim();
-            const formData = new FormData();
-            formData.append('image_file', file);
-            formData.append('size', 'auto'); // Auto adjust for best quality/speed
+    sp(3,'Done!','Preparing result...',97);
 
-            fetch('https://api.remove.bg/v1.0/removebg', {
-                method: 'POST',
-                headers: {
-                    'X-Api-Key': apiKey
-                },
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Invalid API Key ya Image me masla hai.");
-                return response.blob();
-            })
-            .then(blob => {
-                // Instantly generate image URL
-                const imageUrl = URL.createObjectURL(blob);
-                resultImage.src = imageUrl;
+    const rI=new Image();
+    const rU=URL.createObjectURL(result);
+    await new Promise((ok,no)=>{rI.onload=ok;rI.onerror=no;rI.src=rU});
 
-                // Setup Download Button
-                downloadBtn.onclick = () => {
-                    const a = document.createElement('a');
-                    a.href = imageUrl;
-                    a.download = `${originalFileName}_iLoveBG.png`;
-                    a.click();
-                };
+    C.width=W;C.height=H;
+    X.clearRect(0,0,W,H);
+    X.drawImage(rI,0,0,W,H);
+    URL.revokeObjectURL(rU);
 
-                // Switch to Result UI
-                processingArea.style.display = 'none';
-                resultArea.style.display = 'block';
-            })
-            .catch(error => {
-                console.error("Error: ", error);
-                alert(error.message + "\n\nTip: Check karein ke API key theek hai ya nahi.");
-                location.reload(); // Reset on error
-            });
-        }
-    </script>
+    E('iO').src=oUrl;
+    E('nb').style.display='flex';
+
+    hist=[];hi=-1;sh();
+    pr(100);
+    stopTimer();
+
+    setTimeout(()=>{
+      pg(3);R.zf();usl(50);R.tool('view');
+      const elapsed=((Date.now()-startTime)/1000).toFixed(1);
+      toast(`✓ Done in ${elapsed}s! Drag slider to compare.`);
+    },200);
+
+  }catch(err){
+    console.error(err);
+    stopTimer();
+    pg(1);
+    toast('Error: '+(err.message||'Failed. Try again.'),1);
+  }
+}
+
+// Processing UI
+function sp(n,h,d,p){
+  E('pH').textContent=h;E('pD').textContent=d;
+  if(p!==undefined)pr(p);
+  for(let i=1;i<=3;i++){
+    const dot=E('d'+i);dot.classList.remove('now','ok');
+    if(i<n){dot.classList.add('ok');dot.textContent='✓'}
+    else if(i===n){dot.classList.add('now');dot.textContent=i}
+    else dot.textContent=i;
+  }
+  E('l1').classList.toggle('ok',n>1);
+  E('l2').classList.toggle('ok',n>2);
+}
+function pr(p){E('pF').style.width=p+'%';E('pC').textContent=p+'%'}
+
+// Pages
+function pg(n){E('pgU').classList.toggle('on',n===1);E('pgP').classList.toggle('on',n===2);E('pgR').classList.toggle('on',n===3)}
+
+// ===== PUBLIC =====
+R.back=()=>{
+  pg(1);E('nb').style.display='none';
+  oImg=null;oPx=null;hist=[];hi=-1;
+  if(oUrl)URL.revokeObjectURL(oUrl);oUrl=null;
+  cBg='ck';R.bg('ck',document.querySelector('.bg.chk'));R.tool('view');
+};
+
+R.tool=(t)=>{
+  T=t;
+  E('tV').classList.toggle('on',t==='view');
+  E('tW').classList.toggle('on',t==='wand');
+  E('tE').classList.toggle('on',t==='erase');
+  E('tR').classList.toggle('on',t==='restore');
+  const cv=t==='view';
+  E('lOv').style.display=cv?'':'none';
+  E('sB').style.display=cv?'':'none';
+  document.querySelectorAll('.stg').forEach(l=>l.style.display=cv?'':'none');
+  C.style.cursor=t==='erase'||t==='restore'?'none':t==='wand'?'crosshair':'default';
+  E('bcur').style.display='none';
+};
+
+R.undo=()=>{if(hi<=0)return;hi--;X.putImageData(hist[hi],0,0);toast('↩ Undo')};
+R.redo=()=>{if(hi>=hist.length-1)return;hi++;X.putImageData(hist[hi],0,0);toast('↪ Redo')};
+
+R.bg=(b,el)=>{
+  document.querySelectorAll('.bg,.bgc').forEach(x=>x.classList.remove('on'));
+  if(el)el.classList.add('on');cBg=b;
+  E('lCk').style.display=b==='ck'?'block':'none';
+  E('lCl').style.display=b==='ck'?'none':'block';
+  if(b!=='ck')E('lCl').style.backgroundColor=b;
+};
+
+R.zm=(d)=>{Z=Math.max(20,Math.min(400,Z+d));az()};
+R.zf=()=>{const a=E('cA');Z=Math.round(Math.min((a.clientWidth-16)/W,(a.clientHeight-16)/H)*100);Z=Math.max(20,Math.min(400,Z));az()};
+
+R.dl=()=>{
+  if(!oImg)return;
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const cx=c.getContext('2d');
+  if(cBg!=='ck'){cx.fillStyle=cBg;cx.fillRect(0,0,W,H)}
+  cx.drawImage(C,0,0);
+  c.toBlob(b=>{
+    const u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download='no-background.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(u);toast('⤓ Downloaded!');
+  },'image/png');
+};
+
+// Brush cursor
+function bc(e){
+  if(T!=='erase'&&T!=='restore')return;
+  const c=E('bcur'),sz=parseInt(E('rBr').value)*Z/100;
+  c.style.display='block';c.style.width=sz+'px';c.style.height=sz+'px';
+  c.style.left=(e.clientX-sz/2)+'px';c.style.top=(e.clientY-sz/2)+'px';
+  c.style.border=`2px solid ${T==='erase'?'#c62828':'#1a9c6e'}`;
+  c.style.background=T==='erase'?'rgba(198,40,40,.04)':'rgba(26,156,110,.04)';
+}
+
+// Pointer
+function pd(pt){if(T==='wand'){wand(pt);return}paint=true;lp=pt;bat(pt)}
+function pm(pt){if(!paint)return;bln(lp,pt);lp=pt}
+function pu(){if(paint){paint=false;lp=null;sh()}}
+
+function wand(pt){
+  if(pt.x<0||pt.x>=W||pt.y<0||pt.y>=H)return;
+  const tol=parseInt(E('rTol').value),data=X.getImageData(0,0,W,H),d=data.data;
+  const si=(pt.y*W+pt.x)*4;
+  if(d[si+3]===0){toast('Already transparent');return}
+  const sr=d[si],sg=d[si+1],sb=d[si+2],tsq=tol*tol*3;
+  const vis=new Uint8Array(W*H),rem=[],q=[pt.y*W+pt.x];
+  while(q.length){
+    const idx=q.pop();if(vis[idx])continue;vis[idx]=1;
+    const pi=idx*4;if(d[pi+3]===0)continue;
+    const dr=d[pi]-sr,dg=d[pi+1]-sg,db=d[pi+2]-sb;
+    if(dr*dr+dg*dg+db*db>tsq)continue;
+    rem.push(idx);
+    const x=idx%W,y=(idx/W)|0;
+    if(x>0&&!vis[idx-1])q.push(idx-1);
+    if(x<W-1&&!vis[idx+1])q.push(idx+1);
+    if(y>0&&!vis[idx-W])q.push(idx-W);
+    if(y<H-1&&!vis[idx+W])q.push(idx+W);
+  }
+  rem.forEach(i=>{data.data[i*4+3]=0});
+  X.putImageData(data,0,0);sh();
+  toast(`✓ Removed ${rem.length.toLocaleString()} px`);
+}
+
+function bat(pt){
+  const sz=parseInt(E('rBr').value),r=sz/2;
+  if(T==='erase'){
+    X.save();X.globalCompositeOperation='destination-out';
+    X.beginPath();X.arc(pt.x,pt.y,r,0,Math.PI*2);X.fill();X.restore();
+  }else if(T==='restore'&&oPx){
+    const x0=Math.max(0,pt.x-r|0),y0=Math.max(0,pt.y-r|0);
+    const x1=Math.min(W,Math.ceil(pt.x+r)),y1=Math.min(H,Math.ceil(pt.y+r));
+    if(x1<=x0||y1<=y0)return;
+    const data=X.getImageData(x0,y0,x1-x0,y1-y0),dd=data.data,od=oPx.data;
+    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+      const dx=x-pt.x,dy=y-pt.y;
+      if(dx*dx+dy*dy<=r*r){
+        const di=((y-y0)*(x1-x0)+(x-x0))*4,oi=(y*W+x)*4;
+        dd[di]=od[oi];dd[di+1]=od[oi+1];dd[di+2]=od[oi+2];dd[di+3]=od[oi+3];
+      }
+    }
+    X.putImageData(data,x0,y0);
+  }
+}
+function bln(a,b){
+  if(!a||!b)return;
+  const dx=b.x-a.x,dy=b.y-a.y,n=Math.max(1,Math.sqrt(dx*dx+dy*dy)/2|0);
+  for(let i=0;i<=n;i++){const t=i/n;bat({x:Math.round(a.x+dx*t),y:Math.round(a.y+dy*t)})}
+}
+
+function sh(){hi++;hist=hist.slice(0,hi);hist.push(X.getImageData(0,0,W,H));if(hist.length>20){hist.shift();hi--}}
+
+function initSl(){
+  const box=E('cB');let dr=false;
+  function pos(e){const r=box.getBoundingClientRect();const cx=e.touches?e.touches[0].clientX:e.clientX;return Math.max(0,Math.min(100,((cx-r.left)/r.width)*100))}
+  box.addEventListener('mousedown',e=>{if(T==='view'){dr=true;usl(pos(e))}});
+  window.addEventListener('mousemove',e=>{if(dr){e.preventDefault();usl(pos(e))}});
+  window.addEventListener('mouseup',()=>dr=false);
+  box.addEventListener('touchstart',e=>{if(T==='view'){dr=true;usl(pos(e))}},{passive:true});
+  window.addEventListener('touchmove',e=>{if(dr)usl(pos(e))},{passive:true});
+  window.addEventListener('touchend',()=>dr=false);
+}
+function usl(p){E('lOv').style.clipPath=`inset(0 ${100-p}% 0 0)`;E('sB').style.left=p+'%'}
+function az(){E('cB').style.width=Math.round(W*Z/100)+'px';E('cB').style.height=Math.round(H*Z/100)+'px';C.style.width='100%';C.style.height='100%';E('zL').textContent=Z+'%'}
+
+function toast(m,e){const t=E('tst');t.textContent=m;t.className='toast'+(e?' er':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
+</script>
 </body>
 </html>
