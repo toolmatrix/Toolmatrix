@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖼️ Image Upscaler Pro - Free Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-image"></i>
+            <span>UpscaleR <sup>PRO</sup></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Upscale</a>
+            <a href="#features">Features</a>
+            <a href="#how">How it Works</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>🖼️ Image Upscaler</h1>
+        <p class="subtitle">Apni image ki quality aur size badhao - <span class="highlight">100% FREE</span></p>
+        <div class="badges">
+            <span class="badge"><i class="fas fa-bolt"></i> Fast</span>
+            <span class="badge"><i class="fas fa-lock"></i> Secure</span>
+            <span class="badge"><i class="fas fa-infinity"></i> Unlimited</span>
+            <span class="badge"><i class="fas fa-dollar-sign"></i> Free</span>
+        </div>
+    </div>
+</section>
+
+<!-- Main Tool Section -->
+<section class="tool-section" id="tool">
+    <div class="container">
+
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-content" id="uploadContent">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h2>Image Yahan Drop Karo</h2>
+                <p>ya click karke select karo</p>
+                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Image Choose Karo
+                </button>
+                <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                <p class="file-info">Supported: JPG, PNG, WEBP, BMP | Max: 50MB</p>
+            </div>
+        </div>
+
+        <!-- Preview & Settings Panel -->
+        <div class="workspace" id="workspace" style="display:none;">
+
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <button class="btn-back" onclick="resetTool()">
+                    <i class="fas fa-arrow-left"></i> Wapas Jao
+                </button>
+                <div class="file-count" id="fileCount">0 Images</div>
+                <button class="btn-add" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-plus"></i> Aur Add Karo
+                </button>
+            </div>
+
+            <!-- Main Workspace -->
+            <div class="workspace-grid">
+
+                <!-- Left: Image Preview -->
+                <div class="preview-panel">
+                    <h3><i class="fas fa-eye"></i> Preview</h3>
+                    <div class="preview-container">
+                        <div class="comparison-slider" id="comparisonSlider">
+                            <div class="original-side" id="originalSide">
+                                <img id="originalImg" src="" alt="Original">
+                                <span class="label-tag original-tag">ORIGINAL</span>
+                            </div>
+                            <div class="upscaled-side" id="upscaledSide">
+                                <canvas id="upscaledCanvas"></canvas>
+                                <span class="label-tag upscaled-tag">UPSCALED</span>
+                            </div>
+                            <div class="slider-line" id="sliderLine">
+                                <div class="slider-handle">
+                                    <i class="fas fa-arrows-alt-h"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Info -->
+                    <div class="image-info-grid">
+                        <div class="info-card original-info">
+                            <h4>📷 Original</h4>
+                            <p>Size: <span id="origSize">-</span></p>
+                            <p>Dimensions: <span id="origDim">-</span></p>
+                            <p>File Size: <span id="origFileSize">-</span></p>
+                        </div>
+                        <div class="info-card upscaled-info">
+                            <h4>✨ Upscaled</h4>
+                            <p>Size: <span id="upSize">-</span></p>
+                            <p>Dimensions: <span id="upDim">-</span></p>
+                            <p>Quality: <span id="upQuality">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Images List -->
+                    <div class="image-list" id="imageList"></div>
+                </div>
+
+                <!-- Right: Settings -->
+                <div class="settings-panel">
+                    <h3><i class="fas fa-sliders-h"></i> Settings</h3>
+
+                    <!-- Scale Factor -->
+                    <div class="setting-group">
+                        <label>📐 Upscale Factor</label>
+                        <div class="scale-buttons">
+                            <button class="scale-btn" data-scale="1.5" onclick="setScale(1.5, this)">1.5x</button>
+                            <button class="scale-btn active" data-scale="2" onclick="setScale(2, this)">2x</button>
+                            <button class="scale-btn" data-scale="3" onclick="setScale(3, this)">3x</button>
+                            <button class="scale-btn" data-scale="4" onclick="setScale(4, this)">4x</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Size -->
+                    <div class="setting-group">
+                        <label>📏 Custom Size (pixels)</label>
+                        <div class="custom-size">
+                            <div class="size-input">
+                                <span>W:</span>
+                                <input type="number" id="customWidth" placeholder="Width">
+                            </div>
+                            <button class="lock-btn" id="lockBtn" onclick="toggleLock()">
+                                <i class="fas fa-lock"></i>
+                            </button>
+                            <div class="size-input">
+                                <span>H:</span>
+                                <input type="number" id="customHeight" placeholder="Height">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quality -->
+                    <div class="setting-group">
+                        <label>💎 Quality</label>
+                        <div class="quality-slider">
+                            <input type="range" id="qualityRange" min="10" max="100" value="95">
+                            <span class="quality-value" id="qualityValue">95%</span>
+                        </div>
+                    </div>
+
+                    <!-- Enhancement -->
+                    <div class="setting-group">
+                        <label>🎨 Enhancement</label>
+                        
+                        <div class="enhancement-option">
+                            <span>Sharpness</span>
+                            <input type="range" id="sharpness" min="0" max="100" value="30">
+                            <span class="range-val" id="sharpVal">30%</span>
+                        </div>
+
+                        <div class="enhancement-option">
+                            <span>Brightness</span>
+                            <input type="range" id="brightness" min="-50" max="50" value="0">
+                            <span class="range-val" id="brightVal">0</span>
+                        </div>
+
+                        <div class="enhancement-option">
+                            <span>Contrast</span>
+                            <input type="range" id="contrast" min="-50" max="50" value="0">
+                            <span class="range-val" id="contrastVal">0</span>
+                        </div>
+
+                        <div class="enhancement-option">
+                            <span>Saturation</span>
+                            <input type="range" id="saturation" min="-50" max="50" value="0">
+                            <span class="range-val" id="satVal">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Noise Reduction -->
+                    <div class="setting-group">
+                        <label>🔇 Noise Reduction</label>
+                        <div class="toggle-options">
+                            <button class="toggle-btn active" onclick="setNoise('off', this)">Off</button>
+                            <button class="toggle-btn" onclick="setNoise('low', this)">Low</button>
+                            <button class="toggle-btn" onclick="setNoise('medium', this)">Medium</button>
+                            <button class="toggle-btn" onclick="setNoise('high', this)">High</button>
+                        </div>
+                    </div>
+
+                    <!-- Output Format -->
+                    <div class="setting-group">
+                        <label>📁 Output Format</label>
+                        <div class="format-buttons">
+                            <button class="format-btn active" onclick="setFormat('png', this)">PNG</button>
+                            <button class="format-btn" onclick="setFormat('jpeg', this)">JPG</button>
+                            <button class="format-btn" onclick="setFormat('webp', this)">WEBP</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-preview" onclick="previewUpscale()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                        <button class="btn-upscale" onclick="upscaleImage()">
+                            <i class="fas fa-magic"></i> Upscale Karo!
+                        </button>
+                        <button class="btn-download" id="btnDownload" onclick="downloadImage()" style="display:none;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn-download-all" id="btnDownloadAll" onclick="downloadAll()" style="display:none;">
+                            <i class="fas fa-file-archive"></i> Download All (ZIP)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-overlay" id="progressOverlay" style="display:none;">
+            <div class="progress-box">
+                <div class="progress-spinner"></div>
+                <h3 id="progressText">Upscaling...</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p id="progressPercent">0%</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <h2>🌟 Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fas fa-expand-arrows-alt"></i>
+            <h3>4x Upscale</h3>
+            <p>Image ko 4 guna bada karo bina quality khoye</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-magic"></i>
+            <h3>Auto Enhance</h3>
+            <p>Automatic sharpness aur clarity improve</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-images"></i>
+            <h3>Batch Process</h3>
+            <p>Multiple images ek saath process karo</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-tachometer-alt"></i>
+            <h3>Super Fast</h3>
+            <p>Browser mein hi process - koi upload nahi</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>100% Private</h3>
+            <p>Images kabhi server par nahi jaati</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-dollar-sign"></i>
+            <h3>Totally Free</h3>
+            <p>Koi payment nahi, koi watermark nahi</p>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works -->
+<section class="how-section" id="how">
+    <h2>📋 Kaise Use Karo?</h2>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Upload</h3>
+            <p>Image select ya drag & drop karo</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Settings</h3>
+            <p>Scale, quality aur effects choose karo</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Upscale</h3>
+            <p>"Upscale Karo!" button dabao</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Download</h3>
+            <p>HD image download karo</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>Made with ❤️ | Image Upscaler Pro - 100% Free Tool</p>
+    <p>Aapki images private hain - kuch bhi server par nahi jata</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
