@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPDF - Word to PDF Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+
+        :root{
+            --p:#4CAF50;--pl:#81C784;--plr:#C8E6C9;--plt:#E8F5E9;
+            --pd:#388E3C;--pdr:#2E7D32;--pdk:#1B5E20;
+            --bg:#F1F8E9;--bg2:#f5f9f0;--w:#fff;
+            --td:#1B5E20;--tm:#33691E;--tl:#558B2F;--tg:#757575;--tg2:#9E9E9E;
+            --red:#F44336;--rl:#FFEBEE;--blue:#2196F3;--bl:#E3F2FD;
+            --orange:#FF9800;--ol:#FFF3E0;--purple:#9C27B0;--pul:#F3E5F5;
+            --teal:#009688;--tel:#E0F2F1;--pink:#E91E63;--pkl:#FCE4EC;
+            --indigo:#3F51B5;--il:#E8EAF6;--amber:#FFC107;--al:#FFF8E1;
+            --ss:0 2px 8px rgba(0,0,0,0.06);
+            --s:0 4px 20px rgba(76,175,80,0.12);
+            --sl:0 10px 40px rgba(76,175,80,0.18);
+            --sxl:0 20px 60px rgba(76,175,80,0.22);
+            --r:16px;--rs:10px;--rx:8px;
+            --t:all .3s cubic-bezier(.4,0,.2,1);
+            --tf:all .15s ease
+        }
+
+        body{font-family:'Poppins',sans-serif;background:var(--bg);color:#333;min-height:100vh;overflow-x:hidden}
+
+        ::-webkit-scrollbar{width:8px;height:8px}
+        ::-webkit-scrollbar-track{background:var(--plt)}
+        ::-webkit-scrollbar-thumb{background:var(--pl);border-radius:10px}
+        ::-webkit-scrollbar-thumb:hover{background:var(--p)}
+
+        /* ========== NAVBAR ========== */
+        .nav{
+            background:linear-gradient(135deg,var(--pdr),var(--p));
+            padding:0 40px;height:64px;display:flex;align-items:center;
+            justify-content:space-between;
+            box-shadow:0 4px 25px rgba(46,125,50,.35);
+            position:sticky;top:0;z-index:1000
+        }
+        .nav-brand{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
+        .nav-brand .ico{
+            width:40px;height:40px;background:rgba(255,255,255,.2);
+            border-radius:12px;display:flex;align-items:center;justify-content:center;
+            font-size:20px;color:#fff;backdrop-filter:blur(10px)
+        }
+        .nav-brand .txt{font-size:22px;font-weight:700;color:#fff}
+        .nav-brand .txt span{color:#A5D6A7;font-weight:400}
+        .nav-links{display:flex;align-items:center;gap:5px}
+        .nav-links a{
+            color:rgba(255,255,255,.8);text-decoration:none;
+            padding:8px 18px;border-radius:var(--rx);font-size:14px;
+            font-weight:500;transition:var(--t)
+        }
+        .nav-links a:hover,.nav-links a.act{background:rgba(255,255,255,.2);color:#fff}
+
+        /* ========== HERO ========== */
+        .hero{
+            text-align:center;padding:55px 20px 35px;
+            background:linear-gradient(180deg,var(--plt),var(--bg));
+            position:relative;overflow:hidden
+        }
+        .hero::before{
+            content:'';position:absolute;width:500px;height:500px;
+            background:radial-gradient(circle,rgba(76,175,80,.07),transparent 70%);
+            top:-150px;left:-150px;border-radius:50%
+        }
+        .hero::after{
+            content:'';position:absolute;width:400px;height:400px;
+            background:radial-gradient(circle,rgba(76,175,80,.05),transparent 70%);
+            bottom:-150px;right:-100px;border-radius:50%
+        }
+        .hero-badge{
+            display:inline-flex;align-items:center;gap:8px;
+            background:var(--w);padding:8px 22px;border-radius:50px;
+            font-size:13px;font-weight:600;color:var(--pd);
+            margin-bottom:20px;box-shadow:var(--ss);border:1px solid var(--plr)
+        }
+        .hero-badge i{color:var(--p)}
+        .hero h1{
+            font-size:46px;font-weight:800;color:var(--td);
+            margin-bottom:14px;line-height:1.2;position:relative
+        }
+        .hero h1 .gr{
+            background:linear-gradient(135deg,var(--p),var(--pd));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text
+        }
+        .hero p{
+            font-size:18px;color:var(--tl);max-width:560px;
+            margin:0 auto;font-weight:400;line-height:1.6;position:relative
+        }
+
+        /* ========== FEATURES BAR ========== */
+        .feat-bar{
+            display:flex;justify-content:center;gap:40px;
+            padding:30px 20px 10px;flex-wrap:wrap;position:relative
+        }
+        .feat-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tm);font-weight:500}
+        .feat-item i{color:var(--p);font-size:16px}
+
+        /* ========== TOOLS GRID ========== */
+        .tools-sec{padding:35px 40px 60px;max-width:1200px;margin:0 auto}
+        .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+        .sec-ttl{font-size:22px;font-weight:700;color:var(--td);display:flex;align-items:center;gap:10px}
+        .sec-ttl i{color:var(--p);font-size:20px}
+
+        .tools-grid{
+            display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px
+        }
+        .t-card{
+            background:var(--w);border-radius:var(--r);padding:28px 20px;
+            text-align:center;cursor:pointer;transition:var(--t);
+            border:2px solid transparent;box-shadow:var(--ss);
+            position:relative;overflow:hidden
+        }
+        .t-card::after{
+            content:'';position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,var(--pl),var(--p));
+            transform:scaleX(0);transition:var(--t)
+        }
+        .t-card:hover{transform:translateY(-6px);box-shadow:var(--sl);border-color:var(--plr)}
+        .t-card:hover::after{transform:scaleX(1)}
+        .t-card .t-ico{
+            width:64px;height:64px;border-radius:18px;
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 14px;font-size:26px;transition:var(--t)
+        }
+        .t-card:hover .t-ico{transform:scale(1.1)}
+        .t-card h3{font-size:15px;font-weight:600;color:var(--td);margin-bottom:5px}
+        .t-card p{font-size:12px;color:var(--tg);line-height:1.5}
+        .t-card .badge{
+            position:absolute;top:12px;right:12px;background:var(--p);
+            color:#fff;font-size:9px;font-weight:700;padding:3px 8px;
+            border-radius:50px;text-transform:uppercase;letter-spacing:.5px
+        }
+
+        .ic-g{background:var(--plt);color:var(--p)}
+        .ic-b{background:var(--bl);color:var(--blue)}
+        .ic-o{background:var(--ol);color:var(--orange)}
+        .ic-r{background:var(--rl);color:var(--red)}
+        .ic-p{background:var(--pul);color:var(--purple)}
+        .ic-t{background:var(--tel);color:var(--teal)}
+        .ic-pk{background:var(--pkl);color:var(--pink)}
+        .ic-i{background:var(--il);color:var(--indigo)}
+        .ic-a{background:var(--al);color:var(--amber)}
+
+        /* ========== HOW IT WORKS ========== */
+        .how{padding:50px 40px 60px;max-width:950px;margin:0 auto;text-align:center}
+        .how h2{font-size:28px;font-weight:700;color:var(--td);margin-bottom:40px}
+        .how-steps{display:flex;gap:25px;justify-content:center;flex-wrap:wrap}
+        .how-step{flex:1;min-width:200px;max-width:260px;position:relative}
+        .step-n{
+            width:55px;height:55px;
+            background:linear-gradient(135deg,var(--pl),var(--p));
+            color:#fff;font-size:22px;font-weight:800;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 14px;box-shadow:0 6px 20px rgba(76,175,80,.3)
+        }
+        .how-step h4{font-size:16px;font-weight:600;color:var(--td);margin-bottom:6px}
+        .how-step p{font-size:13px;color:var(--tg);line-height:1.5}
+        .step-arrow{
+            position:absolute;top:25px;right:-30px;font-size:24px;color:var(--plr);
+            display:flex;align-items:center
+        }
+
+        /* ========== CONVERTER PAGE ========== */
+        .conv-page{display:none}
+        .conv-page.act{display:block}
+
+        .conv-hero{
+            text-align:center;padding:45px 20px 30px;
+            background:linear-gradient(180deg,var(--plt),var(--bg))
+        }
+        .conv-hero .h-ico{
+            width:85px;height:85px;
+            background:linear-gradient(135deg,var(--pl),var(--p));
+            border-radius:24px;display:flex;align-items:center;justify-content:center;
+            margin:0 auto 18px;font-size:36px;color:#fff;
+            box-shadow:0 10px 30px rgba(76,175,80,.3)
+        }
+        .conv-hero h1{font-size:36px;font-weight:800;color:var(--td);margin-bottom:10px}
+        .conv-hero p{font-size:16px;color:var(--tl);max-width:520px;margin:0 auto}
+
+        /* ========== UPLOAD AREA ========== */
+        .up-wrap{max-width:750px;margin:-15px auto 0;padding:0 20px 50px;position:relative;z-index:5}
+        .back-btn{
+            display:inline-flex;align-items:center;gap:8px;color:var(--pd);
+            font-weight:600;font-size:14px;cursor:pointer;margin-bottom:20px;
+            padding:10px 20px;border-radius:var(--rx);transition:var(--t);
+            border:none;background:var(--w);box-shadow:var(--ss);font-family:'Poppins',sans-serif
+        }
+        .back-btn:hover{background:var(--plt);box-shadow:var(--s)}
+
+        .up-area{
+            background:var(--w);border:3px dashed var(--pl);
+            border-radius:22px;padding:60px 40px;text-align:center;
+            cursor:pointer;transition:var(--t);position:relative;overflow:hidden
+        }
+        .up-area::before{
+            content:'';position:absolute;inset:0;
+            background:linear-gradient(135deg,rgba(76,175,80,.02),rgba(76,175,80,.05));
+            pointer-events:none
+        }
+        .up-area:hover,.up-area.dragover{
+            border-color:var(--p);background:var(--plt);
+            transform:scale(1.01);box-shadow:var(--sl)
+        }
+        .up-area.dragover{border-style:solid}
+
+        .up-ico{
+            width:100px;height:100px;
+            background:linear-gradient(135deg,var(--pl),var(--p));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            margin:0 auto 22px;font-size:42px;color:#fff;
+            box-shadow:0 10px 30px rgba(76,175,80,.3);position:relative
+        }
+        .up-ico::after{
+            content:'';position:absolute;width:120px;height:120px;
+            border:2px dashed rgba(76,175,80,.3);border-radius:50%;
+            animation:pulse 2s ease infinite
+        }
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.5}}
+
+        .up-area h3{font-size:23px;font-weight:700;color:var(--td);margin-bottom:8px}
+        .up-area .sub{color:var(--tg);font-size:14px;margin-bottom:22px}
+        .up-area .fmt{font-size:12px;color:var(--tg2);margin-top:15px}
+
+        .sel-btn{
+            background:linear-gradient(135deg,var(--p),var(--pd));
+            color:#fff;border:none;padding:15px 48px;border-radius:50px;
+            font-size:16px;font-weight:600;cursor:pointer;transition:var(--t);
+            font-family:'Poppins',sans-serif;
+            box-shadow:0 6px 20px rgba(76,175,80,.3);
+            display:inline-flex;align-items:center;gap:10px
+        }
+        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(76,175,80,.4)}
+
+        .file-input{display:none}
+
+        /* ========== FILE INFO ========== */
+        .file-info-card{
+            display:none;background:var(--w);border-radius:var(--r);
+            padding:18px 22px;margin-top:22px;box-shadow:var(--ss);
+            border:1px solid var(--plr);align-items:center;gap:15px
+        }
+        .file-info-card.show{display:flex}
+        .file-info-card .f-icon{
+            width:52px;height:52px;background:var(--bl);
+            border-radius:14px;display:flex;align-items:center;
+            justify-content:center;font-size:24px;color:var(--blue);flex-shrink:0
+        }
+        .file-info-card .f-details{flex:1;text-align:left}
+        .file-info-card .f-name{font-size:14px;font-weight:600;color:var(--td);word-break:break-all}
+        .file-info-card .f-size{font-size:12px;color:var(--tg);margin-top:2px}
+        .file-info-card .f-remove{
+            background:none;border:none;color:var(--red);cursor:pointer;
+            font-size:20px;padding:8px;border-radius:8px;transition:var(--tf)
+        }
+        .file-info-card .f-remove:hover{background:var(--rl)}
+
+        /* ========== WORKSPACE ========== */
+        .workspace{display:none;max-width:1000px;margin:0 auto;padding:0 20px 60px}
+        .workspace.act{display:block}
+
+        .ws-header{
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:20px;flex-wrap:wrap;gap:12px
+        }
+        .ws-title{
+            font-size:18px;font-weight:700;color:var(--td);
+            display:flex;align-items:center;gap:10px
+        }
+
+        .ws-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+        .btn{
+            padding:10px 22px;border-radius:var(--rs);font-size:13px;
+            font-weight:600;cursor:pointer;transition:var(--t);
+            font-family:'Poppins',sans-serif;display:inline-flex;
+            align-items:center;gap:8px;border:2px solid transparent
+        }
+        .btn-out{background:var(--w);color:var(--pd);border-color:var(--plr)}
+        .btn-out:hover{background:var(--plt);border-color:var(--pl)}
+        .btn-red{background:var(--w);color:var(--red);border-color:#FFCDD2}
+        .btn-red:hover{background:var(--rl)}
+        .btn-pri{
+            background:linear-gradient(135deg,var(--p),var(--pd));
+            color:#fff;box-shadow:0 4px 15px rgba(76,175,80,.3)
+        }
+        .btn-pri:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(76,175,80,.4)}
+        .btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+        /* ========== SETTINGS PANEL ========== */
+        .settings{
+            background:var(--w);border-radius:var(--r);padding:22px 25px;
+            margin-bottom:22px;box-shadow:var(--ss);
+            display:flex;align-items:center;gap:25px;flex-wrap:wrap;
+            border:1px solid var(--plr)
+        }
+        .set-grp{display:flex;align-items:center;gap:10px}
+        .set-grp label{font-size:13px;font-weight:600;color:var(--td);white-space:nowrap}
+        .set-grp label i{color:var(--p);margin-right:4px}
+        .set-grp select{
+            padding:9px 35px 9px 14px;border:2px solid var(--plr);
+            border-radius:var(--rx);font-size:13px;font-family:'Poppins',sans-serif;
+            color:var(--td);outline:none;transition:var(--t);background:var(--w);
+            cursor:pointer;appearance:none;-webkit-appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234CAF50' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;background-position:right 12px center
+        }
+        .set-grp select:focus{border-color:var(--p)}
+
+        /* ========== PREVIEW PANEL ========== */
+        .preview-panel{
+            background:var(--w);border-radius:var(--r);
+            box-shadow:var(--ss);border:1px solid var(--plr);
+            overflow:hidden;margin-bottom:25px
+        }
+        .preview-header{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:14px 22px;background:var(--plt);
+            border-bottom:1px solid var(--plr)
+        }
+        .preview-header .ph-left{
+            display:flex;align-items:center;gap:10px;
+            font-size:15px;font-weight:600;color:var(--td)
+        }
+        .preview-header .ph-left i{color:var(--p)}
+        .preview-header .ph-right{display:flex;gap:6px}
+        .preview-header .ph-btn{
+            width:32px;height:32px;border-radius:8px;border:1px solid var(--plr);
+            background:var(--w);color:var(--pd);cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            font-size:13px;transition:var(--tf)
+        }
+        .preview-header .ph-btn:hover{background:var(--plr);color:var(--pdr)}
+
+        .preview-body{
+            padding:30px;max-height:600px;overflow-y:auto;
+            background:#FAFAFA;position:relative
+        }
+        .preview-body .doc-content{
+            background:var(--w);max-width:700px;margin:0 auto;
+            padding:50px 55px;min-height:400px;
+            box-shadow:0 2px 15px rgba(0,0,0,.08);
+            border:1px solid #e8e8e8;font-size:14px;
+            line-height:1.8;color:#333;border-radius:4px;
+            word-wrap:break-word
+        }
+        .preview-body .doc-content h1{font-size:26px;font-weight:700;color:#1a1a1a;margin:20px 0 12px}
+        .preview-body .doc-content h2{font-size:22px;font-weight:600;color:#2a2a2a;margin:18px 0 10px}
+        .preview-body .doc-content h3{font-size:18px;font-weight:600;color:#3a3a3a;margin:15px 0 8px}
+        .preview-body .doc-content p{margin:8px 0;line-height:1.8}
+        .preview-body .doc-content ul,.preview-body .doc-content ol{margin:8px 0 8px 20px}
+        .preview-body .doc-content li{margin:4px 0}
+        .preview-body .doc-content table{
+            border-collapse:collapse;width:100%;margin:12px 0
+        }
+        .preview-body .doc-content table td,
+        .preview-body .doc-content table th{
+            border:1px solid #ddd;padding:8px 12px;text-align:left;font-size:13px
+        }
+        .preview-body .doc-content table th{background:#f5f5f5;font-weight:600}
+        .preview-body .doc-content img{max-width:100%;height:auto;margin:10px 0;border-radius:4px}
+        .preview-body .doc-content a{color:var(--blue);text-decoration:underline}
+        .preview-body .doc-content strong{font-weight:700}
+        .preview-body .doc-content em{font-style:italic}
+        .preview-body .doc-content blockquote{
+            border-left:4px solid var(--plr);padding:10px 20px;
+            margin:12px 0;background:var(--plt);border-radius:0 8px 8px 0;
+            font-style:italic;color:#555
+        }
+
+        .preview-empty{
+            text-align:center;padding:60px 20px;color:var(--tg)
+        }
+        .preview-empty i{font-size:50px;color:var(--plr);margin-bottom:15px;display:block}
+        .preview-empty p{font-size:15px;font-weight:500}
+
+        /* ========== WORD COUNT BAR ========== */
+        .info-bar{
+            display:flex;gap:20px;padding:12px 22px;
+            background:var(--plt);border-top:1px solid var(--plr);
+            flex-wrap:wrap
+        }
+        .info-item{font-size:12px;color:var(--tm);font-weight:500;display:flex;align-items:center;gap:5px}
+        .info-item i{color:var(--p);font-size:11px}
+        .info-item span{font-weight:700;color:var(--pd)}
+
+        /* ========== CONVERT SECTION ========== */
+        .conv-sec{text-align:center;padding:30px 0}
+        .conv-btn{
+            background:linear-gradient(135deg,var(--p),var(--pdk));
+            color:#fff;border:none;padding:18px 65px;border-radius:60px;
+            font-size:18px;font-weight:700;cursor:pointer;transition:var(--t);
+            font-family:'Poppins',sans-serif;
+            box-shadow:0 8px 30px rgba(76,175,80,.35);
+            display:inline-flex;align-items:center;gap:12px;letter-spacing:.3px
+        }
+        .conv-btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 40px rgba(76,175,80,.45)}
+        .conv-btn:active{transform:translateY(0) scale(.98)}
+        .conv-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .conv-btn i{font-size:20px}
+
+        /* ========== PROGRESS ========== */
+        .prog-sec{display:none;max-width:500px;margin:0 auto;padding:25px 0}
+        .prog-sec.show{display:block}
+        .prog-outer{background:var(--plr);border-radius:50px;height:10px;overflow:hidden;margin-bottom:12px}
+        .prog-inner{
+            background:linear-gradient(90deg,var(--pl),var(--p));
+            height:100%;border-radius:50px;transition:width .4s ease;width:0%;position:relative
+        }
+        .prog-inner::after{
+            content:'';position:absolute;inset:0;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.3) 50%,transparent);
+            animation:shimmer 1.5s infinite
+        }
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .prog-lbl{text-align:center;font-size:13px;color:var(--tg);font-weight:500}
+
+        .prog-steps{
+            display:flex;justify-content:center;gap:8px;margin-top:15px;flex-wrap:wrap
+        }
+        .prog-step{
+            display:flex;align-items:center;gap:6px;font-size:12px;
+            color:var(--tg2);font-weight:500;padding:4px 12px;
+            border-radius:20px;background:var(--plt);border:1px solid var(--plr)
+        }
+        .prog-step.active{color:var(--pd);border-color:var(--pl);background:var(--plr)}
+        .prog-step.done{color:var(--p);border-color:var(--p)}
+        .prog-step i{font-size:10px}
+
+        /* ========== RESULT ========== */
+        .result{display:none;text-align:center;padding:40px 20px}
+        .result.show{display:block}
+        .result-ico{
+            width:95px;height:95px;
+            background:linear-gradient(135deg,var(--pl),var(--p));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            margin:0 auto 22px;font-size:42px;color:#fff;
+            box-shadow:0 10px 30px rgba(76,175,80,.3);animation:pop .5s cubic-bezier(.68,-.55,.27,1.55)
+        }
+        @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+
+        .result h2{font-size:28px;font-weight:700;color:var(--td);margin-bottom:8px}
+        .result .r-info{font-size:14px;color:var(--tg);margin-bottom:28px}
+
+        .result-stats{
+            display:flex;justify-content:center;gap:25px;margin-bottom:28px;flex-wrap:wrap
+        }
+        .stat-item{
+            background:var(--plt);padding:12px 24px;border-radius:12px;
+            border:1px solid var(--plr);text-align:center;min-width:110px
+        }
+        .stat-item .stat-val{font-size:20px;font-weight:700;color:var(--pd)}
+        .stat-item .stat-lbl{font-size:11px;color:var(--tg);margin-top:2px}
+
+        .result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+        .r-btn{
+            padding:14px 38px;border-radius:50px;font-size:15px;font-weight:600;
+            cursor:pointer;transition:var(--t);font-family:'Poppins',sans-serif;
+            display:inline-flex;align-items:center;gap:10px;border:2px solid transparent
+        }
+        .r-btn-pri{
+            background:linear-gradient(135deg,var(--p),var(--pd));
+            color:#fff;box-shadow:0 6px 20px rgba(76,175,80,.3)
+        }
+        .r-btn-pri:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(76,175,80,.4)}
+        .r-btn-out{background:var(--w);color:var(--pd);border-color:var(--plr)}
+        .r-btn-out:hover{background:var(--plt);border-color:var(--pl)}
+
+        /* ========== LOADING ========== */
+        .loading{
+            display:none;position:fixed;inset:0;
+            background:rgba(255,255,255,.92);z-index:9999;
+            align-items:center;justify-content:center;
+            flex-direction:column;gap:20px;backdrop-filter:blur(5px)
+        }
+        .loading.show{display:flex}
+        .spinner{
+            width:55px;height:55px;border:5px solid var(--plr);
+            border-top:5px solid var(--p);border-radius:50%;
+            animation:spin .9s linear infinite
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .load-txt{font-size:16px;font-weight:500;color:var(--td)}
+
+        /* ========== TOAST ========== */
+        .toast{
+            position:fixed;bottom:30px;right:30px;padding:14px 24px;
+            border-radius:14px;font-size:14px;font-weight:500;
+            box-shadow:var(--sl);z-index:10000;
+            transform:translateX(420px);opacity:0;transition:var(--t);
+            display:flex;align-items:center;gap:10px;max-width:380px
+        }
+        .toast.show{transform:translateX(0);opacity:1}
+        .t-suc{background:var(--pd);color:#fff}
+        .t-err{background:var(--red);color:#fff}
+        .t-inf{background:var(--blue);color:#fff}
+
+        /* ========== FOOTER ========== */
+        .footer{
+            background:var(--pdr);color:rgba(255,255,255,.7);
+            text-align:center;padding:25px 20px;font-size:13px
+        }
+        .footer a{color:var(--plr);text-decoration:none}
+        .footer a:hover{color:#fff}
+        .footer-links{display:flex;justify-content:center;gap:25px;margin-bottom:10px}
+
+        /* ========== RESPONSIVE ========== */
+        @media(max-width:768px){
+            .nav{padding:0 15px}
+            .nav-links{display:none}
+            .hero h1{font-size:30px}
+            .hero p{font-size:15px}
+            .tools-sec{padding:25px 15px 40px}
+            .tools-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+            .t-card{padding:20px 14px}
+            .t-card .t-ico{width:52px;height:52px;font-size:22px}
+            .conv-hero h1{font-size:26px}
+            .up-area{padding:40px 20px}
+            .settings{padding:15px;gap:15px}
+            .preview-body .doc-content{padding:30px 25px}
+            .conv-btn{padding:15px 40px;font-size:16px}
+            .feat-bar{gap:20px;padding:20px 15px 5px}
+            .how-steps{flex-direction:column;align-items:center}
+            .step-arrow{display:none!important}
+            .result-stats{gap:12px}
+            .stat-item{min-width:90px;padding:10px 18px}
+        }
+        @media(max-width:480px){
+            .tools-grid{grid-template-columns:repeat(2,1fr)}
+            .ws-header{flex-direction:column;align-items:flex-start}
+            .settings{flex-direction:column;align-items:flex-start}
+            .info-bar{gap:12px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a class="nav-brand" onclick="showHome()">
+        <div class="ico"><i class="fas fa-leaf"></i></div>
+        <div class="txt">Green<span>PDF</span></div>
+    </a>
+    <div class="nav-links">
+        <a href="#" class="act" id="nHome" onclick="showHome()">Home</a>
+        <a href="#" id="nTool" onclick="showConv()">Word to PDF</a>
+        <a href="#" id="nAll">All Tools</a>
+    </div>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="homePage">
+    <div class="hero">
+        <div class="hero-badge"><i class="fas fa-bolt"></i> 100% Free & Secure</div>
+        <h1>Convert <span class="gr">Word to PDF</span> Online</h1>
+        <p>Transform your Word documents into professional PDFs instantly. Free, fast, and no watermarks!</p>
+    </div>
+
+    <div class="feat-bar">
+        <div class="feat-item"><i class="fas fa-check-circle"></i> No Watermarks</div>
+        <div class="feat-item"><i class="fas fa-lock"></i> 100% Secure</div>
+        <div class="feat-item"><i class="fas fa-bolt"></i> Instant Convert</div>
+        <div class="feat-item"><i class="fas fa-cloud"></i> Works Online</div>
+        <div class="feat-item"><i class="fas fa-infinity"></i> Unlimited Files</div>
+    </div>
+
+    <div class="tools-sec">
+        <div class="sec-hdr">
+            <div class="sec-ttl"><i class="fas fa-th-large"></i> All PDF Tools</div>
+        </div>
+        <div class="tools-grid">
+            <div class="t-card" onclick="showConv()">
+                <span class="badge">Popular</span>
+                <div class="t-ico ic-b"><i class="fas fa-file-word"></i></div>
+                <h3>Word to PDF</h3>
+                <p>Convert DOC & DOCX files to PDF</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-g"><i class="fas fa-file-image"></i></div>
+                <h3>JPG to PDF</h3>
+                <p>Convert images to PDF document</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-o"><i class="fas fa-file-excel"></i></div>
+                <h3>Excel to PDF</h3>
+                <p>Convert spreadsheets to PDF</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-r"><i class="fas fa-file-powerpoint"></i></div>
+                <h3>PPT to PDF</h3>
+                <p>Convert presentations to PDF</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-p"><i class="fas fa-compress-arrows-alt"></i></div>
+                <h3>Compress PDF</h3>
+                <p>Reduce PDF file size easily</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-t"><i class="fas fa-object-ungroup"></i></div>
+                <h3>Merge PDF</h3>
+                <p>Combine multiple PDFs into one</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-pk"><i class="fas fa-cut"></i></div>
+                <h3>Split PDF</h3>
+                <p>Separate PDF into multiple files</p>
+            </div>
+            <div class="t-card" onclick="showConv()">
+                <div class="t-ico ic-i"><i class="fas fa-eye"></i></div>
+                <h3>PDF Viewer</h3>
+                <p>View and read PDF files online</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="how">
+        <h2>How It Works — 3 Easy Steps</h2>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="step-n">1</div>
+                <h4>Upload Word File</h4>
+                <p>Select or drag & drop your .docx or .doc Word file</p>
+                <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="how-step">
+                <div class="step-n">2</div>
+                <h4>Preview & Settings</h4>
+                <p>Preview your document and customize PDF settings</p>
+                <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="how-step">
+                <div class="step-n">3</div>
+                <h4>Convert & Download</h4>
+                <p>Click convert and download your PDF instantly</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-links">
+            <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a><a href="#">About</a>
+        </div>
+        Made with 💚 by <a href="#">GreenPDF</a> — Free Word to PDF Converter
+    </div>
+</div>
+
+<!-- ===== CONVERTER PAGE ===== -->
+<div class="conv-page" id="convPage">
+    <div class="conv-hero">
+        <div class="h-ico"><i class="fas fa-file-word"></i></div>
+        <h1>Word to PDF</h1>
+        <p>Convert your Word documents (.docx) to PDF format with perfect formatting.</p>
+    </div>
+
+    <!-- Upload -->
+    <div class="up-wrap" id="upWrap">
+        <button class="back-btn" onclick="showHome()"><i class="fas fa-arrow-left"></i> Back to Home</button>
+        <div class="up-area" id="upArea">
+            <div class="up-ico"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Select Your Word File</h3>
+            <p class="sub">Drag & drop your file here, or click to browse</p>
+            <button class="sel-btn" onclick="event.stopPropagation();$('fInput').click()">
+                <i class="fas fa-folder-open"></i> Select Word File
+            </button>
+            <p class="fmt"><i class="fas fa-info-circle"></i> Supported: .DOCX (Microsoft Word)</p>
+            <input type="file" id="fInput" class="file-input" accept=".docx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+        </div>
+        <div class="file-info-card" id="fileCard">
+            <div class="f-icon"><i class="fas fa-file-word"></i></div>
+            <div class="f-details">
+                <div class="f-name" id="fName">document.docx</div>
+                <div class="f-size" id="fSize">2.5 MB</div>
+            </div>
+            <button class="f-remove" onclick="removeFile()"><i class="fas fa-times-circle"></i></button>
+        </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace" id="ws">
+        <button class="back-btn" onclick="showConv()"><i class="fas fa-arrow-left"></i> Upload New File</button>
+
+        <div class="ws-header">
+            <div class="ws-title">
+                <i class="fas fa-file-alt" style="color:var(--p)"></i>
+                Document Preview
+            </div>
+            <div class="ws-actions">
+                <button class="btn btn-out" onclick="$('addInput').click()">
+                    <i class="fas fa-exchange-alt"></i> Change File
+                </button>
+                <input type="file" id="addInput" class="file-input" accept=".docx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <button class="btn btn-red" onclick="removeFile()">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="settings">
+            <div class="set-grp">
+                <label><i class="fas fa-file-alt"></i> Page Size:</label>
+                <select id="pgSize">
+                    <option value="a4">A4 (210×297mm)</option>
+                    <option value="letter">Letter (8.5×11in)</option>
+                    <option value="legal">Legal (8.5×14in)</option>
+                    <option value="a3">A3 (297×420mm)</option>
+                    <option value="a5">A5 (148×210mm)</option>
+                </select>
+            </div>
+            <div class="set-grp">
+                <label><i class="fas fa-arrows-alt-v"></i> Orientation:</label>
+                <select id="orient">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+            <div class="set-grp">
+                <label><i class="fas fa-border-style"></i> Margin:</label>
+                <select id="margin">
+                    <option value="5">Narrow (5mm)</option>
+                    <option value="10" selected>Normal (10mm)</option>
+                    <option value="15">Medium (15mm)</option>
+                    <option value="25">Wide (25mm)</option>
+                </select>
+            </div>
+            <div class="set-grp">
+                <label><i class="fas fa-text-height"></i> Font Size:</label>
+                <select id="fontSize">
+                    <option value="10">Small (10px)</option>
+                    <option value="12" selected>Normal (12px)</option>
+                    <option value="14">Large (14px)</option>
+                    <option value="16">Extra Large (16px)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <div class="ph-left">
+                    <i class="fas fa-eye"></i>
+                    <span>Document Preview</span>
+                    <span id="prevFileName" style="font-weight:400;color:var(--tg);font-size:13px"></span>
+                </div>
+                <div class="ph-right">
+                    <button class="ph-btn" onclick="zoomPreview(-1)" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                    <button class="ph-btn" onclick="zoomPreview(1)" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                    <button class="ph-btn" onclick="toggleFullPreview()" title="Fullscreen"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="preview-body" id="prevBody">
+                <div class="doc-content" id="docContent">
+                    <div class="preview-empty">
+                        <i class="fas fa-file-word"></i>
+                        <p>Your document preview will appear here</p>
+                    </div>
+                </div>
+            </div>
+            <div class="info-bar" id="infoBar" style="display:none">
+                <div class="info-item"><i class="fas fa-font"></i> Words: <span id="wordCount">0</span></div>
+                <div class="info-item"><i class="fas fa-paragraph"></i> Paragraphs: <span id="paraCount">0</span></div>
+                <div class="info-item"><i class="fas fa-text-width"></i> Characters: <span id="charCount">0</span></div>
+                <div class="info-item"><i class="fas fa-image"></i> Images: <span id="imgCount">0</span></div>
+                <div class="info-item"><i class="fas fa-table"></i> Tables: <span id="tableCount">0</span></div>
+            </div>
+        </div>
+
+        <!-- Convert -->
+        <div class="conv-sec">
+            <div class="prog-sec" id="progSec">
+                <div class="prog-outer">
+                    <div class="prog-inner" id="progBar"></div>
+                </div>
+                <div class="prog-lbl" id="progLbl">Converting...</div>
+                <div class="prog-steps">
+                    <div class="prog-step" id="ps1"><i class="fas fa-circle"></i> Reading</div>
+                    <div class="prog-step" id="ps2"><i class="fas fa-circle"></i> Processing</div>
+                    <div class="prog-step" id="ps3"><i class="fas fa-circle"></i> Rendering</div>
+                    <div class="prog-step" id="ps4"><i class="fas fa-circle"></i> Generating</div>
+                </div>
+            </div>
+            <button class="conv-btn" id="convBtn" onclick="convertToPDF()">
+                <i class="fas fa-magic"></i> Convert to PDF
+            </button>
+        </div>
+
+        <!-- Result -->
+        <div class="result" id="resultSec">
+            <div class="result-ico"><i class="fas fa-check"></i></div>
+            <h2>PDF Created Successfully! 🎉</h2>
+            <p class="r-info" id="rInfo">Your PDF is ready to download</p>
+            <div class="result-stats">
+                <div class="stat-item">
+                    <div class="stat-val" id="statPages">-</div>
+                    <div class="stat-lbl">Pages</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="statSize">-</div>
+                    <div class="stat-lbl">File Size</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="statWords">-</div>
+                    <div class="stat-lbl">Words</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="statTime">-</div>
+                    <div class="stat-lbl">Time</div>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="r-btn r-btn-pri" onclick="downloadPDF()"><i class="fas fa-download"></i> Download PDF</button>
+                <button class="r-btn r-btn-out" onclick="resetAll()"><i class="fas fa-redo"></i> Convert Another</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" style="margin-top:0">
+        Made with 💚 by <a href="#">GreenPDF</a> — Free Word to PDF Converter
+    </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loadOverlay">
+    <div class="spinner"></div>
+    <div class="load-txt" id="loadTxt">Processing...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast t-suc" id="toast">
+    <i class="fas fa-check-circle" id="tIco"></i>
+    <span id="tTxt">Done!</span>
+</div>
+
+<script>
+// ========== HELPERS ==========
+const $=id=>document.getElementById(id);
+
+let wordFile=null, htmlContent='', pdfBlob=null, pdfName='converted.pdf', previewZoom=100;
+
+// ========== NAVIGATION ==========
+function showHome(){
+    $('homePage').style.display='block';
+    $('convPage').classList.remove('act');
+    $('nHome').classList.add('act');
+    $('nTool').classList.remove('act');
+    window.scrollTo(0,0);
+}
+
+function showConv(){
+    $('homePage').style.display='none';
+    $('convPage').classList.add('act');
+    $('upWrap').style.display='block';
+    $('ws').classList.remove('act');
+    $('resultSec').classList.remove('show');
+    $('progSec').classList.remove('show');
+    $('convBtn').style.display='inline-flex';
+    $('convBtn').disabled=false;
+    $('nHome').classList.remove('act');
+    $('nTool').classList.add('act');
+    window.scrollTo(0,0);
+}
+
+function showWorkspace(){
+    $('upWrap').style.display='none';
+    $('ws').classList.add('act');
+    $('resultSec').classList.remove('show');
+    $('progSec').classList.remove('show');
+    $('convBtn').style.display='inline-flex';
+    $('convBtn').disabled=false;
+    window.scrollTo(0,0);
+}
+
+// ========== FILE HANDLING ==========
+const upArea=$('upArea');
+const fInput=$('fInput');
+const addInput=$('addInput');
+
+fInput.addEventListener('change',e=>handleFile(e.target.files[0]));
+addInput.addEventListener('change',e=>{handleFile(e.target.files[0])});
+
+upArea.addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON'&&!e.target.closest('.sel-btn'))fInput.click()
+});
+
+upArea.addEventListener('dragover',e=>{e.preventDefault();upArea.classList.add('dragover')});
+upArea.addEventListener('dragleave',()=>upArea.classList.remove('dragover'));
+upArea.addEventListener('drop',e=>{
+    e.preventDefault();upArea.classList.remove('dragover');
+    const f=e.dataTransfer.files[0];
+    if(f)handleFile(f);
+});
+
+function handleFile(file){
+    if(!file)return;
+
+    const validTypes=[
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword'
+    ];
+    const ext=file.name.toLowerCase().split('.').pop();
+
+    if(!validTypes.includes(file.type)&&!['docx','doc'].includes(ext)){
+        toast('Please select a valid Word file (.docx)','err');
+        return;
+    }
+
+    if(ext==='doc'&&!file.type.includes('openxmlformats')){
+        toast('Please use .docx format. Old .doc format is not supported.','err');
+        return;
+    }
+
+    wordFile=file;
+    $('fName').textContent=file.name;
+    $('fSize').textContent=fmtSize(file.size);
+    $('fileCard').classList.add('show');
+
+    toast('Word file selected successfully!','suc');
+    parseWordFile(file);
+}
+
+function removeFile(){
+    wordFile=null;htmlContent='';pdfBlob=null;
+    fInput.value='';addInput.value='';
+    $('fileCard').classList.remove('show');
+    $('docContent').innerHTML='<div class="preview-empty"><i class="fas fa-file-word"></i><p>Your document preview will appear here</p></div>';
+    $('infoBar').style.display='none';
+    showConv();
+}
+
+// ========== PARSE WORD ==========
+async function parseWordFile(file){
+    showLoad('Reading Word document...');
+
+    try{
+        const arrayBuf=await file.arrayBuffer();
+
+        const result=await mammoth.convertToHtml(
+            {arrayBuffer:arrayBuf},
+            {
+                styleMap:[
+                    "p[style-name='Title'] => h1.doc-title",
+                    "p[style-name='Heading 1'] => h1",
+                    "p[style-name='Heading 2'] => h2",
+                    "p[style-name='Heading 3'] => h3",
+                    "p[style-name='Heading 4'] => h4",
+                    "b => strong",
+                    "i => em",
+                    "u => u",
+                    "strike => s"
+                ],
+                convertImage: mammoth.images.imgElement(function(image) {
+                    return image.read("base64").then(function(imageBuffer) {
+                        return {
+                            src: "data:" + image.contentType + ";base64," + imageBuffer
+                        };
+                    });
+                })
+            }
+        );
+
+        htmlContent=result.value;
+
+        if(result.messages&&result.messages.length>0){
+            console.log('Mammoth messages:',result.messages);
+        }
+
+        $('docContent').innerHTML=htmlContent||'<div class="preview-empty"><i class="fas fa-file-alt"></i><p>Document appears to be empty</p></div>';
+        $('prevFileName').textContent='— '+file.name;
+
+        // Count stats
+        const tempDiv=document.createElement('div');
+        tempDiv.innerHTML=htmlContent;
+        const text=tempDiv.textContent||tempDiv.innerText||'';
+        const words=text.trim().split(/\s+/).filter(w=>w.length>0);
+        const paras=tempDiv.querySelectorAll('p').length;
+        const imgs=tempDiv.querySelectorAll('img').length;
+        const tables=tempDiv.querySelectorAll('table').length;
+
+        $('wordCount').textContent=words.length.toLocaleString();
+        $('paraCount').textContent=paras;
+        $('charCount').textContent=text.length.toLocaleString();
+        $('imgCount').textContent=imgs;
+        $('tableCount').textContent=tables;
+        $('infoBar').style.display='flex';
+
+        hideLoad();
+        showWorkspace();
+        toast('Document parsed successfully!','suc');
+
+    }catch(err){
+        hideLoad();
+        console.error(err);
+        toast('Error reading file: '+err.message,'err');
+    }
+}
+
+// ========== ZOOM PREVIEW ==========
+function zoomPreview(dir){
+    previewZoom=Math.max(50,Math.min(200,previewZoom+(dir*10)));
+    $('docContent').style.transform=`scale(${previewZoom/100})`;
+    $('docContent').style.transformOrigin='top center';
+}
+
+function toggleFullPreview(){
+    const pb=$('prevBody');
+    if(pb.style.maxHeight==='none'){
+        pb.style.maxHeight='600px';
+    }else{
+        pb.style.maxHeight='none';
+    }
+}
+
+// ========== CONVERT TO PDF ==========
+async function convertToPDF(){
+    if(!htmlContent){
+        toast('Please upload a Word file first!','err');
+        return;
+    }
+
+    const startTime=Date.now();
+    const convBtn=$('convBtn');
+    convBtn.disabled=true;
+
+    const progSec=$('progSec');
+    const progBar=$('progBar');
+    const progLbl=$('progLbl');
+
+    progSec.classList.add('show');
+    progBar.style.width='0%';
+
+    // Step 1: Reading
+    setStep(1);
+    progBar.style.width='15%';
+    progLbl.textContent='Reading document content...';
+    await delay(400);
+
+    // Step 2: Processing
+    setStep(2);
+    progBar.style.width='35%';
+    progLbl.textContent='Processing formatting...';
+    await delay(500);
+
+    // Step 3: Rendering
+    setStep(3);
+    progBar.style.width='55%';
+    progLbl.textContent='Rendering PDF pages...';
+
+    try{
+        const pgSize=$('pgSize').value;
+        const orient=$('orient').value;
+        const marginVal=parseInt($('margin').value);
+        const fontSz=$('fontSize').value;
+
+        // Page size mapping
+        const sizes={
+            a4:[210,297],letter:[215.9,279.4],legal:[215.9,355.6],
+            a3:[297,420],a5:[148,210]
+        };
+
+        let [pw,ph]=sizes[pgSize]||sizes.a4;
+        if(orient==='landscape')[pw,ph]=[ph,pw];
+
+        // Create styled container for PDF
+        const pdfContainer=document.createElement('div');
+        pdfContainer.style.cssText=`
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: ${fontSz}px;
+            line-height: 1.8;
+            color: #222;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        `;
+
+        // Enhanced content styling
+        const styledHTML=`
+            <style>
+                * { font-family: 'Times New Roman', Georgia, serif; }
+                h1 { font-size: ${parseInt(fontSz)*2}px; font-weight: bold; color: #111; margin: 15px 0 10px; line-height: 1.3; }
+                h2 { font-size: ${parseInt(fontSz)*1.6}px; font-weight: bold; color: #222; margin: 12px 0 8px; line-height: 1.3; }
+                h3 { font-size: ${parseInt(fontSz)*1.3}px; font-weight: bold; color: #333; margin: 10px 0 6px; line-height: 1.3; }
+                h4 { font-size: ${parseInt(fontSz)*1.1}px; font-weight: bold; color: #444; margin: 8px 0 5px; }
+                p { margin: 6px 0; line-height: 1.8; font-size: ${fontSz}px; }
+                ul, ol { margin: 6px 0 6px 18px; }
+                li { margin: 3px 0; line-height: 1.7; }
+                table { border-collapse: collapse; width: 100%; margin: 10px 0; page-break-inside: auto; }
+                td, th { border: 1px solid #bbb; padding: 6px 10px; font-size: ${parseInt(fontSz)-1}px; text-align: left; }
+                th { background: #f0f0f0; font-weight: bold; }
+                tr { page-break-inside: avoid; }
+                img { max-width: 100%; height: auto; margin: 8px 0; }
+                strong, b { font-weight: bold; }
+                em, i { font-style: italic; }
+                u { text-decoration: underline; }
+                s { text-decoration: line-through; }
+                a { color: #1a73e8; text-decoration: underline; }
+                blockquote { border-left: 3px solid #ccc; padding: 8px 15px; margin: 10px 0; color: #555; font-style: italic; }
+                hr { border: none; border-top: 1px solid #ddd; margin: 15px 0; }
+                sup { vertical-align: super; font-size: smaller; }
+                sub { vertical-align: sub; font-size: smaller; }
+            </style>
+            ${htmlContent}
+        `;
+
+        pdfContainer.innerHTML=styledHTML;
+        document.body.appendChild(pdfContainer);
+
+        await delay(300);
+        progBar.style.width='70%';
+
+        // Step 4: Generating PDF
+        setStep(4);
+        progLbl.textContent='Generating PDF file...';
+
+        const opt={
+            margin: marginVal,
+            filename: wordFile?wordFile.name.replace(/\.(docx|doc)$/i,'.pdf'):'document.pdf',
+            image: { type:'jpeg', quality:0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                logging: false
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: pgSize==='letter'?'letter':pgSize==='legal'?'legal':[pw,ph],
+                orientation: orient
+            },
+            pagebreak: { mode: ['avoid-all','css','legacy'] }
+        };
+
+        pdfName=opt.filename;
+
+        // Generate PDF
+        const pdfResult=await html2pdf().set(opt).from(pdfContainer).toPdf().get('pdf');
+
+        progBar.style.width='90%';
+        progLbl.textContent='Finalizing...';
+        await delay(300);
+
+        pdfBlob=pdfResult.output('blob');
+
+        // Clean up
+        document.body.removeChild(pdfContainer);
+
+        progBar.style.width='100%';
+        progLbl.textContent='Complete!';
+        await delay(400);
+
+        const endTime=Date.now();
+        const timeTaken=((endTime-startTime)/1000).toFixed(1);
+
+        // Calculate stats
+        const tempDiv=document.createElement('div');
+        tempDiv.innerHTML=htmlContent;
+        const text=tempDiv.textContent||'';
+        const wc=text.trim().split(/\s+/).filter(w=>w.length>0).length;
+        const pgs=pdfResult.internal.getNumberOfPages();
+        const sizeMB=(pdfBlob.size/(1024*1024)).toFixed(2);
+
+        $('statPages').textContent=pgs;
+        $('statSize').textContent=sizeMB+' MB';
+        $('statWords').textContent=wc.toLocaleString();
+        $('statTime').textContent=timeTaken+'s';
+        $('rInfo').textContent=`${wordFile.name} → ${pdfName}`;
+
+        // Show result
+        progSec.classList.remove('show');
+        convBtn.style.display='none';
+        $('resultSec').classList.add('show');
+
+        toast('PDF created successfully! 🎉','suc');
+
+    }catch(err){
+        console.error(err);
+        toast('Error creating PDF: '+err.message,'err');
+        progSec.classList.remove('show');
+    }
+
+    convBtn.disabled=false;
+}
+
+function setStep(n){
+    for(let i=1;i<=4;i++){
+        const el=$('ps'+i);
+        el.classList.remove('active','done');
+        if(i<n){
+            el.classList.add('done');
+            el.querySelector('i').className='fas fa-check-circle';
+        }else if(i===n){
+            el.classList.add('active');
+            el.querySelector('i').className='fas fa-circle-notch fa-spin';
+        }else{
+            el.querySelector('i').className='fas fa-circle';
+        }
+    }
+}
+
+// ========== DOWNLOAD ==========
+function downloadPDF(){
+    if(!pdfBlob){toast('No PDF to download!','err');return}
+    const link=document.createElement('a');
+    link.href=URL.createObjectURL(pdfBlob);
+    link.download=pdfName;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    toast('Download started!','suc');
+}
+
+// ========== RESET ==========
+function resetAll(){
+    wordFile=null;htmlContent='';pdfBlob=null;
+    fInput.value='';addInput.value='';
+    $('fileCard').classList.remove('show');
+    $('docContent').innerHTML='<div class="preview-empty"><i class="fas fa-file-word"></i><p>Your document preview will appear here</p></div>';
+    $('infoBar').style.display='none';
+    previewZoom=100;
+    $('docContent').style.transform='scale(1)';
+    showConv();
+}
+
+// ========== UTILS ==========
+function fmtSize(b){
+    if(b===0)return '0 B';
+    const k=1024,s=['B','KB','MB','GB'];
+    const i=Math.floor(Math.log(b)/Math.log(k));
+    return parseFloat((b/Math.pow(k,i)).toFixed(1))+' '+s[i];
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// ========== TOAST ==========
+function toast(text,type='suc'){
+    const t=$('toast');
+    const ico=$('tIco');
+    $('tTxt').textContent=text;
+    t.className='toast show t-'+type;
+    if(type==='suc')ico.className='fas fa-check-circle';
+    else if(type==='err')ico.className='fas fa-exclamation-circle';
+    else ico.className='fas fa-info-circle';
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ========== LOADING ==========
+function showLoad(t){$('loadTxt').textContent=t||'Processing...';$('loadOverlay').classList.add('show')}
+function hideLoad(){$('loadOverlay').classList.remove('show')}
+</script>
+
+</body>
+</html>
