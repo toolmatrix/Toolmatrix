@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blur Face - iLoveImage Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --primary:#4CAF50;--primary-hover:#43A047;--primary-dark:#388E3C;
+            --primary-darker:#2E7D32;--primary-light:#66BB6A;--primary-lighter:#A5D6A7;
+            --primary-lightest:#C8E6C9;--primary-bg:#E8F5E9;--white:#fff;
+            --bg:#f0faf1;--text:#1a1a2e;--text-light:#636e72;--text-lighter:#b2bec3;
+            --border:#dfe6e9;--shadow:0 2px 15px rgba(76,175,80,.12);
+            --shadow-md:0 5px 25px rgba(76,175,80,.18);--shadow-lg:0 10px 40px rgba(76,175,80,.22);
+            --shadow-xl:0 20px 60px rgba(76,175,80,.25);--radius:14px;--radius-lg:20px;
+            --transition:all .3s cubic-bezier(.4,0,.2,1);
+            --danger:#e74c3c;--danger-bg:#fff5f5;--danger-border:#ffcdd2;
+            --warning:#ff9800;--info:#2196F3;
+        }
+        body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+        /* ===== NAVBAR ===== */
+        .navbar{background:var(--white);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:1000;}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:22px;font-weight:800;}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(76,175,80,.3);}
+        .logo-icon i{font-size:18px;color:#fff;}
+        .logo span:first-of-type{color:var(--primary);}
+        .logo span:last-of-type{color:var(--text);}
+        .nav-links{display:flex;gap:28px;list-style:none;}
+        .nav-links a{text-decoration:none;color:var(--text-light);font-size:13px;font-weight:500;transition:var(--transition);display:flex;align-items:center;gap:5px;}
+        .nav-links a:hover,.nav-links a.active{color:var(--primary);}
+        .nav-toggle{display:none;background:none;border:none;font-size:22px;color:var(--text);cursor:pointer;}
+
+        /* ===== HERO ===== */
+        .hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-darker) 100%);padding:52px 20px 48px;text-align:center;color:#fff;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;top:-50%;left:-30%;width:160%;height:200%;background:radial-gradient(ellipse,rgba(255,255,255,.07) 0%,transparent 70%);animation:heroWave 8s ease-in-out infinite;}
+        @keyframes heroWave{0%,100%{transform:scale(1) translateX(0)}50%{transform:scale(1.08) translateX(3%)}}
+        .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,var(--bg),transparent);}
+        .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:500;margin-bottom:16px;position:relative;border:1px solid rgba(255,255,255,.2);}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:10px;position:relative;letter-spacing:-.5px;}
+        .hero h1 i{margin-right:10px;font-size:32px;}
+        .hero p{font-size:15px;opacity:.9;position:relative;max-width:560px;margin:0 auto;line-height:1.6;}
+
+        /* ===== FEATURES BAR ===== */
+        .features-bar{display:flex;justify-content:center;gap:30px;padding:22px 20px;flex-wrap:wrap;max-width:950px;margin:-18px auto 0;position:relative;z-index:2;}
+        .feat-item{display:flex;align-items:center;gap:9px;background:var(--white);padding:11px 20px;border-radius:50px;box-shadow:var(--shadow);font-size:13px;font-weight:600;}
+        .feat-item i{width:28px;height:28px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:13px;}
+
+        /* ===== MAIN ===== */
+        .main{max-width:1240px;margin:15px auto 60px;padding:0 20px;}
+
+        /* ===== UPLOAD ===== */
+        .upload-section{text-align:center;padding:18px 0 30px;}
+        .upload-area{border:3px dashed var(--primary-lighter);border-radius:var(--radius-lg);padding:60px 40px;background:var(--white);cursor:pointer;transition:var(--transition);max-width:740px;margin:0 auto;position:relative;}
+        .upload-area:hover,.upload-area.drag-over{border-color:var(--primary);background:var(--primary-bg);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+        .upload-area.drag-over{transform:scale(1.02);}
+        .upload-icon-wrap{width:95px;height:95px;margin:0 auto 20px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(76,175,80,.35);animation:float 3s ease-in-out infinite;}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .upload-icon-wrap i{font-size:38px;color:#fff;}
+        .upload-area h3{font-size:23px;font-weight:700;margin-bottom:8px;}
+        .upload-area p{color:var(--text-light);font-size:14px;margin-bottom:22px;}
+        .select-btn{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;padding:14px 44px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:var(--transition);box-shadow:0 5px 20px rgba(76,175,80,.4);display:inline-flex;align-items:center;gap:10px;}
+        .select-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(76,175,80,.5);}
+        .upload-hint{margin-top:16px;font-size:11px;color:var(--text-lighter);display:flex;align-items:center;justify-content:center;gap:5px;}
+        .upload-hint i{color:var(--primary-light);}
+
+        /* ===== EDITOR ===== */
+        .editor-section{display:none;}
+        .editor-section.visible{display:block;animation:fadeUp .5s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        /* TOOLBAR */
+        .toolbar{display:flex;align-items:center;justify-content:space-between;background:var(--white);padding:12px 22px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+        .toolbar-left{display:flex;align-items:center;gap:12px;}
+        .file-thumb{width:42px;height:42px;border-radius:10px;overflow:hidden;border:2px solid var(--primary-lightest);}
+        .file-thumb img{width:100%;height:100%;object-fit:cover;}
+        .file-meta h4{font-size:13px;font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .file-meta span{font-size:11px;color:var(--text-light);}
+        .toolbar-right{display:flex;gap:8px;flex-wrap:wrap;}
+        .t-btn{padding:8px 15px;border:2px solid var(--primary-lightest);border-radius:10px;background:var(--white);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--text-light);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:5px;}
+        .t-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+        .t-btn.danger:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-bg);}
+
+        /* EDITOR GRID */
+        .editor-grid{display:grid;grid-template-columns:1fr 370px;gap:20px;align-items:start;}
+
+        /* CANVAS CARD */
+        .canvas-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+        .canvas-header{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--primary-bg);border-bottom:1px solid var(--primary-lightest);}
+        .canvas-header h3{font-size:14px;font-weight:600;color:var(--primary-dark);display:flex;align-items:center;gap:7px;}
+        .canvas-header h3 i{font-size:15px;}
+        .canvas-tools{display:flex;gap:5px;}
+        .canvas-tool{width:32px;height:32px;border-radius:8px;border:1px solid var(--primary-lightest);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-light);transition:var(--transition);}
+        .canvas-tool:hover,.canvas-tool.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+        .canvas-tool[title]:hover::after{content:attr(title);position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;white-space:nowrap;}
+
+        .canvas-body{position:relative;min-height:420px;background:#fafafa;background-image:linear-gradient(45deg,#f0f0f0 25%,transparent 25%),linear-gradient(-45deg,#f0f0f0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f0f0f0 75%),linear-gradient(-45deg,transparent 75%,#f0f0f0 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;display:flex;justify-content:center;align-items:center;overflow:hidden;cursor:crosshair;}
+        .canvas-wrapper{position:relative;display:inline-block;line-height:0;}
+        .canvas-wrapper canvas{max-width:100%;max-height:500px;border-radius:4px;box-shadow:0 3px 15px rgba(0,0,0,.1);}
+        #overlayCanvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;border-radius:4px;}
+
+        .canvas-footer{padding:10px 20px;background:var(--primary-bg);border-top:1px solid var(--primary-lightest);display:flex;justify-content:center;gap:20px;font-size:11px;color:var(--text-light);flex-wrap:wrap;}
+        .canvas-footer span{display:flex;align-items:center;gap:4px;}
+        .canvas-footer i{color:var(--primary);font-size:12px;}
+
+        /* CONTROLS */
+        .controls-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:82px;}
+        .controls-header{padding:15px 20px;background:var(--primary-bg);border-bottom:1px solid var(--primary-lightest);}
+        .controls-header h3{font-size:15px;font-weight:700;color:var(--primary-dark);display:flex;align-items:center;gap:8px;}
+        .controls-body{padding:20px;overflow-y:auto;max-height:calc(100vh - 180px);}
+        .controls-body::-webkit-scrollbar{width:5px;}
+        .controls-body::-webkit-scrollbar-thumb{background:var(--primary-lighter);border-radius:10px;}
+
+        .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary-dark);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+        .sec-label::after{content:'';flex:1;height:1px;background:var(--primary-lightest);}
+
+        /* DRAWING MODE */
+        .mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+        .mode-btn{padding:14px 10px;border:2px solid var(--primary-lightest);border-radius:12px;background:var(--white);cursor:pointer;transition:var(--transition);text-align:center;font-family:'Poppins',sans-serif;}
+        .mode-btn:hover{border-color:var(--primary);background:var(--primary-bg);transform:translateY(-2px);box-shadow:var(--shadow);}
+        .mode-btn.active{border-color:var(--primary);background:var(--primary-bg);box-shadow:0 0 0 3px rgba(76,175,80,.15);}
+        .mode-btn i{font-size:22px;color:var(--primary);display:block;margin-bottom:5px;}
+        .mode-btn span{font-size:12px;font-weight:600;color:var(--text);display:block;}
+        .mode-btn small{font-size:10px;color:var(--text-light);}
+
+        /* AUTO DETECT BTN */
+        .auto-detect-btn{width:100%;padding:13px;border:2px dashed var(--primary-lighter);border-radius:12px;background:var(--primary-bg);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--primary-dark);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;}
+        .auto-detect-btn:hover{border-color:var(--primary);background:var(--primary-lightest);transform:translateY(-1px);}
+        .auto-detect-btn i{font-size:18px;}
+
+        /* BLUR CONTROLS */
+        .control-group{margin-bottom:16px;}
+        .control-group label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;}
+        .control-group label i{color:var(--primary);font-size:13px;}
+        .slider-wrap{display:flex;align-items:center;gap:10px;}
+        .slider-wrap input[type=range]{flex:1;-webkit-appearance:none;height:7px;border-radius:10px;background:linear-gradient(to right,var(--primary-lightest),var(--primary));outline:none;}
+        .slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));cursor:pointer;box-shadow:0 3px 10px rgba(76,175,80,.4);border:3px solid #fff;transition:transform .2s;}
+        .slider-wrap input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+        .slider-val{font-size:14px;font-weight:700;color:var(--primary);min-width:36px;text-align:right;}
+
+        /* BLUR PRESETS */
+        .blur-presets{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+        .blur-preset{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;border:2px solid var(--primary-lightest);background:var(--white);cursor:pointer;transition:var(--transition);color:var(--text-light);font-family:'Poppins',sans-serif;}
+        .blur-preset:hover,.blur-preset.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+        /* BLUR TYPE */
+        .blur-type-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;}
+        .blur-type{padding:10px 6px;border:2px solid var(--primary-lightest);border-radius:10px;text-align:center;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-light);transition:var(--transition);font-family:'Poppins',sans-serif;background:var(--white);}
+        .blur-type:hover,.blur-type.active{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+        .blur-type i{display:block;font-size:16px;margin-bottom:3px;color:var(--primary);}
+
+        /* REGIONS LIST */
+        .regions-list{margin-bottom:16px;}
+        .region-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--primary-bg);border-radius:10px;margin-bottom:6px;transition:var(--transition);border:2px solid transparent;}
+        .region-item:hover{border-color:var(--primary-lighter);}
+        .region-item .region-info{display:flex;align-items:center;gap:8px;}
+        .region-item .region-icon{width:30px;height:30px;border-radius:8px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;}
+        .region-item .region-text{font-size:12px;font-weight:600;color:var(--text);}
+        .region-item .region-text small{display:block;font-size:10px;color:var(--text-light);font-weight:400;}
+        .region-del{width:28px;height:28px;border-radius:7px;border:none;background:var(--danger-bg);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:var(--transition);}
+        .region-del:hover{background:var(--danger);color:#fff;}
+
+        .no-regions{text-align:center;padding:20px;color:var(--text-lighter);font-size:13px;}
+        .no-regions i{font-size:30px;display:block;margin-bottom:8px;color:var(--primary-lighter);}
+
+        .divider{height:1px;background:var(--primary-lightest);margin:18px 0;}
+
+        /* TOGGLE */
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--primary-bg);border-radius:10px;margin-bottom:10px;}
+        .toggle-row label{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;margin:0;}
+        .toggle-row label i{color:var(--primary);font-size:13px;}
+        .toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+        .toggle input{opacity:0;width:0;height:0;}
+        .toggle-slider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:24px;transition:.3s;}
+        .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+        .toggle input:checked+.toggle-slider{background:var(--primary);}
+        .toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+
+        /* FORMAT */
+        .format-row{display:flex;gap:8px;margin-bottom:16px;}
+        .format-opt{flex:1;padding:10px;border:2px solid var(--primary-lightest);border-radius:10px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-light);transition:var(--transition);font-family:'Poppins',sans-serif;background:var(--white);}
+        .format-opt:hover,.format-opt.active{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+        .format-opt i{display:block;font-size:16px;margin-bottom:3px;}
+
+        /* DOWNLOAD */
+        .download-btn{width:100%;padding:16px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:var(--transition);box-shadow:0 6px 22px rgba(76,175,80,.4);display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
+        .download-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(76,175,80,.5);}
+        .btn-row{display:flex;gap:10px;margin-top:12px;}
+        .sec-btn{flex:1;padding:11px;border:2px solid var(--primary-lightest);border-radius:10px;background:var(--white);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--text-light);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:5px;}
+        .sec-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);}
+        .sec-btn.danger{border-color:var(--danger-border);color:var(--danger);background:var(--danger-bg);}
+        .sec-btn.danger:hover{background:var(--danger);color:#fff;}
+
+        /* SHORTCUT HINTS */
+        .shortcut-hints{margin-top:16px;padding:12px;background:var(--primary-bg);border-radius:10px;}
+        .shortcut-hints h4{font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+        .shortcut-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-light);padding:3px 0;}
+        .shortcut-key{background:var(--white);padding:2px 8px;border-radius:4px;font-weight:600;font-size:10px;color:var(--text);border:1px solid var(--border);}
+
+        /* PROCESSING */
+        .processing{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:5000;justify-content:center;align-items:center;}
+        .processing.show{display:flex;}
+        .proc-box{background:var(--white);border-radius:var(--radius-lg);padding:50px 60px;text-align:center;box-shadow:var(--shadow-xl);animation:fadeUp .3s ease;}
+        .spinner{width:55px;height:55px;border:4px solid var(--primary-lightest);border-top-color:var(--primary);border-radius:50%;margin:0 auto 18px;animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .proc-box h3{font-size:17px;font-weight:700;margin-bottom:5px;}
+        .proc-box p{font-size:13px;color:var(--text-light);}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--primary-dark);color:#fff;padding:13px 30px;border-radius:50px;font-size:13px;font-weight:600;box-shadow:0 6px 25px rgba(0,0,0,.2);z-index:6000;transition:transform .4s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:9px;}
+        .toast.show{transform:translateX(-50%) translateY(0);}
+        .toast i{font-size:16px;}
+
+        /* INSTRUCTION OVERLAY */
+        .instruction-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;justify-content:center;align-items:center;border-radius:4px;pointer-events:none;z-index:10;transition:opacity .3s;}
+        .instruction-overlay.hidden{opacity:0;}
+        .instruction-box{background:rgba(255,255,255,.95);padding:20px 30px;border-radius:12px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+        .instruction-box i{font-size:32px;color:var(--primary);margin-bottom:8px;display:block;}
+        .instruction-box h4{font-size:14px;font-weight:700;margin-bottom:4px;}
+        .instruction-box p{font-size:12px;color:var(--text-light);}
+
+        /* FOOTER */
+        .footer{background:var(--white);padding:28px 0;text-align:center;border-top:1px solid var(--primary-lightest);}
+        .footer p{color:var(--text-light);font-size:13px;}
+        .footer a{color:var(--primary);text-decoration:none;font-weight:700;}
+        .footer-links{display:flex;justify-content:center;gap:25px;margin-top:8px;}
+        .footer-links a{font-size:12px;font-weight:500;color:var(--text-lighter);}
+        .footer-links a:hover{color:var(--primary);}
+
+        /* RESPONSIVE */
+        @media(max-width:960px){
+            .editor-grid{grid-template-columns:1fr;}
+            .controls-card{position:static;}
+            .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:var(--white);flex-direction:column;padding:15px 25px;box-shadow:var(--shadow-md);gap:12px;}
+            .nav-links.open{display:flex;}
+            .nav-toggle{display:block;}
+            .hero h1{font-size:26px;}
+            .hero h1 i{font-size:24px;}
+            .features-bar{gap:12px;}
+            .feat-item{padding:9px 14px;font-size:12px;}
+        }
+        @media(max-width:500px){
+            .toolbar{flex-direction:column;align-items:stretch;}
+            .toolbar-right{justify-content:center;}
+            .upload-area{padding:40px 20px;}
+            .upload-area h3{font-size:19px;}
+            .mode-selector{grid-template-columns:1fr;}
+            .blur-type-row{grid-template-columns:1fr 1fr;}
+            .format-row{flex-wrap:wrap;}
+            .btn-row{flex-direction:column;}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="logo">
+        <div class="logo-icon"><i class="fas fa-eye-slash"></i></div>
+        <span>iLove</span><span>Image</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#"><i class="fas fa-compress-arrows-alt"></i> Compress</a></li>
+        <li><a href="#"><i class="fas fa-crop-alt"></i> Crop</a></li>
+        <li><a href="#" class="active"><i class="fas fa-eye-slash"></i> Blur Face</a></li>
+        <li><a href="#"><i class="fas fa-sync-alt"></i> Rotate</a></li>
+    </ul>
+    <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-shield-alt"></i> Privacy First — 100% Browser-Based</div>
+    <h1><i class="fas fa-eye-slash"></i> Blur Face Tool</h1>
+    <p>Image mein chehron aur sensitive areas ko easily blur karein. Aapki images server par nahi jaatein — sab kuch browser mein hota hai!</p>
+</section>
+
+<!-- FEATURES -->
+<div class="features-bar">
+    <div class="feat-item"><i class="fas fa-mouse-pointer"></i> Click & Drag to Blur</div>
+    <div class="feat-item"><i class="fas fa-magic"></i> Auto Face Detect</div>
+    <div class="feat-item"><i class="fas fa-sliders-h"></i> Adjustable Intensity</div>
+    <div class="feat-item"><i class="fas fa-lock"></i> 100% Private</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- UPLOAD -->
+    <div class="upload-section" id="uploadSection">
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon-wrap"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Image Yahan Drop Karein</h3>
+            <p>ya button click karke apni image select karein</p>
+            <button class="select-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-image"></i> Select Image</button>
+            <div class="upload-hint"><i class="fas fa-info-circle"></i> JPG, PNG, WEBP supported — Max 50MB</div>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+        </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="editor-section" id="editorSection">
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="file-thumb" id="fileThumb"><img src="" alt=""></div>
+                <div class="file-meta">
+                    <h4 id="fileName">image.jpg</h4>
+                    <span id="fileMeta">1920 × 1080</span>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="t-btn" onclick="undoLast()"><i class="fas fa-undo"></i> Undo</button>
+                <button class="t-btn" onclick="redoLast()"><i class="fas fa-redo"></i> Redo</button>
+                <button class="t-btn danger" onclick="goBack()"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+
+        <div class="editor-grid">
+            <!-- CANVAS -->
+            <div class="canvas-card">
+                <div class="canvas-header">
+                    <h3><i class="fas fa-eye"></i> Preview — Draw to Blur</h3>
+                    <div class="canvas-tools">
+                        <button class="canvas-tool" onclick="zoomOut()" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                        <span style="font-size:11px;font-weight:600;color:var(--text-light);padding:0 4px;" id="zoomLabel">100%</span>
+                        <button class="canvas-tool" onclick="zoomIn()" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                        <button class="canvas-tool" onclick="zoomReset()" title="Fit"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+                <div class="canvas-body" id="canvasBody">
+                    <div class="canvas-wrapper" id="canvasWrapper">
+                        <canvas id="mainCanvas"></canvas>
+                        <canvas id="overlayCanvas"></canvas>
+                        <div class="instruction-overlay" id="instructionOverlay">
+                            <div class="instruction-box">
+                                <i class="fas fa-hand-pointer"></i>
+                                <h4>Click & Drag karein</h4>
+                                <p>Jis area ko blur karna hai<br>wahan rectangle draw karein</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-footer">
+                    <span><i class="fas fa-expand"></i> <span id="dimLabel">— × —</span></span>
+                    <span><i class="fas fa-th"></i> Regions: <strong id="regionsCount">0</strong></span>
+                    <span><i class="fas fa-eye-slash"></i> Blur: <strong id="blurInfo">Gaussian</strong></span>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="controls-card">
+                <div class="controls-header">
+                    <h3><i class="fas fa-tools"></i> Blur Controls</h3>
+                </div>
+                <div class="controls-body">
+
+                    <!-- DRAW MODE -->
+                    <div class="sec-label"><i class="fas fa-vector-square"></i> DRAWING SHAPE</div>
+                    <div class="mode-selector">
+                        <div class="mode-btn active" id="modeRect" onclick="setDrawMode('rect')">
+                            <i class="fas fa-vector-square"></i>
+                            <span>Rectangle</span>
+                            <small>Box select</small>
+                        </div>
+                        <div class="mode-btn" id="modeCircle" onclick="setDrawMode('circle')">
+                            <i class="fas fa-circle"></i>
+                            <span>Circle / Ellipse</span>
+                            <small>Round select</small>
+                        </div>
+                    </div>
+
+                    <!-- AUTO DETECT -->
+                    <button class="auto-detect-btn" onclick="autoDetectFaces()">
+                        <i class="fas fa-magic"></i> Auto Detect Faces
+                    </button>
+
+                    <div class="divider"></div>
+
+                    <!-- BLUR INTENSITY -->
+                    <div class="sec-label"><i class="fas fa-adjust"></i> BLUR INTENSITY</div>
+                    <div class="control-group">
+                        <label><i class="fas fa-tint"></i> Blur Strength: <span id="blurVal">20</span>px</label>
+                        <div class="slider-wrap">
+                            <input type="range" id="blurSlider" min="5" max="80" value="20" oninput="updateBlur()">
+                            <span class="slider-val" id="blurDisplay">20</span>
+                        </div>
+                    </div>
+                    <div class="blur-presets">
+                        <button class="blur-preset" onclick="setBlurPreset(10)">Light</button>
+                        <button class="blur-preset active" onclick="setBlurPreset(20)">Medium</button>
+                        <button class="blur-preset" onclick="setBlurPreset(40)">Strong</button>
+                        <button class="blur-preset" onclick="setBlurPreset(60)">Heavy</button>
+                        <button class="blur-preset" onclick="setBlurPreset(80)">Max</button>
+                    </div>
+
+                    <!-- BLUR TYPE -->
+                    <div class="sec-label"><i class="fas fa-magic"></i> BLUR EFFECT</div>
+                    <div class="blur-type-row">
+                        <div class="blur-type active" id="typeGaussian" onclick="setBlurType('gaussian')">
+                            <i class="fas fa-water"></i> Gaussian
+                        </div>
+                        <div class="blur-type" id="typePixelate" onclick="setBlurType('pixelate')">
+                            <i class="fas fa-th"></i> Pixelate
+                        </div>
+                        <div class="blur-type" id="typeBlack" onclick="setBlurType('black')">
+                            <i class="fas fa-square-full"></i> Black Fill
+                        </div>
+                    </div>
+
+                    <!-- PIXEL SIZE (for pixelate) -->
+                    <div class="control-group" id="pixelSizeGroup" style="display:none;">
+                        <label><i class="fas fa-th-large"></i> Pixel Size: <span id="pixelVal">10</span>px</label>
+                        <div class="slider-wrap">
+                            <input type="range" id="pixelSlider" min="4" max="40" value="10" oninput="updatePixelSize()">
+                            <span class="slider-val" id="pixelDisplay">10</span>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- OPTIONS -->
+                    <div class="sec-label"><i class="fas fa-cog"></i> OPTIONS</div>
+                    <div class="toggle-row">
+                        <label><i class="fas fa-border-all"></i> Show Region Borders</label>
+                        <div class="toggle"><input type="checkbox" id="showBorders" checked onchange="renderAll()"><span class="toggle-slider"></span></div>
+                    </div>
+                    <div class="toggle-row">
+                        <label><i class="fas fa-expand-arrows-alt"></i> Feather Edges</label>
+                        <div class="toggle"><input type="checkbox" id="featherEdges" onchange="renderAll()"><span class="toggle-slider"></span></div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- BLUR REGIONS LIST -->
+                    <div class="sec-label"><i class="fas fa-list"></i> BLUR REGIONS (<span id="regCount2">0</span>)</div>
+                    <div class="regions-list" id="regionsList">
+                        <div class="no-regions" id="noRegions">
+                            <i class="fas fa-draw-polygon"></i>
+                            Koi region nahi hai<br>Image par draw karein
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- FORMAT -->
+                    <div class="sec-label"><i class="fas fa-file-image"></i> OUTPUT FORMAT</div>
+                    <div class="format-row">
+                        <div class="format-opt active" onclick="setFormat('png',this)"><i class="fas fa-file-image"></i> PNG</div>
+                        <div class="format-opt" onclick="setFormat('jpeg',this)"><i class="fas fa-file-image"></i> JPG</div>
+                        <div class="format-opt" onclick="setFormat('webp',this)"><i class="fas fa-file-image"></i> WEBP</div>
+                    </div>
+
+                    <!-- DOWNLOAD -->
+                    <button class="download-btn" onclick="downloadImage()">
+                        <i class="fas fa-download"></i> Apply Blur & Download
+                    </button>
+                    <div class="btn-row">
+                        <button class="sec-btn" onclick="clearAllRegions()"><i class="fas fa-eraser"></i> Clear All</button>
+                        <button class="sec-btn" onclick="resetAll()"><i class="fas fa-undo-alt"></i> Reset</button>
+                        <button class="sec-btn danger" onclick="goBack()"><i class="fas fa-trash-alt"></i> New</button>
+                    </div>
+
+                    <!-- SHORTCUTS -->
+                    <div class="shortcut-hints">
+                        <h4><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h4>
+                        <div class="shortcut-row"><span>Undo</span><span class="shortcut-key">Ctrl + Z</span></div>
+                        <div class="shortcut-row"><span>Redo</span><span class="shortcut-key">Ctrl + Y</span></div>
+                        <div class="shortcut-row"><span>Download</span><span class="shortcut-key">Ctrl + S</span></div>
+                        <div class="shortcut-row"><span>Clear All</span><span class="shortcut-key">Delete</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="processing" id="processing">
+    <div class="proc-box">
+        <div class="spinner"></div>
+        <h3>Processing Image...</h3>
+        <p>Blur apply ho raha hai 🔒</p>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done!</span></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">iLoveImage</a> — Free Online Image Privacy Tool</p>
+    <div class="footer-links">
+        <a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Contact</a>
+    </div>
+</footer>
+
+<script>
+// ========== STATE ==========
+let originalImage = null;
+let fileName = '';
+let fileSize = 0;
+let regions = [];       // {x,y,w,h,shape}
+let undoStack = [];
+let redoStack = [];
+let drawMode = 'rect';  // rect | circle
+let blurType = 'gaussian'; // gaussian | pixelate | black
+let blurAmount = 20;
+let pixelSize = 10;
+let outputFormat = 'png';
+let isDrawing = false;
+let startX = 0, startY = 0;
+let zoomLevel = 1;
+let scaleRatio = 1;
+
+const mainCanvas = document.getElementById('mainCanvas');
+const mainCtx = mainCanvas.getContext('2d');
+const overlayCanvas = document.getElementById('overlayCanvas');
+const overlayCtx = overlayCanvas.getContext('2d');
+
+// ========== FILE HANDLING ==========
+document.getElementById('fileInput').addEventListener('change', e => {
+    if (e.target.files[0]) loadFile(e.target.files[0]);
+});
+
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault(); uploadArea.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+uploadArea.addEventListener('click', e => {
+    if (!e.target.closest('.select-btn')) document.getElementById('fileInput').click();
+});
+
+document.addEventListener('paste', e => {
+    const items = e.clipboardData?.items;
+    if (items) for (let i of items) if (i.type.startsWith('image/')) { loadFile(i.getAsFile()); break; }
+});
+
+function loadFile(file) {
+    if (!file.type.startsWith('image/')) { toast('Sirf image files allowed hain!'); return; }
+    fileName = file.name;
+    fileSize = file.size;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            originalImage = img;
+            regions = []; undoStack = []; redoStack = [];
+            showEditor();
+            renderAll();
+            toast('Image loaded! Ab blur regions draw karein 🎯');
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// ========== UI ==========
+function showEditor() {
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('editorSection').classList.add('visible');
+    document.getElementById('fileThumb').querySelector('img').src = originalImage.src;
+    document.getElementById('fileName').textContent = fileName;
+    document.getElementById('fileMeta').textContent = `${originalImage.width} × ${originalImage.height} • ${(fileSize/1048576).toFixed(2)} MB`;
+    document.getElementById('instructionOverlay').classList.remove('hidden');
+}
+
+function goBack() {
+    document.getElementById('uploadSection').style.display = 'block';
+    document.getElementById('editorSection').classList.remove('visible');
+    originalImage = null; regions = []; undoStack = []; redoStack = [];
+    document.getElementById('fileInput').value = '';
+}
+
+// ========== RENDER ==========
+function renderAll() {
+    if (!originalImage) return;
+
+    // Size canvas to fit container
+    const wrapper = document.getElementById('canvasWrapper');
+    const body = document.getElementById('canvasBody');
+    const maxW = body.clientWidth - 50;
+    const maxH = 500;
+
+    let w = originalImage.width;
+    let h = originalImage.height;
+    scaleRatio = Math.min(maxW / w, maxH / h, 1);
+    const dispW = Math.round(w * scaleRatio);
+    const dispH = Math.round(h * scaleRatio);
+
+    mainCanvas.width = dispW;
+    mainCanvas.height = dispH;
+    overlayCanvas.width = dispW;
+    overlayCanvas.height = dispH;
+    overlayCanvas.style.width = dispW + 'px';
+    overlayCanvas.style.height = dispH + 'px';
+
+    // Draw original image
+    mainCtx.clearRect(0, 0, dispW, dispH);
+    mainCtx.drawImage(originalImage, 0, 0, dispW, dispH);
+
+    // Apply blur to each region
+    regions.forEach(r => {
+        applyBlurRegion(mainCtx, r, dispW, dispH);
+    });
+
+    // Draw overlay (region outlines)
+    renderOverlay();
+    updateRegionsList();
+
+    document.getElementById('dimLabel').textContent = `${originalImage.width} × ${originalImage.height}`;
+    document.getElementById('regionsCount').textContent = regions.length;
+    document.getElementById('regCount2').textContent = regions.length;
+}
+
+function applyBlurRegion(ctx, region, canvasW, canvasH) {
+    const x = Math.round(region.x * scaleRatio);
+    const y = Math.round(region.y * scaleRatio);
+    const w = Math.round(region.w * scaleRatio);
+    const h = Math.round(region.h * scaleRatio);
+
+    if (w === 0 || h === 0) return;
+
+    ctx.save();
+
+    // Clip to shape
+    ctx.beginPath();
+    if (region.shape === 'circle') {
+        ctx.ellipse(x + w/2, y + h/2, Math.abs(w/2), Math.abs(h/2), 0, 0, Math.PI * 2);
+    } else {
+        ctx.rect(x, y, w, h);
+    }
+    ctx.clip();
+
+    if (blurType === 'gaussian') {
+        // Multiple passes for stronger blur
+        const passes = Math.ceil(blurAmount / 15);
+        for (let p = 0; p < passes; p++) {
+            ctx.filter = `blur(${blurAmount}px)`;
+            // Draw the area to itself for blur
+            const sx = Math.max(0, x - blurAmount);
+            const sy = Math.max(0, y - blurAmount);
+            const sw = Math.min(canvasW - sx, Math.abs(w) + blurAmount * 2);
+            const sh = Math.min(canvasH - sy, Math.abs(h) + blurAmount * 2);
+            ctx.drawImage(mainCanvas, sx, sy, sw, sh, sx, sy, sw, sh);
+        }
+        ctx.filter = 'none';
+    } else if (blurType === 'pixelate') {
+        const imgData = ctx.getImageData(Math.max(0,x), Math.max(0,y), Math.abs(w), Math.abs(h));
+        const ps = pixelSize;
+        for (let py = 0; py < imgData.height; py += ps) {
+            for (let px = 0; px < imgData.width; px += ps) {
+                let r=0,g=0,b=0,count=0;
+                for (let dy=0; dy<ps && py+dy<imgData.height; dy++) {
+                    for (let dx=0; dx<ps && px+dx<imgData.width; dx++) {
+                        const idx = ((py+dy)*imgData.width + (px+dx)) * 4;
+                        r += imgData.data[idx]; g += imgData.data[idx+1]; b += imgData.data[idx+2]; count++;
+                    }
+                }
+                r = Math.round(r/count); g = Math.round(g/count); b = Math.round(b/count);
+                for (let dy=0; dy<ps && py+dy<imgData.height; dy++) {
+                    for (let dx=0; dx<ps && px+dx<imgData.width; dx++) {
+                        const idx = ((py+dy)*imgData.width + (px+dx)) * 4;
+                        imgData.data[idx]=r; imgData.data[idx+1]=g; imgData.data[idx+2]=b;
+                    }
+                }
+            }
+        }
+        ctx.putImageData(imgData, Math.max(0,x), Math.max(0,y));
+    } else if (blurType === 'black') {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x, y, w, h);
+    }
+
+    ctx.restore();
+}
+
+function renderOverlay() {
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    const showBorders = document.getElementById('showBorders').checked;
+    if (!showBorders) return;
+
+    regions.forEach((r, i) => {
+        const x = r.x * scaleRatio;
+        const y = r.y * scaleRatio;
+        const w = r.w * scaleRatio;
+        const h = r.h * scaleRatio;
+
+        overlayCtx.save();
+        overlayCtx.strokeStyle = 'rgba(76,175,80,0.8)';
+        overlayCtx.lineWidth = 2;
+        overlayCtx.setLineDash([6, 4]);
+
+        if (r.shape === 'circle') {
+            overlayCtx.beginPath();
+            overlayCtx.ellipse(x + w/2, y + h/2, Math.abs(w/2), Math.abs(h/2), 0, 0, Math.PI * 2);
+            overlayCtx.stroke();
+            overlayCtx.fillStyle = 'rgba(76,175,80,0.08)';
+            overlayCtx.fill();
+        } else {
+            overlayCtx.strokeRect(x, y, w, h);
+            overlayCtx.fillStyle = 'rgba(76,175,80,0.08)';
+            overlayCtx.fillRect(x, y, w, h);
+        }
+
+        // Label
+        overlayCtx.setLineDash([]);
+        overlayCtx.fillStyle = 'rgba(76,175,80,0.9)';
+        overlayCtx.fillRect(x, y - 22, 60, 20);
+        overlayCtx.fillStyle = '#fff';
+        overlayCtx.font = 'bold 10px Poppins';
+        overlayCtx.fillText(`Region ${i+1}`, x + 5, y - 8);
+
+        overlayCtx.restore();
+    });
+
+    // Draw current selection while drawing
+    if (isDrawing) {
+        const rect = overlayCanvas.getBoundingClientRect();
+        overlayCtx.save();
+        overlayCtx.strokeStyle = 'rgba(255,152,0,0.9)';
+        overlayCtx.lineWidth = 2;
+        overlayCtx.setLineDash([4, 4]);
+        // The current drawing is handled in mousemove
+        overlayCtx.restore();
+    }
+}
+
+// ========== DRAWING ==========
+let tempStartX = 0, tempStartY = 0, tempEndX = 0, tempEndY = 0;
+
+overlayCanvas.addEventListener('mousedown', e => {
+    const rect = overlayCanvas.getBoundingClientRect();
+    tempStartX = e.clientX - rect.left;
+    tempStartY = e.clientY - rect.top;
+    isDrawing = true;
+    document.getElementById('instructionOverlay').classList.add('hidden');
+});
+
+overlayCanvas.addEventListener('mousemove', e => {
+    if (!isDrawing) return;
+    const rect = overlayCanvas.getBoundingClientRect();
+    tempEndX = e.clientX - rect.left;
+    tempEndY = e.clientY - rect.top;
+
+    // Redraw overlay with temp selection
+    renderOverlay();
+    overlayCtx.save();
+    overlayCtx.strokeStyle = 'rgba(255,152,0,0.9)';
+    overlayCtx.lineWidth = 2.5;
+    overlayCtx.setLineDash([5, 3]);
+    overlayCtx.fillStyle = 'rgba(255,152,0,0.1)';
+
+    const dx = tempEndX - tempStartX;
+    const dy = tempEndY - tempStartY;
+
+    if (drawMode === 'circle') {
+        overlayCtx.beginPath();
+        overlayCtx.ellipse(tempStartX + dx/2, tempStartY + dy/2, Math.abs(dx/2), Math.abs(dy/2), 0, 0, Math.PI * 2);
+        overlayCtx.stroke();
+        overlayCtx.fill();
+    } else {
+        overlayCtx.strokeRect(tempStartX, tempStartY, dx, dy);
+        overlayCtx.fillRect(tempStartX, tempStartY, dx, dy);
+    }
+    overlayCtx.restore();
+});
+
+overlayCanvas.addEventListener('mouseup', e => {
+    if (!isDrawing) return;
+    isDrawing = false;
+
+    const rect = overlayCanvas.getBoundingClientRect();
+    tempEndX = e.clientX - rect.left;
+    tempEndY = e.clientY - rect.top;
+
+    let x = Math.min(tempStartX, tempEndX);
+    let y = Math.min(tempStartY, tempEndY);
+    let w = Math.abs(tempEndX - tempStartX);
+    let h = Math.abs(tempEndY - tempStartY);
+
+    if (w < 10 || h < 10) return; // Too small
+
+    // Convert to original image coords
+    const region = {
+        x: x / scaleRatio,
+        y: y / scaleRatio,
+        w: w / scaleRatio,
+        h: h / scaleRatio,
+        shape: drawMode
+    };
+
+    saveUndo();
+    regions.push(region);
+    renderAll();
+    toast(`Region ${regions.length} added ✅`);
+});
+
+// Touch support
+overlayCanvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = overlayCanvas.getBoundingClientRect();
+    tempStartX = touch.clientX - rect.left;
+    tempStartY = touch.clientY - rect.top;
+    isDrawing = true;
+    document.getElementById('instructionOverlay').classList.add('hidden');
+}, {passive:false});
+
+overlayCanvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const touch = e.touches[0];
+    const rect = overlayCanvas.getBoundingClientRect();
+    tempEndX = touch.clientX - rect.left;
+    tempEndY = touch.clientY - rect.top;
+
+    renderOverlay();
+    overlayCtx.save();
+    overlayCtx.strokeStyle = 'rgba(255,152,0,0.9)';
+    overlayCtx.lineWidth = 2.5;
+    overlayCtx.setLineDash([5, 3]);
+    overlayCtx.fillStyle = 'rgba(255,152,0,0.1)';
+    const dx = tempEndX - tempStartX;
+    const dy = tempEndY - tempStartY;
+    if (drawMode === 'circle') {
+        overlayCtx.beginPath();
+        overlayCtx.ellipse(tempStartX + dx/2, tempStartY + dy/2, Math.abs(dx/2), Math.abs(dy/2), 0, 0, Math.PI * 2);
+        overlayCtx.stroke(); overlayCtx.fill();
+    } else {
+        overlayCtx.strokeRect(tempStartX, tempStartY, dx, dy);
+        overlayCtx.fillRect(tempStartX, tempStartY, dx, dy);
+    }
+    overlayCtx.restore();
+}, {passive:false});
+
+overlayCanvas.addEventListener('touchend', e => {
+    if (!isDrawing) return;
+    isDrawing = false;
+    let x = Math.min(tempStartX, tempEndX);
+    let y = Math.min(tempStartY, tempEndY);
+    let w = Math.abs(tempEndX - tempStartX);
+    let h = Math.abs(tempEndY - tempStartY);
+    if (w < 10 || h < 10) return;
+    saveUndo();
+    regions.push({ x: x/scaleRatio, y: y/scaleRatio, w: w/scaleRatio, h: h/scaleRatio, shape: drawMode });
+    renderAll();
+    toast(`Region ${regions.length} added ✅`);
+});
+
+overlayCanvas.addEventListener('mouseleave', () => {
+    if (isDrawing) { /* keep drawing */ }
+});
+
+// ========== AUTO DETECT ==========
+async function autoDetectFaces() {
+    if (!originalImage) return;
+
+    if ('FaceDetector' in window) {
+        try {
+            toast('Faces detect ho rahi hain... 🔍');
+            const detector = new FaceDetector({ fastMode: true, maxDetectedFaces: 20 });
+            const faces = await detector.detect(originalImage);
+            if (faces.length === 0) {
+                toast('Koi face detect nahi hua — manually draw karein 🖌️');
+                return;
+            }
+            saveUndo();
+            faces.forEach(face => {
+                const b = face.boundingBox;
+                // Add some padding
+                const pad = 0.15;
+                regions.push({
+                    x: b.x - b.width * pad,
+                    y: b.y - b.height * pad,
+                    w: b.width * (1 + pad * 2),
+                    h: b.height * (1 + pad * 2),
+                    shape: 'rect'
+                });
+            });
+            renderAll();
+            toast(`${faces.length} face(s) detected aur blur kiya! 🎉`);
+        } catch (err) {
+            fallbackDetection();
+        }
+    } else {
+        fallbackDetection();
+    }
+}
+
+function fallbackDetection() {
+    // Simple skin-color based region detection (basic heuristic)
+    toast('Auto detect chal raha hai... 🤖');
+    
+    const tempCanvas = document.createElement('canvas');
+    const tCtx = tempCanvas.getContext('2d');
+    const sw = Math.min(originalImage.width, 400);
+    const sh = Math.round(originalImage.height * (sw / originalImage.width));
+    tempCanvas.width = sw;
+    tempCanvas.height = sh;
+    tCtx.drawImage(originalImage, 0, 0, sw, sh);
+    
+    const imgData = tCtx.getImageData(0, 0, sw, sh);
+    const data = imgData.data;
+    
+    // Detect skin-like pixels
+    const skinMap = new Uint8Array(sw * sh);
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        // Simple skin detection
+        if (r > 95 && g > 40 && b > 20 &&
+            r > g && r > b &&
+            (r - g) > 15 &&
+            Math.abs(r - g) > 15 &&
+            r - b > 15) {
+            skinMap[i / 4] = 1;
+        }
+    }
+    
+    // Find clusters (simple bounding box approach)
+    const visited = new Uint8Array(sw * sh);
+    const clusters = [];
+    
+    for (let y = 0; y < sh; y += 4) {
+        for (let x = 0; x < sw; x += 4) {
+            const idx = y * sw + x;
+            if (skinMap[idx] && !visited[idx]) {
+                // BFS to find cluster
+                let minX = x, maxX = x, minY = y, maxY = y;
+                let count = 0;
+                const queue = [[x, y]];
+                visited[idx] = 1;
+                
+                while (queue.length > 0 && count < 5000) {
+                    const [cx, cy] = queue.shift();
+                    count++;
+                    minX = Math.min(minX, cx);
+                    maxX = Math.max(maxX, cx);
+                    minY = Math.min(minY, cy);
+                    maxY = Math.max(maxY, cy);
+                    
+                    const neighbors = [[cx+4,cy],[cx-4,cy],[cx,cy+4],[cx,cy-4]];
+                    for (const [nx, ny] of neighbors) {
+                        if (nx >= 0 && nx < sw && ny >= 0 && ny < sh) {
+                            const ni = ny * sw + nx;
+                            if (skinMap[ni] && !visited[ni]) {
+                                visited[ni] = 1;
+                                queue.push([nx, ny]);
+                            }
+                        }
+                    }
+                }
+                
+                const cw = maxX - minX;
+                const ch = maxY - minY;
+                const ratio = ch / (cw || 1);
+                
+                // Filter: face-like clusters (aspect ratio, min size)
+                if (count > 80 && cw > 20 && ch > 25 && ratio > 0.7 && ratio < 2.5) {
+                    clusters.push({ x: minX, y: minY, w: cw, h: ch, count });
+                }
+            }
+        }
+    }
+    
+    if (clusters.length === 0) {
+        toast('Koi face detect nahi hua — manually draw karein 🖌️');
+        return;
+    }
+    
+    // Sort by size, take top ones
+    clusters.sort((a, b) => b.count - a.count);
+    const topClusters = clusters.slice(0, Math.min(5, clusters.length));
+    
+    saveUndo();
+    const ratioX = originalImage.width / sw;
+    const ratioY = originalImage.height / sh;
+    
+    topClusters.forEach(c => {
+        const pad = 0.2;
+        regions.push({
+            x: (c.x - c.w * pad) * ratioX,
+            y: (c.y - c.h * pad) * ratioY,
+            w: c.w * (1 + pad * 2) * ratioX,
+            h: c.h * (1 + pad * 2) * ratioY,
+            shape: 'rect'
+        });
+    });
+    
+    renderAll();
+    toast(`${topClusters.length} region(s) detected! Check karein aur adjust karein 🎯`);
+}
+
+// ========== REGIONS LIST ==========
+function updateRegionsList() {
+    const list = document.getElementById('regionsList');
+    const noReg = document.getElementById('noRegions');
+    
+    if (regions.length === 0) {
+        list.innerHTML = '';
+        list.appendChild(noReg.cloneNode ? createNoRegions() : noReg);
+        return;
+    }
+    
+    list.innerHTML = '';
+    regions.forEach((r, i) => {
+        const div = document.createElement('div');
+        div.className = 'region-item';
+        div.innerHTML = `
+            <div class="region-info">
+                <div class="region-icon"><i class="fas fa-${r.shape === 'circle' ? 'circle' : 'vector-square'}"></i></div>
+                <div class="region-text">Region ${i + 1}
+                    <small>${Math.round(r.w)} × ${Math.round(r.h)} px • ${r.shape}</small>
+                </div>
+            </div>
+            <button class="region-del" onclick="deleteRegion(${i})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function createNoRegions() {
+    const div = document.createElement('div');
+    div.className = 'no-regions';
+    div.innerHTML = '<i class="fas fa-draw-polygon"></i>Koi region nahi hai<br>Image par draw karein';
+    return div;
+}
+
+function deleteRegion(i) {
+    saveUndo();
+    regions.splice(i, 1);
+    renderAll();
+    toast('Region delete ho gaya 🗑️');
+}
+
+function clearAllRegions() {
+    if (regions.length === 0) return;
+    saveUndo();
+    regions = [];
+    renderAll();
+    toast('Sab regions clear! 🧹');
+}
+
+// ========== UNDO / REDO ==========
+function saveUndo() {
+    undoStack.push(JSON.parse(JSON.stringify(regions)));
+    if (undoStack.length > 30) undoStack.shift();
+    redoStack = [];
+}
+
+function undoLast() {
+    if (undoStack.length === 0) { toast('Undo nahi ho sakta'); return; }
+    redoStack.push(JSON.parse(JSON.stringify(regions)));
+    regions = undoStack.pop();
+    renderAll();
+    toast('Undo ↩️');
+}
+
+function redoLast() {
+    if (redoStack.length === 0) { toast('Redo nahi ho sakta'); return; }
+    undoStack.push(JSON.parse(JSON.stringify(regions)));
+    regions = redoStack.pop();
+    renderAll();
+    toast('Redo ↪️');
+}
+
+// ========== CONTROLS ==========
+function setDrawMode(mode) {
+    drawMode = mode;
+    document.getElementById('modeRect').classList.toggle('active', mode === 'rect');
+    document.getElementById('modeCircle').classList.toggle('active', mode === 'circle');
+}
+
+function setBlurType(type) {
+    blurType = type;
+    document.getElementById('typeGaussian').classList.toggle('active', type === 'gaussian');
+    document.getElementById('typePixelate').classList.toggle('active', type === 'pixelate');
+    document.getElementById('typeBlack').classList.toggle('active', type === 'black');
+    document.getElementById('pixelSizeGroup').style.display = type === 'pixelate' ? 'block' : 'none';
+    document.getElementById('blurInfo').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+    renderAll();
+}
+
+function updateBlur() {
+    blurAmount = parseInt(document.getElementById('blurSlider').value);
+    document.getElementById('blurVal').textContent = blurAmount;
+    document.getElementById('blurDisplay').textContent = blurAmount;
+    document.querySelectorAll('.blur-preset').forEach(b => b.classList.remove('active'));
+    renderAll();
+}
+
+function setBlurPreset(val) {
+    document.getElementById('blurSlider').value = val;
+    blurAmount = val;
+    document.getElementById('blurVal').textContent = val;
+    document.getElementById('blurDisplay').textContent = val;
+    document.querySelectorAll('.blur-preset').forEach(b => {
+        b.classList.toggle('active', parseInt(b.textContent === 'Light' ? 10 : b.textContent === 'Medium' ? 20 : b.textContent === 'Strong' ? 40 : b.textContent === 'Heavy' ? 60 : 80) === val);
+    });
+    renderAll();
+}
+
+function updatePixelSize() {
+    pixelSize = parseInt(document.getElementById('pixelSlider').value);
+    document.getElementById('pixelVal').textContent = pixelSize;
+    document.getElementById('pixelDisplay').textContent = pixelSize;
+    renderAll();
+}
+
+function setFormat(fmt, el) {
+    outputFormat = fmt;
+    document.querySelectorAll('.format-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function resetAll() {
+    saveUndo();
+    regions = [];
+    blurAmount = 20; blurType = 'gaussian'; drawMode = 'rect'; pixelSize = 10;
+    document.getElementById('blurSlider').value = 20;
+    document.getElementById('blurVal').textContent = '20';
+    document.getElementById('blurDisplay').textContent = '20';
+    document.getElementById('pixelSlider').value = 10;
+    document.getElementById('pixelVal').textContent = '10';
+    document.getElementById('pixelDisplay').textContent = '10';
+    setBlurType('gaussian');
+    setDrawMode('rect');
+    document.querySelectorAll('.blur-preset').forEach((b,i) => b.classList.toggle('active', i===1));
+    renderAll();
+    document.getElementById('instructionOverlay').classList.remove('hidden');
+    toast('Sab reset ho gaya! 🔄');
+}
+
+// ========== ZOOM ==========
+function zoomIn() { zoomLevel = Math.min(zoomLevel + 0.1, 2); applyZoom(); }
+function zoomOut() { zoomLevel = Math.max(zoomLevel - 0.1, 0.3); applyZoom(); }
+function zoomReset() { zoomLevel = 1; applyZoom(); }
+function applyZoom() {
+    document.getElementById('canvasWrapper').style.transform = `scale(${zoomLevel})`;
+    document.getElementById('zoomLabel').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+// ========== DOWNLOAD ==========
+function downloadImage() {
+    if (!originalImage || regions.length === 0) { toast('Pehle blur regions add karein!'); return; }
+
+    document.getElementById('processing').classList.add('show');
+
+    setTimeout(() => {
+        // Render at full resolution
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = originalImage.width;
+        offCanvas.height = originalImage.height;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(originalImage, 0, 0);
+
+        // Apply blurs at full res
+        const origScale = scaleRatio;
+        scaleRatio = 1;
+        regions.forEach(r => applyBlurRegion(offCtx, r, originalImage.width, originalImage.height));
+        scaleRatio = origScale;
+
+        let mime = 'image/png', ext = 'png';
+        if (outputFormat === 'jpeg') { mime = 'image/jpeg'; ext = 'jpg'; }
+        else if (outputFormat === 'webp') { mime = 'image/webp'; ext = 'webp'; }
+
+        const dataUrl = offCanvas.toDataURL(mime, 0.92);
+        const link = document.createElement('a');
+        link.download = `${fileName.replace(/\.[^.]+$/, '')}-blurred.${ext}`;
+        link.href = dataUrl;
+        link.click();
+
+        document.getElementById('processing').classList.remove('show');
+        toast('Image download ho gayi! 🎉🔒');
+    }, 600);
+}
+
+// ========== TOAST ==========
+function toast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown', e => {
+    if (!originalImage) return;
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoLast(); }
+    else if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redoLast(); }
+    else if (e.ctrlKey && e.key === 's') { e.preventDefault(); downloadImage(); }
+    else if (e.key === 'Delete') { clearAllRegions(); }
+});
+
+// ========== WINDOW RESIZE ==========
+window.addEventListener('resize', () => { if (originalImage) renderAll(); });
+</script>
+</body>
+</html>
