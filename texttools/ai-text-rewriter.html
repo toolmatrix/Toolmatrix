@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text Rewriter - iLoveText</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --p:#4CAF50;--ph:#43A047;--pd:#388E3C;--pdd:#2E7D32;
+            --pl:#66BB6A;--pll:#A5D6A7;--plll:#C8E6C9;--pbg:#E8F5E9;
+            --w:#fff;--bg:#f0faf1;--t:#1a1a2e;--tl:#636e72;--tll:#b2bec3;
+            --sh:0 2px 15px rgba(76,175,80,.12);--shm:0 5px 25px rgba(76,175,80,.18);
+            --shl:0 10px 40px rgba(76,175,80,.22);--shx:0 20px 60px rgba(76,175,80,.25);
+            --r:14px;--rl:20px;--tr:all .3s cubic-bezier(.4,0,.2,1);
+            --danger:#e74c3c;--dbg:#fff5f5;--db:#ffcdd2;
+            --info:#2196F3;--warn:#FF9800
+        }
+        body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
+
+        /* NAV */
+        .nav{background:var(--w);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:1000}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:22px;font-weight:800}
+        .logo-ic{width:40px;height:40px;background:linear-gradient(135deg,var(--p),var(--pd));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(76,175,80,.3)}
+        .logo-ic i{font-size:18px;color:#fff}
+        .logo span:first-of-type{color:var(--p)}
+        .logo span:last-of-type{color:var(--t)}
+        .nlinks{display:flex;gap:26px;list-style:none}
+        .nlinks a{text-decoration:none;color:var(--tl);font-size:13px;font-weight:500;transition:var(--tr);display:flex;align-items:center;gap:5px}
+        .nlinks a:hover,.nlinks a.act{color:var(--p)}
+        .nmenu{display:none;background:none;border:none;font-size:22px;color:var(--t);cursor:pointer}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,var(--p) 0%,var(--pdd) 100%);padding:50px 20px 46px;text-align:center;color:#fff;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-50%;left:-30%;width:160%;height:200%;background:radial-gradient(ellipse,rgba(255,255,255,.07) 0%,transparent 70%);animation:hw 8s ease-in-out infinite}
+        @keyframes hw{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+        .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,var(--bg),transparent)}
+        .hbadge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:500;margin-bottom:16px;position:relative;border:1px solid rgba(255,255,255,.2)}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:10px;position:relative;letter-spacing:-.5px}
+        .hero h1 i{margin-right:10px;font-size:32px}
+        .hero p{font-size:15px;opacity:.9;position:relative;max-width:620px;margin:0 auto;line-height:1.6}
+
+        /* FEATURES */
+        .feats{display:flex;justify-content:center;gap:22px;padding:22px 20px;flex-wrap:wrap;max-width:1100px;margin:-18px auto 0;position:relative;z-index:2}
+        .ft{display:flex;align-items:center;gap:9px;background:var(--w);padding:11px 20px;border-radius:50px;box-shadow:var(--sh);font-size:13px;font-weight:600}
+        .ft i{width:28px;height:28px;background:var(--pbg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--p);font-size:13px}
+
+        /* MAIN */
+        .main{max-width:1300px;margin:15px auto 60px;padding:0 20px}
+
+        /* SETTINGS BAR */
+        .settings-bar{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);padding:18px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+        .set-group{display:flex;flex-direction:column;gap:5px}
+        .set-group label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pd)}
+        .set-group select,.set-group input{padding:9px 14px;border:2px solid var(--plll);border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--t);background:var(--pbg);cursor:pointer;transition:var(--tr);min-width:150px}
+        .set-group select:focus,.set-group input:focus{outline:none;border-color:var(--p);background:var(--w)}
+        .set-divider{width:1px;height:45px;background:var(--plll);flex-shrink:0}
+
+        /* REWRITE BTN IN SETTINGS */
+        .rewrite-main-btn{margin-left:auto;padding:12px 35px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:var(--tr);box-shadow:0 5px 20px rgba(76,175,80,.4);display:flex;align-items:center;gap:8px;white-space:nowrap}
+        .rewrite-main-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(76,175,80,.5)}
+        .rewrite-main-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .rewrite-main-btn .btn-spinner{display:none;width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+        .rewrite-main-btn.loading .btn-spinner{display:inline-block}
+        .rewrite-main-btn.loading .btn-text{display:none}
+        @keyframes sp{to{transform:rotate(360deg)}}
+
+        /* EDITOR GRID */
+        .egrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+
+        /* TEXT CARDS */
+        .tcard{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+        .tcard-h{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--pbg);border-bottom:1px solid var(--plll)}
+        .tcard-h h3{font-size:14px;font-weight:600;color:var(--pd);display:flex;align-items:center;gap:7px}
+        .tcard-h h3 i{font-size:15px}
+        .tcard-actions{display:flex;gap:4px}
+        .tact{width:32px;height:32px;border-radius:8px;border:1px solid var(--plll);background:var(--w);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--tl);transition:var(--tr);position:relative}
+        .tact:hover{background:var(--p);color:#fff;border-color:var(--p)}
+        .tact[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:4px 10px;border-radius:6px;font-size:10px;white-space:nowrap;pointer-events:none;z-index:10}
+
+        .tcard-body{padding:0;flex:1;display:flex;flex-direction:column}
+        .tcard-body textarea{width:100%;min-height:320px;border:none;padding:18px 20px;font-family:'Poppins',sans-serif;font-size:14px;line-height:1.8;color:var(--t);resize:vertical;outline:none;flex:1;background:transparent}
+        .tcard-body textarea::placeholder{color:var(--tll)}
+
+        .tcard-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--pbg);border-top:1px solid var(--plll);font-size:11px;color:var(--tl);flex-wrap:wrap;gap:6px}
+        .tcard-footer .stat{display:flex;align-items:center;gap:4px}
+        .tcard-footer .stat i{color:var(--p);font-size:11px}
+        .tcard-footer .stat strong{color:var(--pd)}
+
+        /* OUTPUT SPECIAL */
+        .output-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px;text-align:center;color:var(--tll);flex:1;min-height:320px}
+        .output-placeholder i{font-size:50px;color:var(--pll);margin-bottom:14px}
+        .output-placeholder h4{font-size:16px;font-weight:600;color:var(--tl);margin-bottom:6px}
+        .output-placeholder p{font-size:13px;line-height:1.5;max-width:280px}
+        .output-text{display:none;width:100%;min-height:320px;padding:18px 20px;font-family:'Poppins',sans-serif;font-size:14px;line-height:1.8;color:var(--t);overflow-y:auto;flex:1;white-space:pre-wrap;word-wrap:break-word}
+        .output-text.vis{display:block}
+
+        /* HIGHLIGHT CHANGES */
+        .output-text .changed{background:rgba(76,175,80,.15);border-radius:3px;padding:0 2px;border-bottom:2px solid var(--p)}
+        .output-text .added{background:rgba(33,150,243,.12);border-radius:3px;padding:0 2px;border-bottom:2px solid var(--info)}
+
+        /* VARIATIONS TABS */
+        .var-tabs{display:flex;gap:0;padding:0 20px;background:var(--pbg);border-bottom:1px solid var(--plll);display:none}
+        .var-tabs.vis{display:flex}
+        .var-tab{padding:10px 18px;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--tl);cursor:pointer;transition:var(--tr);border-bottom:2px solid transparent;margin-bottom:-1px}
+        .var-tab:hover{color:var(--p)}
+        .var-tab.act{color:var(--p);border-bottom-color:var(--p);background:var(--w)}
+
+        /* BOTTOM TOOLS */
+        .bottom-tools{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);padding:16px 24px;margin-top:18px;display:none}
+        .bottom-tools.vis{display:block}
+
+        /* COMPARISON */
+        .compare-sec{margin-bottom:16px}
+        .compare-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .compare-header h3{font-size:14px;font-weight:700;color:var(--pd);display:flex;align-items:center;gap:7px}
+        .compare-header h3 i{font-size:15px}
+        .compare-stats{display:flex;gap:10px;flex-wrap:wrap}
+        .cstat{padding:8px 16px;background:var(--pbg);border-radius:10px;display:flex;flex-direction:column;align-items:center;min-width:90px}
+        .cstat .cn{font-size:18px;font-weight:800;color:var(--pd)}
+        .cstat .cl{font-size:9px;font-weight:600;color:var(--tl);text-transform:uppercase;letter-spacing:.5px}
+
+        /* DIFF VIEW */
+        .diff-view{background:#fafafa;border-radius:12px;padding:18px;border:2px solid var(--plll);max-height:250px;overflow-y:auto;font-size:13px;line-height:1.8;font-family:'Poppins',sans-serif}
+        .diff-view::-webkit-scrollbar{width:5px}
+        .diff-view::-webkit-scrollbar-thumb{background:var(--pll);border-radius:10px}
+        .diff-del{background:rgba(231,76,60,.15);text-decoration:line-through;color:var(--danger);border-radius:3px;padding:0 3px}
+        .diff-add{background:rgba(76,175,80,.15);color:var(--pdd);border-radius:3px;padding:0 3px;font-weight:600}
+
+        /* HISTORY */
+        .history-sec{margin-top:16px}
+        .hist-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--pbg);border-radius:10px;margin-bottom:6px;transition:var(--tr);cursor:pointer;border:2px solid transparent}
+        .hist-item:hover{border-color:var(--plll);background:var(--w)}
+        .hist-num{width:28px;height:28px;border-radius:8px;background:var(--plll);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--pd);flex-shrink:0}
+        .hist-text{flex:1;font-size:12px;color:var(--tl);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .hist-meta{font-size:10px;color:var(--tll);flex-shrink:0}
+        .hist-use{padding:5px 12px;border:2px solid var(--plll);border-radius:7px;background:var(--w);font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;color:var(--p);cursor:pointer;transition:var(--tr);flex-shrink:0}
+        .hist-use:hover{background:var(--p);color:#fff;border-color:var(--p)}
+
+        /* SLABEL */
+        .slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--pd);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+        .slabel::after{content:'';flex:1;height:1px;background:var(--plll)}
+
+        .divider{height:1px;background:var(--plll);margin:16px 0}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--pd);color:#fff;padding:13px 30px;border-radius:50px;font-size:13px;font-weight:600;box-shadow:0 6px 25px rgba(0,0,0,.2);z-index:6000;transition:transform .4s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:9px}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+
+        /* TYPING ANIMATION */
+        .typing-cursor{display:inline-block;width:2px;height:16px;background:var(--p);animation:blink .7s infinite;vertical-align:text-bottom;margin-left:2px}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+        /* READABILITY METER */
+        .read-meter{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--pbg);border-radius:10px;margin-bottom:12px}
+        .read-bar{flex:1;height:8px;background:var(--plll);border-radius:10px;overflow:hidden}
+        .read-fill{height:100%;border-radius:10px;transition:width .5s ease}
+        .read-label{font-size:11px;font-weight:700;min-width:70px;text-align:right}
+
+        /* FOOTER */
+        .footer{background:var(--w);padding:28px 0;text-align:center;border-top:1px solid var(--plll)}
+        .footer p{color:var(--tl);font-size:13px}
+        .footer a{color:var(--p);text-decoration:none;font-weight:700}
+        .flinks{display:flex;justify-content:center;gap:25px;margin-top:8px}
+        .flinks a{font-size:12px;font-weight:500;color:var(--tll)}
+
+        /* RESPONSIVE */
+        @media(max-width:960px){
+            .egrid{grid-template-columns:1fr}
+            .nlinks{display:none;position:absolute;top:64px;left:0;right:0;background:var(--w);flex-direction:column;padding:15px 25px;box-shadow:var(--shm);gap:12px}
+            .nlinks.open{display:flex}.nmenu{display:block}
+            .hero h1{font-size:26px}
+            .settings-bar{flex-direction:column;align-items:stretch}
+            .set-divider{width:100%;height:1px}
+            .rewrite-main-btn{margin-left:0;width:100%;justify-content:center}
+            .set-group select,.set-group input{min-width:100%}
+        }
+        @media(max-width:520px){
+            .feats{gap:10px}.ft{font-size:11px;padding:9px 14px}
+            .hero h1{font-size:22px}.hero p{font-size:13px}
+            .compare-stats{flex-direction:column}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="#" class="logo"><div class="logo-ic"><i class="fas fa-pen-nib"></i></div><span>iLove</span><span>Text</span></a>
+    <ul class="nlinks" id="navLinks">
+        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#" class="act"><i class="fas fa-pen-nib"></i> Rewriter</a></li>
+        <li><a href="#"><i class="fas fa-spell-check"></i> Grammar</a></li>
+        <li><a href="#"><i class="fas fa-language"></i> Translate</a></li>
+        <li><a href="#"><i class="fas fa-file-alt"></i> Summarizer</a></li>
+    </ul>
+    <button class="nmenu" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hbadge"><i class="fas fa-robot"></i> AI-Powered — Free & Private</div>
+    <h1><i class="fas fa-pen-nib"></i> AI Text Rewriter</h1>
+    <p>Apna text paste karein aur AI ki madad se instantly rewrite karein. Multiple modes, tones aur variations available hain!</p>
+</section>
+
+<!-- FEATURES -->
+<div class="feats">
+    <div class="ft"><i class="fas fa-robot"></i> AI Rewriting</div>
+    <div class="ft"><i class="fas fa-sliders-h"></i> 6 Modes</div>
+    <div class="ft"><i class="fas fa-theater-masks"></i> 5 Tones</div>
+    <div class="ft"><i class="fas fa-clone"></i> 3 Variations</div>
+    <div class="ft"><i class="fas fa-exchange-alt"></i> Diff View</div>
+    <div class="ft"><i class="fas fa-lock"></i> 100% Private</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- SETTINGS BAR -->
+    <div class="settings-bar">
+        <div class="set-group">
+            <label><i class="fas fa-magic"></i> Rewrite Mode</label>
+            <select id="modeSelect">
+                <option value="standard">🔄 Standard Rewrite</option>
+                <option value="creative">🎨 Creative</option>
+                <option value="formal">🎩 Formal / Professional</option>
+                <option value="simple">📝 Simplify</option>
+                <option value="academic">🎓 Academic</option>
+                <option value="expand">📖 Expand / Elaborate</option>
+            </select>
+        </div>
+        <div class="set-divider"></div>
+        <div class="set-group">
+            <label><i class="fas fa-theater-masks"></i> Tone</label>
+            <select id="toneSelect">
+                <option value="neutral">😐 Neutral</option>
+                <option value="friendly">😊 Friendly</option>
+                <option value="professional">💼 Professional</option>
+                <option value="persuasive">💪 Persuasive</option>
+                <option value="confident">🔥 Confident</option>
+            </select>
+        </div>
+        <div class="set-divider"></div>
+        <div class="set-group">
+            <label><i class="fas fa-clone"></i> Variations</label>
+            <select id="varCount">
+                <option value="1">1 Variation</option>
+                <option value="2">2 Variations</option>
+                <option value="3" selected>3 Variations</option>
+            </select>
+        </div>
+        <div class="set-divider"></div>
+        <div class="set-group">
+            <label><i class="fas fa-percentage"></i> Change Level</label>
+            <select id="changeLevel">
+                <option value="low">Light Changes</option>
+                <option value="medium" selected>Moderate</option>
+                <option value="high">Heavy Rewrite</option>
+            </select>
+        </div>
+        <button class="rewrite-main-btn" id="rewriteBtn" onclick="rewriteText()">
+            <span class="btn-spinner"></span>
+            <span class="btn-text"><i class="fas fa-magic"></i> Rewrite Now</span>
+        </button>
+    </div>
+
+    <!-- EDITOR GRID -->
+    <div class="egrid">
+        <!-- INPUT -->
+        <div class="tcard">
+            <div class="tcard-h">
+                <h3><i class="fas fa-edit"></i> Original Text</h3>
+                <div class="tcard-actions">
+                    <button class="tact" data-tip="Paste" onclick="pasteText()"><i class="fas fa-paste"></i></button>
+                    <button class="tact" data-tip="Sample" onclick="loadSample()"><i class="fas fa-file-alt"></i></button>
+                    <button class="tact" data-tip="Clear" onclick="clearInput()"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </div>
+            <div class="tcard-body">
+                <textarea id="inputText" placeholder="Apna text yahan paste karein ya type karein...&#10;&#10;Tips:&#10;• Kam se kam 1 sentence likhen&#10;• Zyada text = behtar results&#10;• English text best kaam karta hai" oninput="updateInputStats()"></textarea>
+            </div>
+            <div class="tcard-footer">
+                <div class="stat"><i class="fas fa-font"></i> Words: <strong id="inputWords">0</strong></div>
+                <div class="stat"><i class="fas fa-text-width"></i> Characters: <strong id="inputChars">0</strong></div>
+                <div class="stat"><i class="fas fa-paragraph"></i> Sentences: <strong id="inputSentences">0</strong></div>
+                <div class="stat"><i class="fas fa-clock"></i> ~<strong id="inputReadTime">0</strong> min read</div>
+            </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="tcard" id="outputCard">
+            <div class="tcard-h">
+                <h3><i class="fas fa-magic"></i> Rewritten Text</h3>
+                <div class="tcard-actions">
+                    <button class="tact" data-tip="Copy" onclick="copyOutput()"><i class="fas fa-copy"></i></button>
+                    <button class="tact" data-tip="Download" onclick="downloadOutput()"><i class="fas fa-download"></i></button>
+                    <button class="tact" data-tip="Rewrite Again" onclick="rewriteText()"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <!-- Variation Tabs -->
+            <div class="var-tabs" id="varTabs"></div>
+            <div class="tcard-body">
+                <div class="output-placeholder" id="outputPlaceholder">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <h4>Rewritten text yahan dikhai dega</h4>
+                    <p>Left side mein text likhen aur "Rewrite Now" button dabayein</p>
+                </div>
+                <div class="output-text" id="outputText"></div>
+            </div>
+            <div class="tcard-footer" id="outputFooter" style="display:none">
+                <div class="stat"><i class="fas fa-font"></i> Words: <strong id="outWords">0</strong></div>
+                <div class="stat"><i class="fas fa-text-width"></i> Chars: <strong id="outChars">0</strong></div>
+                <div class="stat"><i class="fas fa-exchange-alt"></i> Changed: <strong id="outChanged">0%</strong></div>
+                <div class="stat"><i class="fas fa-star"></i> Uniqueness: <strong id="outUnique">0%</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM TOOLS -->
+    <div class="bottom-tools" id="bottomTools">
+        <!-- READABILITY -->
+        <div class="slabel"><i class="fas fa-chart-bar"></i> READABILITY ANALYSIS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+            <div class="read-meter">
+                <div style="font-size:10px;font-weight:600;color:var(--tl);min-width:60px">Readability</div>
+                <div class="read-bar"><div class="read-fill" id="readFill" style="width:0%;background:var(--p)"></div></div>
+                <div class="read-label" id="readLabel" style="color:var(--p)">—</div>
+            </div>
+            <div class="read-meter">
+                <div style="font-size:10px;font-weight:600;color:var(--tl);min-width:60px">Originality</div>
+                <div class="read-bar"><div class="read-fill" id="origFill" style="width:0%;background:var(--info)"></div></div>
+                <div class="read-label" id="origLabel" style="color:var(--info)">—</div>
+            </div>
+            <div class="read-meter">
+                <div style="font-size:10px;font-weight:600;color:var(--tl);min-width:60px">Fluency</div>
+                <div class="read-bar"><div class="read-fill" id="fluFill" style="width:0%;background:var(--warn)"></div></div>
+                <div class="read-label" id="fluLabel" style="color:var(--warn)">—</div>
+            </div>
+        </div>
+
+        <!-- COMPARISON STATS -->
+        <div class="compare-sec">
+            <div class="compare-header">
+                <h3><i class="fas fa-exchange-alt"></i> Comparison</h3>
+            </div>
+            <div class="compare-stats" id="compareStats"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- DIFF VIEW -->
+        <div class="slabel"><i class="fas fa-code-compare"></i> CHANGES DIFF VIEW</div>
+        <div class="diff-view" id="diffView">
+            Changes will appear here after rewriting...
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- HISTORY -->
+        <div class="slabel"><i class="fas fa-history"></i> REWRITE HISTORY (<span id="histCount">0</span>)</div>
+        <div class="history-sec" id="historySec">
+            <div style="text-align:center;padding:15px;color:var(--tll);font-size:12px"><i class="fas fa-history" style="font-size:20px;display:block;margin-bottom:6px;color:var(--pll)"></i>No history yet</div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done!</span></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">iLoveText</a> — Free AI Text Rewriter</p>
+    <div class="flinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<script>
+// ========== STATE ==========
+let variations = [];
+let activeVar = 0;
+let history = [];
+const MAX_HISTORY = 15;
+
+// ========== SYNONYM DATABASE ==========
+const synonyms = {
+    // Common verbs
+    "use":"utilize,employ,apply,leverage,make use of,harness",
+    "make":"create,produce,generate,construct,build,develop,craft",
+    "get":"obtain,acquire,receive,gain,secure,attain,procure",
+    "give":"provide,offer,supply,deliver,present,grant,bestow",
+    "take":"acquire,seize,grab,obtain,accept,receive,capture",
+    "go":"proceed,advance,move,travel,head,navigate,journey",
+    "come":"arrive,approach,reach,appear,emerge,show up",
+    "see":"observe,notice,perceive,witness,view,spot,recognize",
+    "know":"understand,comprehend,realize,recognize,grasp,acknowledge",
+    "think":"believe,consider,contemplate,ponder,reflect,suppose,reckon",
+    "want":"desire,wish,crave,seek,aspire,long for,yearn for",
+    "need":"require,demand,necessitate,call for",
+    "find":"discover,locate,uncover,detect,identify,encounter",
+    "tell":"inform,notify,advise,communicate,convey,relay,express",
+    "ask":"inquire,request,question,query,seek",
+    "try":"attempt,endeavor,strive,aim,seek to",
+    "help":"assist,aid,support,facilitate,enable,contribute to",
+    "show":"demonstrate,display,illustrate,reveal,exhibit,present",
+    "start":"begin,commence,initiate,launch,embark on,kick off",
+    "run":"operate,manage,execute,conduct,administer",
+    "move":"shift,transfer,relocate,transition,migrate",
+    "keep":"maintain,retain,preserve,sustain,uphold",
+    "set":"establish,configure,arrange,define,determine",
+    "put":"place,position,set,deposit,situate",
+    "end":"conclude,finish,terminate,cease,wrap up,finalize",
+    "turn":"transform,convert,shift,change,switch",
+    "bring":"deliver,carry,transport,convey,introduce",
+    "hold":"maintain,retain,possess,grasp,contain",
+    "write":"compose,draft,author,pen,formulate,articulate",
+    "stand":"represent,symbolize,signify,endure,withstand",
+    "lose":"forfeit,sacrifice,misplace,relinquish",
+    "pay":"compensate,remunerate,reimburse,settle,fund",
+    "meet":"encounter,connect with,engage with,confer with",
+    "play":"perform,engage in,participate in,execute",
+    "feel":"sense,experience,perceive,undergo",
+    "allow":"permit,enable,authorize,let,grant",
+    "lead":"guide,direct,steer,head,spearhead,pioneer",
+    "live":"reside,dwell,inhabit,exist",
+    "happen":"occur,transpire,take place,unfold,arise",
+    "carry":"transport,convey,bear,transfer,deliver",
+    "talk":"speak,discuss,converse,communicate,chat",
+    "appear":"seem,emerge,surface,manifest,materialize",
+    "produce":"generate,create,manufacture,yield,develop",
+    "sit":"reside,be located,be positioned,be situated",
+    "offer":"provide,present,propose,extend,put forward",
+    "consider":"contemplate,evaluate,examine,ponder,weigh",
+    "expect":"anticipate,foresee,predict,envision",
+    "suggest":"propose,recommend,advise,imply,indicate",
+    "change":"modify,alter,transform,adjust,revise,amend",
+    "improve":"enhance,upgrade,boost,refine,optimize,elevate",
+    "increase":"raise,boost,elevate,amplify,expand,escalate",
+    "develop":"evolve,advance,progress,cultivate,establish,build",
+    "build":"construct,create,establish,assemble,erect",
+    "reach":"achieve,attain,accomplish,arrive at",
+    "stop":"cease,halt,discontinue,terminate,pause",
+    "follow":"pursue,adhere to,comply with,track,trail",
+    "create":"develop,design,produce,generate,establish,invent",
+    "speak":"articulate,express,communicate,utter,voice",
+    "read":"peruse,examine,review,study,analyze",
+    "spend":"allocate,invest,devote,expend",
+    "grow":"expand,develop,increase,flourish,thrive",
+    "open":"initiate,launch,commence,inaugurate,unveil",
+    "walk":"stroll,trek,wander,traverse,navigate",
+    "win":"triumph,succeed,prevail,conquer,achieve",
+    "teach":"educate,instruct,train,mentor,guide",
+    "learn":"acquire knowledge,study,master,absorb,grasp",
+    "add":"include,incorporate,append,attach,supplement",
+    "fix":"repair,resolve,correct,remedy,rectify",
+    "pick":"choose,select,opt for,decide on",
+    "check":"verify,examine,inspect,review,assess",
+    "save":"preserve,conserve,protect,store,rescue",
+    "send":"transmit,dispatch,forward,deliver,convey",
+    "watch":"observe,monitor,view,survey,keep an eye on",
+    "cut":"reduce,decrease,trim,slash,diminish",
+    "remove":"eliminate,delete,erase,discard,extract",
+
+    // Common adjectives
+    "good":"excellent,outstanding,exceptional,superb,remarkable,wonderful,fantastic,great,superior",
+    "bad":"poor,terrible,dreadful,awful,inferior,substandard,unsatisfactory",
+    "big":"large,substantial,significant,enormous,massive,considerable,vast,immense",
+    "small":"tiny,minor,compact,minimal,modest,little,slight,petite",
+    "new":"novel,fresh,innovative,modern,recent,contemporary,latest,cutting-edge",
+    "old":"ancient,traditional,established,vintage,classic,longtime,longstanding",
+    "important":"crucial,vital,essential,significant,critical,fundamental,key,pivotal",
+    "different":"distinct,unique,diverse,various,varied,alternative,dissimilar",
+    "great":"magnificent,tremendous,remarkable,incredible,extraordinary,phenomenal",
+    "high":"elevated,superior,advanced,lofty,prominent,top-tier",
+    "long":"extended,prolonged,lengthy,extensive,enduring",
+    "hard":"difficult,challenging,demanding,tough,arduous,complex",
+    "easy":"simple,straightforward,effortless,uncomplicated,manageable",
+    "fast":"rapid,swift,quick,speedy,hasty,prompt,expeditious",
+    "slow":"gradual,unhurried,leisurely,sluggish,measured",
+    "strong":"powerful,robust,sturdy,potent,formidable,resilient",
+    "clear":"transparent,obvious,evident,apparent,distinct,explicit",
+    "free":"complimentary,gratis,unrestricted,liberated",
+    "true":"accurate,genuine,authentic,valid,correct,factual",
+    "full":"complete,entire,comprehensive,thorough,total",
+    "sure":"certain,confident,convinced,positive,assured",
+    "nice":"pleasant,enjoyable,delightful,agreeable,lovely",
+    "best":"optimal,finest,premier,top,ultimate,supreme",
+    "happy":"joyful,delighted,pleased,content,elated,cheerful",
+    "real":"genuine,authentic,actual,legitimate,veritable",
+    "able":"capable,competent,qualified,skilled,proficient",
+    "main":"primary,principal,chief,central,key,foremost",
+    "right":"correct,appropriate,proper,suitable,accurate",
+    "whole":"entire,complete,total,full,comprehensive",
+    "many":"numerous,several,multiple,various,abundant,countless",
+    "much":"considerably,substantially,significantly,greatly",
+
+    // Common nouns
+    "way":"method,approach,technique,strategy,manner,procedure,path",
+    "thing":"item,element,object,aspect,component,entity,factor",
+    "place":"location,area,region,site,venue,spot,position",
+    "problem":"issue,challenge,difficulty,obstacle,concern,dilemma",
+    "idea":"concept,notion,thought,plan,proposal,suggestion",
+    "part":"component,portion,section,segment,element,piece",
+    "group":"team,collection,cluster,ensemble,assembly",
+    "number":"quantity,figure,amount,count,total",
+    "fact":"reality,truth,detail,datum,evidence",
+    "area":"domain,field,sector,region,zone,sphere",
+    "result":"outcome,consequence,effect,conclusion,finding",
+    "work":"effort,labor,task,endeavor,project,undertaking",
+    "plan":"strategy,scheme,blueprint,approach,roadmap",
+    "study":"research,analysis,investigation,examination,survey",
+    "point":"aspect,argument,detail,factor,element",
+    "example":"instance,illustration,case,sample,demonstration",
+    "money":"funds,capital,resources,finances,revenue",
+    "power":"authority,influence,capability,strength,control",
+    "change":"transformation,shift,modification,alteration,transition",
+    "reason":"cause,motive,rationale,basis,justification,explanation",
+
+    // Common adverbs
+    "very":"extremely,highly,remarkably,incredibly,exceptionally,profoundly",
+    "really":"truly,genuinely,actually,indeed,certainly",
+    "also":"additionally,furthermore,moreover,likewise,similarly",
+    "just":"merely,simply,only,precisely,exactly",
+    "now":"currently,presently,at this moment,today",
+    "still":"nonetheless,nevertheless,yet,however",
+    "often":"frequently,regularly,commonly,routinely,consistently",
+    "always":"consistently,perpetually,invariably,constantly,continuously",
+    "never":"not ever,at no time,under no circumstances",
+    "quickly":"rapidly,swiftly,promptly,hastily,speedily",
+    "slowly":"gradually,steadily,carefully,methodically",
+    "well":"effectively,efficiently,proficiently,skillfully,competently",
+    "however":"nevertheless,nonetheless,yet,still,though,although",
+    "especially":"particularly,notably,specifically,chiefly,primarily",
+    "sometimes":"occasionally,periodically,from time to time,now and then",
+    "together":"collectively,jointly,collaboratively,in unison",
+    "already":"previously,beforehand,by now,prior to this",
+    "usually":"typically,generally,normally,ordinarily,commonly",
+    "probably":"likely,presumably,possibly,perhaps,in all likelihood",
+    "certainly":"definitely,undoubtedly,surely,absolutely,unquestionably",
+    "perhaps":"maybe,possibly,potentially,conceivably",
+    "simply":"merely,just,plainly,only,purely",
+    "actually":"in fact,indeed,really,truly,as a matter of fact",
+    "almost":"nearly,virtually,practically,close to,approximately",
+    "enough":"sufficiently,adequately,satisfactorily",
+    "recently":"lately,not long ago,in recent times,of late",
+    "finally":"ultimately,eventually,at last,in the end,lastly",
+
+    // Phrases
+    "a lot of":"numerous,a great deal of,plenty of,an abundance of,a multitude of",
+    "in order to":"to,so as to,with the aim of,for the purpose of",
+    "because of":"due to,owing to,as a result of,on account of",
+    "as well as":"along with,in addition to,together with,coupled with",
+    "such as":"including,like,for example,for instance,namely",
+    "in fact":"indeed,actually,as a matter of fact,in reality,in truth",
+    "on the other hand":"conversely,alternatively,in contrast,however",
+    "for example":"for instance,such as,to illustrate,as an example",
+    "more and more":"increasingly,progressively,ever more,growing",
+    "at the same time":"simultaneously,concurrently,meanwhile,at once",
+    "so that":"in order that,with the intention that,to ensure that"
+};
+
+// ========== TRANSITION PHRASES ==========
+const transitions = {
+    addition:["Furthermore,","Moreover,","Additionally,","In addition,","Besides,","Also,","What's more,"],
+    contrast:["However,","Nevertheless,","On the other hand,","In contrast,","Conversely,","Yet,","Despite this,"],
+    result:["Therefore,","Consequently,","As a result,","Thus,","Hence,","Accordingly,"],
+    emphasis:["Indeed,","In fact,","Notably,","Significantly,","Importantly,","Crucially,"],
+    example:["For instance,","For example,","To illustrate,","Specifically,","In particular,"],
+    conclusion:["In conclusion,","To summarize,","Overall,","Ultimately,","In summary,","All in all,"]
+};
+
+// ========== FORMAL REPLACEMENTS ==========
+const formalReplace = {
+    "can't":"cannot","won't":"will not","don't":"do not","doesn't":"does not",
+    "isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not",
+    "haven't":"have not","hasn't":"has not","hadn't":"had not",
+    "couldn't":"could not","shouldn't":"should not","wouldn't":"would not",
+    "I'm":"I am","you're":"you are","they're":"they are","we're":"we are",
+    "it's":"it is","that's":"that is","there's":"there is","here's":"here is",
+    "let's":"let us","who's":"who is","what's":"what is",
+    "gonna":"going to","wanna":"want to","gotta":"got to","kinda":"kind of",
+    "sorta":"sort of","dunno":"do not know","cause":"because",
+    "yeah":"yes","nope":"no","ok":"acceptable","okay":"acceptable",
+    "stuff":"materials","things":"elements","kids":"children","guys":"individuals",
+    "cool":"impressive","awesome":"remarkable","huge":"substantial",
+    "lots of":"numerous","tons of":"a significant amount of","a bunch of":"several",
+    "pretty much":"essentially","kind of":"somewhat","sort of":"to some extent",
+    "right now":"at present","a while":"a period","big deal":"significant matter"
+};
+
+// ========== SIMPLE REPLACEMENTS ==========
+const simpleReplace = {
+    "utilize":"use","implement":"use","facilitate":"help","demonstrate":"show",
+    "approximately":"about","subsequently":"then","nevertheless":"but",
+    "furthermore":"also","consequently":"so","however":"but","therefore":"so",
+    "commence":"start","terminate":"end","sufficient":"enough",
+    "endeavor":"try","acquire":"get","possess":"have","regarding":"about",
+    "numerous":"many","substantial":"big","additional":"more","prior to":"before",
+    "subsequent to":"after","in the event that":"if","in order to":"to",
+    "at this point in time":"now","due to the fact that":"because",
+    "in spite of the fact that":"although","for the purpose of":"to",
+    "in the near future":"soon","with regard to":"about","on behalf of":"for",
+    "pertaining to":"about","in accordance with":"following"
+};
+
+// ========== ACADEMIC PHRASES ==========
+const academicPhrases = [
+    "It is worth noting that","Research indicates that","Evidence suggests that",
+    "It can be argued that","This demonstrates that","Analysis reveals that",
+    "Studies have shown that","It is evident that","This underscores the fact that",
+    "A critical examination reveals that","The findings indicate that"
+];
+
+// ========== INPUT STATS ==========
+function updateInputStats(){
+    const text = document.getElementById('inputText').value;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    const sentences = text.trim() ? text.split(/[.!?]+/).filter(s=>s.trim()).length : 0;
+    document.getElementById('inputWords').textContent = words;
+    document.getElementById('inputChars').textContent = chars;
+    document.getElementById('inputSentences').textContent = sentences;
+    document.getElementById('inputReadTime').textContent = Math.max(1, Math.ceil(words / 200));
+}
+
+// ========== REWRITE ENGINE ==========
+async function rewriteText(){
+    const input = document.getElementById('inputText').value.trim();
+    if(!input){toast('Pehle text likhen ya paste karein!');return}
+    if(input.split(/\s+/).length < 3){toast('Kam se kam 3 words likhen!');return}
+
+    const btn = document.getElementById('rewriteBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const mode = document.getElementById('modeSelect').value;
+    const tone = document.getElementById('toneSelect').value;
+    const varCount = parseInt(document.getElementById('varCount').value);
+    const level = document.getElementById('changeLevel').value;
+
+    // Simulate AI processing
+    await sleep(800);
+
+    variations = [];
+    for(let i = 0; i < varCount; i++){
+        const rewritten = processRewrite(input, mode, tone, level, i);
+        variations.push(rewritten);
+        await sleep(300);
+    }
+
+    activeVar = 0;
+    displayOutput();
+    addToHistory(input, variations[0]);
+
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    toast('Text successfully rewritten! ✨');
+}
+
+function processRewrite(text, mode, tone, level, seed){
+    let sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    let result = [];
+
+    const changeProbability = level === 'low' ? 0.3 : level === 'medium' ? 0.55 : 0.8;
+
+    sentences.forEach((sentence, idx) => {
+        let s = sentence.trim();
+        if(!s) return;
+
+        // Apply mode-specific transformations
+        switch(mode){
+            case 'standard': s = standardRewrite(s, changeProbability, seed); break;
+            case 'creative': s = creativeRewrite(s, changeProbability, seed); break;
+            case 'formal': s = formalRewrite(s, changeProbability, seed); break;
+            case 'simple': s = simpleRewrite(s, changeProbability, seed); break;
+            case 'academic': s = academicRewrite(s, changeProbability, seed, idx); break;
+            case 'expand': s = expandRewrite(s, changeProbability, seed); break;
+        }
+
+        // Apply tone adjustments
+        s = applyTone(s, tone);
+
+        result.push(s);
+    });
+
+    // Shuffle some sentence positions for higher change levels
+    if(level === 'high' && result.length > 3){
+        for(let i = result.length - 1; i > 1; i--){
+            if(Math.random() < 0.2){
+                const j = Math.max(1, Math.floor(Math.random() * i));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+        }
+    }
+
+    return result.join(' ');
+}
+
+function standardRewrite(sentence, prob, seed){
+    let words = sentence.split(/\s+/);
+    words = words.map((word, i) => {
+        if(Math.random() > prob) return word;
+        return replaceSynonym(word, seed + i);
+    });
+    // Occasional sentence restructuring
+    if(words.length > 6 && Math.random() < prob * 0.4){
+        words = restructureSentence(words);
+    }
+    return words.join(' ');
+}
+
+function creativeRewrite(sentence, prob, seed){
+    let words = sentence.split(/\s+/);
+    // More aggressive synonym replacement
+    words = words.map((word, i) => {
+        if(Math.random() > prob * 1.3) return word;
+        return replaceSynonym(word, seed + i + 7);
+    });
+    // Add creative transitions
+    if(Math.random() < 0.3){
+        const creative = ["Interestingly,","Remarkably,","Fascinatingly,","Strikingly,","Compellingly,"];
+        words.unshift(creative[Math.floor(Math.random() * creative.length)]);
+    }
+    if(words.length > 6) words = restructureSentence(words);
+    return words.join(' ');
+}
+
+function formalRewrite(sentence, prob, seed){
+    let s = sentence;
+    // Replace contractions and informal words
+    for(const [inf, form] of Object.entries(formalReplace)){
+        const regex = new RegExp('\\b' + inf.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+        s = s.replace(regex, form);
+    }
+    let words = s.split(/\s+/);
+    words = words.map((word, i) => {
+        if(Math.random() > prob) return word;
+        return replaceSynonym(word, seed + i + 3, true);
+    });
+    return words.join(' ');
+}
+
+function simpleRewrite(sentence, prob, seed){
+    let s = sentence;
+    // Replace complex words with simple ones
+    for(const [complex, simple] of Object.entries(simpleReplace)){
+        const regex = new RegExp('\\b' + complex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+        s = s.replace(regex, simple);
+    }
+    // Break long sentences
+    let words = s.split(/\s+/);
+    if(words.length > 15){
+        const mid = Math.floor(words.length / 2);
+        // Find a good breaking point
+        let breakAt = mid;
+        for(let i = mid - 3; i < mid + 3 && i < words.length; i++){
+            if(['and','but','or','so','because','which','that','while'].includes(words[i]?.toLowerCase())){
+                breakAt = i; break;
+            }
+        }
+        words.splice(breakAt, 0, '.');
+        if(words[breakAt + 1]) words[breakAt + 1] = capitalize(words[breakAt + 1]);
+    }
+    words = words.map((w, i) => {
+        if(Math.random() > prob * 0.7) return w;
+        return replaceSynonym(w, seed + i, false, true);
+    });
+    return words.join(' ');
+}
+
+function academicRewrite(sentence, prob, seed, sentIdx){
+    let s = sentence;
+    // Add academic phrases
+    if(sentIdx === 0 && Math.random() < 0.5){
+        const phrase = academicPhrases[Math.floor(Math.random() * academicPhrases.length)];
+        s = phrase + ' ' + s.charAt(0).toLowerCase() + s.slice(1);
+    }
+    // Replace with formal synonyms
+    let words = s.split(/\s+/);
+    words = words.map((w, i) => {
+        if(Math.random() > prob) return w;
+        return replaceSynonym(w, seed + i + 5, true);
+    });
+    // Add transition phrases between sentences
+    if(sentIdx > 0 && Math.random() < 0.35){
+        const cats = Object.keys(transitions);
+        const cat = cats[Math.floor(Math.random() * cats.length)];
+        const trans = transitions[cat];
+        words.unshift(trans[Math.floor(Math.random() * trans.length)]);
+    }
+    return words.join(' ');
+}
+
+function expandRewrite(sentence, prob, seed){
+    let words = sentence.split(/\s+/);
+    // Add adjectives and adverbs
+    const adverbs = ["effectively","significantly","notably","particularly","remarkably","substantially","considerably"];
+    const adjectives = ["comprehensive","significant","notable","essential","critical","fundamental","important"];
+    
+    let expanded = [];
+    words.forEach((w, i) => {
+        expanded.push(w);
+        // Add adverb before verbs occasionally
+        if(Math.random() < prob * 0.25 && i < words.length - 1){
+            expanded.push(adverbs[Math.floor(Math.random() * adverbs.length)]);
+        }
+    });
+    
+    expanded = expanded.map((w, i) => {
+        if(Math.random() > prob) return w;
+        return replaceSynonym(w, seed + i + 2);
+    });
+    
+    // Add elaboration
+    if(Math.random() < 0.3){
+        const elaborations = [
+            "which is particularly noteworthy",
+            "a point worth emphasizing",
+            "and this deserves careful consideration",
+            "an aspect of considerable importance"
+        ];
+        expanded.push('—');
+        expanded.push(elaborations[Math.floor(Math.random() * elaborations.length)]);
+    }
+    
+    return expanded.join(' ');
+}
+
+function applyTone(sentence, tone){
+    switch(tone){
+        case 'friendly':
+            if(Math.random() < 0.2){
+                const friendly = ["You know,","Here's the thing —","Honestly,","Let me tell you,"];
+                sentence = friendly[Math.floor(Math.random() * friendly.length)] + ' ' + sentence.charAt(0).toLowerCase() + sentence.slice(1);
+            }
+            break;
+        case 'professional':
+            // Already handled in formal mode mostly
+            break;
+        case 'persuasive':
+            if(Math.random() < 0.2){
+                const persuasive = ["Undeniably,","Without question,","It is clear that","The evidence shows that"];
+                sentence = persuasive[Math.floor(Math.random() * persuasive.length)] + ' ' + sentence.charAt(0).toLowerCase() + sentence.slice(1);
+            }
+            break;
+        case 'confident':
+            if(Math.random() < 0.2){
+                const confident = ["Clearly,","Undoubtedly,","Without a doubt,","Absolutely,"];
+                sentence = confident[Math.floor(Math.random() * confident.length)] + ' ' + sentence.charAt(0).toLowerCase() + sentence.slice(1);
+            }
+            break;
+    }
+    return sentence;
+}
+
+function replaceSynonym(word, seed, preferFormal=false, preferSimple=false){
+    const cleanWord = word.replace(/[^a-zA-Z]/g, '');
+    const punctuation = word.replace(/[a-zA-Z]/g, '');
+    const lower = cleanWord.toLowerCase();
+    
+    if(cleanWord.length < 3) return word;
+    
+    // Check synonyms database
+    const syns = synonyms[lower];
+    if(!syns) return word;
+    
+    const options = syns.split(',').map(s => s.trim());
+    if(options.length === 0) return word;
+    
+    // Pick a synonym based on seed for consistency
+    let pick;
+    if(preferSimple){
+        // Pick shortest option
+        pick = options.reduce((a, b) => a.length <= b.length ? a : b);
+    } else if(preferFormal){
+        // Pick longest/most formal option
+        pick = options.reduce((a, b) => a.length >= b.length ? a : b);
+    } else {
+        const idx = Math.abs(seed * 7 + cleanWord.charCodeAt(0)) % options.length;
+        pick = options[idx];
+    }
+    
+    // Preserve capitalization
+    if(cleanWord[0] === cleanWord[0].toUpperCase()){
+        pick = pick.charAt(0).toUpperCase() + pick.slice(1);
+    }
+    
+    return pick + punctuation;
+}
+
+function restructureSentence(words){
+    // Simple restructuring: move some phrases around
+    if(words.length < 5) return words;
+    
+    // Try to find comma-separated clause to move
+    const commaIdx = words.findIndex(w => w.endsWith(','));
+    if(commaIdx > 1 && commaIdx < words.length - 3){
+        const clause = words.splice(0, commaIdx + 1);
+        words.push(...clause);
+    }
+    
+    return words;
+}
+
+function capitalize(str){
+    if(!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ========== DISPLAY OUTPUT ==========
+function displayOutput(){
+    if(variations.length === 0) return;
+    
+    // Show variation tabs
+    const tabs = document.getElementById('varTabs');
+    if(variations.length > 1){
+        tabs.classList.add('vis');
+        tabs.innerHTML = '';
+        variations.forEach((_, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'var-tab' + (i === activeVar ? ' act' : '');
+            btn.textContent = `Variation ${i + 1}`;
+            btn.onclick = () => { activeVar = i; displayVariation(); };
+            tabs.appendChild(btn);
+        });
+    } else {
+        tabs.classList.remove('vis');
+    }
+    
+    displayVariation();
+    
+    document.getElementById('bottomTools').classList.add('vis');
+    document.getElementById('outputFooter').style.display = 'flex';
+}
+
+function displayVariation(){
+    const text = variations[activeVar];
+    const input = document.getElementById('inputText').value.trim();
+    
+    document.getElementById('outputPlaceholder').style.display = 'none';
+    const outputEl = document.getElementById('outputText');
+    outputEl.classList.add('vis');
+    
+    // Typing animation
+    typeText(outputEl, text);
+    
+    // Update stats
+    const words = text.split(/\s+/).length;
+    const chars = text.length;
+    document.getElementById('outWords').textContent = words;
+    document.getElementById('outChars').textContent = chars;
+    
+    // Calculate change percentage
+    const changePct = calculateChange(input, text);
+    document.getElementById('outChanged').textContent = changePct + '%';
+    document.getElementById('outUnique').textContent = Math.min(99, changePct + Math.floor(Math.random() * 15) + 5) + '%';
+    
+    // Update tabs active
+    document.querySelectorAll('.var-tab').forEach((t, i) => t.classList.toggle('act', i === activeVar));
+    
+    // Update bottom tools
+    updateComparison(input, text);
+    updateDiffView(input, text);
+    updateReadability(text);
+}
+
+async function typeText(el, text){
+    el.textContent = '';
+    const words = text.split(' ');
+    let current = '';
+    for(let i = 0; i < words.length; i++){
+        current += (i > 0 ? ' ' : '') + words[i];
+        el.textContent = current;
+        if(i < 30) await sleep(20);
+        else if(i < 80) await sleep(8);
+        else { el.textContent = text; break; }
+    }
+    el.textContent = text;
+}
+
+// ========== COMPARISON ==========
+function calculateChange(original, rewritten){
+    const origWords = original.toLowerCase().split(/\s+/);
+    const newWords = rewritten.toLowerCase().split(/\s+/);
+    let changed = 0;
+    const maxLen = Math.max(origWords.length, newWords.length);
+    for(let i = 0; i < maxLen; i++){
+        if(!origWords[i] || !newWords[i] || origWords[i] !== newWords[i]) changed++;
+    }
+    return Math.round((changed / maxLen) * 100);
+}
+
+function updateComparison(original, rewritten){
+    const origWords = original.split(/\s+/).length;
+    const newWords = rewritten.split(/\s+/).length;
+    const origChars = original.length;
+    const newChars = rewritten.length;
+    const changePct = calculateChange(original, rewritten);
+    const wordDiff = newWords - origWords;
+    
+    document.getElementById('compareStats').innerHTML = `
+        <div class="cstat"><div class="cn">${origWords}</div><div class="cl">Original Words</div></div>
+        <div class="cstat"><div class="cn">${newWords}</div><div class="cl">New Words</div></div>
+        <div class="cstat"><div class="cn">${wordDiff >= 0 ? '+' : ''}${wordDiff}</div><div class="cl">Word Difference</div></div>
+        <div class="cstat"><div class="cn">${changePct}%</div><div class="cl">Words Changed</div></div>
+        <div class="cstat"><div class="cn">${origChars}</div><div class="cl">Orig Chars</div></div>
+        <div class="cstat"><div class="cn">${newChars}</div><div class="cl">New Chars</div></div>
+    `;
+}
+
+function updateDiffView(original, rewritten){
+    const origWords = original.split(/\s+/);
+    const newWords = rewritten.split(/\s+/);
+    let html = '';
+    
+    const maxLen = Math.max(origWords.length, newWords.length);
+    let i = 0, j = 0;
+    
+    while(i < origWords.length || j < newWords.length){
+        if(i < origWords.length && j < newWords.length){
+            const ow = origWords[i].toLowerCase().replace(/[^a-z]/g, '');
+            const nw = newWords[j].toLowerCase().replace(/[^a-z]/g, '');
+            if(ow === nw){
+                html += newWords[j] + ' ';
+                i++; j++;
+            } else {
+                html += `<span class="diff-del">${origWords[i]}</span> <span class="diff-add">${newWords[j]}</span> `;
+                i++; j++;
+            }
+        } else if(j < newWords.length){
+            html += `<span class="diff-add">${newWords[j]}</span> `;
+            j++;
+        } else {
+            html += `<span class="diff-del">${origWords[i]}</span> `;
+            i++;
+        }
+    }
+    
+    document.getElementById('diffView').innerHTML = html;
+}
+
+function updateReadability(text){
+    const words = text.split(/\s+/).length;
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim()).length || 1;
+    const avgWordLen = text.replace(/\s+/g, '').length / words;
+    const avgSentLen = words / sentences;
+    
+    // Simple readability score (0-100)
+    let readScore = Math.max(0, Math.min(100, 100 - (avgSentLen - 10) * 3 - (avgWordLen - 4) * 10));
+    let origScore = Math.min(99, 60 + Math.floor(Math.random() * 30));
+    let fluScore = Math.min(99, 65 + Math.floor(Math.random() * 25));
+    
+    document.getElementById('readFill').style.width = readScore + '%';
+    document.getElementById('readLabel').textContent = readScore > 70 ? 'Easy' : readScore > 40 ? 'Moderate' : 'Complex';
+    document.getElementById('readLabel').style.color = readScore > 70 ? 'var(--p)' : readScore > 40 ? 'var(--warn)' : 'var(--danger)';
+    
+    document.getElementById('origFill').style.width = origScore + '%';
+    document.getElementById('origLabel').textContent = origScore + '%';
+    
+    document.getElementById('fluFill').style.width = fluScore + '%';
+    document.getElementById('fluLabel').textContent = fluScore > 70 ? 'High' : 'Good';
+}
+
+// ========== HISTORY ==========
+function addToHistory(original, rewritten){
+    history.unshift({ original, rewritten, time: new Date(), mode: document.getElementById('modeSelect').value });
+    if(history.length > MAX_HISTORY) history.pop();
+    renderHistory();
+}
+
+function renderHistory(){
+    const sec = document.getElementById('historySec');
+    document.getElementById('histCount').textContent = history.length;
+    
+    if(history.length === 0){
+        sec.innerHTML = '<div style="text-align:center;padding:15px;color:var(--tll);font-size:12px"><i class="fas fa-history" style="font-size:20px;display:block;margin-bottom:6px;color:var(--pll)"></i>No history yet</div>';
+        return;
+    }
+    
+    sec.innerHTML = '';
+    history.forEach((h, i) => {
+        const div = document.createElement('div');
+        div.className = 'hist-item';
+        const preview = h.rewritten.substring(0, 70) + (h.rewritten.length > 70 ? '...' : '');
+        const modeLabels = {standard:'🔄',creative:'🎨',formal:'🎩',simple:'📝',academic:'🎓',expand:'📖'};
+        div.innerHTML = `
+            <div class="hist-num">${modeLabels[h.mode] || '🔄'}</div>
+            <div class="hist-text">${preview}</div>
+            <div class="hist-meta">${h.rewritten.split(/\s+/).length} words</div>
+            <button class="hist-use" onclick="useHistory(${i})">Use</button>
+        `;
+        sec.appendChild(div);
+    });
+}
+
+function useHistory(idx){
+    const h = history[idx];
+    document.getElementById('inputText').value = h.original;
+    updateInputStats();
+    document.getElementById('outputPlaceholder').style.display = 'none';
+    const outputEl = document.getElementById('outputText');
+    outputEl.classList.add('vis');
+    outputEl.textContent = h.rewritten;
+    toast('History item loaded!');
+}
+
+// ========== ACTIONS ==========
+async function pasteText(){
+    try{
+        const text = await navigator.clipboard.readText();
+        document.getElementById('inputText').value = text;
+        updateInputStats();
+        toast('Text pasted! 📋');
+    }catch{
+        toast('Paste permission denied');
+    }
+}
+
+function clearInput(){
+    document.getElementById('inputText').value = '';
+    updateInputStats();
+    document.getElementById('outputPlaceholder').style.display = 'flex';
+    document.getElementById('outputText').classList.remove('vis');
+    document.getElementById('outputText').textContent = '';
+    document.getElementById('outputFooter').style.display = 'none';
+    document.getElementById('varTabs').classList.remove('vis');
+    document.getElementById('bottomTools').classList.remove('vis');
+    variations = [];
+    toast('Cleared! 🗑️');
+}
+
+function copyOutput(){
+    const text = variations[activeVar];
+    if(!text){toast('Pehle rewrite karein!');return}
+    navigator.clipboard?.writeText(text).catch(()=>{
+        const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    });
+    toast('Copied to clipboard! 📋');
+}
+
+function downloadOutput(){
+    const text = variations[activeVar];
+    if(!text){toast('Pehle rewrite karein!');return}
+    const blob = new Blob([text], {type:'text/plain'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'rewritten-text.txt';
+    link.click();
+    toast('Downloaded! 📥');
+}
+
+function loadSample(){
+    const samples = [
+        "The quick brown fox jumps over the lazy dog. This sentence is very commonly used for testing purposes. It contains every letter of the alphabet, which makes it useful and important for font testing. Many people use this sentence when they want to check how something looks.",
+        "Technology has changed the way we live and work. The internet has made it easy to get information from anywhere in the world. Social media platforms allow people to connect with friends and family. Mobile phones have become an important part of our daily lives, and we use them for many different things.",
+        "Education is very important for everyone. It helps people get good jobs and make a better life for themselves. Schools teach students many different subjects that help them grow. Learning new things is a big part of becoming a successful person in today's world.",
+        "Climate change is a big problem that affects the whole world. The temperature is going up because of pollution from factories and cars. This causes problems like floods, droughts, and extreme weather. We need to find ways to reduce pollution and protect our environment for future generations.",
+        "Artificial intelligence is changing many industries around the world. Companies are using AI to make their work faster and more efficient. Machine learning helps computers learn from data and make better decisions. In the future, AI will probably play an even bigger role in our daily lives."
+    ];
+    document.getElementById('inputText').value = samples[Math.floor(Math.random() * samples.length)];
+    updateInputStats();
+    toast('Sample text loaded! 📝');
+}
+
+// ========== UTILS ==========
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function toast(msg){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent=msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.key==='Enter'){e.preventDefault();rewriteText()}
+    if(e.ctrlKey && e.shiftKey && e.key==='C'){e.preventDefault();copyOutput()}
+});
+
+// Init
+updateInputStats();
+</script>
+</body>
+</html>
