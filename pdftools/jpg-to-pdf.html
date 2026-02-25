@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPDF - JPG to PDF Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-lighter: #C8E6C9;
+            --primary-lightest: #E8F5E9;
+            --primary-dark: #388E3C;
+            --primary-darker: #2E7D32;
+            --primary-darkest: #1B5E20;
+            --accent: #66BB6A;
+            --bg: #F1F8E9;
+            --bg2: #f5f9f0;
+            --white: #ffffff;
+            --text-dark: #1B5E20;
+            --text-medium: #33691E;
+            --text-light: #558B2F;
+            --text-gray: #757575;
+            --text-gray2: #9E9E9E;
+            --border: #E0E0E0;
+            --red: #F44336;
+            --red-light: #FFEBEE;
+            --blue: #2196F3;
+            --blue-light: #E3F2FD;
+            --orange: #FF9800;
+            --orange-light: #FFF3E0;
+            --purple: #9C27B0;
+            --purple-light: #F3E5F5;
+            --teal: #009688;
+            --teal-light: #E0F2F1;
+            --pink: #E91E63;
+            --pink-light: #FCE4EC;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(76,175,80,0.12);
+            --shadow-lg: 0 10px 40px rgba(76,175,80,0.18);
+            --shadow-xl: 0 20px 60px rgba(76,175,80,0.22);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============ SCROLLBAR ============ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary-lightest); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ============ NAVBAR ============ */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary) 100%);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 25px rgba(46,125,50,0.35);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .brand-text span { color: #A5D6A7; font-weight: 400; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: var(--radius-xs);
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* ============ HERO ============ */
+        .hero {
+            text-align: center;
+            padding: 55px 20px 35px;
+            background: linear-gradient(180deg, var(--primary-lightest) 0%, var(--bg) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(76,175,80,0.06) 0%, transparent 70%);
+            bottom: -100px;
+            right: -50px;
+            border-radius: 50%;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--primary-lighter);
+        }
+
+        .hero-badge i { color: var(--primary); }
+
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 14px;
+            line-height: 1.2;
+            position: relative;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 550px;
+            margin: 0 auto;
+            font-weight: 400;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* ============ TOOLS GRID ============ */
+        .tools-section {
+            padding: 35px 40px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i { color: var(--primary); font-size: 20px; }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .tool-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-lighter);
+        }
+
+        .tool-card:hover::after { transform: scaleX(1); }
+
+        .tool-card .icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 26px;
+            transition: var(--transition);
+        }
+
+        .tool-card:hover .icon-wrap { transform: scale(1.1); }
+
+        .icon-green { background: var(--primary-lightest); color: var(--primary); }
+        .icon-blue { background: var(--blue-light); color: var(--blue); }
+        .icon-orange { background: var(--orange-light); color: var(--orange); }
+        .icon-red { background: var(--red-light); color: var(--red); }
+        .icon-purple { background: var(--purple-light); color: var(--purple); }
+        .icon-teal { background: var(--teal-light); color: var(--teal); }
+        .icon-pink { background: var(--pink-light); color: var(--pink); }
+
+        .tool-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .tool-card p {
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        .tool-card .card-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============ HOW IT WORKS ============ */
+        .how-section {
+            padding: 50px 40px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .how-section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+        }
+
+        .how-steps {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .how-step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .step-number {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: #fff;
+            font-size: 22px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            box-shadow: 0 6px 20px rgba(76,175,80,0.3);
+        }
+
+        .how-step h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .how-step p {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        /* ============ CONVERTER PAGE ============ */
+        .converter-page {
+            display: none;
+        }
+
+        .converter-page.active { display: block; }
+
+        .converter-hero {
+            text-align: center;
+            padding: 45px 20px 30px;
+            background: linear-gradient(180deg, var(--primary-lightest) 0%, var(--bg) 100%);
+        }
+
+        .converter-hero .tool-hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 34px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(76,175,80,0.3);
+        }
+
+        .converter-hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .converter-hero p {
+            font-size: 16px;
+            color: var(--text-light);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ============ UPLOAD AREA ============ */
+        .upload-container {
+            max-width: 750px;
+            margin: -20px auto 0;
+            padding: 0 20px 50px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: var(--radius-xs);
+            transition: var(--transition);
+            border: none;
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .back-btn:hover { background: var(--primary-lightest); box-shadow: var(--shadow); }
+
+        .upload-area {
+            background: var(--white);
+            border: 3px dashed var(--primary-light);
+            border-radius: 20px;
+            padding: 55px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(76,175,80,0.02), rgba(76,175,80,0.05));
+            pointer-events: none;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .upload-area.dragover { border-style: solid; }
+
+        .upload-icon-circle {
+            width: 95px;
+            height: 95px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            font-size: 38px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(76,175,80,0.3);
+            position: relative;
+        }
+
+        .upload-icon-circle::after {
+            content: '';
+            position: absolute;
+            width: 115px;
+            height: 115px;
+            border: 2px dashed rgba(76,175,80,0.3);
+            border-radius: 50%;
+            animation: pulse-ring 2s ease infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        .upload-area h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-area .upload-subtitle {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        .upload-area .format-info {
+            font-size: 12px;
+            color: var(--text-gray2);
+            margin-top: 15px;
+        }
+
+        .select-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            padding: 15px 45px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 6px 20px rgba(76,175,80,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76,175,80,0.4);
+        }
+
+        .file-input { display: none; }
+
+        /* ============ IMAGES WORKSPACE ============ */
+        .workspace {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .workspace.active { display: block; }
+
+        .workspace-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .workspace-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .workspace-title .img-count {
+            background: var(--primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 50px;
+        }
+
+        .workspace-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ws-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+        }
+
+        .ws-btn-outline {
+            background: var(--white);
+            color: var(--primary-dark);
+            border-color: var(--primary-lighter);
+        }
+
+        .ws-btn-outline:hover {
+            background: var(--primary-lightest);
+            border-color: var(--primary-light);
+        }
+
+        .ws-btn-danger {
+            background: var(--white);
+            color: var(--red);
+            border-color: #FFCDD2;
+        }
+
+        .ws-btn-danger:hover { background: var(--red-light); }
+
+        .ws-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+
+        .ws-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.4);
+        }
+
+        .ws-btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ============ SETTINGS PANEL ============ */
+        .settings-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 22px 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            border: 1px solid var(--primary-lighter);
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .setting-group select, .setting-group input[type="number"] {
+            padding: 8px 14px;
+            border: 2px solid var(--primary-lighter);
+            border-radius: var(--radius-xs);
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            outline: none;
+            transition: var(--transition);
+            background: var(--white);
+            cursor: pointer;
+        }
+
+        .setting-group select:focus, .setting-group input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        .setting-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234CAF50' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+
+        /* ============ IMAGES GRID ============ */
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .image-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .image-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-lighter);
+            transform: translateY(-3px);
+        }
+
+        .image-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+            border-color: var(--primary);
+        }
+
+        .image-card.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+        }
+
+        .image-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--primary-lightest);
+            border-bottom: 1px solid var(--primary-lighter);
+        }
+
+        .image-card .card-number {
+            background: var(--primary);
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .image-card .card-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .image-card .card-action-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: var(--transition-fast);
+            background: transparent;
+            color: var(--text-gray);
+        }
+
+        .image-card .card-action-btn:hover {
+            background: var(--white);
+        }
+
+        .image-card .card-action-btn.btn-rotate:hover { color: var(--blue); }
+        .image-card .card-action-btn.btn-delete:hover { color: var(--red); }
+        .image-card .card-action-btn.btn-move:hover { color: var(--primary); }
+
+        .image-card .card-preview {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            background: #FAFAFA;
+            overflow: hidden;
+        }
+
+        .image-card .card-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .image-card .card-footer {
+            padding: 8px 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .image-card .card-filename {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .image-card .card-filesize {
+            font-size: 10px;
+            color: var(--text-gray2);
+        }
+
+        /* ADD MORE CARD */
+        .add-more-card {
+            background: var(--white);
+            border: 3px dashed var(--primary-lighter);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 230px;
+            cursor: pointer;
+            transition: var(--transition);
+            gap: 10px;
+        }
+
+        .add-more-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+            transform: translateY(-3px);
+        }
+
+        .add-more-card i {
+            font-size: 30px;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .add-more-card:hover i { color: var(--primary); transform: scale(1.1); }
+
+        .add-more-card span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* ============ CONVERT SECTION ============ */
+        .convert-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-darker));
+            color: #fff;
+            border: none;
+            padding: 18px 60px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 30px rgba(76,175,80,0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(76,175,80,0.45);
+        }
+
+        .convert-btn:active { transform: translateY(0) scale(0.98); }
+
+        .convert-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .convert-btn i { font-size: 20px; }
+
+        /* ============ PROGRESS BAR ============ */
+        .progress-section {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .progress-section.show { display: block; }
+
+        .progress-bar-outer {
+            background: var(--primary-lighter);
+            border-radius: 50px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-inner {
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.4s ease;
+            width: 0%;
+            position: relative;
+        }
+
+        .progress-bar-inner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-label {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* ============ RESULT SECTION ============ */
+        .result-section {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-section.show { display: block; }
+
+        .result-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(76,175,80,0.3);
+            animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .result-section h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .result-section .result-info {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .result-btn {
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+        }
+
+        .result-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(76,175,80,0.3);
+        }
+
+        .result-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76,175,80,0.4);
+        }
+
+        .result-btn-outline {
+            background: var(--white);
+            color: var(--primary-dark);
+            border-color: var(--primary-lighter);
+        }
+
+        .result-btn-outline:hover {
+            background: var(--primary-lightest);
+            border-color: var(--primary-light);
+        }
+
+        /* ============ LOADING OVERLAY ============ */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.show { display: flex; }
+
+        .loader {
+            width: 55px;
+            height: 55px;
+            border: 5px solid var(--primary-lighter);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loader-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast.show { transform: translateX(0); opacity: 1; }
+
+        .toast-success { background: var(--primary-dark); color: #fff; }
+        .toast-error { background: var(--red); color: #fff; }
+        .toast-info { background: var(--blue); color: #fff; }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            background: var(--primary-darker);
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 13px;
+        }
+
+        .footer a { color: var(--primary-lighter); text-decoration: none; }
+        .footer a:hover { color: #fff; }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 10px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 15px; }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 30px; }
+            .hero p { font-size: 15px; }
+            .tools-section { padding: 25px 15px 40px; }
+            .tools-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+            .tool-card { padding: 20px 14px; }
+            .tool-card .icon-wrap { width: 52px; height: 52px; font-size: 22px; }
+            .converter-hero h1 { font-size: 26px; }
+            .upload-area { padding: 40px 20px; }
+            .images-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+            .image-card .card-preview { height: 120px; }
+            .settings-panel { padding: 15px; gap: 15px; }
+            .convert-btn { padding: 15px 40px; font-size: 16px; }
+            .how-steps { flex-direction: column; align-items: center; }
+        }
+
+        @media (max-width: 480px) {
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+            .images-grid { grid-template-columns: repeat(2, 1fr); }
+            .workspace-header { flex-direction: column; align-items: flex-start; }
+            .settings-panel { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+    <a class="navbar-brand" onclick="showHome()">
+        <div class="brand-icon"><i class="fas fa-leaf"></i></div>
+        <div class="brand-text">Green<span>PDF</span></div>
+    </a>
+    <div class="nav-links">
+        <a href="#" class="active" id="navHome" onclick="showHome()">Home</a>
+        <a href="#" id="navTool" onclick="showConverter()">JPG to PDF</a>
+    </div>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="homePage">
+    <div class="hero">
+        <div class="hero-badge">
+            <i class="fas fa-bolt"></i> 100% Free & Fast
+        </div>
+        <h1>Convert <span class="gradient-text">JPG to PDF</span> Online</h1>
+        <p>Transform your images into professional PDF documents. Free, fast, and easy — no watermarks!</p>
+    </div>
+
+    <div class="tools-section">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fas fa-th-large"></i> All PDF Tools
+            </div>
+        </div>
+        <div class="tools-grid">
+            <div class="tool-card" onclick="showConverter()">
+                <span class="card-badge">Popular</span>
+                <div class="icon-wrap icon-green"><i class="fas fa-file-image"></i></div>
+                <h3>JPG to PDF</h3>
+                <p>Convert JPG images to PDF document</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-blue"><i class="fas fa-images"></i></div>
+                <h3>PNG to PDF</h3>
+                <p>Convert PNG images to PDF format</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-orange"><i class="fas fa-photo-video"></i></div>
+                <h3>Image to PDF</h3>
+                <p>Any image format to PDF</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-red"><i class="fas fa-object-group"></i></div>
+                <h3>Merge Images</h3>
+                <p>Combine multiple images into one PDF</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-purple"><i class="fas fa-compress-arrows-alt"></i></div>
+                <h3>Compress PDF</h3>
+                <p>Reduce PDF file size easily</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-teal"><i class="fas fa-expand-arrows-alt"></i></div>
+                <h3>Resize Images</h3>
+                <p>Resize before converting to PDF</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-pink"><i class="fas fa-redo-alt"></i></div>
+                <h3>Rotate Images</h3>
+                <p>Rotate and fix image orientation</p>
+            </div>
+            <div class="tool-card" onclick="showConverter()">
+                <div class="icon-wrap icon-blue"><i class="fas fa-sort-amount-down"></i></div>
+                <h3>Reorder Pages</h3>
+                <p>Drag & drop to reorder pages</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="how-section">
+        <h2>How It Works</h2>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="step-number">1</div>
+                <h4>Upload Images</h4>
+                <p>Select or drag & drop your JPG, PNG or other image files</p>
+            </div>
+            <div class="how-step">
+                <div class="step-number">2</div>
+                <h4>Arrange & Settings</h4>
+                <p>Reorder images, set page size, orientation & margins</p>
+            </div>
+            <div class="how-step">
+                <div class="step-number">3</div>
+                <h4>Convert & Download</h4>
+                <p>Click convert and download your PDF instantly</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Contact</a>
+        </div>
+        Made with 💚 by <a href="#">GreenPDF</a> — Free JPG to PDF Converter
+    </div>
+</div>
+
+<!-- ===== CONVERTER PAGE ===== -->
+<div class="converter-page" id="converterPage">
+    <div class="converter-hero">
+        <div class="tool-hero-icon">
+            <i class="fas fa-file-image"></i>
+        </div>
+        <h1>JPG to PDF</h1>
+        <p>Convert your images to a single PDF document. Drag & drop to reorder pages.</p>
+    </div>
+
+    <!-- Upload Container -->
+    <div class="upload-container" id="uploadContainer">
+        <button class="back-btn" onclick="showHome()">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon-circle">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Select Your Images</h3>
+            <p class="upload-subtitle">Drag & drop images here, or click to browse</p>
+            <button class="select-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">
+                <i class="fas fa-folder-open"></i> Select Images
+            </button>
+            <p class="format-info"><i class="fas fa-info-circle"></i> Supported: JPG, JPEG, PNG, GIF, BMP, WEBP</p>
+            <input type="file" id="fileInput" class="file-input" accept="image/*" multiple>
+        </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace" id="workspace">
+        <button class="back-btn" onclick="showConverter()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+
+        <div class="workspace-header">
+            <div class="workspace-title">
+                <i class="fas fa-images" style="color:var(--primary)"></i>
+                Your Images
+                <span class="img-count" id="imgCount">0</span>
+            </div>
+            <div class="workspace-actions">
+                <button class="ws-btn ws-btn-outline" onclick="document.getElementById('addMoreInput').click();">
+                    <i class="fas fa-plus"></i> Add More
+                </button>
+                <input type="file" id="addMoreInput" class="file-input" accept="image/*" multiple>
+                <button class="ws-btn ws-btn-outline" onclick="rotateAll()">
+                    <i class="fas fa-redo"></i> Rotate All
+                </button>
+                <button class="ws-btn ws-btn-danger" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <div class="setting-group">
+                <label><i class="fas fa-file-alt" style="color:var(--primary);margin-right:4px"></i> Page Size:</label>
+                <select id="pageSize">
+                    <option value="a4">A4 (210×297mm)</option>
+                    <option value="letter">Letter (8.5×11in)</option>
+                    <option value="legal">Legal (8.5×14in)</option>
+                    <option value="a3">A3 (297×420mm)</option>
+                    <option value="a5">A5 (148×210mm)</option>
+                    <option value="fit">Fit to Image</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label><i class="fas fa-arrows-alt-v" style="color:var(--primary);margin-right:4px"></i> Orientation:</label>
+                <select id="orientation">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                    <option value="auto">Auto Detect</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label><i class="fas fa-border-style" style="color:var(--primary);margin-right:4px"></i> Margin:</label>
+                <select id="marginSize">
+                    <option value="0">No Margin</option>
+                    <option value="10" selected>Small (10mm)</option>
+                    <option value="20">Medium (20mm)</option>
+                    <option value="30">Large (30mm)</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label><i class="fas fa-compress" style="color:var(--primary);margin-right:4px"></i> Quality:</label>
+                <select id="imgQuality">
+                    <option value="1">Best (100%)</option>
+                    <option value="0.85" selected>High (85%)</option>
+                    <option value="0.7">Medium (70%)</option>
+                    <option value="0.5">Low (50%)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Images Grid -->
+        <div class="images-grid" id="imagesGrid"></div>
+
+        <!-- Convert Section -->
+        <div class="convert-section">
+            <div class="progress-section" id="progressSection">
+                <div class="progress-bar-outer">
+                    <div class="progress-bar-inner" id="progressBar"></div>
+                </div>
+                <div class="progress-label" id="progressLabel">Converting...</div>
+            </div>
+            <button class="convert-btn" id="convertBtn" onclick="convertToPDF()">
+                <i class="fas fa-magic"></i> Convert to PDF
+            </button>
+        </div>
+
+        <!-- Result -->
+        <div class="result-section" id="resultSection">
+            <div class="result-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>PDF Created Successfully! 🎉</h2>
+            <p class="result-info" id="resultInfo">Your PDF is ready to download</p>
+            <div class="result-actions">
+                <button class="result-btn result-btn-primary" id="downloadBtn" onclick="downloadPDF()">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button class="result-btn result-btn-outline" onclick="resetConverter()">
+                    <i class="fas fa-redo"></i> Convert More
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" style="margin-top:0">
+        Made with 💚 by <a href="#">GreenPDF</a> — Free JPG to PDF Converter
+    </div>
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loader"></div>
+    <div class="loader-text" id="loaderText">Processing...</div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast toast-success" id="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastText">Done!</span>
+</div>
+
+<script>
+    // ==================== STATE ====================
+    let images = [];
+    let pdfBlob = null;
+    let pdfFileName = 'converted.pdf';
+    let draggedIndex = null;
+
+    // ==================== DOM ====================
+    const homePage = document.getElementById('homePage');
+    const converterPage = document.getElementById('converterPage');
+    const uploadContainer = document.getElementById('uploadContainer');
+    const workspace = document.getElementById('workspace');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const addMoreInput = document.getElementById('addMoreInput');
+    const imagesGrid = document.getElementById('imagesGrid');
+    const imgCountEl = document.getElementById('imgCount');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressSection = document.getElementById('progressSection');
+    const progressBar = document.getElementById('progressBar');
+    const progressLabel = document.getElementById('progressLabel');
+    const resultSection = document.getElementById('resultSection');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // ==================== NAVIGATION ====================
+    function showHome() {
+        homePage.style.display = 'block';
+        converterPage.classList.remove('active');
+        document.getElementById('navHome').classList.add('active');
+        document.getElementById('navTool').classList.remove('active');
+        window.scrollTo(0, 0);
+    }
+
+    function showConverter() {
+        homePage.style.display = 'none';
+        converterPage.classList.add('active');
+        uploadContainer.style.display = 'block';
+        workspace.classList.remove('active');
+        resultSection.classList.remove('show');
+        progressSection.classList.remove('show');
+        document.getElementById('navHome').classList.remove('active');
+        document.getElementById('navTool').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function showWorkspace() {
+        uploadContainer.style.display = 'none';
+        workspace.classList.add('active');
+        resultSection.classList.remove('show');
+        progressSection.classList.remove('show');
+        convertBtn.style.display = 'inline-flex';
+        renderImages();
+    }
+
+    // ==================== FILE UPLOAD ====================
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+    addMoreInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && !e.target.closest('.select-btn')) {
+            fileInput.click();
+        }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        if (!files || files.length === 0) return;
+
+        let validCount = 0;
+        let invalidCount = 0;
+
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    images.push({
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        size: file.size,
+                        dataUrl: e.target.result,
+                        rotation: 0,
+                        file: file
+                    });
+                    validCount++;
+                    if (validCount + invalidCount === files.length) {
+                        finishUpload(validCount, invalidCount);
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                invalidCount++;
+                if (validCount + invalidCount === files.length) {
+                    finishUpload(validCount, invalidCount);
+                }
+            }
+        });
+    }
+
+    function finishUpload(valid, invalid) {
+        if (invalid > 0) {
+            showToast(`${invalid} file(s) skipped (not images)`, 'error');
+        }
+        if (valid > 0) {
+            showToast(`${valid} image(s) added successfully!`, 'success');
+            setTimeout(() => showWorkspace(), 300);
+        }
+        fileInput.value = '';
+        addMoreInput.value = '';
+    }
+
+    // ==================== RENDER IMAGES ====================
+    function renderImages() {
+        imagesGrid.innerHTML = '';
+        imgCountEl.textContent = images.length;
+
+        images.forEach((img, index) => {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.draggable = true;
+            card.dataset.index = index;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-number">${index + 1}</div>
+                    <div class="card-actions">
+                        <button class="card-action-btn btn-move" title="Drag to reorder">
+                            <i class="fas fa-grip-vertical"></i>
+                        </button>
+                        <button class="card-action-btn btn-rotate" onclick="rotateImage(${index})" title="Rotate 90°">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="card-action-btn btn-delete" onclick="deleteImage(${index})" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-preview">
+                    <img src="${img.dataUrl}" alt="${img.name}" style="transform: rotate(${img.rotation}deg)">
+                </div>
+                <div class="card-footer">
+                    <div class="card-filename" title="${img.name}">${img.name}</div>
+                    <div class="card-filesize">${formatSize(img.size)}</div>
+                </div>
+            `;
+
+            // Drag events
+            card.addEventListener('dragstart', (e) => {
+                draggedIndex = index;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                document.querySelectorAll('.image-card').forEach(c => c.classList.remove('drag-over'));
+                draggedIndex = null;
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                card.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                const targetIndex = index;
+                if (draggedIndex !== null && draggedIndex !== targetIndex) {
+                    const item = images.splice(draggedIndex, 1)[0];
+                    images.splice(targetIndex, 0, item);
+                    renderImages();
+                    showToast('Images reordered!', 'info');
+                }
+            });
+
+            imagesGrid.appendChild(card);
+        });
+
+        // Add More Card
+        const addCard = document.createElement('div');
+        addCard.className = 'add-more-card';
+        addCard.onclick = () => addMoreInput.click();
+        addCard.innerHTML = `
+            <i class="fas fa-plus-circle"></i>
+            <span>Add More Images</span>
+        `;
+
+        // Drag & drop on add more card
+        addCard.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            addCard.style.borderColor = 'var(--primary)';
+            addCard.style.background = 'var(--primary-lightest)';
+        });
+        addCard.addEventListener('dragleave', () => {
+            addCard.style.borderColor = '';
+            addCard.style.background = '';
+        });
+        addCard.addEventListener('drop', (e) => {
+            e.preventDefault();
+            addCard.style.borderColor = '';
+            addCard.style.background = '';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imagesGrid.appendChild(addCard);
+    }
+
+    // ==================== IMAGE ACTIONS ====================
+    function rotateImage(index) {
+        images[index].rotation = (images[index].rotation + 90) % 360;
+        renderImages();
+    }
+
+    function rotateAll() {
+        images.forEach(img => img.rotation = (img.rotation + 90) % 360);
+        renderImages();
+        showToast('All images rotated!', 'success');
+    }
+
+    function deleteImage(index) {
+        images.splice(index, 1);
+        if (images.length === 0) {
+            showConverter();
+            showToast('All images removed', 'info');
+        } else {
+            renderImages();
+            showToast('Image removed', 'info');
+        }
+    }
+
+    function clearAll() {
+        if (images.length === 0) return;
+        if (confirm('Are you sure you want to remove all images?')) {
+            images = [];
+            showConverter();
+            showToast('All images cleared', 'info');
+        }
+    }
+
+    // ==================== CONVERT TO PDF ====================
+    async function convertToPDF() {
+        if (images.length === 0) {
+            showToast('Please add images first!', 'error');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+
+        const pageSizeVal = document.getElementById('pageSize').value;
+        const orientationVal = document.getElementById('orientation').value;
+        const marginVal = parseInt(document.getElementById('marginSize').value);
+        const qualityVal = parseFloat(document.getElementById('imgQuality').value);
+
+        convertBtn.disabled = true;
+        progressSection.classList.add('show');
+        progressBar.style.width = '0%';
+        progressLabel.textContent = 'Starting conversion...';
+
+        try {
+            let pdf = null;
+
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                const progress = Math.round(((i + 1) / images.length) * 100);
+                progressBar.style.width = progress + '%';
+                progressLabel.textContent = `Processing image ${i + 1} of ${images.length}...`;
+
+                // Load image to get dimensions
+                const imgEl = await loadImage(img.dataUrl);
+                let imgWidth = imgEl.naturalWidth;
+                let imgHeight = imgEl.naturalHeight;
+
+                // Handle rotation — swap dimensions for 90/270
+                if (img.rotation === 90 || img.rotation === 270) {
+                    [imgWidth, imgHeight] = [imgHeight, imgWidth];
+                }
+
+                // Determine orientation
+                let pageOrientation;
+                if (orientationVal === 'auto') {
+                    pageOrientation = imgWidth > imgHeight ? 'landscape' : 'portrait';
+                } else {
+                    pageOrientation = orientationVal;
+                }
+
+                // Determine page size
+                let pageFormat;
+                if (pageSizeVal === 'fit') {
+                    // Convert px to mm (assuming 96 DPI)
+                    const pxToMm = 25.4 / 96;
+                    pageFormat = [imgWidth * pxToMm + marginVal * 2, imgHeight * pxToMm + marginVal * 2];
+                } else {
+                    pageFormat = pageSizeVal;
+                }
+
+                if (i === 0) {
+                    pdf = new jsPDF({
+                        orientation: pageOrientation,
+                        unit: 'mm',
+                        format: pageFormat
+                    });
+                } else {
+                    pdf.addPage(pageFormat, pageOrientation);
+                }
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+
+                const availWidth = pageWidth - marginVal * 2;
+                const availHeight = pageHeight - marginVal * 2;
+
+                // Create canvas to handle rotation
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                if (img.rotation === 90 || img.rotation === 270) {
+                    canvas.width = imgEl.naturalHeight;
+                    canvas.height = imgEl.naturalWidth;
+                } else {
+                    canvas.width = imgEl.naturalWidth;
+                    canvas.height = imgEl.naturalHeight;
+                }
+
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate((img.rotation * Math.PI) / 180);
+                ctx.drawImage(imgEl, -imgEl.naturalWidth / 2, -imgEl.naturalHeight / 2);
+                ctx.restore();
+
+                const rotatedDataUrl = canvas.toDataURL('image/jpeg', qualityVal);
+
+                // Calculate dimensions to fit
+                const ratioW = availWidth / canvas.width;
+                const ratioH = availHeight / canvas.height;
+                const ratio = Math.min(ratioW, ratioH, 1);
+
+                const drawWidth = (canvas.width * ratio * 25.4) / 96;
+                const drawHeight = (canvas.height * ratio * 25.4) / 96;
+
+                // For fit mode, just fill
+                let finalW, finalH, x, y;
+                if (pageSizeVal === 'fit') {
+                    finalW = availWidth;
+                    finalH = availHeight;
+                    x = marginVal;
+                    y = marginVal;
+                } else {
+                    // Scale to fit page maintaining aspect ratio
+                    const imgAspect = canvas.width / canvas.height;
+                    const pageAspect = availWidth / availHeight;
+
+                    if (imgAspect > pageAspect) {
+                        finalW = availWidth;
+                        finalH = availWidth / imgAspect;
+                    } else {
+                        finalH = availHeight;
+                        finalW = availHeight * imgAspect;
+                    }
+
+                    x = marginVal + (availWidth - finalW) / 2;
+                    y = marginVal + (availHeight - finalH) / 2;
+                }
+
+                pdf.addImage(rotatedDataUrl, 'JPEG', x, y, finalW, finalH);
+
+                // Small delay for UI update
+                await new Promise(r => setTimeout(r, 50));
+            }
+
+            progressBar.style.width = '100%';
+            progressLabel.textContent = 'Generating PDF file...';
+
+            await new Promise(r => setTimeout(r, 300));
+
+            pdfBlob = pdf.output('blob');
+            pdfFileName = 'GreenPDF_converted_' + Date.now() + '.pdf';
+
+            // Show result
+            progressSection.classList.remove('show');
+            convertBtn.style.display = 'none';
+            resultSection.classList.add('show');
+
+            const sizeMB = (pdfBlob.size / (1024 * 1024)).toFixed(2);
+            document.getElementById('resultInfo').textContent =
+                `${images.length} image(s) • ${sizeMB} MB • Ready to download`;
+
+            showToast('PDF created successfully! 🎉', 'success');
+
+        } catch (error) {
+            console.error(error);
+            showToast('Error creating PDF: ' + error.message, 'error');
+            progressSection.classList.remove('show');
+        }
+
+        convertBtn.disabled = false;
+    }
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+
+    // ==================== DOWNLOAD ====================
+    function downloadPDF() {
+        if (!pdfBlob) return;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(pdfBlob);
+        link.download = pdfFileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast('Download started!', 'success');
+    }
+
+    // ==================== RESET ====================
+    function resetConverter() {
+        images = [];
+        pdfBlob = null;
+        resultSection.classList.remove('show');
+        progressSection.classList.remove('show');
+        convertBtn.style.display = 'inline-flex';
+        convertBtn.disabled = false;
+        showConverter();
+    }
+
+    // ==================== UTILS ====================
+    function formatSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // ==================== TOAST ====================
+    function showToast(text, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastText = document.getElementById('toastText');
+
+        toast.className = 'toast toast-' + type;
+        toastText.textContent = text;
+
+        if (type === 'success') toastIcon.className = 'fas fa-check-circle';
+        else if (type === 'error') toastIcon.className = 'fas fa-exclamation-circle';
+        else toastIcon.className = 'fas fa-info-circle';
+
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // ==================== LOADING ====================
+    function showLoading(text) {
+        document.getElementById('loaderText').textContent = text || 'Processing...';
+        loadingOverlay.classList.add('show');
+    }
+
+    function hideLoading() {
+        loadingOverlay.classList.remove('show');
+    }
+</script>
+
+</body>
+</html>
