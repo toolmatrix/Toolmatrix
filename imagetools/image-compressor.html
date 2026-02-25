@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress Image - iLoveImage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary:#4CAF50;--primary-h:#43A047;--primary-d:#388E3C;--primary-dd:#2E7D32;
+            --primary-l:#66BB6A;--primary-ll:#A5D6A7;--primary-lll:#C8E6C9;--primary-bg:#E8F5E9;
+            --white:#fff;--bg:#f0faf1;--text:#1a1a2e;--text-l:#636e72;--text-ll:#b2bec3;
+            --border:#dfe6e9;--shadow:0 2px 15px rgba(76,175,80,.12);
+            --shadow-md:0 5px 25px rgba(76,175,80,.18);--shadow-lg:0 10px 40px rgba(76,175,80,.22);
+            --shadow-xl:0 20px 60px rgba(76,175,80,.25);
+            --radius:14px;--radius-lg:20px;--transition:all .3s cubic-bezier(.4,0,.2,1);
+            --danger:#e74c3c;--danger-bg:#fff5f5;--danger-border:#ffcdd2;
+            --warning:#FF9800;--info:#2196F3;--success:#4CAF50;
+        }
+        body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+        /* NAVBAR */
+        .navbar{background:var(--white);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:1000}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:22px;font-weight:800}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-d));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(76,175,80,.3)}
+        .logo-icon i{font-size:18px;color:#fff}
+        .logo span:first-of-type{color:var(--primary)}
+        .logo span:last-of-type{color:var(--text)}
+        .nav-links{display:flex;gap:26px;list-style:none}
+        .nav-links a{text-decoration:none;color:var(--text-l);font-size:13px;font-weight:500;transition:var(--transition);display:flex;align-items:center;gap:5px}
+        .nav-links a:hover,.nav-links a.active{color:var(--primary)}
+        .nav-toggle{display:none;background:none;border:none;font-size:22px;color:var(--text);cursor:pointer}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dd) 100%);padding:50px 20px 46px;text-align:center;color:#fff;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-50%;left:-30%;width:160%;height:200%;background:radial-gradient(ellipse,rgba(255,255,255,.07) 0%,transparent 70%);animation:hw 8s ease-in-out infinite}
+        @keyframes hw{0%,100%{transform:scale(1) translateX(0)}50%{transform:scale(1.08) translateX(3%)}}
+        .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,var(--bg),transparent)}
+        .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:500;margin-bottom:16px;position:relative;border:1px solid rgba(255,255,255,.2)}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:10px;position:relative;letter-spacing:-.5px}
+        .hero h1 i{margin-right:10px;font-size:32px}
+        .hero p{font-size:15px;opacity:.9;position:relative;max-width:580px;margin:0 auto;line-height:1.6}
+
+        /* FEATURES */
+        .features-bar{display:flex;justify-content:center;gap:28px;padding:22px 20px;flex-wrap:wrap;max-width:1000px;margin:-18px auto 0;position:relative;z-index:2}
+        .feat{display:flex;align-items:center;gap:9px;background:var(--white);padding:11px 20px;border-radius:50px;box-shadow:var(--shadow);font-size:13px;font-weight:600}
+        .feat i{width:28px;height:28px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:13px}
+
+        /* MAIN */
+        .main{max-width:1200px;margin:15px auto 60px;padding:0 20px}
+
+        /* UPLOAD */
+        .upload-section{text-align:center;padding:18px 0 30px}
+        .upload-area{border:3px dashed var(--primary-ll);border-radius:var(--radius-lg);padding:58px 40px;background:var(--white);cursor:pointer;transition:var(--transition);max-width:760px;margin:0 auto;position:relative}
+        .upload-area:hover,.upload-area.drag{border-color:var(--primary);background:var(--primary-bg);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+        .upload-area.drag{transform:scale(1.02)}
+        .u-icon{width:95px;height:95px;margin:0 auto 20px;background:linear-gradient(135deg,var(--primary),var(--primary-d));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(76,175,80,.35);animation:fl 3s ease-in-out infinite}
+        @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .u-icon i{font-size:38px;color:#fff}
+        .upload-area h3{font-size:23px;font-weight:700;margin-bottom:8px}
+        .upload-area p{color:var(--text-l);font-size:14px;margin-bottom:22px}
+        .sel-btn{background:linear-gradient(135deg,var(--primary),var(--primary-d));color:#fff;border:none;padding:14px 44px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:var(--transition);box-shadow:0 5px 20px rgba(76,175,80,.4);display:inline-flex;align-items:center;gap:10px}
+        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(76,175,80,.5)}
+        .u-hint{margin-top:16px;font-size:11px;color:var(--text-ll);display:flex;align-items:center;justify-content:center;gap:5px}
+        .u-hint i{color:var(--primary-l)}
+
+        /* EDITOR */
+        .editor{display:none}
+        .editor.visible{display:block;animation:fu .5s ease}
+        @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        /* TOOLBAR */
+        .toolbar{display:flex;align-items:center;justify-content:space-between;background:var(--white);padding:12px 22px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px;flex-wrap:wrap;gap:10px}
+        .tb-left{display:flex;align-items:center;gap:15px}
+        .tb-left h3{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+        .tb-left h3 i{color:var(--primary)}
+        .tb-badge{background:var(--primary-bg);color:var(--primary-d);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
+        .tb-right{display:flex;gap:8px;flex-wrap:wrap}
+        .tb{padding:8px 15px;border:2px solid var(--primary-lll);border-radius:10px;background:var(--white);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--text-l);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:5px}
+        .tb:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+        .tb.danger:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-bg)}
+
+        /* EDITOR GRID */
+        .editor-grid{display:grid;grid-template-columns:1fr 370px;gap:20px;align-items:start}
+
+        /* FILE LIST CARD */
+        .files-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+        .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--primary-bg);border-bottom:1px solid var(--primary-lll)}
+        .card-header h3{font-size:14px;font-weight:600;color:var(--primary-d);display:flex;align-items:center;gap:7px}
+        .card-header h3 i{font-size:15px}
+        .card-body{padding:0}
+
+        /* TOTAL STATS */
+        .total-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--primary-lll)}
+        .stat-box{padding:18px 15px;text-align:center;border-right:1px solid var(--primary-lll)}
+        .stat-box:last-child{border-right:none}
+        .stat-box .stat-num{font-size:22px;font-weight:800;color:var(--primary-d);line-height:1.1}
+        .stat-box .stat-label{font-size:10px;font-weight:600;color:var(--text-l);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+        .stat-box .stat-sub{font-size:11px;color:var(--primary);font-weight:600;margin-top:2px}
+        .stat-saved{color:var(--success)!important}
+
+        /* FILE ITEMS */
+        .file-list{max-height:500px;overflow-y:auto;padding:8px}
+        .file-list::-webkit-scrollbar{width:5px}
+        .file-list::-webkit-scrollbar-thumb{background:var(--primary-ll);border-radius:10px}
+
+        .file-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:6px;transition:var(--transition);background:var(--white);border:2px solid transparent}
+        .file-item:hover{background:var(--primary-bg);border-color:var(--primary-lll)}
+        .file-item .f-thumb{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;border:2px solid var(--primary-lll);position:relative}
+        .file-item .f-thumb img{width:100%;height:100%;object-fit:cover}
+        .file-item .f-thumb .f-format{position:absolute;bottom:-1px;right:-1px;background:var(--primary);color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:4px 0 6px 0;text-transform:uppercase}
+        .file-item .f-info{flex:1;min-width:0}
+        .file-item .f-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .file-item .f-dims{font-size:10px;color:var(--text-l)}
+        .file-item .f-sizes{display:flex;align-items:center;gap:8px;margin-top:4px}
+        .file-item .f-original{font-size:11px;color:var(--text-ll);text-decoration:line-through}
+        .file-item .f-arrow{color:var(--primary);font-size:10px}
+        .file-item .f-compressed{font-size:12px;font-weight:700;color:var(--primary-d)}
+        .file-item .f-savings{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-left:auto;flex-shrink:0}
+        .f-savings.good{background:#E8F5E9;color:#2E7D32}
+        .f-savings.great{background:#C8E6C9;color:#1B5E20}
+        .f-savings.low{background:#FFF3E0;color:#E65100}
+
+        /* PROGRESS BAR */
+        .file-item .f-progress{width:100%;height:4px;background:var(--primary-lll);border-radius:10px;margin-top:6px;overflow:hidden}
+        .file-item .f-progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-l));border-radius:10px;transition:width .5s ease;width:0}
+
+        .file-item .f-status{font-size:10px;color:var(--text-l);margin-top:3px;display:flex;align-items:center;gap:4px}
+        .file-item .f-status i{font-size:9px}
+        .file-item .f-status.done{color:var(--success)}
+        .file-item .f-status.compressing{color:var(--warning)}
+
+        .file-item .f-actions{display:flex;gap:4px;flex-shrink:0}
+        .f-action-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:var(--transition)}
+        .f-action-btn.download{background:var(--primary-bg);color:var(--primary-d)}
+        .f-action-btn.download:hover{background:var(--primary);color:#fff}
+        .f-action-btn.remove{background:var(--danger-bg);color:var(--danger)}
+        .f-action-btn.remove:hover{background:var(--danger);color:#fff}
+        .f-action-btn.preview{background:#E3F2FD;color:#1976D2}
+        .f-action-btn.preview:hover{background:#1976D2;color:#fff}
+
+        /* CONTROLS CARD */
+        .ctrl-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:82px}
+        .ctrl-header{padding:15px 20px;background:var(--primary-bg);border-bottom:1px solid var(--primary-lll)}
+        .ctrl-header h3{font-size:15px;font-weight:700;color:var(--primary-d);display:flex;align-items:center;gap:8px}
+        .ctrl-body{padding:20px;overflow-y:auto;max-height:calc(100vh - 180px)}
+        .ctrl-body::-webkit-scrollbar{width:5px}
+        .ctrl-body::-webkit-scrollbar-thumb{background:var(--primary-ll);border-radius:10px}
+
+        .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary-d);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+        .sec-label::after{content:'';flex:1;height:1px;background:var(--primary-lll)}
+
+        /* COMPRESSION PRESETS */
+        .presets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+        .preset{padding:16px 8px;border:2px solid var(--primary-lll);border-radius:12px;background:var(--white);cursor:pointer;transition:var(--transition);text-align:center;font-family:'Poppins',sans-serif;position:relative;overflow:hidden}
+        .preset:hover{border-color:var(--primary);background:var(--primary-bg);transform:translateY(-2px);box-shadow:var(--shadow)}
+        .preset.active{border-color:var(--primary);background:var(--primary-bg);box-shadow:0 0 0 3px rgba(76,175,80,.15)}
+        .preset.active::after{content:'✓';position:absolute;top:6px;right:8px;font-size:10px;font-weight:800;color:var(--primary);background:var(--primary-lll);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .preset i{font-size:24px;color:var(--primary);display:block;margin-bottom:5px}
+        .preset span{font-size:12px;font-weight:700;color:var(--text);display:block}
+        .preset small{font-size:9px;color:var(--text-l);display:block;margin-top:2px}
+        .preset .preset-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:5px}
+        .preset .preset-badge.green{background:#E8F5E9;color:#2E7D32}
+        .preset .preset-badge.orange{background:#FFF3E0;color:#E65100}
+        .preset .preset-badge.red{background:#FFEBEE;color:#C62828}
+
+        /* QUALITY SLIDER */
+        .quality-section{margin-bottom:20px}
+        .quality-display{text-align:center;margin-bottom:10px}
+        .q-val{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--primary-d));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+        .q-unit{font-size:18px;font-weight:600;color:var(--primary-l)}
+        .q-label{font-size:11px;color:var(--text-l);margin-top:2px}
+        .quality-slider{width:100%;-webkit-appearance:none;height:10px;border-radius:10px;outline:none;margin:10px 0;background:linear-gradient(to right,#E8F5E9,var(--primary),#FF9800,#e74c3c)}
+        .quality-slider::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--white);cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.25);border:4px solid var(--primary);transition:transform .2s}
+        .quality-slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+        .q-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-ll);font-weight:500}
+
+        /* VISUAL METER */
+        .meter-row{display:flex;gap:12px;margin:14px 0 18px}
+        .meter-item{flex:1;text-align:center}
+        .meter-bar{height:6px;border-radius:10px;margin-bottom:5px;overflow:hidden;background:var(--primary-lll)}
+        .meter-fill{height:100%;border-radius:10px;transition:width .5s ease}
+        .meter-fill.quality{background:linear-gradient(90deg,var(--primary),var(--primary-l))}
+        .meter-fill.compress{background:linear-gradient(90deg,#FF9800,#FF5722)}
+        .meter-label{font-size:10px;font-weight:600;color:var(--text-l)}
+
+        .divider{height:1px;background:var(--primary-lll);margin:18px 0}
+
+        /* OUTPUT FORMAT */
+        .format-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px}
+        .fmt{padding:10px 4px;border:2px solid var(--primary-lll);border-radius:10px;text-align:center;cursor:pointer;font-size:11px;font-weight:600;color:var(--text-l);transition:var(--transition);font-family:'Poppins',sans-serif;background:var(--white)}
+        .fmt:hover,.fmt.active{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+        .fmt i{display:block;font-size:15px;margin-bottom:2px}
+
+        /* RESIZE */
+        .resize-section{margin-bottom:18px}
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--primary-bg);border-radius:10px;margin-bottom:10px}
+        .toggle-row label{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;margin:0}
+        .toggle-row label i{color:var(--primary);font-size:13px}
+        .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+        .toggle input{opacity:0;width:0;height:0}
+        .tslider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:24px;transition:.3s}
+        .tslider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+        .toggle input:checked+.tslider{background:var(--primary)}
+        .toggle input:checked+.tslider::before{transform:translateX(20px)}
+
+        .resize-inputs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:10px;display:none}
+        .resize-inputs.visible{display:grid}
+        .resize-inputs input{width:100%;padding:9px 12px;border:2px solid var(--primary-lll);border-radius:10px;font-family:'Poppins',sans-serif;font-size:13px;text-align:center;transition:var(--transition);background:var(--primary-bg);font-weight:600;color:var(--text)}
+        .resize-inputs input:focus{outline:none;border-color:var(--primary);background:var(--white)}
+        .resize-link{width:32px;height:32px;border-radius:8px;border:2px solid var(--primary-lll);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--primary);font-size:14px;transition:var(--transition);background:var(--white)}
+        .resize-link:hover,.resize-link.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .resize-percent{margin-top:8px;display:none}
+        .resize-percent.visible{display:block}
+        .resize-percent select{width:100%;padding:9px;border:2px solid var(--primary-lll);border-radius:10px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;background:var(--primary-bg);color:var(--text);cursor:pointer}
+
+        /* STRIP META */
+        .meta-section{margin-bottom:10px}
+
+        /* DOWNLOAD BUTTONS */
+        .dl-btn{width:100%;padding:16px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-d));color:#fff;font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:var(--transition);box-shadow:0 6px 22px rgba(76,175,80,.4);display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(76,175,80,.5)}
+        .dl-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .btn-row{display:flex;gap:10px;margin-top:12px}
+        .sb{flex:1;padding:11px;border:2px solid var(--primary-lll);border-radius:10px;background:var(--white);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--text-l);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:5px}
+        .sb:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+        .sb.danger{border-color:var(--danger-border);color:var(--danger);background:var(--danger-bg)}
+        .sb.danger:hover{background:var(--danger);color:#fff}
+
+        /* PREVIEW MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:5000;justify-content:center;align-items:center;padding:20px}
+        .modal-overlay.show{display:flex}
+        .modal{background:var(--white);border-radius:var(--radius-lg);max-width:900px;width:100%;max-height:90vh;overflow:hidden;box-shadow:var(--shadow-xl);animation:fu .3s ease}
+        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:var(--primary-bg);border-bottom:1px solid var(--primary-lll)}
+        .modal-header h3{font-size:15px;font-weight:700;color:var(--primary-d);display:flex;align-items:center;gap:8px}
+        .modal-close{width:34px;height:34px;border-radius:8px;border:none;background:var(--white);cursor:pointer;font-size:16px;color:var(--text-l);display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+        .modal-close:hover{background:var(--danger-bg);color:var(--danger)}
+        .modal-body{padding:20px;overflow-y:auto;max-height:calc(90vh - 80px)}
+        .compare-view{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+        .compare-side{text-align:center}
+        .compare-side h4{font-size:12px;font-weight:700;color:var(--text-l);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+        .compare-side h4 i{margin-right:5px}
+        .compare-side h4.original i{color:var(--text-ll)}
+        .compare-side h4.compressed i{color:var(--primary)}
+        .compare-img{width:100%;border-radius:10px;border:2px solid var(--primary-lll);max-height:400px;object-fit:contain;background:#fafafa}
+        .compare-meta{margin-top:8px;font-size:11px;color:var(--text-l)}
+        .compare-meta strong{color:var(--text)}
+
+        /* PROCESSING */
+        .processing{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:5000;justify-content:center;align-items:center}
+        .processing.show{display:flex}
+        .proc-box{background:var(--white);border-radius:var(--radius-lg);padding:45px 55px;text-align:center;box-shadow:var(--shadow-xl);animation:fu .3s ease;min-width:300px}
+        .spinner{width:55px;height:55px;border:4px solid var(--primary-lll);border-top-color:var(--primary);border-radius:50%;margin:0 auto 18px;animation:sp 1s linear infinite}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .proc-box h3{font-size:17px;font-weight:700;margin-bottom:5px}
+        .proc-box p{font-size:13px;color:var(--text-l)}
+        .proc-progress{width:100%;height:8px;background:var(--primary-lll);border-radius:10px;margin-top:18px;overflow:hidden}
+        .proc-progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-l));border-radius:10px;transition:width .3s;width:0}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--primary-d);color:#fff;padding:13px 30px;border-radius:50px;font-size:13px;font-weight:600;box-shadow:0 6px 25px rgba(0,0,0,.2);z-index:6000;transition:transform .4s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:9px}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+        .toast i{font-size:16px}
+
+        /* EMPTY STATE */
+        .empty-state{text-align:center;padding:40px 20px;color:var(--text-ll)}
+        .empty-state i{font-size:40px;color:var(--primary-ll);margin-bottom:10px;display:block}
+        .empty-state h4{font-size:15px;font-weight:600;color:var(--text-l);margin-bottom:5px}
+        .empty-state p{font-size:12px}
+
+        /* FOOTER */
+        .footer{background:var(--white);padding:28px 0;text-align:center;border-top:1px solid var(--primary-lll)}
+        .footer p{color:var(--text-l);font-size:13px}
+        .footer a{color:var(--primary);text-decoration:none;font-weight:700}
+        .footer-links{display:flex;justify-content:center;gap:25px;margin-top:8px}
+        .footer-links a{font-size:12px;font-weight:500;color:var(--text-ll)}
+        .footer-links a:hover{color:var(--primary)}
+
+        /* RESPONSIVE */
+        @media(max-width:960px){
+            .editor-grid{grid-template-columns:1fr}
+            .ctrl-card{position:static}
+            .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:var(--white);flex-direction:column;padding:15px 25px;box-shadow:var(--shadow-md);gap:12px}
+            .nav-links.open{display:flex}
+            .nav-toggle{display:block}
+            .hero h1{font-size:26px}
+            .hero h1 i{font-size:24px}
+            .features-bar{gap:12px}
+            .feat{padding:9px 14px;font-size:12px}
+            .total-stats{grid-template-columns:1fr 1fr}
+            .compare-view{grid-template-columns:1fr}
+        }
+        @media(max-width:500px){
+            .toolbar{flex-direction:column;align-items:stretch}
+            .tb-right{justify-content:center}
+            .upload-area{padding:35px 18px}
+            .upload-area h3{font-size:18px}
+            .presets{grid-template-columns:1fr}
+            .format-grid{grid-template-columns:repeat(2,1fr)}
+            .btn-row{flex-direction:column}
+            .stat-box .stat-num{font-size:18px}
+            .q-val{font-size:36px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="logo">
+        <div class="logo-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+        <span>iLove</span><span>Image</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#" class="active"><i class="fas fa-compress-arrows-alt"></i> Compress</a></li>
+        <li><a href="#"><i class="fas fa-crop-alt"></i> Crop</a></li>
+        <li><a href="#"><i class="fas fa-sync-alt"></i> Rotate</a></li>
+        <li><a href="#"><i class="fas fa-eye-slash"></i> Blur Face</a></li>
+    </ul>
+    <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-bolt"></i> Fast & Free — No Signup Required</div>
+    <h1><i class="fas fa-compress-arrows-alt"></i> Compress Images</h1>
+    <p>Apni images ki file size chhoti karein bina quality khoye. Multiple images ek saath compress karein!</p>
+</section>
+
+<!-- FEATURES -->
+<div class="features-bar">
+    <div class="feat"><i class="fas fa-layer-group"></i> Batch Compress</div>
+    <div class="feat"><i class="fas fa-sliders-h"></i> Custom Quality</div>
+    <div class="feat"><i class="fas fa-tachometer-alt"></i> Up to 90% Smaller</div>
+    <div class="feat"><i class="fas fa-lock"></i> 100% Private</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- UPLOAD -->
+    <div class="upload-section" id="uploadSection">
+        <div class="upload-area" id="uploadArea">
+            <div class="u-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Images Yahan Drop Karein</h3>
+            <p>ya button click karke images select karein</p>
+            <button class="sel-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-images"></i> Select Images</button>
+            <div class="u-hint"><i class="fas fa-info-circle"></i> JPG, PNG, WEBP, GIF — Multiple files supported — Max 50MB each</div>
+            <input type="file" id="fileInput" accept="image/*" multiple hidden>
+        </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="editor" id="editor">
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div class="tb-left">
+                <h3><i class="fas fa-images"></i> Your Images</h3>
+                <span class="tb-badge" id="totalCount">0 files</span>
+            </div>
+            <div class="tb-right">
+                <button class="tb" onclick="document.getElementById('fileInput2').click()"><i class="fas fa-plus"></i> Add More</button>
+                <button class="tb" onclick="compressAll()"><i class="fas fa-compress-arrows-alt"></i> Compress All</button>
+                <button class="tb danger" onclick="clearAll()"><i class="fas fa-trash-alt"></i> Clear All</button>
+                <input type="file" id="fileInput2" accept="image/*" multiple hidden>
+            </div>
+        </div>
+
+        <div class="editor-grid">
+            <!-- FILES CARD -->
+            <div class="files-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Compression Results</h3>
+                    <span style="font-size:11px;color:var(--text-l);font-weight:600" id="statusText">Ready to compress</span>
+                </div>
+
+                <!-- TOTAL STATS -->
+                <div class="total-stats" id="totalStats" style="display:none">
+                    <div class="stat-box">
+                        <div class="stat-num" id="statOriginal">0 KB</div>
+                        <div class="stat-label">Original Size</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num" id="statCompressed">0 KB</div>
+                        <div class="stat-label">Compressed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num stat-saved" id="statSaved">0%</div>
+                        <div class="stat-label">Space Saved</div>
+                        <div class="stat-sub" id="statSavedKB">0 KB saved</div>
+                    </div>
+                </div>
+
+                <!-- FILE LIST -->
+                <div class="file-list" id="fileList">
+                    <div class="empty-state" id="emptyState">
+                        <i class="fas fa-image"></i>
+                        <h4>No images yet</h4>
+                        <p>Upload images to start compressing</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="ctrl-card">
+                <div class="ctrl-header">
+                    <h3><i class="fas fa-sliders-h"></i> Compression Settings</h3>
+                </div>
+                <div class="ctrl-body">
+
+                    <!-- PRESETS -->
+                    <div class="sec-label"><i class="fas fa-magic"></i> COMPRESSION LEVEL</div>
+                    <div class="presets">
+                        <div class="preset" onclick="setPreset('low',this)">
+                            <i class="fas fa-feather"></i>
+                            <span>Low</span>
+                            <small>Best quality</small>
+                            <span class="preset-badge green">~20% smaller</span>
+                        </div>
+                        <div class="preset active" onclick="setPreset('medium',this)">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Medium</span>
+                            <small>Recommended</small>
+                            <span class="preset-badge orange">~50% smaller</span>
+                        </div>
+                        <div class="preset" onclick="setPreset('high',this)">
+                            <i class="fas fa-compress"></i>
+                            <span>Maximum</span>
+                            <small>Smallest size</small>
+                            <span class="preset-badge red">~80% smaller</span>
+                        </div>
+                    </div>
+
+                    <!-- QUALITY SLIDER -->
+                    <div class="sec-label"><i class="fas fa-adjust"></i> QUALITY</div>
+                    <div class="quality-section">
+                        <div class="quality-display">
+                            <span class="q-val" id="qVal">75</span>
+                            <span class="q-unit">%</span>
+                            <div class="q-label" id="qLabel">Balanced quality & size</div>
+                        </div>
+                        <input type="range" class="quality-slider" id="qualitySlider" min="5" max="100" value="75" oninput="updateQuality()">
+                        <div class="q-labels"><span>Max Compress</span><span>Original</span></div>
+
+                        <div class="meter-row">
+                            <div class="meter-item">
+                                <div class="meter-bar"><div class="meter-fill quality" id="meterQuality" style="width:75%"></div></div>
+                                <div class="meter-label">Quality</div>
+                            </div>
+                            <div class="meter-item">
+                                <div class="meter-bar"><div class="meter-fill compress" id="meterCompress" style="width:50%"></div></div>
+                                <div class="meter-label">Compression</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- OUTPUT FORMAT -->
+                    <div class="sec-label"><i class="fas fa-file-image"></i> OUTPUT FORMAT</div>
+                    <div class="format-grid">
+                        <div class="fmt" onclick="setFormat('original',this)"><i class="fas fa-file"></i> Same</div>
+                        <div class="fmt active" onclick="setFormat('jpeg',this)"><i class="fas fa-file-image"></i> JPG</div>
+                        <div class="fmt" onclick="setFormat('png',this)"><i class="fas fa-file-image"></i> PNG</div>
+                        <div class="fmt" onclick="setFormat('webp',this)"><i class="fas fa-file-image"></i> WEBP</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- RESIZE -->
+                    <div class="sec-label"><i class="fas fa-expand-arrows-alt"></i> RESIZE (OPTIONAL)</div>
+                    <div class="resize-section">
+                        <div class="toggle-row">
+                            <label><i class="fas fa-ruler-combined"></i> Enable Resize</label>
+                            <div class="toggle"><input type="checkbox" id="enableResize" onchange="toggleResize()"><span class="tslider"></span></div>
+                        </div>
+                        <div class="resize-inputs" id="resizeInputs">
+                            <input type="number" id="resizeW" placeholder="Width" oninput="syncResize('w')">
+                            <div class="resize-link active" id="resizeLink" onclick="toggleAspect()"><i class="fas fa-link"></i></div>
+                            <input type="number" id="resizeH" placeholder="Height" oninput="syncResize('h')">
+                        </div>
+                        <div class="resize-percent" id="resizePercent">
+                            <select id="resizeScale" onchange="applyScale()">
+                                <option value="100">100% — Original</option>
+                                <option value="75">75% — Three Quarter</option>
+                                <option value="50" selected>50% — Half Size</option>
+                                <option value="25">25% — Quarter Size</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- EXTRA OPTIONS -->
+                    <div class="sec-label"><i class="fas fa-cog"></i> OPTIONS</div>
+                    <div class="meta-section">
+                        <div class="toggle-row">
+                            <label><i class="fas fa-tag"></i> Strip EXIF / Metadata</label>
+                            <div class="toggle"><input type="checkbox" id="stripMeta" checked><span class="tslider"></span></div>
+                        </div>
+                        <div class="toggle-row">
+                            <label><i class="fas fa-palette"></i> Preserve Transparency</label>
+                            <div class="toggle"><input type="checkbox" id="preserveAlpha" checked><span class="tslider"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- ACTION BUTTONS -->
+                    <button class="dl-btn" id="compressBtn" onclick="compressAll()">
+                        <i class="fas fa-compress-arrows-alt"></i> Compress All Images
+                    </button>
+                    <button class="dl-btn" id="downloadAllBtn" onclick="downloadAll()" style="display:none;background:linear-gradient(135deg,#2196F3,#1565C0);box-shadow:0 6px 22px rgba(33,150,243,.4);margin-top:10px">
+                        <i class="fas fa-download"></i> Download All
+                    </button>
+                    <div class="btn-row">
+                        <button class="sb" onclick="compressAll()"><i class="fas fa-redo"></i> Re-compress</button>
+                        <button class="sb danger" onclick="clearAll()"><i class="fas fa-trash-alt"></i> Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-eye"></i> Before / After Compare</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="compare-view">
+                <div class="compare-side">
+                    <h4 class="original"><i class="fas fa-image"></i> Original</h4>
+                    <img class="compare-img" id="compareOriginal" src="">
+                    <div class="compare-meta" id="compareOrigMeta"></div>
+                </div>
+                <div class="compare-side">
+                    <h4 class="compressed"><i class="fas fa-compress-arrows-alt"></i> Compressed</h4>
+                    <img class="compare-img" id="compareCompressed" src="">
+                    <div class="compare-meta" id="compareCompMeta"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="processing" id="processing">
+    <div class="proc-box">
+        <div class="spinner"></div>
+        <h3 id="procTitle">Compressing Images...</h3>
+        <p id="procText">Please wait</p>
+        <div class="proc-progress"><div class="proc-progress-bar" id="procBar"></div></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done!</span></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">iLoveImage</a> — Free Online Image Compressor</p>
+    <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<script>
+// ========== STATE ==========
+let files = []; // {id, file, name, origSize, origW, origH, origDataUrl, compressedDataUrl, compressedSize, status}
+let idCounter = 0;
+let quality = 75;
+let outputFormat = 'jpeg';
+let aspectLocked = true;
+let aspectRatio = 1;
+
+// ========== FILE INPUT ==========
+document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+document.getElementById('fileInput2').addEventListener('change', e => handleFiles(e.target.files));
+
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e=>{e.preventDefault();uploadArea.classList.add('drag')});
+uploadArea.addEventListener('dragleave', ()=>uploadArea.classList.remove('drag'));
+uploadArea.addEventListener('drop', e=>{e.preventDefault();uploadArea.classList.remove('drag');handleFiles(e.dataTransfer.files)});
+uploadArea.addEventListener('click', e=>{if(!e.target.closest('.sel-btn'))document.getElementById('fileInput').click()});
+
+document.addEventListener('paste', e=>{
+    const items = e.clipboardData?.items;
+    if(items) for(let i of items) if(i.type.startsWith('image/')){handleFiles([i.getAsFile()]);break}
+});
+
+function handleFiles(fileList){
+    if(!fileList||fileList.length===0) return;
+    Array.from(fileList).forEach(file=>{
+        if(!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = e=>{
+            const img = new Image();
+            img.onload = ()=>{
+                files.push({
+                    id: idCounter++,
+                    file,
+                    name: file.name,
+                    origSize: file.size,
+                    origW: img.width,
+                    origH: img.height,
+                    origDataUrl: e.target.result,
+                    compressedDataUrl: null,
+                    compressedSize: 0,
+                    status: 'pending' // pending, compressing, done
+                });
+                showEditor();
+                renderFileList();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function showEditor(){
+    document.getElementById('uploadSection').style.display='none';
+    document.getElementById('editor').classList.add('visible');
+}
+
+function clearAll(){
+    files=[];
+    document.getElementById('uploadSection').style.display='block';
+    document.getElementById('editor').classList.remove('visible');
+    document.getElementById('fileInput').value='';
+    document.getElementById('totalStats').style.display='none';
+    document.getElementById('downloadAllBtn').style.display='none';
+    document.getElementById('compressBtn').style.display='flex';
+    toast('Sab clear ho gaya! 🗑️');
+}
+
+// ========== RENDER FILE LIST ==========
+function renderFileList(){
+    const list = document.getElementById('fileList');
+    const empty = document.getElementById('emptyState');
+    document.getElementById('totalCount').textContent = files.length + ' file' + (files.length!==1?'s':'');
+
+    if(files.length===0){
+        list.innerHTML='';
+        list.appendChild(createEmpty());
+        return;
+    }
+
+    list.innerHTML='';
+    files.forEach((f,i)=>{
+        const div = document.createElement('div');
+        div.className='file-item';
+        const ext = f.name.split('.').pop().toUpperCase();
+        const origKB = formatSize(f.origSize);
+        let compInfo = '';
+        let savingsBadge = '';
+        let progressBar = '';
+        let statusHTML = '';
+        let actionsHTML = '';
+
+        if(f.status==='done' && f.compressedDataUrl){
+            const compKB = formatSize(f.compressedSize);
+            const saved = Math.round((1 - f.compressedSize/f.origSize)*100);
+            const cls = saved>=50?'great':saved>=20?'good':'low';
+            compInfo = `
+                <div class="f-sizes">
+                    <span class="f-original">${origKB}</span>
+                    <i class="fas fa-arrow-right f-arrow"></i>
+                    <span class="f-compressed">${compKB}</span>
+                </div>`;
+            savingsBadge = `<span class="f-savings ${cls}">-${saved}%</span>`;
+            statusHTML = `<div class="f-status done"><i class="fas fa-check-circle"></i> Compressed</div>`;
+            actionsHTML = `
+                <button class="f-action-btn preview" onclick="previewFile(${f.id})" title="Compare"><i class="fas fa-eye"></i></button>
+                <button class="f-action-btn download" onclick="downloadFile(${f.id})" title="Download"><i class="fas fa-download"></i></button>
+                <button class="f-action-btn remove" onclick="removeFile(${f.id})" title="Remove"><i class="fas fa-times"></i></button>`;
+        } else if(f.status==='compressing'){
+            progressBar = `<div class="f-progress"><div class="f-progress-bar" style="width:60%"></div></div>`;
+            statusHTML = `<div class="f-status compressing"><i class="fas fa-spinner fa-spin"></i> Compressing...</div>`;
+            actionsHTML = `<button class="f-action-btn remove" onclick="removeFile(${f.id})" title="Remove"><i class="fas fa-times"></i></button>`;
+            compInfo = `<div class="f-sizes"><span style="font-size:11px;color:var(--text-ll)">${origKB}</span></div>`;
+        } else {
+            statusHTML = `<div class="f-status"><i class="fas fa-clock"></i> Pending</div>`;
+            actionsHTML = `<button class="f-action-btn remove" onclick="removeFile(${f.id})" title="Remove"><i class="fas fa-times"></i></button>`;
+            compInfo = `<div class="f-sizes"><span style="font-size:11px;color:var(--text-ll)">${origKB}</span></div>`;
+        }
+
+        div.innerHTML = `
+            <div class="f-thumb">
+                <img src="${f.origDataUrl}" alt="">
+                <span class="f-format">${ext}</span>
+            </div>
+            <div class="f-info">
+                <div class="f-name">${f.name}</div>
+                <div class="f-dims">${f.origW} × ${f.origH} px</div>
+                ${compInfo}
+                ${progressBar}
+                ${statusHTML}
+            </div>
+            ${savingsBadge}
+            <div class="f-actions">${actionsHTML}</div>
+        `;
+        list.appendChild(div);
+    });
+
+    updateTotalStats();
+}
+
+function createEmpty(){
+    const div = document.createElement('div');
+    div.className='empty-state';
+    div.innerHTML='<i class="fas fa-image"></i><h4>No images yet</h4><p>Upload images to start compressing</p>';
+    return div;
+}
+
+function removeFile(id){
+    files = files.filter(f=>f.id!==id);
+    if(files.length===0) clearAll();
+    else{ renderFileList(); toast('Image removed 🗑️'); }
+}
+
+// ========== COMPRESS ==========
+async function compressAll(){
+    if(files.length===0){toast('Pehle images upload karein!');return}
+
+    const proc = document.getElementById('processing');
+    const procBar = document.getElementById('procBar');
+    const procTitle = document.getElementById('procTitle');
+    const procText = document.getElementById('procText');
+    proc.classList.add('show');
+    procBar.style.width='0%';
+
+    const enableResize = document.getElementById('enableResize').checked;
+    const resizeScale = parseInt(document.getElementById('resizeScale').value)/100;
+
+    for(let i=0;i<files.length;i++){
+        const f = files[i];
+        f.status='compressing';
+        renderFileList();
+        procTitle.textContent = `Compressing ${i+1} of ${files.length}...`;
+        procText.textContent = f.name;
+        procBar.style.width = ((i/files.length)*100)+'%';
+
+        await new Promise(resolve=>setTimeout(resolve,200)); // small delay for UX
+
+        try{
+            const result = await compressImage(f, enableResize, resizeScale);
+            f.compressedDataUrl = result.dataUrl;
+            f.compressedSize = result.size;
+            f.status='done';
+        }catch(err){
+            f.status='done';
+            f.compressedDataUrl = f.origDataUrl;
+            f.compressedSize = f.origSize;
+        }
+        renderFileList();
+    }
+
+    procBar.style.width='100%';
+    await new Promise(r=>setTimeout(r,400));
+    proc.classList.remove('show');
+
+    document.getElementById('downloadAllBtn').style.display='flex';
+    document.getElementById('compressBtn').innerHTML='<i class="fas fa-redo"></i> Re-compress All';
+    toast(`${files.length} image(s) compressed successfully! 🎉`);
+}
+
+function compressImage(fileObj, enableResize, resizeScale){
+    return new Promise((resolve)=>{
+        const img = new Image();
+        img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+
+            if(enableResize){
+                const rw = parseInt(document.getElementById('resizeW').value);
+                const rh = parseInt(document.getElementById('resizeH').value);
+                if(rw && rh){
+                    w=rw; h=rh;
+                } else {
+                    w = Math.round(w * resizeScale);
+                    h = Math.round(h * resizeScale);
+                }
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+
+            // Handle transparency
+            const preserveAlpha = document.getElementById('preserveAlpha').checked;
+            let mime = 'image/jpeg';
+            let ext = 'jpg';
+
+            if(outputFormat==='original'){
+                const origExt = fileObj.name.split('.').pop().toLowerCase();
+                if(origExt==='png') mime='image/png';
+                else if(origExt==='webp') mime='image/webp';
+                else if(origExt==='gif') mime='image/gif';
+                else mime='image/jpeg';
+            } else if(outputFormat==='png'){
+                mime='image/png';
+            } else if(outputFormat==='webp'){
+                mime='image/webp';
+            }
+
+            // White background for JPG (no alpha)
+            if(mime==='image/jpeg'){
+                ctx.fillStyle='#FFFFFF';
+                ctx.fillRect(0,0,w,h);
+            }
+
+            ctx.drawImage(img,0,0,w,h);
+
+            const q = quality/100;
+            const dataUrl = canvas.toDataURL(mime, q);
+            const size = Math.round((dataUrl.length - `data:${mime};base64,`.length) * 3/4);
+
+            resolve({dataUrl, size});
+        };
+        img.src = fileObj.origDataUrl;
+    });
+}
+
+// ========== STATS ==========
+function updateTotalStats(){
+    const done = files.filter(f=>f.status==='done');
+    if(done.length===0){
+        document.getElementById('totalStats').style.display='none';
+        return;
+    }
+    document.getElementById('totalStats').style.display='grid';
+
+    let totalOrig = 0, totalComp = 0;
+    done.forEach(f=>{ totalOrig+=f.origSize; totalComp+=f.compressedSize; });
+
+    document.getElementById('statOriginal').textContent = formatSize(totalOrig);
+    document.getElementById('statCompressed').textContent = formatSize(totalComp);
+
+    const saved = totalOrig>0 ? Math.round((1-totalComp/totalOrig)*100) : 0;
+    document.getElementById('statSaved').textContent = saved+'%';
+    document.getElementById('statSavedKB').textContent = formatSize(totalOrig-totalComp)+' saved';
+
+    document.getElementById('statusText').textContent = `${done.length}/${files.length} compressed`;
+}
+
+function formatSize(bytes){
+    if(bytes===0) return '0 B';
+    if(bytes<1024) return bytes+' B';
+    if(bytes<1048576) return (bytes/1024).toFixed(1)+' KB';
+    return (bytes/1048576).toFixed(2)+' MB';
+}
+
+// ========== DOWNLOAD ==========
+function downloadFile(id){
+    const f = files.find(x=>x.id===id);
+    if(!f||!f.compressedDataUrl) return;
+    const ext = getExt();
+    const baseName = f.name.replace(/\.[^.]+$/,'');
+    const link = document.createElement('a');
+    link.download = `${baseName}-compressed.${ext}`;
+    link.href = f.compressedDataUrl;
+    link.click();
+    toast('Image downloaded! 🎉');
+}
+
+function downloadAll(){
+    const done = files.filter(f=>f.status==='done'&&f.compressedDataUrl);
+    if(done.length===0){toast('Pehle compress karein!');return}
+    if(done.length===1){downloadFile(done[0].id);return}
+
+    // Download one by one with delay
+    done.forEach((f,i)=>{
+        setTimeout(()=>downloadFile(f.id), i*500);
+    });
+    toast(`${done.length} images download ho rahi hain! 📦`);
+}
+
+function getExt(){
+    if(outputFormat==='png') return 'png';
+    if(outputFormat==='webp') return 'webp';
+    if(outputFormat==='jpeg') return 'jpg';
+    return 'jpg';
+}
+
+// ========== PREVIEW ==========
+function previewFile(id){
+    const f = files.find(x=>x.id===id);
+    if(!f) return;
+    document.getElementById('compareOriginal').src = f.origDataUrl;
+    document.getElementById('compareCompressed').src = f.compressedDataUrl||f.origDataUrl;
+    document.getElementById('compareOrigMeta').innerHTML = `<strong>${formatSize(f.origSize)}</strong> — ${f.origW}×${f.origH} px`;
+
+    const compSize = f.compressedSize||f.origSize;
+    const saved = Math.round((1-compSize/f.origSize)*100);
+    document.getElementById('compareCompMeta').innerHTML = `<strong>${formatSize(compSize)}</strong> — <span style="color:var(--primary);font-weight:700">-${saved}% saved</span>`;
+
+    document.getElementById('previewModal').classList.add('show');
+}
+
+function closeModal(){
+    document.getElementById('previewModal').classList.remove('show');
+}
+
+document.getElementById('previewModal').addEventListener('click',e=>{
+    if(e.target===document.getElementById('previewModal')) closeModal();
+});
+
+// ========== QUALITY CONTROLS ==========
+function updateQuality(){
+    quality = parseInt(document.getElementById('qualitySlider').value);
+    document.getElementById('qVal').textContent = quality;
+    document.getElementById('meterQuality').style.width = quality+'%';
+    document.getElementById('meterCompress').style.width = (100-quality)+'%';
+
+    if(quality>=80) document.getElementById('qLabel').textContent='High quality — Larger file size';
+    else if(quality>=50) document.getElementById('qLabel').textContent='Balanced quality & size';
+    else if(quality>=25) document.getElementById('qLabel').textContent='More compression — Smaller files';
+    else document.getElementById('qLabel').textContent='Maximum compression — Very small files';
+
+    document.querySelectorAll('.preset').forEach(p=>p.classList.remove('active'));
+}
+
+function setPreset(level, el){
+    document.querySelectorAll('.preset').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    if(level==='low'){ quality=90; }
+    else if(level==='medium'){ quality=75; }
+    else if(level==='high'){ quality=30; }
+    document.getElementById('qualitySlider').value=quality;
+    updateQuality();
+}
+
+function setFormat(fmt, el){
+    outputFormat=fmt;
+    document.querySelectorAll('.fmt').forEach(o=>o.classList.remove('active'));
+    el.classList.add('active');
+}
+
+// ========== RESIZE ==========
+function toggleResize(){
+    const on = document.getElementById('enableResize').checked;
+    document.getElementById('resizeInputs').classList.toggle('visible',on);
+    document.getElementById('resizePercent').classList.toggle('visible',on);
+    if(on && files.length>0){
+        const f = files[0];
+        aspectRatio = f.origW/f.origH;
+        document.getElementById('resizeW').value = Math.round(f.origW*0.5);
+        document.getElementById('resizeH').value = Math.round(f.origH*0.5);
+    }
+}
+
+function syncResize(dim){
+    if(!aspectLocked) return;
+    const w = parseInt(document.getElementById('resizeW').value)||0;
+    const h = parseInt(document.getElementById('resizeH').value)||0;
+    if(dim==='w'&&w>0){
+        document.getElementById('resizeH').value = Math.round(w/aspectRatio);
+    } else if(dim==='h'&&h>0){
+        document.getElementById('resizeW').value = Math.round(h*aspectRatio);
+    }
+}
+
+function toggleAspect(){
+    aspectLocked = !aspectLocked;
+    const btn = document.getElementById('resizeLink');
+    btn.classList.toggle('active',aspectLocked);
+    btn.innerHTML = aspectLocked?'<i class="fas fa-link"></i>':'<i class="fas fa-unlink"></i>';
+}
+
+function applyScale(){
+    const scale = parseInt(document.getElementById('resizeScale').value)/100;
+    if(files.length>0){
+        const f = files[0];
+        document.getElementById('resizeW').value = Math.round(f.origW*scale);
+        document.getElementById('resizeH').value = Math.round(f.origH*scale);
+    }
+}
+
+// ========== TOAST ==========
+function toast(msg){
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent=msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ========== KEYBOARD ==========
+document.addEventListener('keydown',e=>{
+    if(e.ctrlKey&&e.key==='s'){e.preventDefault();downloadAll();}
+});
+
+// ========== WINDOW RESIZE ==========
+window.addEventListener('resize',()=>renderFileList());
+</script>
+</body>
+</html>
