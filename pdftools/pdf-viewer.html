@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPDF - PDF Viewer & Tools</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-lighter: #C8E6C9;
+            --primary-lightest: #E8F5E9;
+            --primary-dark: #388E3C;
+            --primary-darker: #2E7D32;
+            --accent: #66BB6A;
+            --bg: #F1F8E9;
+            --bg-white: #ffffff;
+            --text-dark: #1B5E20;
+            --text-medium: #33691E;
+            --text-light: #558B2F;
+            --text-gray: #6B6B6B;
+            --shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+            --shadow-lg: 0 10px 40px rgba(76, 175, 80, 0.2);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 0 40px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-brand i {
+            font-size: 28px;
+            color: #fff;
+            background: rgba(255,255,255,0.2);
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .navbar-brand span {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand .brand-accent {
+            color: #A5D6A7;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, var(--primary-lightest) 0%, var(--bg) 100%);
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* ===== TOOLS GRID ===== */
+        .tools-section {
+            padding: 30px 40px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .tool-card .tool-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+        }
+
+        .tool-card .tool-icon.green { background: #E8F5E9; color: #4CAF50; }
+        .tool-card .tool-icon.blue { background: #E3F2FD; color: #2196F3; }
+        .tool-card .tool-icon.orange { background: #FFF3E0; color: #FF9800; }
+        .tool-card .tool-icon.red { background: #FFEBEE; color: #F44336; }
+        .tool-card .tool-icon.purple { background: #F3E5F5; color: #9C27B0; }
+        .tool-card .tool-icon.teal { background: #E0F2F1; color: #009688; }
+
+        .tool-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .tool-card p {
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* ===== UPLOAD AREA ===== */
+        .upload-section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .upload-section.active {
+            display: block;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            border: none;
+            background: var(--primary-lightest);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-lighter);
+        }
+
+        .upload-area {
+            background: var(--bg-white);
+            border: 3px dashed var(--primary-light);
+            border-radius: var(--radius);
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+            transform: scale(1.01);
+        }
+
+        .upload-area .upload-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .upload-area h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            display: none;
+            background: var(--primary-lightest);
+            border-radius: var(--radius-sm);
+            padding: 15px 20px;
+            margin-top: 20px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selected-file.show {
+            display: flex;
+        }
+
+        .selected-file i {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .selected-file .file-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .selected-file .file-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .selected-file .file-size {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .selected-file .remove-file {
+            background: none;
+            border: none;
+            color: #F44336;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .view-pdf-btn {
+            display: none;
+            margin: 20px auto 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            padding: 14px 50px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .view-pdf-btn.show {
+            display: block;
+        }
+
+        .view-pdf-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* ===== PDF VIEWER ===== */
+        .viewer-section {
+            display: none;
+            height: calc(100vh - 65px);
+            flex-direction: column;
+        }
+
+        .viewer-section.active {
+            display: flex;
+        }
+
+        .viewer-toolbar {
+            background: var(--bg-white);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar-left, .toolbar-center, .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-btn {
+            background: var(--primary-lightest);
+            border: 1px solid var(--primary-lighter);
+            color: var(--primary-dark);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--primary-lighter);
+            color: var(--primary-darker);
+        }
+
+        .toolbar-btn.active-tool {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .page-info {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-input {
+            width: 50px;
+            text-align: center;
+            border: 2px solid var(--primary-lighter);
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .page-input:focus {
+            border-color: var(--primary);
+        }
+
+        .zoom-display {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .file-name-display {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-gray);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .viewer-container {
+            flex: 1;
+            overflow: auto;
+            background: #E0E0E0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .pages-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-canvas-wrapper {
+            background: #fff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .page-canvas-wrapper canvas {
+            display: block;
+        }
+
+        .page-label {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* ===== SIDEBAR (Thumbnails) ===== */
+        .viewer-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 0;
+            background: var(--bg-white);
+            border-right: 1px solid var(--primary-lighter);
+            overflow-y: auto;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .sidebar.open {
+            width: 180px;
+        }
+
+        .sidebar-header {
+            padding: 12px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--primary-lighter);
+            background: var(--primary-lightest);
+        }
+
+        .thumbnail-list {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .thumbnail-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+            padding: 5px;
+        }
+
+        .thumbnail-item:hover {
+            border-color: var(--primary-light);
+        }
+
+        .thumbnail-item.active {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+        }
+
+        .thumbnail-item canvas {
+            width: 100%;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .thumbnail-item .thumb-label {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--primary-lighter);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar-bg {
+            background: var(--primary-lighter);
+            border-radius: 50px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            height: 100%;
+            border-radius: 50px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 6px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--primary-darker);
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--primary-lighter);
+            text-decoration: none;
+        }
+
+        /* ===== PRINT STYLES ===== */
+        .print-section {
+            display: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .tools-section {
+                padding: 20px 15px 40px;
+            }
+
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .tool-card {
+                padding: 20px 15px;
+            }
+
+            .tool-card .tool-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 22px;
+            }
+
+            .upload-area {
+                padding: 40px 20px;
+            }
+
+            .viewer-toolbar {
+                padding: 8px 10px;
+            }
+
+            .sidebar.open {
+                width: 120px;
+            }
+
+            .file-name-display {
+                display: none;
+            }
+
+            .toolbar-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .toolbar-center {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-dark);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Search bar */
+        .search-bar {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            padding: 12px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow-lg);
+            gap: 8px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .search-bar.open {
+            display: flex;
+        }
+
+        .search-bar input {
+            border: 2px solid var(--primary-lighter);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-bar .search-count {
+            font-size: 12px;
+            color: var(--text-gray);
+            white-space: nowrap;
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 100;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu.open {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-lightest);
+            color: var(--primary-dark);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-lightest);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Rotate animation */
+        .rotate-90 canvas {
+            transform: rotate(90deg);
+        }
+
+        .rotate-180 canvas {
+            transform: rotate(180deg);
+        }
+
+        .rotate-270 canvas {
+            transform: rotate(270deg);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a class="navbar-brand" onclick="showHome()">
+        <i class="fas fa-leaf"></i>
+        <span>Green<span class="brand-accent">PDF</span></span>
+    </a>
+    <div class="nav-links">
+        <a href="#" class="active" onclick="showHome()">Home</a>
+        <a href="#" onclick="showUploadSection('view')">View PDF</a>
+        <a href="#" onclick="showUploadSection('view')">Tools</a>
+    </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="homePage">
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Every Tool You Need to Work with <span>PDFs</span></h1>
+        <p>Free, fast, and easy to use. View, read, and manage your PDF files — all in one place.</p>
+    </div>
+
+    <!-- TOOLS GRID -->
+    <div class="tools-section">
+        <div class="section-title">
+            <i class="fas fa-th-large"></i> PDF Tools
+        </div>
+        <div class="tools-grid">
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon green"><i class="fas fa-eye"></i></div>
+                <h3>View PDF</h3>
+                <p>Open and read any PDF file online</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon blue"><i class="fas fa-file-pdf"></i></div>
+                <h3>PDF Reader</h3>
+                <p>Read PDF documents with ease</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon orange"><i class="fas fa-search-plus"></i></div>
+                <h3>Zoom & Navigate</h3>
+                <p>Zoom in/out and navigate pages</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon red"><i class="fas fa-print"></i></div>
+                <h3>Print PDF</h3>
+                <p>Print your PDF documents</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon purple"><i class="fas fa-download"></i></div>
+                <h3>Download PDF</h3>
+                <p>Download PDF files easily</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon teal"><i class="fas fa-columns"></i></div>
+                <h3>Thumbnails</h3>
+                <p>View page thumbnails sidebar</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon green"><i class="fas fa-expand"></i></div>
+                <h3>Full Screen</h3>
+                <p>View PDF in fullscreen mode</p>
+            </div>
+            <div class="tool-card" onclick="showUploadSection('view')">
+                <div class="tool-icon blue"><i class="fas fa-redo"></i></div>
+                <h3>Rotate Pages</h3>
+                <p>Rotate PDF pages as needed</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Made with 💚 by <a href="#">GreenPDF</a> — Your Free PDF Viewer Tool
+    </div>
+</div>
+
+<!-- UPLOAD SECTION -->
+<div class="upload-section" id="uploadSection">
+    <button class="back-btn" onclick="showHome()">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+
+    <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h3>Upload Your PDF File</h3>
+        <p>Drag & drop your PDF here, or click to browse</p>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-folder-open"></i>&nbsp; Select PDF File
+        </button>
+        <input type="file" id="fileInput" class="file-input" accept=".pdf,application/pdf">
+    </div>
+
+    <div class="selected-file" id="selectedFile">
+        <i class="fas fa-file-pdf"></i>
+        <div class="file-info">
+            <div class="file-name" id="fileName">document.pdf</div>
+            <div class="file-size" id="fileSize">2.5 MB</div>
+        </div>
+        <button class="remove-file" onclick="removeFile()">
+            <i class="fas fa-times-circle"></i>
+        </button>
+    </div>
+
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Loading PDF...</div>
+    </div>
+
+    <button class="view-pdf-btn" id="viewPdfBtn" onclick="openViewer()">
+        <i class="fas fa-eye"></i>&nbsp; View PDF
+    </button>
+</div>
+
+<!-- PDF VIEWER -->
+<div class="viewer-section" id="viewerSection">
+    <div class="viewer-toolbar" style="position: relative;">
+        <div class="toolbar-left">
+            <button class="toolbar-btn" onclick="showUploadSection('view')" title="Close">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="toolbar-btn" id="sidebarToggle" onclick="toggleSidebar()" title="Thumbnails">
+                <i class="fas fa-columns"></i>
+            </button>
+            <span class="file-name-display" id="viewerFileName">document.pdf</span>
+        </div>
+
+        <div class="toolbar-center">
+            <button class="toolbar-btn" onclick="prevPage()" title="Previous Page">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="page-info">
+                <input type="number" class="page-input" id="pageInput" value="1" min="1" onchange="goToPage(this.value)">
+                <span>/ <span id="totalPages">1</span></span>
+            </div>
+            <button class="toolbar-btn" onclick="nextPage()" title="Next Page">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="toolbar-right">
+            <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">
+                <i class="fas fa-minus"></i>
+            </button>
+            <span class="zoom-display" id="zoomDisplay">100%</span>
+            <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="toolbar-btn" onclick="fitToWidth()" title="Fit to Width">
+                <i class="fas fa-arrows-alt-h"></i>
+            </button>
+            <button class="toolbar-btn" onclick="rotatePDF()" title="Rotate">
+                <i class="fas fa-redo"></i>
+            </button>
+            <button class="toolbar-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                <i class="fas fa-expand"></i>
+            </button>
+
+            <div class="dropdown">
+                <button class="toolbar-btn" onclick="toggleDropdown()" title="More Options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="dropdown-menu" id="moreDropdown">
+                    <button class="dropdown-item" onclick="downloadPDF()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="dropdown-item" onclick="printPDF()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="dropdown-item" onclick="goToFirstPage()">
+                        <i class="fas fa-step-backward"></i> First Page
+                    </button>
+                    <button class="dropdown-item" onclick="goToLastPage()">
+                        <i class="fas fa-step-forward"></i> Last Page
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="viewer-body">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-th-list"></i> Pages
+            </div>
+            <div class="thumbnail-list" id="thumbnailList"></div>
+        </div>
+        <div class="viewer-container" id="viewerContainer">
+            <div class="pages-wrapper" id="pagesWrapper"></div>
+        </div>
+    </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Loading PDF...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastText">Done!</span>
+</div>
+
+<script>
+    // Configure PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // State
+    let pdfDoc = null;
+    let currentPage = 1;
+    let totalPagesCount = 0;
+    let scale = 1.0;
+    let rotation = 0;
+    let pdfFile = null;
+    let pdfDataUrl = null;
+    let isRendering = false;
+    let renderQueue = [];
+    let sidebarOpen = false;
+
+    // DOM Elements
+    const homePage = document.getElementById('homePage');
+    const uploadSection = document.getElementById('uploadSection');
+    const viewerSection = document.getElementById('viewerSection');
+    const fileInput = document.getElementById('fileInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const selectedFileEl = document.getElementById('selectedFile');
+    const viewPdfBtn = document.getElementById('viewPdfBtn');
+    const pagesWrapper = document.getElementById('pagesWrapper');
+    const viewerContainer = document.getElementById('viewerContainer');
+    const pageInput = document.getElementById('pageInput');
+    const totalPagesEl = document.getElementById('totalPages');
+    const zoomDisplay = document.getElementById('zoomDisplay');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // Navigation
+    function showHome() {
+        homePage.style.display = 'block';
+        uploadSection.classList.remove('active');
+        viewerSection.classList.remove('active');
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        document.querySelector('.nav-links a').classList.add('active');
+    }
+
+    function showUploadSection(tool) {
+        homePage.style.display = 'none';
+        uploadSection.classList.add('active');
+        viewerSection.classList.remove('active');
+    }
+
+    function showViewer() {
+        homePage.style.display = 'none';
+        uploadSection.classList.remove('active');
+        viewerSection.classList.add('active');
+    }
+
+    // File Upload
+    fileInput.addEventListener('change', handleFile);
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            handleFile({ target: { files } });
+        } else {
+            showToast('Please drop a valid PDF file!');
+        }
+    });
+
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') {
+            fileInput.click();
+        }
+    });
+
+    function handleFile(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+            showToast('Please select a valid PDF file!');
+            return;
+        }
+
+        pdfFile = file;
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        selectedFileEl.classList.add('show');
+        viewPdfBtn.classList.add('show');
+
+        showToast('PDF file selected successfully!');
+    }
+
+    function removeFile() {
+        pdfFile = null;
+        pdfDataUrl = null;
+        fileInput.value = '';
+        selectedFileEl.classList.remove('show');
+        viewPdfBtn.classList.remove('show');
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Open Viewer
+    async function openViewer() {
+        if (!pdfFile) return;
+
+        showLoading('Loading PDF...');
+
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        progressContainer.classList.add('show');
+
+        try {
+            const arrayBuffer = await pdfFile.arrayBuffer();
+
+            // Store for download
+            pdfDataUrl = URL.createObjectURL(pdfFile);
+
+            progressFill.style.width = '30%';
+            progressText.textContent = 'Parsing PDF...';
+
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+
+            loadingTask.onProgress = (progress) => {
+                if (progress.total > 0) {
+                    const percent = Math.round((progress.loaded / progress.total) * 100);
+                    progressFill.style.width = Math.min(30 + percent * 0.5, 80) + '%';
+                }
+            };
+
+            pdfDoc = await loadingTask.promise;
+            totalPagesCount = pdfDoc.numPages;
+
+            progressFill.style.width = '80%';
+            progressText.textContent = 'Rendering pages...';
+
+            totalPagesEl.textContent = totalPagesCount;
+            pageInput.max = totalPagesCount;
+            document.getElementById('viewerFileName').textContent = pdfFile.name;
+
+            currentPage = 1;
+            rotation = 0;
+            scale = 1.0;
+            updateZoomDisplay();
+
+            showViewer();
+
+            progressFill.style.width = '100%';
+            progressContainer.classList.remove('show');
+
+            await renderAllPages();
+            renderThumbnails();
+
+            hideLoading();
+            showToast('PDF loaded successfully!');
+
+        } catch (error) {
+            hideLoading();
+            progressContainer.classList.remove('show');
+            showToast('Error loading PDF: ' + error.message);
+            console.error(error);
+        }
+    }
+
+    // Render All Pages
+    async function renderAllPages() {
+        pagesWrapper.innerHTML = '';
+
+        for (let i = 1; i <= totalPagesCount; i++) {
+            const page = await pdfDoc.getPage(i);
+            const viewport = page.getViewport({ scale, rotation });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'page-canvas-wrapper';
+            wrapper.id = `page-${i}`;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            wrapper.appendChild(canvas);
+
+            const label = document.createElement('div');
+            label.className = 'page-label';
+            label.textContent = `Page ${i}`;
+
+            const pageBlock = document.createElement('div');
+            pageBlock.appendChild(wrapper);
+            pageBlock.appendChild(label);
+            pagesWrapper.appendChild(pageBlock);
+
+            await page.render({ canvasContext: ctx, viewport }).promise;
+        }
+
+        // Scroll observer
+        setupScrollObserver();
+    }
+
+    // Render single page (for re-renders)
+    async function renderPage(pageNum) {
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale, rotation });
+        const wrapper = document.getElementById(`page-${pageNum}`);
+        if (!wrapper) return;
+
+        const canvas = wrapper.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+    }
+
+    // Re-render all pages (zoom/rotate)
+    async function reRenderAll() {
+        showLoading('Rendering...');
+        for (let i = 1; i <= totalPagesCount; i++) {
+            await renderPage(i);
+        }
+        hideLoading();
+    }
+
+    // Scroll observer to track current page
+    function setupScrollObserver() {
+        const options = { root: viewerContainer, threshold: 0.5 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    const num = parseInt(id.replace('page-', ''));
+                    if (num && num !== currentPage) {
+                        currentPage = num;
+                        pageInput.value = currentPage;
+                        updateActiveThumbnail();
+                    }
+                }
+            });
+        }, options);
+
+        document.querySelectorAll('.page-canvas-wrapper').forEach(el => {
+            observer.observe(el);
+        });
+    }
+
+    // Thumbnails
+    async function renderThumbnails() {
+        const list = document.getElementById('thumbnailList');
+        list.innerHTML = '';
+
+        for (let i = 1; i <= totalPagesCount; i++) {
+            const page = await pdfDoc.getPage(i);
+            const viewport = page.getViewport({ scale: 0.3, rotation });
+
+            const item = document.createElement('div');
+            item.className = 'thumbnail-item' + (i === currentPage ? ' active' : '');
+            item.dataset.page = i;
+            item.onclick = () => goToPage(i);
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            item.appendChild(canvas);
+
+            const label = document.createElement('div');
+            label.className = 'thumb-label';
+            label.textContent = i;
+            item.appendChild(label);
+
+            list.appendChild(item);
+
+            page.render({ canvasContext: ctx, viewport });
+        }
+    }
+
+    function updateActiveThumbnail() {
+        document.querySelectorAll('.thumbnail-item').forEach(item => {
+            item.classList.toggle('active', parseInt(item.dataset.page) === currentPage);
+        });
+    }
+
+    // Navigation
+    function prevPage() {
+        if (currentPage <= 1) return;
+        goToPage(currentPage - 1);
+    }
+
+    function nextPage() {
+        if (currentPage >= totalPagesCount) return;
+        goToPage(currentPage + 1);
+    }
+
+    function goToPage(num) {
+        num = parseInt(num);
+        if (isNaN(num) || num < 1 || num > totalPagesCount) return;
+
+        currentPage = num;
+        pageInput.value = currentPage;
+
+        const el = document.getElementById(`page-${num}`);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        updateActiveThumbnail();
+    }
+
+    function goToFirstPage() {
+        goToPage(1);
+        closeDropdown();
+    }
+
+    function goToLastPage() {
+        goToPage(totalPagesCount);
+        closeDropdown();
+    }
+
+    // Zoom
+    function zoomIn() {
+        if (scale >= 3.0) return;
+        scale = Math.round((scale + 0.2) * 10) / 10;
+        updateZoomDisplay();
+        reRenderAll();
+    }
+
+    function zoomOut() {
+        if (scale <= 0.3) return;
+        scale = Math.round((scale - 0.2) * 10) / 10;
+        updateZoomDisplay();
+        reRenderAll();
+    }
+
+    function fitToWidth() {
+        const containerWidth = viewerContainer.clientWidth - 60;
+        if (!pdfDoc) return;
+
+        pdfDoc.getPage(1).then(page => {
+            const viewport = page.getViewport({ scale: 1, rotation });
+            scale = Math.round((containerWidth / viewport.width) * 10) / 10;
+            scale = Math.max(0.3, Math.min(scale, 3.0));
+            updateZoomDisplay();
+            reRenderAll();
+        });
+    }
+
+    function updateZoomDisplay() {
+        zoomDisplay.textContent = Math.round(scale * 100) + '%';
+    }
+
+    // Rotate
+    function rotatePDF() {
+        rotation = (rotation + 90) % 360;
+        reRenderAll();
+        renderThumbnails();
+        showToast('Rotated ' + rotation + '°');
+    }
+
+    // Fullscreen
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            viewerSection.requestFullscreen().catch(err => {
+                showToast('Fullscreen not supported');
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    // Sidebar
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const btn = document.getElementById('sidebarToggle');
+        sidebarOpen = !sidebarOpen;
+        sidebar.classList.toggle('open', sidebarOpen);
+        btn.classList.toggle('active-tool', sidebarOpen);
+    }
+
+    // Download
+    function downloadPDF() {
+        if (!pdfFile) return;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(pdfFile);
+        link.download = pdfFile.name;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast('Download started!');
+        closeDropdown();
+    }
+
+    // Print
+    function printPDF() {
+        if (!pdfDataUrl) return;
+        const printWindow = window.open(pdfDataUrl, '_blank');
+        if (printWindow) {
+            printWindow.addEventListener('load', () => {
+                printWindow.print();
+            });
+        }
+        showToast('Opening print dialog...');
+        closeDropdown();
+    }
+
+    // Dropdown
+    function toggleDropdown() {
+        const menu = document.getElementById('moreDropdown');
+        menu.classList.toggle('open');
+    }
+
+    function closeDropdown() {
+        document.getElementById('moreDropdown').classList.remove('open');
+    }
+
+    // Click outside to close dropdown
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown')) {
+            closeDropdown();
+        }
+    });
+
+    // Loading
+    function showLoading(text) {
+        document.getElementById('loadingText').textContent = text || 'Loading...';
+        loadingOverlay.classList.add('show');
+    }
+
+    function hideLoading() {
+        loadingOverlay.classList.remove('show');
+    }
+
+    // Toast
+    function showToast(text) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastText').textContent = text;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (!viewerSection.classList.contains('active')) return;
+
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            prevPage();
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            nextPage();
+        } else if (e.key === '+' || e.key === '=') {
+            e.preventDefault();
+            zoomIn();
+        } else if (e.key === '-') {
+            e.preventDefault();
+            zoomOut();
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            goToFirstPage();
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            goToLastPage();
+        } else if (e.key === 'f' || e.key === 'F') {
+            if (!e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        } else if (e.key === 'Escape') {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+    });
+
+    // Mouse wheel zoom
+    viewerContainer?.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                zoomIn();
+            } else {
+                zoomOut();
+            }
+        }
+    }, { passive: false });
+</script>
+
+</body>
+</html>
