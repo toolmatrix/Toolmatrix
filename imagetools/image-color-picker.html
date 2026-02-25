@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker from Image - iLoveImage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --p:#4CAF50;--ph:#43A047;--pd:#388E3C;--pdd:#2E7D32;
+            --pl:#66BB6A;--pll:#A5D6A7;--plll:#C8E6C9;--pbg:#E8F5E9;
+            --w:#fff;--bg:#f0faf1;--t:#1a1a2e;--tl:#636e72;--tll:#b2bec3;
+            --sh:0 2px 15px rgba(76,175,80,.12);--shm:0 5px 25px rgba(76,175,80,.18);
+            --shl:0 10px 40px rgba(76,175,80,.22);--shx:0 20px 60px rgba(76,175,80,.25);
+            --r:14px;--rl:20px;--tr:all .3s cubic-bezier(.4,0,.2,1);
+            --danger:#e74c3c;--dbg:#fff5f5;--db:#ffcdd2;
+        }
+        body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
+
+        /* NAV */
+        .nav{background:var(--w);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:1000}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:22px;font-weight:800}
+        .logo-ic{width:40px;height:40px;background:linear-gradient(135deg,var(--p),var(--pd));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(76,175,80,.3)}
+        .logo-ic i{font-size:18px;color:#fff}
+        .logo span:first-of-type{color:var(--p)}
+        .logo span:last-of-type{color:var(--t)}
+        .nlinks{display:flex;gap:26px;list-style:none}
+        .nlinks a{text-decoration:none;color:var(--tl);font-size:13px;font-weight:500;transition:var(--tr);display:flex;align-items:center;gap:5px}
+        .nlinks a:hover,.nlinks a.act{color:var(--p)}
+        .nmenu{display:none;background:none;border:none;font-size:22px;color:var(--t);cursor:pointer}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,var(--p) 0%,var(--pdd) 100%);padding:50px 20px 46px;text-align:center;color:#fff;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-50%;left:-30%;width:160%;height:200%;background:radial-gradient(ellipse,rgba(255,255,255,.07) 0%,transparent 70%);animation:hw 8s ease-in-out infinite}
+        @keyframes hw{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+        .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,var(--bg),transparent)}
+        .hbadge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:500;margin-bottom:16px;position:relative;border:1px solid rgba(255,255,255,.2)}
+        .hero h1{font-size:36px;font-weight:800;margin-bottom:10px;position:relative;letter-spacing:-.5px}
+        .hero h1 i{margin-right:10px;font-size:32px}
+        .hero p{font-size:15px;opacity:.9;position:relative;max-width:600px;margin:0 auto;line-height:1.6}
+
+        /* FEATURES */
+        .feats{display:flex;justify-content:center;gap:26px;padding:22px 20px;flex-wrap:wrap;max-width:1050px;margin:-18px auto 0;position:relative;z-index:2}
+        .ft{display:flex;align-items:center;gap:9px;background:var(--w);padding:11px 20px;border-radius:50px;box-shadow:var(--sh);font-size:13px;font-weight:600}
+        .ft i{width:28px;height:28px;background:var(--pbg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--p);font-size:13px}
+
+        /* MAIN */
+        .main{max-width:1280px;margin:15px auto 60px;padding:0 20px}
+
+        /* UPLOAD */
+        .upload-sec{text-align:center;padding:18px 0 30px}
+        .upload-area{border:3px dashed var(--pll);border-radius:var(--rl);padding:58px 40px;background:var(--w);cursor:pointer;transition:var(--tr);max-width:760px;margin:0 auto}
+        .upload-area:hover,.upload-area.drag{border-color:var(--p);background:var(--pbg);transform:translateY(-3px);box-shadow:var(--shl)}
+        .uic{width:95px;height:95px;margin:0 auto 20px;background:linear-gradient(135deg,var(--p),var(--pd));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(76,175,80,.35);animation:fl 3s ease-in-out infinite}
+        @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .uic i{font-size:38px;color:#fff}
+        .upload-area h3{font-size:23px;font-weight:700;margin-bottom:8px}
+        .upload-area p{color:var(--tl);font-size:14px;margin-bottom:22px}
+        .selbtn{background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;border:none;padding:14px 44px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:var(--tr);box-shadow:0 5px 20px rgba(76,175,80,.4);display:inline-flex;align-items:center;gap:10px}
+        .selbtn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(76,175,80,.5)}
+        .uhint{margin-top:16px;font-size:11px;color:var(--tll);display:flex;align-items:center;justify-content:center;gap:5px}
+
+        /* EDITOR */
+        .editor{display:none}
+        .editor.vis{display:block;animation:fu .5s ease}
+        @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        /* TOOLBAR */
+        .toolbar{display:flex;align-items:center;justify-content:space-between;background:var(--w);padding:12px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px;flex-wrap:wrap;gap:10px}
+        .tbl{display:flex;align-items:center;gap:12px}
+        .tbl .fthumb{width:42px;height:42px;border-radius:10px;overflow:hidden;border:2px solid var(--plll)}
+        .tbl .fthumb img{width:100%;height:100%;object-fit:cover}
+        .tbl .fmeta h4{font-size:13px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .tbl .fmeta span{font-size:11px;color:var(--tl)}
+        .tbr{display:flex;gap:8px;flex-wrap:wrap}
+        .tbtn{padding:8px 15px;border:2px solid var(--plll);border-radius:10px;background:var(--w);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--tl);cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:5px}
+        .tbtn:hover{border-color:var(--p);color:var(--p);background:var(--pbg)}
+        .tbtn.dng:hover{border-color:var(--danger);color:var(--danger);background:var(--dbg)}
+
+        /* GRID */
+        .egrid{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start}
+
+        /* CANVAS CARD */
+        .ccard{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+        .ccard-h{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--pbg);border-bottom:1px solid var(--plll)}
+        .ccard-h h3{font-size:14px;font-weight:600;color:var(--pd);display:flex;align-items:center;gap:7px}
+        .ccard-h h3 i{font-size:15px}
+
+        .canvas-body{position:relative;min-height:400px;background:#fafafa;background-image:linear-gradient(45deg,#f0f0f0 25%,transparent 25%),linear-gradient(-45deg,#f0f0f0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f0f0f0 75%),linear-gradient(-45deg,transparent 75%,#f0f0f0 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:15px;cursor:crosshair}
+        .canvas-wrap{position:relative;display:inline-block;line-height:0}
+        .canvas-wrap canvas{max-width:100%;max-height:520px;border-radius:6px;box-shadow:0 3px 15px rgba(0,0,0,.1)}
+        #overlayCanvas{position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;border-radius:6px}
+
+        /* MAGNIFIER */
+        .magnifier{position:absolute;width:140px;height:140px;border-radius:50%;border:4px solid var(--w);box-shadow:0 6px 25px rgba(0,0,0,.3);pointer-events:none;display:none;z-index:50;overflow:hidden;background:#000}
+        .magnifier canvas{position:absolute;top:0;left:0}
+        .magnifier-crosshair{position:absolute;inset:0;z-index:2}
+        .magnifier-crosshair::before,.magnifier-crosshair::after{content:'';position:absolute;background:rgba(255,255,255,.6)}
+        .magnifier-crosshair::before{width:1px;height:100%;left:50%;top:0}
+        .magnifier-crosshair::after{height:1px;width:100%;top:50%;left:0}
+        .magnifier-color{position:absolute;bottom:-32px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;z-index:3}
+
+        .canvas-footer{padding:10px 20px;background:var(--pbg);border-top:1px solid var(--plll);display:flex;justify-content:center;gap:20px;font-size:11px;color:var(--tl);flex-wrap:wrap}
+        .canvas-footer span{display:flex;align-items:center;gap:4px}
+        .canvas-footer i{color:var(--p);font-size:12px}
+
+        /* LIVE COLOR BAR */
+        .live-bar{display:flex;align-items:center;gap:12px;background:var(--w);padding:10px 18px;border-radius:10px;box-shadow:var(--sh);margin-top:12px}
+        .live-swatch{width:45px;height:45px;border-radius:10px;border:3px solid var(--plll);flex-shrink:0;transition:var(--tr)}
+        .live-info{flex:1}
+        .live-hex{font-size:18px;font-weight:800;font-family:'Courier New',monospace;color:var(--t)}
+        .live-rgb{font-size:11px;color:var(--tl)}
+        .live-label{font-size:10px;color:var(--tll);font-weight:500}
+
+        /* CONTROLS CARD */
+        .ctrl{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;position:sticky;top:82px}
+        .ctrl-h{padding:15px 20px;background:var(--pbg);border-bottom:1px solid var(--plll)}
+        .ctrl-h h3{font-size:15px;font-weight:700;color:var(--pd);display:flex;align-items:center;gap:8px}
+        .ctrl-b{padding:20px;overflow-y:auto;max-height:calc(100vh - 180px)}
+        .ctrl-b::-webkit-scrollbar{width:5px}
+        .ctrl-b::-webkit-scrollbar-thumb{background:var(--pll);border-radius:10px}
+
+        .slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--pd);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+        .slabel::after{content:'';flex:1;height:1px;background:var(--plll)}
+
+        /* PICKED COLOR DISPLAY */
+        .picked-display{margin-bottom:20px}
+        .picked-big{display:flex;gap:15px;align-items:center;margin-bottom:14px}
+        .picked-swatch{width:80px;height:80px;border-radius:16px;border:4px solid var(--plll);box-shadow:var(--sh);transition:var(--tr);position:relative;overflow:hidden}
+        .picked-swatch::after{content:'';position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+        .picked-main{flex:1}
+        .picked-hex{font-size:28px;font-weight:900;font-family:'Courier New',monospace;letter-spacing:1px}
+        .picked-name{font-size:12px;color:var(--tl);font-weight:500;margin-top:2px}
+        .picked-copy-hex{margin-top:6px;padding:5px 14px;border:2px solid var(--plll);border-radius:8px;background:var(--w);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:var(--p);cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:4px}
+        .picked-copy-hex:hover{background:var(--p);color:#fff;border-color:var(--p)}
+
+        /* COLOR VALUES GRID */
+        .color-values{display:grid;gap:8px;margin-bottom:18px}
+        .cv-row{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--pbg);border-radius:10px;border:2px solid transparent;transition:var(--tr)}
+        .cv-row:hover{border-color:var(--plll)}
+        .cv-label{font-size:10px;font-weight:700;color:var(--pd);text-transform:uppercase;letter-spacing:1px;min-width:40px}
+        .cv-value{flex:1;font-size:13px;font-weight:600;font-family:'Courier New',monospace;color:var(--t)}
+        .cv-copy{width:28px;height:28px;border-radius:7px;border:none;background:var(--plll);color:var(--pd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:var(--tr);flex-shrink:0}
+        .cv-copy:hover{background:var(--p);color:#fff}
+        .cv-copy.copied{background:var(--p);color:#fff}
+
+        .divider{height:1px;background:var(--plll);margin:18px 0}
+
+        /* CONTRAST PREVIEW */
+        .contrast-sec{margin-bottom:18px}
+        .contrast-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .contrast-box{padding:16px 12px;border-radius:10px;text-align:center;font-size:12px;font-weight:700;border:2px solid var(--plll)}
+        .contrast-box small{display:block;font-size:9px;font-weight:500;margin-top:4px;opacity:.8}
+
+        /* SHADES & TINTS */
+        .shades-sec{margin-bottom:18px}
+        .shades-row{display:flex;border-radius:10px;overflow:hidden;height:36px;box-shadow:var(--sh)}
+        .shade-cell{flex:1;cursor:pointer;position:relative;transition:transform .2s}
+        .shade-cell:hover{transform:scaleY(1.3);z-index:2}
+        .shade-cell .shade-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:3px 8px;border-radius:5px;font-size:9px;font-weight:600;white-space:nowrap;z-index:10}
+        .shade-cell:hover .shade-tip{display:block}
+
+        /* PALETTE HISTORY */
+        .palette-sec{margin-bottom:18px}
+        .palette-grid{display:flex;flex-wrap:wrap;gap:6px}
+        .palette-item{width:38px;height:38px;border-radius:10px;cursor:pointer;border:3px solid transparent;transition:var(--tr);position:relative;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+        .palette-item:hover{transform:scale(1.15);border-color:var(--p);z-index:2}
+        .palette-item .pi-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:3px 8px;border-radius:5px;font-size:9px;font-weight:600;white-space:nowrap;z-index:10}
+        .palette-item:hover .pi-tip{display:block}
+        .palette-item .pi-del{display:none;position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:var(--danger);color:#fff;font-size:8px;border:none;cursor:pointer;align-items:center;justify-content:center}
+        .palette-item:hover .pi-del{display:flex}
+
+        .palette-empty{text-align:center;padding:20px;color:var(--tll);font-size:12px}
+        .palette-empty i{font-size:24px;display:block;margin-bottom:6px;color:var(--pll)}
+
+        /* DOMINANT COLORS */
+        .dominant-sec{margin-bottom:18px}
+        .dominant-grid{display:flex;gap:6px;flex-wrap:wrap}
+        .dom-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:var(--tr)}
+        .dom-item:hover{transform:translateY(-3px)}
+        .dom-swatch{width:42px;height:42px;border-radius:10px;border:3px solid var(--plll);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .dom-item:hover .dom-swatch{border-color:var(--p)}
+        .dom-hex{font-size:9px;font-weight:700;font-family:'Courier New',monospace;color:var(--tl)}
+        .dom-pct{font-size:8px;color:var(--tll)}
+
+        /* EXPORT */
+        .export-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+        .exp-btn{padding:9px 16px;border:2px solid var(--plll);border-radius:10px;background:var(--w);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:var(--tl);cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:5px}
+        .exp-btn:hover{border-color:var(--p);color:var(--p);background:var(--pbg)}
+        .exp-btn i{font-size:13px}
+
+        /* ACTION BUTTONS */
+        .act-btns{margin-top:14px}
+        .dl-btn{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:var(--tr);box-shadow:0 6px 22px rgba(76,175,80,.4);display:flex;align-items:center;justify-content:center;gap:10px}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(76,175,80,.5)}
+        .brow{display:flex;gap:10px;margin-top:10px}
+        .sb{flex:1;padding:10px;border:2px solid var(--plll);border-radius:10px;background:var(--w);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:var(--tl);cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:5px}
+        .sb:hover{border-color:var(--p);color:var(--p);background:var(--pbg)}
+        .sb.dng{border-color:var(--db);color:var(--danger);background:var(--dbg)}
+        .sb.dng:hover{background:var(--danger);color:#fff}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--pd);color:#fff;padding:13px 30px;border-radius:50px;font-size:13px;font-weight:600;box-shadow:0 6px 25px rgba(0,0,0,.2);z-index:6000;transition:transform .4s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:9px}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+
+        /* INSTRUCTION OVERLAY */
+        .instr{position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;justify-content:center;align-items:center;border-radius:6px;z-index:10;transition:opacity .3s;pointer-events:none}
+        .instr.hide{opacity:0}
+        .instr-box{background:rgba(255,255,255,.95);padding:20px 30px;border-radius:14px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+        .instr-box i{font-size:32px;color:var(--p);margin-bottom:8px;display:block}
+        .instr-box h4{font-size:14px;font-weight:700;margin-bottom:4px}
+        .instr-box p{font-size:12px;color:var(--tl)}
+
+        /* FOOTER */
+        .footer{background:var(--w);padding:28px 0;text-align:center;border-top:1px solid var(--plll)}
+        .footer p{color:var(--tl);font-size:13px}
+        .footer a{color:var(--p);text-decoration:none;font-weight:700}
+        .flinks{display:flex;justify-content:center;gap:25px;margin-top:8px}
+        .flinks a{font-size:12px;font-weight:500;color:var(--tll)}
+
+        /* RESPONSIVE */
+        @media(max-width:1000px){
+            .egrid{grid-template-columns:1fr}
+            .ctrl{position:static}
+            .nlinks{display:none;position:absolute;top:64px;left:0;right:0;background:var(--w);flex-direction:column;padding:15px 25px;box-shadow:var(--shm);gap:12px}
+            .nlinks.open{display:flex}
+            .nmenu{display:block}
+            .hero h1{font-size:26px}
+            .feats{gap:12px}
+            .ft{font-size:12px;padding:9px 14px}
+        }
+        @media(max-width:520px){
+            .toolbar{flex-direction:column;align-items:stretch}
+            .tbr{justify-content:center}
+            .upload-area{padding:35px 18px}
+            .upload-area h3{font-size:18px}
+            .brow{flex-direction:column}
+            .picked-big{flex-direction:column;text-align:center}
+            .contrast-grid{grid-template-columns:1fr}
+            .export-btns{justify-content:center}
+            .magnifier{width:110px;height:110px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="#" class="logo">
+        <div class="logo-ic"><i class="fas fa-eyedropper"></i></div>
+        <span>iLove</span><span>Image</span>
+    </a>
+    <ul class="nlinks" id="navLinks">
+        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#"><i class="fas fa-compress-arrows-alt"></i> Compress</a></li>
+        <li><a href="#"><i class="fas fa-expand-arrows-alt"></i> Resize</a></li>
+        <li><a href="#" class="act"><i class="fas fa-eyedropper"></i> Color Picker</a></li>
+        <li><a href="#"><i class="fas fa-crop-alt"></i> Crop</a></li>
+    </ul>
+    <button class="nmenu" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hbadge"><i class="fas fa-bolt"></i> Fast & Free — No Signup</div>
+    <h1><i class="fas fa-eyedropper"></i> Image Color Picker</h1>
+    <p>Apni image se koi bhi color pick karein. HEX, RGB, HSL aur CMYK codes instantly copy karein!</p>
+</section>
+
+<!-- FEATURES -->
+<div class="feats">
+    <div class="ft"><i class="fas fa-eyedropper"></i> Click to Pick</div>
+    <div class="ft"><i class="fas fa-search-plus"></i> Magnifier Lens</div>
+    <div class="ft"><i class="fas fa-palette"></i> Auto Palette</div>
+    <div class="ft"><i class="fas fa-copy"></i> Copy Codes</div>
+    <div class="ft"><i class="fas fa-download"></i> Export Palette</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- UPLOAD -->
+    <div class="upload-sec" id="uploadSection">
+        <div class="upload-area" id="uploadArea">
+            <div class="uic"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h3>Image Yahan Drop Karein</h3>
+            <p>ya button click karke select karein</p>
+            <button class="selbtn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-image"></i> Select Image</button>
+            <div class="uhint"><i class="fas fa-info-circle"></i> JPG, PNG, WEBP, GIF — Max 50MB</div>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+        </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="editor" id="editor">
+        <div class="toolbar">
+            <div class="tbl">
+                <div class="fthumb" id="toolThumb"><img src="" alt=""></div>
+                <div class="fmeta">
+                    <h4 id="toolName">image.jpg</h4>
+                    <span id="toolMeta">1920 × 1080</span>
+                </div>
+            </div>
+            <div class="tbr">
+                <button class="tbtn" onclick="extractDominant()"><i class="fas fa-magic"></i> Extract Palette</button>
+                <button class="tbtn" onclick="clearPalette()"><i class="fas fa-eraser"></i> Clear History</button>
+                <button class="tbtn dng" onclick="goBack()"><i class="fas fa-times"></i> New Image</button>
+            </div>
+        </div>
+
+        <div class="egrid">
+            <!-- CANVAS CARD -->
+            <div>
+                <div class="ccard">
+                    <div class="ccard-h">
+                        <h3><i class="fas fa-crosshairs"></i> Click on image to pick color</h3>
+                        <div style="display:flex;gap:5px">
+                            <button class="tbtn" onclick="zoomIn()" style="padding:6px 10px"><i class="fas fa-search-plus"></i></button>
+                            <span style="font-size:11px;font-weight:600;color:var(--tl);padding:6px 4px" id="zoomLabel">100%</span>
+                            <button class="tbtn" onclick="zoomOut()" style="padding:6px 10px"><i class="fas fa-search-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="canvas-body" id="canvasBody">
+                        <div class="canvas-wrap" id="canvasWrap">
+                            <canvas id="mainCanvas"></canvas>
+                            <canvas id="overlayCanvas"></canvas>
+                            <div class="magnifier" id="magnifier">
+                                <canvas id="magCanvas" width="140" height="140"></canvas>
+                                <div class="magnifier-crosshair"></div>
+                                <div class="magnifier-color" id="magColor">#FFFFFF</div>
+                            </div>
+                            <div class="instr" id="instr">
+                                <div class="instr-box">
+                                    <i class="fas fa-hand-pointer"></i>
+                                    <h4>Click anywhere on image</h4>
+                                    <p>Color pick karne ke liye click karein</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="canvas-footer">
+                        <span><i class="fas fa-expand"></i> <span id="dimLabel">—</span></span>
+                        <span><i class="fas fa-mouse-pointer"></i> Position: <strong id="posLabel">—</strong></span>
+                        <span><i class="fas fa-palette"></i> Picked: <strong id="pickedCount">0</strong> colors</span>
+                    </div>
+                </div>
+
+                <!-- LIVE COLOR BAR -->
+                <div class="live-bar" id="liveBar">
+                    <div class="live-swatch" id="liveSwatch" style="background:#E8F5E9"></div>
+                    <div class="live-info">
+                        <div class="live-label">Current Color Under Cursor</div>
+                        <div class="live-hex" id="liveHex">#E8F5E9</div>
+                        <div class="live-rgb" id="liveRgb">rgb(232, 245, 233)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="ctrl">
+                <div class="ctrl-h">
+                    <h3><i class="fas fa-palette"></i> Color Details</h3>
+                </div>
+                <div class="ctrl-b">
+
+                    <!-- PICKED COLOR -->
+                    <div class="slabel"><i class="fas fa-eyedropper"></i> SELECTED COLOR</div>
+                    <div class="picked-display">
+                        <div class="picked-big">
+                            <div class="picked-swatch" id="pickedSwatch" style="background:#4CAF50"></div>
+                            <div class="picked-main">
+                                <div class="picked-hex" id="pickedHex">#4CAF50</div>
+                                <div class="picked-name" id="pickedName">Click image to pick a color</div>
+                                <button class="picked-copy-hex" onclick="copyText(document.getElementById('pickedHex').textContent)"><i class="fas fa-copy"></i> Copy HEX</button>
+                            </div>
+                        </div>
+
+                        <!-- VALUES -->
+                        <div class="color-values">
+                            <div class="cv-row">
+                                <span class="cv-label">HEX</span>
+                                <span class="cv-value" id="valHex">#4CAF50</span>
+                                <button class="cv-copy" onclick="copyVal(this,'valHex')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="cv-row">
+                                <span class="cv-label">RGB</span>
+                                <span class="cv-value" id="valRgb">rgb(76, 175, 80)</span>
+                                <button class="cv-copy" onclick="copyVal(this,'valRgb')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="cv-row">
+                                <span class="cv-label">HSL</span>
+                                <span class="cv-value" id="valHsl">hsl(122, 39%, 49%)</span>
+                                <button class="cv-copy" onclick="copyVal(this,'valHsl')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="cv-row">
+                                <span class="cv-label">CMYK</span>
+                                <span class="cv-value" id="valCmyk">cmyk(57%, 0%, 54%, 31%)</span>
+                                <button class="cv-copy" onclick="copyVal(this,'valCmyk')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="cv-row">
+                                <span class="cv-label">CSS</span>
+                                <span class="cv-value" id="valCss">rgba(76, 175, 80, 1)</span>
+                                <button class="cv-copy" onclick="copyVal(this,'valCss')"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- CONTRAST -->
+                    <div class="slabel"><i class="fas fa-adjust"></i> CONTRAST PREVIEW</div>
+                    <div class="contrast-sec">
+                        <div class="contrast-grid">
+                            <div class="contrast-box" id="contrastWhite" style="background:#4CAF50;color:#fff">
+                                White Text<small>On picked color</small>
+                            </div>
+                            <div class="contrast-box" id="contrastBlack" style="background:#4CAF50;color:#000">
+                                Black Text<small>On picked color</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- SHADES & TINTS -->
+                    <div class="slabel"><i class="fas fa-fill-drip"></i> SHADES</div>
+                    <div class="shades-sec">
+                        <div class="shades-row" id="shadesRow"></div>
+                    </div>
+                    <div class="slabel"><i class="fas fa-sun"></i> TINTS</div>
+                    <div class="shades-sec">
+                        <div class="shades-row" id="tintsRow"></div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- DOMINANT COLORS -->
+                    <div class="slabel"><i class="fas fa-magic"></i> DOMINANT COLORS</div>
+                    <div class="dominant-sec">
+                        <div class="dominant-grid" id="dominantGrid">
+                            <div style="text-align:center;width:100%;padding:10px;color:var(--tll);font-size:12px">
+                                <i class="fas fa-magic" style="color:var(--pll);font-size:20px;display:block;margin-bottom:5px"></i>
+                                Click "Extract Palette" button
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- COLOR HISTORY -->
+                    <div class="slabel"><i class="fas fa-history"></i> PICKED COLORS HISTORY (<span id="histCount">0</span>)</div>
+                    <div class="palette-sec">
+                        <div class="palette-grid" id="paletteGrid">
+                            <div class="palette-empty"><i class="fas fa-palette"></i>Koi color pick nahi hua<br>Image par click karein</div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- EXPORT -->
+                    <div class="slabel"><i class="fas fa-download"></i> EXPORT PALETTE</div>
+                    <div class="export-btns">
+                        <button class="exp-btn" onclick="exportCSS()"><i class="fas fa-code"></i> CSS</button>
+                        <button class="exp-btn" onclick="exportJSON()"><i class="fas fa-file-code"></i> JSON</button>
+                        <button class="exp-btn" onclick="exportTXT()"><i class="fas fa-file-alt"></i> TXT</button>
+                        <button class="exp-btn" onclick="exportPalettePNG()"><i class="fas fa-image"></i> PNG</button>
+                    </div>
+
+                    <div class="act-btns">
+                        <button class="dl-btn" onclick="exportPalettePNG()"><i class="fas fa-download"></i> Download Palette Image</button>
+                        <div class="brow">
+                            <button class="sb" onclick="clearPalette()"><i class="fas fa-eraser"></i> Clear</button>
+                            <button class="sb dng" onclick="goBack()"><i class="fas fa-trash-alt"></i> New Image</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done!</span></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">iLoveImage</a> — Free Online Color Picker</p>
+    <div class="flinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<script>
+// ========== STATE ==========
+let origImg=null, fileName='', fileSize=0;
+let pickedR=76, pickedG=175, pickedB=80;
+let palette=[];
+let dominantColors=[];
+let zoomLevel=1;
+let scaleRatio=1;
+let hasPicked=false;
+
+const mainCanvas=document.getElementById('mainCanvas');
+const mainCtx=mainCanvas.getContext('2d',{willReadFrequently:true});
+const overlayCanvas=document.getElementById('overlayCanvas');
+const overlayCtx=overlayCanvas.getContext('2d');
+const magCanvas=document.getElementById('magCanvas');
+const magCtx=magCanvas.getContext('2d',{willReadFrequently:true});
+
+// ========== FILE ==========
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0])});
+const ua=document.getElementById('uploadArea');
+ua.addEventListener('dragover',e=>{e.preventDefault();ua.classList.add('drag')});
+ua.addEventListener('dragleave',()=>ua.classList.remove('drag'));
+ua.addEventListener('drop',e=>{e.preventDefault();ua.classList.remove('drag');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
+ua.addEventListener('click',e=>{if(!e.target.closest('.selbtn'))document.getElementById('fileInput').click()});
+document.addEventListener('paste',e=>{const it=e.clipboardData?.items;if(it)for(let i of it)if(i.type.startsWith('image/')){loadFile(i.getAsFile());break}});
+
+function loadFile(file){
+    if(!file.type.startsWith('image/'))return toast('Sirf image files!');
+    fileName=file.name;fileSize=file.size;
+    const reader=new FileReader();
+    reader.onload=e=>{
+        const img=new Image();
+        img.onload=()=>{origImg=img;palette=[];hasPicked=false;showEditor();renderCanvas();toast('Image loaded! Click to pick colors 🎨')};
+        img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function showEditor(){
+    document.getElementById('uploadSection').style.display='none';
+    document.getElementById('editor').classList.add('vis');
+    document.getElementById('toolThumb').querySelector('img').src=origImg.src;
+    document.getElementById('toolName').textContent=fileName;
+    document.getElementById('toolMeta').textContent=`${origImg.width} × ${origImg.height} • ${(fileSize/1048576).toFixed(2)} MB`;
+    document.getElementById('instr').classList.remove('hide');
+}
+
+function goBack(){
+    document.getElementById('uploadSection').style.display='block';
+    document.getElementById('editor').classList.remove('vis');
+    origImg=null;palette=[];dominantColors=[];
+    document.getElementById('fileInput').value='';
+}
+
+// ========== RENDER ==========
+function renderCanvas(){
+    if(!origImg)return;
+    const body=document.getElementById('canvasBody');
+    const maxW=body.clientWidth-30;
+    const maxH=520;
+    scaleRatio=Math.min(maxW/origImg.width,maxH/origImg.height,1);
+    const dw=Math.round(origImg.width*scaleRatio);
+    const dh=Math.round(origImg.height*scaleRatio);
+    mainCanvas.width=dw;mainCanvas.height=dh;
+    overlayCanvas.width=dw;overlayCanvas.height=dh;
+    overlayCanvas.style.width=dw+'px';
+    overlayCanvas.style.height=dh+'px';
+    mainCtx.drawImage(origImg,0,0,dw,dh);
+    document.getElementById('dimLabel').textContent=`${origImg.width} × ${origImg.height}`;
+    renderOverlayMarkers();
+}
+
+function renderOverlayMarkers(){
+    overlayCtx.clearRect(0,0,overlayCanvas.width,overlayCanvas.height);
+    palette.forEach((c,i)=>{
+        if(c._x!==undefined){
+            overlayCtx.save();
+            overlayCtx.beginPath();
+            overlayCtx.arc(c._x*scaleRatio,c._y*scaleRatio,8,0,Math.PI*2);
+            overlayCtx.fillStyle=c.hex;
+            overlayCtx.strokeStyle='#fff';
+            overlayCtx.lineWidth=2.5;
+            overlayCtx.shadowColor='rgba(0,0,0,.3)';
+            overlayCtx.shadowBlur=4;
+            overlayCtx.fill();
+            overlayCtx.stroke();
+            overlayCtx.restore();
+        }
+    });
+}
+
+// ========== MOUSE EVENTS ==========
+overlayCanvas.addEventListener('mousemove',e=>{
+    if(!origImg)return;
+    const rect=overlayCanvas.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const y=e.clientY-rect.top;
+    const imgX=Math.round(x/scaleRatio);
+    const imgY=Math.round(y/scaleRatio);
+    document.getElementById('posLabel').textContent=`${imgX}, ${imgY}`;
+
+    // Get pixel
+    const pixel=mainCtx.getImageData(Math.round(x),Math.round(y),1,1).data;
+    const r=pixel[0],g=pixel[1],b=pixel[2];
+    const hex=rgbToHex(r,g,b);
+
+    // Live bar
+    document.getElementById('liveSwatch').style.background=hex;
+    document.getElementById('liveHex').textContent=hex;
+    document.getElementById('liveRgb').textContent=`rgb(${r}, ${g}, ${b})`;
+
+    // Magnifier
+    showMagnifier(e,x,y,hex);
+});
+
+overlayCanvas.addEventListener('mouseleave',()=>{
+    document.getElementById('magnifier').style.display='none';
+});
+
+overlayCanvas.addEventListener('click',e=>{
+    if(!origImg)return;
+    document.getElementById('instr').classList.add('hide');
+    const rect=overlayCanvas.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const y=e.clientY-rect.top;
+    const pixel=mainCtx.getImageData(Math.round(x),Math.round(y),1,1).data;
+    pickColor(pixel[0],pixel[1],pixel[2],x/scaleRatio,y/scaleRatio);
+});
+
+// Touch
+overlayCanvas.addEventListener('touchstart',e=>{e.preventDefault()},{passive:false});
+overlayCanvas.addEventListener('touchend',e=>{
+    e.preventDefault();
+    if(!origImg)return;
+    document.getElementById('instr').classList.add('hide');
+    const touch=e.changedTouches[0];
+    const rect=overlayCanvas.getBoundingClientRect();
+    const x=touch.clientX-rect.left;
+    const y=touch.clientY-rect.top;
+    const pixel=mainCtx.getImageData(Math.round(x),Math.round(y),1,1).data;
+    pickColor(pixel[0],pixel[1],pixel[2],x/scaleRatio,y/scaleRatio);
+},{passive:false});
+
+// ========== MAGNIFIER ==========
+function showMagnifier(e,cx,cy,hex){
+    const mag=document.getElementById('magnifier');
+    const wrap=document.getElementById('canvasWrap');
+    const wrapRect=wrap.getBoundingClientRect();
+    mag.style.display='block';
+
+    // Position
+    let mx=cx+20, my=cy-160;
+    if(mx+150>wrapRect.width) mx=cx-160;
+    if(my<0) my=cy+20;
+    mag.style.left=mx+'px';
+    mag.style.top=my+'px';
+
+    // Draw magnified area
+    const zoom=6;
+    const srcSize=140/zoom;
+    const sx=Math.round(cx)-srcSize/2;
+    const sy=Math.round(cy)-srcSize/2;
+    magCtx.clearRect(0,0,140,140);
+    magCtx.imageSmoothingEnabled=false;
+    magCtx.drawImage(mainCanvas,sx,sy,srcSize,srcSize,0,0,140,140);
+
+    // Grid
+    magCtx.strokeStyle='rgba(255,255,255,.15)';
+    magCtx.lineWidth=.5;
+    for(let i=0;i<140;i+=zoom){
+        magCtx.beginPath();magCtx.moveTo(i,0);magCtx.lineTo(i,140);magCtx.stroke();
+        magCtx.beginPath();magCtx.moveTo(0,i);magCtx.lineTo(140,i);magCtx.stroke();
+    }
+
+    // Center pixel highlight
+    const center=70-zoom/2;
+    magCtx.strokeStyle='#fff';magCtx.lineWidth=2;
+    magCtx.strokeRect(center,center,zoom,zoom);
+
+    document.getElementById('magColor').textContent=hex;
+}
+
+// ========== PICK COLOR ==========
+function pickColor(r,g,b,imgX,imgY){
+    pickedR=r;pickedG=g;pickedB=b;
+    hasPicked=true;
+    const hex=rgbToHex(r,g,b);
+    const hsl=rgbToHsl(r,g,b);
+    const cmyk=rgbToCmyk(r,g,b);
+
+    // Add to palette
+    const entry={hex,r,g,b,hsl,cmyk,_x:imgX,_y:imgY};
+    if(!palette.find(p=>p.hex===hex)) palette.push(entry);
+    
+    updatePickedDisplay(entry);
+    updateShadesTints(r,g,b);
+    updateContrast(hex);
+    renderPaletteGrid();
+    renderOverlayMarkers();
+
+    document.getElementById('pickedCount').textContent=palette.length;
+    toast(`Color picked: ${hex} 🎨`);
+}
+
+function updatePickedDisplay(c){
+    document.getElementById('pickedSwatch').style.background=c.hex;
+    document.getElementById('pickedHex').textContent=c.hex;
+    document.getElementById('pickedName').textContent=getColorName(c.r,c.g,c.b);
+    document.getElementById('valHex').textContent=c.hex;
+    document.getElementById('valRgb').textContent=`rgb(${c.r}, ${c.g}, ${c.b})`;
+    document.getElementById('valHsl').textContent=`hsl(${c.hsl[0]}, ${c.hsl[1]}%, ${c.hsl[2]}%)`;
+    document.getElementById('valCmyk').textContent=`cmyk(${c.cmyk[0]}%, ${c.cmyk[1]}%, ${c.cmyk[2]}%, ${c.cmyk[3]}%)`;
+    document.getElementById('valCss').textContent=`rgba(${c.r}, ${c.g}, ${c.b}, 1)`;
+}
+
+function updateContrast(hex){
+    document.getElementById('contrastWhite').style.background=hex;
+    document.getElementById('contrastBlack').style.background=hex;
+}
+
+function updateShadesTints(r,g,b){
+    // Shades (darker)
+    const shadesRow=document.getElementById('shadesRow');
+    shadesRow.innerHTML='';
+    for(let i=0;i<=9;i++){
+        const factor=1-i*.1;
+        const sr=Math.round(r*factor),sg=Math.round(g*factor),sb=Math.round(b*factor);
+        const hex=rgbToHex(sr,sg,sb);
+        const cell=document.createElement('div');
+        cell.className='shade-cell';
+        cell.style.background=hex;
+        cell.innerHTML=`<div class="shade-tip">${hex}</div>`;
+        cell.onclick=()=>{copyText(hex);toast(`Copied ${hex}`)};
+        shadesRow.appendChild(cell);
+    }
+    // Tints (lighter)
+    const tintsRow=document.getElementById('tintsRow');
+    tintsRow.innerHTML='';
+    for(let i=0;i<=9;i++){
+        const factor=i*.1;
+        const tr2=Math.round(r+(255-r)*factor),tg=Math.round(g+(255-g)*factor),tb=Math.round(b+(255-b)*factor);
+        const hex=rgbToHex(tr2,tg,tb);
+        const cell=document.createElement('div');
+        cell.className='shade-cell';
+        cell.style.background=hex;
+        cell.innerHTML=`<div class="shade-tip">${hex}</div>`;
+        cell.onclick=()=>{copyText(hex);toast(`Copied ${hex}`)};
+        tintsRow.appendChild(cell);
+    }
+}
+
+// ========== PALETTE GRID ==========
+function renderPaletteGrid(){
+    const grid=document.getElementById('paletteGrid');
+    document.getElementById('histCount').textContent=palette.length;
+    if(palette.length===0){
+        grid.innerHTML='<div class="palette-empty"><i class="fas fa-palette"></i>Koi color pick nahi hua<br>Image par click karein</div>';
+        return;
+    }
+    grid.innerHTML='';
+    palette.forEach((c,i)=>{
+        const div=document.createElement('div');
+        div.className='palette-item';
+        div.style.background=c.hex;
+        div.innerHTML=`<div class="pi-tip">${c.hex}</div><button class="pi-del" onclick="event.stopPropagation();removePalette(${i})"><i class="fas fa-times"></i></button>`;
+        div.onclick=()=>{updatePickedDisplay(c);updateShadesTints(c.r,c.g,c.b);updateContrast(c.hex);copyText(c.hex);toast(`${c.hex} copied!`)};
+        grid.appendChild(div);
+    });
+}
+
+function removePalette(i){
+    palette.splice(i,1);
+    renderPaletteGrid();
+    renderOverlayMarkers();
+    document.getElementById('pickedCount').textContent=palette.length;
+}
+
+function clearPalette(){
+    palette=[];
+    renderPaletteGrid();
+    renderOverlayMarkers();
+    document.getElementById('pickedCount').textContent=0;
+    toast('History cleared 🧹');
+}
+
+// ========== DOMINANT COLORS ==========
+function extractDominant(){
+    if(!origImg)return;
+    toast('Extracting dominant colors... 🎨');
+    
+    const tempCanvas=document.createElement('canvas');
+    const tCtx=tempCanvas.getContext('2d');
+    const sw=Math.min(origImg.width,150);
+    const sh=Math.round(origImg.height*(sw/origImg.width));
+    tempCanvas.width=sw;tempCanvas.height=sh;
+    tCtx.drawImage(origImg,0,0,sw,sh);
+    const data=tCtx.getImageData(0,0,sw,sh).data;
+
+    // Simple color quantization
+    const colorMap={};
+    for(let i=0;i<data.length;i+=4){
+        const r=Math.round(data[i]/16)*16;
+        const g=Math.round(data[i+1]/16)*16;
+        const b=Math.round(data[i+2]/16)*16;
+        const key=`${r},${g},${b}`;
+        colorMap[key]=(colorMap[key]||0)+1;
+    }
+
+    const sorted=Object.entries(colorMap).sort((a,b)=>b[1]-a[1]);
+    const totalPixels=sw*sh;
+    
+    // Take top colors that are visually distinct
+    dominantColors=[];
+    for(let i=0;i<sorted.length&&dominantColors.length<10;i++){
+        const [key,count]=sorted[i];
+        const [r,g,b]=key.split(',').map(Number);
+        const hex=rgbToHex(r,g,b);
+        
+        // Check if visually distinct from already picked
+        let distinct=true;
+        for(const dc of dominantColors){
+            if(colorDistance(r,g,b,dc.r,dc.g,dc.b)<60){distinct=false;break}
+        }
+        if(distinct){
+            dominantColors.push({r,g,b,hex,pct:Math.round(count/totalPixels*100)});
+        }
+    }
+
+    const grid=document.getElementById('dominantGrid');
+    grid.innerHTML='';
+    dominantColors.forEach(c=>{
+        const div=document.createElement('div');
+        div.className='dom-item';
+        div.innerHTML=`<div class="dom-swatch" style="background:${c.hex}"></div><div class="dom-hex">${c.hex}</div><div class="dom-pct">${c.pct}%</div>`;
+        div.onclick=()=>{
+            const hsl=rgbToHsl(c.r,c.g,c.b);
+            const cmyk=rgbToCmyk(c.r,c.g,c.b);
+            const entry={hex:c.hex,r:c.r,g:c.g,b:c.b,hsl,cmyk};
+            updatePickedDisplay(entry);
+            updateShadesTints(c.r,c.g,c.b);
+            updateContrast(c.hex);
+            if(!palette.find(p=>p.hex===c.hex)){palette.push(entry);renderPaletteGrid();document.getElementById('pickedCount').textContent=palette.length}
+            copyText(c.hex);
+            toast(`${c.hex} copied!`);
+        };
+        grid.appendChild(div);
+    });
+
+    toast(`${dominantColors.length} dominant colors extracted! 🎉`);
+}
+
+function colorDistance(r1,g1,b1,r2,g2,b2){
+    return Math.sqrt((r1-r2)**2+(g1-g2)**2+(b1-b2)**2);
+}
+
+// ========== ZOOM ==========
+function zoomIn(){zoomLevel=Math.min(zoomLevel+.15,3);applyZoom()}
+function zoomOut(){zoomLevel=Math.max(zoomLevel-.15,.3);applyZoom()}
+function applyZoom(){
+    document.getElementById('canvasWrap').style.transform=`scale(${zoomLevel})`;
+    document.getElementById('zoomLabel').textContent=Math.round(zoomLevel*100)+'%';
+}
+
+// ========== EXPORT ==========
+function exportCSS(){
+    if(palette.length===0)return toast('Pehle colors pick karein!');
+    let css=':root {\n';
+    palette.forEach((c,i)=>{css+=`  --color-${i+1}: ${c.hex};\n`});
+    css+='}';
+    downloadText(css,'palette.css');
+    toast('CSS file downloaded! 📄');
+}
+
+function exportJSON(){
+    if(palette.length===0)return toast('Pehle colors pick karein!');
+    const data=palette.map(c=>({
+        hex:c.hex,
+        rgb:`rgb(${c.r},${c.g},${c.b})`,
+        hsl:`hsl(${c.hsl[0]},${c.hsl[1]}%,${c.hsl[2]}%)`,
+        cmyk:`cmyk(${c.cmyk.join('%, ')}%)`
+    }));
+    downloadText(JSON.stringify(data,null,2),'palette.json');
+    toast('JSON file downloaded! 📄');
+}
+
+function exportTXT(){
+    if(palette.length===0)return toast('Pehle colors pick karein!');
+    let txt='Image Color Palette\n====================\n\n';
+    palette.forEach((c,i)=>{
+        txt+=`Color ${i+1}:\n`;
+        txt+=`  HEX: ${c.hex}\n`;
+        txt+=`  RGB: rgb(${c.r}, ${c.g}, ${c.b})\n`;
+        txt+=`  HSL: hsl(${c.hsl[0]}, ${c.hsl[1]}%, ${c.hsl[2]}%)\n`;
+        txt+=`  CMYK: cmyk(${c.cmyk.join('%, ')}%)\n\n`;
+    });
+    downloadText(txt,'palette.txt');
+    toast('TXT file downloaded! 📄');
+}
+
+function exportPalettePNG(){
+    if(palette.length===0)return toast('Pehle colors pick karein!');
+    const count=palette.length;
+    const swatchW=120,swatchH=150,padding=20;
+    const cols=Math.min(count,6);
+    const rows=Math.ceil(count/cols);
+    const cw=cols*swatchW+padding*2;
+    const ch=rows*swatchH+padding*2+60;
+    
+    const c=document.createElement('canvas');
+    c.width=cw;c.height=ch;
+    const ctx=c.getContext('2d');
+    
+    // Background
+    ctx.fillStyle='#FFFFFF';
+    ctx.fillRect(0,0,cw,ch);
+    
+    // Title
+    ctx.fillStyle='#2E7D32';
+    ctx.font='bold 18px Poppins, sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('Color Palette — iLoveImage',cw/2,35);
+    
+    // Swatches
+    palette.forEach((clr,i)=>{
+        const col=i%cols, row=Math.floor(i/cols);
+        const x=padding+col*swatchW;
+        const y=60+row*swatchH;
+        
+        // Rounded rect
+        ctx.fillStyle=clr.hex;
+        roundRect(ctx,x+5,y+5,swatchW-10,swatchH-40,10);
+        ctx.fill();
+        
+        // Hex label
+        ctx.fillStyle='#333';
+        ctx.font='bold 12px Courier New, monospace';
+        ctx.textAlign='center';
+        ctx.fillText(clr.hex,x+swatchW/2,y+swatchH-18);
+        
+        // RGB
+        ctx.fillStyle='#999';
+        ctx.font='9px Poppins, sans-serif';
+        ctx.fillText(`rgb(${clr.r},${clr.g},${clr.b})`,x+swatchW/2,y+swatchH-5);
+    });
+    
+    const link=document.createElement('a');
+    link.download='color-palette.png';
+    link.href=c.toDataURL('image/png');
+    link.click();
+    toast('Palette image downloaded! 🎉');
+}
+
+function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+}
+
+function downloadText(text,filename){
+    const blob=new Blob([text],{type:'text/plain'});
+    const link=document.createElement('a');
+    link.href=URL.createObjectURL(blob);
+    link.download=filename;
+    link.click();
+}
+
+// ========== COLOR CONVERSIONS ==========
+function rgbToHex(r,g,b){
+    return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
+function rgbToHsl(r,g,b){
+    r/=255;g/=255;b/=255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b);
+    let h,s,l=(max+min)/2;
+    if(max===min){h=s=0}
+    else{
+        const d=max-min;
+        s=l>.5?d/(2-max-min):d/(max+min);
+        switch(max){
+            case r:h=((g-b)/d+(g<b?6:0))/6;break;
+            case g:h=((b-r)/d+2)/6;break;
+            case b:h=((r-g)/d+4)/6;break;
+        }
+    }
+    return[Math.round(h*360),Math.round(s*100),Math.round(l*100)];
+}
+
+function rgbToCmyk(r,g,b){
+    if(r===0&&g===0&&b===0) return[0,0,0,100];
+    const c=1-r/255,m=1-g/255,y=1-b/255;
+    const k=Math.min(c,m,y);
+    return[Math.round((c-k)/(1-k)*100),Math.round((m-k)/(1-k)*100),Math.round((y-k)/(1-k)*100),Math.round(k*100)];
+}
+
+function getColorName(r,g,b){
+    const names=[
+        [0,0,0,'Black'],[255,255,255,'White'],[255,0,0,'Red'],[0,255,0,'Lime'],
+        [0,0,255,'Blue'],[255,255,0,'Yellow'],[0,255,255,'Cyan'],[255,0,255,'Magenta'],
+        [128,128,128,'Gray'],[128,0,0,'Maroon'],[0,128,0,'Green'],[0,0,128,'Navy'],
+        [128,128,0,'Olive'],[128,0,128,'Purple'],[0,128,128,'Teal'],[192,192,192,'Silver'],
+        [255,165,0,'Orange'],[255,192,203,'Pink'],[165,42,42,'Brown'],[75,0,130,'Indigo'],
+        [255,215,0,'Gold'],[64,224,208,'Turquoise'],[255,127,80,'Coral'],[250,128,114,'Salmon'],
+        [230,230,250,'Lavender'],[245,245,220,'Beige'],[255,228,196,'Bisque'],[245,222,179,'Wheat'],
+        [144,238,144,'Light Green'],[135,206,235,'Sky Blue'],[255,99,71,'Tomato'],[46,139,87,'Sea Green']
+    ];
+    let closest='',minDist=Infinity;
+    for(const[nr,ng,nb,name] of names){
+        const d=Math.sqrt((r-nr)**2+(g-ng)**2+(b-nb)**2);
+        if(d<minDist){minDist=d;closest=name}
+    }
+    const hsl=rgbToHsl(r,g,b);
+    if(hsl[1]<10){
+        if(hsl[2]<15) return'Very Dark (Near Black)';
+        if(hsl[2]<40) return'Dark Gray';
+        if(hsl[2]<60) return'Gray';
+        if(hsl[2]<85) return'Light Gray';
+        return'Near White';
+    }
+    return`≈ ${closest}`;
+}
+
+// ========== COPY ==========
+function copyText(text){
+    navigator.clipboard?.writeText(text).catch(()=>{
+        const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    });
+}
+
+function copyVal(btn,id){
+    const text=document.getElementById(id).textContent;
+    copyText(text);
+    btn.classList.add('copied');
+    btn.innerHTML='<i class="fas fa-check"></i>';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='<i class="fas fa-copy"></i>'},1500);
+    toast(`Copied: ${text}`);
+}
+
+// ========== TOAST ==========
+function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ========== KEYBOARD ==========
+document.addEventListener('keydown',e=>{
+    if(!origImg)return;
+    if(e.key==='+'||e.key==='=')zoomIn();
+    if(e.key==='-')zoomOut();
+    if(e.ctrlKey&&e.key==='c'&&hasPicked){e.preventDefault();copyText(rgbToHex(pickedR,pickedG,pickedB));toast('HEX copied!')}
+});
+
+// ========== RESIZE ==========
+window.addEventListener('resize',()=>{if(origImg)renderCanvas()});
+</script>
+</body>
+</html>
