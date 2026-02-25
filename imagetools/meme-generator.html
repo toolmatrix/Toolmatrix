@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator - iLoveMemes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --primary-lighter: #C8E6C9;
+            --primary-lightest: #E8F5E9;
+            --primary-dark: #388E3C;
+            --primary-darker: #2E7D32;
+            --bg: #f0faf0;
+            --white: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --shadow: 0 2px 15px rgba(76, 175, 80, 0.15);
+            --shadow-lg: 0 10px 40px rgba(76, 175, 80, 0.2);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .logo span:first-of-type {
+            color: var(--primary);
+        }
+
+        .logo span:last-of-type {
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .hero p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .hero .emoji {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        /* STEPS BAR */
+        .steps-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--white);
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .step.active .step-num {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        /* UPLOAD AREA */
+        .upload-section {
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--primary-light);
+            border-radius: 20px;
+            padding: 60px 40px;
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.3s;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .upload-area.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-lightest);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .upload-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .upload-area h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .upload-area p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .upload-formats {
+            margin-top: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* EDITOR SECTION */
+        .editor-section {
+            display: none;
+        }
+
+        .editor-section.visible {
+            display: block;
+        }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        /* PREVIEW */
+        .preview-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: var(--primary-lightest);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--primary-lighter);
+        }
+
+        .preview-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-header h3 i {
+            font-size: 18px;
+        }
+
+        .preview-body {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            background: #f8f8f8;
+            background-image: 
+                linear-gradient(45deg, #e8e8e8 25%, transparent 25%),
+                linear-gradient(-45deg, #e8e8e8 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e8e8e8 75%),
+                linear-gradient(-45deg, transparent 75%, #e8e8e8 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        #memeCanvas {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        /* CONTROLS */
+        .controls-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .controls-header {
+            background: var(--primary-lightest);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--primary-lighter);
+        }
+
+        .controls-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .controls-body {
+            padding: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .control-group label i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .control-group input[type="text"],
+        .control-group textarea,
+        .control-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--primary-lighter);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            transition: all 0.3s;
+            background: var(--primary-lightest);
+        }
+
+        .control-group input[type="text"]:focus,
+        .control-group textarea:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .control-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 5px;
+            background: var(--primary-lighter);
+            outline: none;
+            margin-top: 5px;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
+            transition: all 0.2s;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group input[type="color"] {
+            -webkit-appearance: none;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--primary-lighter);
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .control-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .control-group input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .color-label {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* CHECKBOX TOGGLE */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: var(--primary-lightest);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .toggle-group label {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--primary-lighter);
+            margin: 18px 0;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title i {
+            font-size: 12px;
+        }
+
+        /* TEMPLATE MEMES */
+        .templates-section {
+            margin-bottom: 18px;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .template-item {
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            aspect-ratio: 1;
+        }
+
+        .template-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .template-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* BUTTONS */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--primary-lightest);
+            color: var(--primary-dark);
+            border: 2px solid var(--primary-lighter);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-lighter);
+        }
+
+        .btn-danger {
+            background: #fff5f5;
+            color: #e74c3c;
+            border: 2px solid #ffcdd2;
+        }
+
+        .btn-danger:hover {
+            background: #ffebee;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+        }
+
+        /* DOWNLOAD SECTION */
+        .download-section {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .download-section.visible {
+            display: block;
+        }
+
+        .download-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--white);
+            padding: 25px 0;
+            text-align: center;
+            border-top: 1px solid var(--primary-lighter);
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-dark);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* FONT PREVIEW */
+        .font-option {
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .steps-bar {
+                gap: 15px;
+            }
+
+            .step {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .templates-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .upload-area {
+                padding: 40px 20px;
+            }
+
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .templates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        .controls-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .controls-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls-body::-webkit-scrollbar-track {
+            background: var(--primary-lightest);
+        }
+
+        .controls-body::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        .watermark-text {
+            font-size: 11px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .image-info {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .image-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .image-info i {
+            color: var(--primary);
+        }
+
+        /* Popular templates */
+        .popular-memes {
+            margin-top: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .popular-memes h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .popular-item {
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid var(--primary-lighter);
+            transition: all 0.3s;
+            aspect-ratio: 1;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .popular-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .popular-item i {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .popular-item span {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Predefined colors */
+        .color-presets {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .color-preset {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-preset:hover {
+            transform: scale(1.2);
+            border-color: var(--primary);
+        }
+
+        /* Tab Navigation for controls */
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid var(--primary-lighter);
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn i {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Position control */
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .pos-btn {
+            padding: 8px;
+            border: 2px solid var(--primary-lighter);
+            border-radius: 8px;
+            background: var(--primary-lightest);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .pos-btn:hover, .pos-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .change-image-btn {
+            font-size: 12px;
+            padding: 6px 14px;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .change-image-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">
+                <i class="fas fa-laugh-squint"></i>
+                <span>iLove</span><span>Memes</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#"><i class="fas fa-th"></i> Templates</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <span class="emoji">😂</span>
+        <h1>Meme Generator</h1>
+        <p>Apni pasandida image upload karein aur mazedaar meme banayein!</p>
+    </section>
+
+    <!-- STEPS -->
+    <div class="main-container">
+        <div class="steps-bar">
+            <div class="step active" id="step1">
+                <span class="step-num">1</span>
+                Image Upload
+            </div>
+            <div class="step" id="step2">
+                <span class="step-num">2</span>
+                Text Add Karein
+            </div>
+            <div class="step" id="step3">
+                <span class="step-num">3</span>
+                Download Karein
+            </div>
+        </div>
+
+        <!-- UPLOAD SECTION -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3>Image Yahan Drop Karein</h3>
+                <p>ya click karke select karein</p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-image"></i> Image Select Karein
+                </button>
+                <div class="upload-formats">
+                    <i class="fas fa-check-circle"></i> JPG, PNG, GIF, WEBP supported
+                </div>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+
+            <!-- Popular templates as colored boxes -->
+            <div class="popular-memes">
+                <h3><i class="fas fa-fire" style="color: #e74c3c;"></i> Ya Blank Template Use Karein</h3>
+                <div class="popular-grid">
+                    <div class="popular-item" onclick="createBlankMeme('#ffffff')" style="background: #ffffff;">
+                        <i class="fas fa-square" style="color:#ddd;"></i>
+                        <span>White</span>
+                    </div>
+                    <div class="popular-item" onclick="createBlankMeme('#000000')" style="background: #333;">
+                        <i class="fas fa-square" style="color:#fff;"></i>
+                        <span style="color:#fff;">Black</span>
+                    </div>
+                    <div class="popular-item" onclick="createBlankMeme('#E8F5E9')">
+                        <i class="fas fa-square" style="color: var(--primary);"></i>
+                        <span>Green</span>
+                    </div>
+                    <div class="popular-item" onclick="createBlankMeme('#E3F2FD')">
+                        <i class="fas fa-square" style="color: #2196F3;"></i>
+                        <span>Blue</span>
+                    </div>
+                    <div class="popular-item" onclick="createBlankMeme('#FFF3E0')">
+                        <i class="fas fa-square" style="color: #FF9800;"></i>
+                        <span>Orange</span>
+                    </div>
+                    <div class="popular-item" onclick="createBlankMeme('#FCE4EC')">
+                        <i class="fas fa-square" style="color: #E91E63;"></i>
+                        <span>Pink</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDITOR SECTION -->
+        <div class="editor-section" id="editorSection">
+            <div class="editor-layout">
+                <!-- Preview -->
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-eye"></i> Live Preview</h3>
+                        <button class="change-image-btn" onclick="changeImage()">
+                            <i class="fas fa-sync-alt"></i> Change Image
+                        </button>
+                    </div>
+                    <div class="preview-body">
+                        <canvas id="memeCanvas"></canvas>
+                    </div>
+                    <div class="image-info" id="imageInfo"></div>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls-card">
+                    <div class="controls-header">
+                        <h3><i class="fas fa-sliders-h"></i> Meme Controls</h3>
+                    </div>
+                    <div class="controls-body">
+                        <!-- Tab Navigation -->
+                        <div class="tab-nav">
+                            <button class="tab-btn active" onclick="switchTab('text')">
+                                <i class="fas fa-font"></i> Text
+                            </button>
+                            <button class="tab-btn" onclick="switchTab('style')">
+                                <i class="fas fa-palette"></i> Style
+                            </button>
+                            <button class="tab-btn" onclick="switchTab('advanced')">
+                                <i class="fas fa-cog"></i> Advanced
+                            </button>
+                        </div>
+
+                        <!-- TEXT TAB -->
+                        <div class="tab-content active" id="tab-text">
+                            <div class="control-group">
+                                <label><i class="fas fa-arrow-up"></i> Top Text</label>
+                                <textarea id="topText" placeholder="Upar ka text likho..." rows="2" oninput="renderMeme()"></textarea>
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-arrow-down"></i> Bottom Text</label>
+                                <textarea id="bottomText" placeholder="Neeche ka text likho..." rows="2" oninput="renderMeme()"></textarea>
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-text-height"></i> Middle Text (Optional)</label>
+                                <textarea id="middleText" placeholder="Beech ka text..." rows="2" oninput="renderMeme()"></textarea>
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-font"></i> Font Family</label>
+                                <select id="fontFamily" onchange="renderMeme()">
+                                    <option value="Impact" style="font-family: Impact;">Impact (Classic Meme)</option>
+                                    <option value="Arial Black" style="font-family: Arial Black;">Arial Black</option>
+                                    <option value="Comic Sans MS" style="font-family: Comic Sans MS;">Comic Sans</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Courier New" style="font-family: Courier New;">Courier New</option>
+                                    <option value="Georgia" style="font-family: Georgia;">Georgia</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- STYLE TAB -->
+                        <div class="tab-content" id="tab-style">
+                            <div class="control-group">
+                                <label><i class="fas fa-text-height"></i> Font Size: <span id="fontSizeVal">40</span>px</label>
+                                <input type="range" id="fontSize" min="16" max="100" value="40" oninput="updateFontSize()">
+                                <div class="range-labels">
+                                    <span>16px</span>
+                                    <span>100px</span>
+                                </div>
+                            </div>
+
+                            <div class="control-row">
+                                <div class="control-group">
+                                    <label><i class="fas fa-fill-drip"></i> Text Color</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="textColor" value="#ffffff" onchange="renderMeme()">
+                                        <span class="color-label">Fill</span>
+                                    </div>
+                                    <div class="color-presets">
+                                        <div class="color-preset" style="background:#fff;" onclick="setColor('textColor','#ffffff')"></div>
+                                        <div class="color-preset" style="background:#000;" onclick="setColor('textColor','#000000')"></div>
+                                        <div class="color-preset" style="background:#ff0;" onclick="setColor('textColor','#ffff00')"></div>
+                                        <div class="color-preset" style="background:#f00;" onclick="setColor('textColor','#ff0000')"></div>
+                                        <div class="color-preset" style="background:#0f0;" onclick="setColor('textColor','#00ff00')"></div>
+                                        <div class="color-preset" style="background:#00f;" onclick="setColor('textColor','#0000ff')"></div>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label><i class="fas fa-border-style"></i> Stroke Color</label>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="strokeColor" value="#000000" onchange="renderMeme()">
+                                        <span class="color-label">Stroke</span>
+                                    </div>
+                                    <div class="color-presets">
+                                        <div class="color-preset" style="background:#000;" onclick="setColor('strokeColor','#000000')"></div>
+                                        <div class="color-preset" style="background:#fff;" onclick="setColor('strokeColor','#ffffff')"></div>
+                                        <div class="color-preset" style="background:#333;" onclick="setColor('strokeColor','#333333')"></div>
+                                        <div class="color-preset" style="background:#c00;" onclick="setColor('strokeColor','#cc0000')"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-border-all"></i> Stroke Width: <span id="strokeWidthVal">3</span>px</label>
+                                <input type="range" id="strokeWidth" min="0" max="10" value="3" oninput="updateStrokeWidth()">
+                                <div class="range-labels">
+                                    <span>0px</span>
+                                    <span>10px</span>
+                                </div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <label><i class="fas fa-bold"></i> Bold Text</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="boldText" checked onchange="renderMeme()">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <label><i class="fas fa-font"></i> ALL CAPS</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="allCaps" checked onchange="renderMeme()">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <label><i class="fas fa-moon"></i> Text Shadow</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="textShadow" checked onchange="renderMeme()">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ADVANCED TAB -->
+                        <div class="tab-content" id="tab-advanced">
+                            <div class="control-group">
+                                <label><i class="fas fa-arrows-alt-v"></i> Top Padding: <span id="topPaddingVal">10</span>%</label>
+                                <input type="range" id="topPadding" min="2" max="45" value="10" oninput="updateTopPadding()">
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-arrows-alt-v"></i> Bottom Padding: <span id="bottomPaddingVal">5</span>%</label>
+                                <input type="range" id="bottomPadding" min="2" max="45" value="5" oninput="updateBottomPadding()">
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-text-width"></i> Line Spacing: <span id="lineSpacingVal">1.2</span></label>
+                                <input type="range" id="lineSpacing" min="8" max="25" value="12" oninput="updateLineSpacing()">
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-expand-arrows-alt"></i> Max Width: <span id="maxWidthVal">90</span>%</label>
+                                <input type="range" id="maxWidth" min="50" max="100" value="90" oninput="updateMaxWidth()">
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-adjust"></i> Brightness: <span id="brightnessVal">100</span>%</label>
+                                <input type="range" id="brightness" min="30" max="170" value="100" oninput="updateBrightness()">
+                            </div>
+
+                            <div class="control-group">
+                                <label><i class="fas fa-circle-half-stroke"></i> Contrast: <span id="contrastVal">100</span>%</label>
+                                <input type="range" id="contrast" min="30" max="200" value="100" oninput="updateContrast()">
+                            </div>
+
+                            <div class="toggle-group">
+                                <label><i class="fas fa-image"></i> Grayscale</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="grayscale" onchange="renderMeme()">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-full" onclick="downloadMeme()">
+                                <i class="fas fa-download"></i> Download Meme
+                            </button>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn btn-secondary" style="flex:1;" onclick="resetAll()">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                            <button class="btn btn-danger" style="flex:1;" onclick="changeImage()">
+                                <i class="fas fa-trash"></i> New Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Done!</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Made with 💚 by <a href="#">iLoveMemes</a> — Free Meme Generator Tool</p>
+    </footer>
+
+    <script>
+        // State
+        let uploadedImage = null;
+        const canvas = document.getElementById('memeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // File Input
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files[0]) loadImage(e.target.files[0]);
+        });
+
+        // Drag and Drop
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+        });
+
+        // Click to upload
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                document.getElementById('fileInput').click();
+            }
+        });
+
+        function loadImage(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('Sirf image files allowed hain!', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    uploadedImage = img;
+                    showEditor();
+                    renderMeme();
+                    showToast('Image loaded! Ab meme banao 😂');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function createBlankMeme(color) {
+            const img = new Image();
+            const tmpCanvas = document.createElement('canvas');
+            tmpCanvas.width = 800;
+            tmpCanvas.height = 600;
+            const tmpCtx = tmpCanvas.getContext('2d');
+            tmpCtx.fillStyle = color;
+            tmpCtx.fillRect(0, 0, 800, 600);
+            img.onload = function() {
+                uploadedImage = img;
+                showEditor();
+                renderMeme();
+                showToast('Blank template ready! Text add karo 📝');
+            };
+            img.src = tmpCanvas.toDataURL();
+        }
+
+        function showEditor() {
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('editorSection').classList.add('visible');
+            setActiveStep(2);
+        }
+
+        function changeImage() {
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('editorSection').classList.remove('visible');
+            uploadedImage = null;
+            document.getElementById('fileInput').value = '';
+            setActiveStep(1);
+        }
+
+        function setActiveStep(num) {
+            document.querySelectorAll('.step').forEach((s, i) => {
+                s.classList.toggle('active', i < num);
+            });
+        }
+
+        function renderMeme() {
+            if (!uploadedImage) return;
+
+            const img = uploadedImage;
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Filters
+            const brightness = document.getElementById('brightness').value;
+            const contrast = document.getElementById('contrast').value;
+            const grayscale = document.getElementById('grayscale').checked;
+            
+            let filterStr = `brightness(${brightness}%) contrast(${contrast}%)`;
+            if (grayscale) filterStr += ' grayscale(100%)';
+            ctx.filter = filterStr;
+
+            ctx.drawImage(img, 0, 0);
+            ctx.filter = 'none';
+
+            // Text settings
+            const topText = document.getElementById('topText').value;
+            const bottomText = document.getElementById('bottomText').value;
+            const middleText = document.getElementById('middleText').value;
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+            const fontFamily = document.getElementById('fontFamily').value;
+            const textColor = document.getElementById('textColor').value;
+            const strokeColor = document.getElementById('strokeColor').value;
+            const strokeWidth = parseInt(document.getElementById('strokeWidth').value);
+            const bold = document.getElementById('boldText').checked;
+            const allCaps = document.getElementById('allCaps').checked;
+            const shadow = document.getElementById('textShadow').checked;
+            const topPadding = parseInt(document.getElementById('topPadding').value) / 100;
+            const bottomPadding = parseInt(document.getElementById('bottomPadding').value) / 100;
+            const lineSpacing = parseInt(document.getElementById('lineSpacing').value) / 10;
+            const maxWidthPercent = parseInt(document.getElementById('maxWidth').value) / 100;
+
+            // Scale font based on image size
+            const scaledFontSize = Math.round(fontSize * (canvas.width / 800));
+            const fontWeight = bold ? 'bold' : 'normal';
+            ctx.font = `${fontWeight} ${scaledFontSize}px "${fontFamily}"`;
+            ctx.fillStyle = textColor;
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = strokeWidth * (canvas.width / 800);
+            ctx.textAlign = 'center';
+            ctx.lineJoin = 'round';
+            ctx.miterLimit = 2;
+
+            const maxWidth = canvas.width * maxWidthPercent;
+
+            if (shadow) {
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 5 * (canvas.width / 800);
+                ctx.shadowOffsetX = 2 * (canvas.width / 800);
+                ctx.shadowOffsetY = 2 * (canvas.width / 800);
+            }
+
+            // Draw top text
+            if (topText) {
+                const text = allCaps ? topText.toUpperCase() : topText;
+                const lines = wrapText(ctx, text, maxWidth);
+                const lineHeight = scaledFontSize * lineSpacing;
+                const startY = canvas.height * topPadding + scaledFontSize;
+                lines.forEach((line, i) => {
+                    if (strokeWidth > 0) ctx.strokeText(line, canvas.width / 2, startY + i * lineHeight);
+                    ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+                });
+            }
+
+            // Draw bottom text
+            if (bottomText) {
+                const text = allCaps ? bottomText.toUpperCase() : bottomText;
+                const lines = wrapText(ctx, text, maxWidth);
+                const lineHeight = scaledFontSize * lineSpacing;
+                const startY = canvas.height - (canvas.height * bottomPadding) - (lines.length - 1) * lineHeight;
+                lines.forEach((line, i) => {
+                    if (strokeWidth > 0) ctx.strokeText(line, canvas.width / 2, startY + i * lineHeight);
+                    ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+                });
+            }
+
+            // Draw middle text
+            if (middleText) {
+                const text = allCaps ? middleText.toUpperCase() : middleText;
+                const lines = wrapText(ctx, text, maxWidth);
+                const lineHeight = scaledFontSize * lineSpacing;
+                const totalHeight = lines.length * lineHeight;
+                const startY = (canvas.height / 2) - (totalHeight / 2) + scaledFontSize / 2;
+                lines.forEach((line, i) => {
+                    if (strokeWidth > 0) ctx.strokeText(line, canvas.width / 2, startY + i * lineHeight);
+                    ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+                });
+            }
+
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+
+            // Image info
+            document.getElementById('imageInfo').innerHTML = `
+                <span><i class="fas fa-expand"></i> ${img.width} × ${img.height}</span>
+                <span><i class="fas fa-file-image"></i> PNG</span>
+            `;
+        }
+
+        function wrapText(ctx, text, maxWidth) {
+            const lines = [];
+            const paragraphs = text.split('\n');
+            
+            paragraphs.forEach(para => {
+                const words = para.split(' ');
+                let line = '';
+                
+                words.forEach(word => {
+                    const testLine = line + (line ? ' ' : '') + word;
+                    const metrics = ctx.measureText(testLine);
+                    
+                    if (metrics.width > maxWidth && line) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = testLine;
+                    }
+                });
+                
+                if (line) lines.push(line);
+            });
+            
+            return lines.length ? lines : [''];
+        }
+
+        function downloadMeme() {
+            if (!uploadedImage) return;
+            
+            const link = document.createElement('a');
+            link.download = 'meme-ilovememes-' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            setActiveStep(3);
+            showToast('Meme download ho gaya! 🎉');
+        }
+
+        function resetAll() {
+            document.getElementById('topText').value = '';
+            document.getElementById('bottomText').value = '';
+            document.getElementById('middleText').value = '';
+            document.getElementById('fontSize').value = 40;
+            document.getElementById('fontSizeVal').textContent = '40';
+            document.getElementById('textColor').value = '#ffffff';
+            document.getElementById('strokeColor').value = '#000000';
+            document.getElementById('strokeWidth').value = 3;
+            document.getElementById('strokeWidthVal').textContent = '3';
+            document.getElementById('boldText').checked = true;
+            document.getElementById('allCaps').checked = true;
+            document.getElementById('textShadow').checked = true;
+            document.getElementById('topPadding').value = 10;
+            document.getElementById('topPaddingVal').textContent = '10';
+            document.getElementById('bottomPadding').value = 5;
+            document.getElementById('bottomPaddingVal').textContent = '5';
+            document.getElementById('lineSpacing').value = 12;
+            document.getElementById('lineSpacingVal').textContent = '1.2';
+            document.getElementById('maxWidth').value = 90;
+            document.getElementById('maxWidthVal').textContent = '90';
+            document.getElementById('brightness').value = 100;
+            document.getElementById('brightnessVal').textContent = '100';
+            document.getElementById('contrast').value = 100;
+            document.getElementById('contrastVal').textContent = '100';
+            document.getElementById('grayscale').checked = false;
+            document.getElementById('fontFamily').value = 'Impact';
+            renderMeme();
+            showToast('Sab reset ho gaya! 🔄');
+        }
+
+        // Slider updates
+        function updateFontSize() {
+            const v = document.getElementById('fontSize').value;
+            document.getElementById('fontSizeVal').textContent = v;
+            renderMeme();
+        }
+        function updateStrokeWidth() {
+            const v = document.getElementById('strokeWidth').value;
+            document.getElementById('strokeWidthVal').textContent = v;
+            renderMeme();
+        }
+        function updateTopPadding() {
+            const v = document.getElementById('topPadding').value;
+            document.getElementById('topPaddingVal').textContent = v;
+            renderMeme();
+        }
+        function updateBottomPadding() {
+            const v = document.getElementById('bottomPadding').value;
+            document.getElementById('bottomPaddingVal').textContent = v;
+            renderMeme();
+        }
+        function updateLineSpacing() {
+            const v = document.getElementById('lineSpacing').value;
+            document.getElementById('lineSpacingVal').textContent = (v / 10).toFixed(1);
+            renderMeme();
+        }
+        function updateMaxWidth() {
+            const v = document.getElementById('maxWidth').value;
+            document.getElementById('maxWidthVal').textContent = v;
+            renderMeme();
+        }
+        function updateBrightness() {
+            const v = document.getElementById('brightness').value;
+            document.getElementById('brightnessVal').textContent = v;
+            renderMeme();
+        }
+        function updateContrast() {
+            const v = document.getElementById('contrast').value;
+            document.getElementById('contrastVal').textContent = v;
+            renderMeme();
+        }
+
+        function setColor(id, color) {
+            document.getElementById(id).value = color;
+            renderMeme();
+        }
+
+        // Tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        // Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Paste image from clipboard
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData?.items;
+            if (items) {
+                for (let item of items) {
+                    if (item.type.startsWith('image/')) {
+                        loadImage(item.getAsFile());
+                        break;
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
