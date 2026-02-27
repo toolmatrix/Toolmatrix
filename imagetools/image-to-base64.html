@@ -4,515 +4,1008 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Image to Base64 Converter</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#22c55e;
+  --primary-dark:#16a34a;
+  --primary-xdark:#15803d;
+  --primary-light:#bbf7d0;
+  --primary-xlight:#dcfce7;
+  --primary-xxlight:#f0fdf4;
+  --bg:#f0fdf4;
+  --surface:#ffffff;
+  --surface2:#f0fdf4;
+  --text:#14532d;
+  --text-mid:#166534;
+  --text-muted:#6b7280;
+  --border:#bbf7d0;
+  --border2:#86efac;
+  --danger:#ef4444;
+  --danger-light:#fee2e2;
+  --warning:#f59e0b;
+  --shadow:0 4px 20px rgba(34,197,94,0.10);
+  --shadow2:0 2px 8px rgba(34,197,94,0.13);
+  --shadow3:0 8px 32px rgba(34,197,94,0.18);
+}
 body{
   font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  background:#f5f7fa;color:#333;min-height:100vh;display:flex;flex-direction:column
+  background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;
 }
 
-/* NAV */
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surface2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── NAV ── */
 nav{
-  background:#fff;padding:13px 24px;display:flex;align-items:center;
-  border-bottom:1px solid #e8ecf0;box-shadow:0 1px 3px rgba(0,0,0,.04);
-  position:sticky;top:0;z-index:100
+  background:var(--surface);
+  padding:0 24px;
+  display:flex;align-items:center;height:62px;
+  border-bottom:2px solid var(--border);
+  box-shadow:var(--shadow);
+  position:sticky;top:0;z-index:100;
+  gap:12px;
 }
-.nav-title{font-weight:700;font-size:1.05rem;color:#4f46e5}
-.nav-sub{color:#aaa;font-size:.76rem;margin-left:8px;font-weight:500}
-.nav-right{margin-left:auto;display:flex;gap:8px}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(34,197,94,0.3);flex-shrink:0;
+}
+.nav-logo-icon i{color:#fff;font-size:1rem}
+.nav-title{font-weight:800;font-size:1.05rem;color:var(--primary-dark);letter-spacing:-.3px}
+.nav-sub{
+  color:var(--primary);font-size:.7rem;font-weight:700;
+  background:var(--primary-xlight);border:1px solid var(--border2);
+  border-radius:20px;padding:2px 10px;letter-spacing:.5px;text-transform:uppercase;
+}
+.nav-badge{
+  display:flex;align-items:center;gap:5px;
+  color:var(--text-muted);font-size:.72rem;font-weight:600;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;
+}
+.nav-badge i{color:var(--primary);font-size:.7rem}
+.nav-right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .nb{
-  padding:8px 16px;border:none;border-radius:8px;font-size:.82rem;
-  font-weight:600;cursor:pointer;transition:all .15s;display:flex;
-  align-items:center;gap:5px;white-space:nowrap
+  padding:8px 16px;border:none;border-radius:9px;font-size:.82rem;
+  font-weight:600;cursor:pointer;transition:all .18s;display:flex;
+  align-items:center;gap:6px;white-space:nowrap;font-family:inherit;
 }
-.nb.sec{background:#f0f2f5;color:#666}
-.nb.sec:hover{background:#e4e6e9}
-.nb.pri{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
-  box-shadow:0 2px 8px rgba(79,70,229,.2)}
-.nb.pri:hover{box-shadow:0 4px 14px rgba(79,70,229,.3);transform:translateY(-1px)}
+.nb.sec{background:var(--surface2);color:var(--text-muted);border:1.5px solid var(--border2)}
+.nb.sec:hover{background:var(--primary-xlight);border-color:var(--primary);color:var(--primary-dark)}
+.nb.pri{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;box-shadow:0 3px 12px rgba(34,197,94,0.3);border:none;
+}
+.nb.pri:hover{box-shadow:0 5px 18px rgba(34,197,94,0.4);transform:translateY(-1px)}
 
-/* UPLOAD */
+/* ── UPLOAD AREA ── */
 .upload-wrap{
   display:flex;flex-direction:column;align-items:center;
-  padding:40px 20px 36px;
-  background:linear-gradient(180deg,#f0ecff 0%,#f5f7fa 100%)
+  padding:44px 20px 40px;
+  background:linear-gradient(180deg,var(--primary-xxlight) 0%,var(--bg) 100%);
+  border-bottom:2px solid var(--border);
 }
-.upload-wrap h1{font-size:1.7rem;font-weight:800;color:#222;margin-bottom:6px;text-align:center}
-.upload-wrap h1 span{color:#4f46e5}
-.upload-wrap p{color:#888;font-size:.9rem;margin-bottom:24px;text-align:center}
+.upload-hero{text-align:center;margin-bottom:28px}
+.upload-hero h1{font-size:1.9rem;font-weight:900;color:var(--text);margin-bottom:8px;letter-spacing:-.5px}
+.upload-hero h1 em{font-style:normal;color:var(--primary-dark)}
+.upload-hero p{color:var(--text-muted);font-size:.92rem;max-width:480px;line-height:1.6}
+.upload-features{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.uf-badge{
+  display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;
+  color:var(--primary-dark);background:var(--primary-xlight);
+  border:1px solid var(--border2);border-radius:20px;padding:4px 12px;
+}
+.uf-badge i{font-size:.68rem}
 
 #dropZone{
-  width:100%;max-width:600px;padding:44px 28px;border:2.5px dashed #c7c4f0;
-  border-radius:16px;background:#fff;text-align:center;cursor:pointer;
-  transition:all .25s
+  width:100%;max-width:620px;
+  border:2.5px dashed var(--border2);
+  border-radius:20px;background:var(--surface);
+  text-align:center;cursor:pointer;transition:all .25s;
+  padding:48px 32px;position:relative;overflow:hidden;
+}
+#dropZone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.06) 0%,transparent 70%);
+  pointer-events:none;
 }
 #dropZone:hover,#dropZone.dragover{
-  border-color:#4f46e5;background:#faf9ff;transform:translateY(-2px);
-  box-shadow:0 8px 25px rgba(79,70,229,.07)
+  border-color:var(--primary);background:var(--primary-xlight);
+  transform:translateY(-3px);box-shadow:var(--shadow3);
 }
-.dz-icon{font-size:2.8rem;margin-bottom:10px;opacity:.55}
-.dz-text{font-size:1rem;color:#666;font-weight:500;margin-bottom:3px}
-.dz-hint{font-size:.82rem;color:#bbb;margin-bottom:16px}
+.dz-icon-wrap{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary-xlight),var(--primary-light));
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+}
+.dz-icon-wrap i{font-size:2rem;color:var(--primary-dark)}
+.dz-text{font-size:1.05rem;color:var(--text);font-weight:700;margin-bottom:5px}
+.dz-hint{font-size:.84rem;color:var(--text-muted);margin-bottom:20px}
 .dz-btn{
-  display:inline-block;padding:11px 32px;
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;
-  border-radius:30px;font-size:.93rem;font-weight:700;cursor:pointer;
-  transition:all .2s;box-shadow:0 4px 14px rgba(79,70,229,.22)
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 32px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;border-radius:30px;
+  font-size:.92rem;font-weight:700;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 14px rgba(34,197,94,0.3);
+  font-family:inherit;
 }
-.dz-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,70,229,.3)}
-.dz-fmt{font-size:.72rem;color:#ccc;margin-top:14px}
+.dz-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,0.4)}
+.dz-fmt{font-size:.71rem;color:var(--text-muted);margin-top:16px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.fmt-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 8px;font-weight:600;color:var(--primary-dark)}
 #fileInput{display:none}
 
-/* RESULT */
-#resultSection{display:none;padding:0 20px 40px}
-#resultSection.show{display:block}
-.result-container{max-width:900px;margin:0 auto}
+/* ── PASTE HINT ── */
+.paste-hint{
+  display:flex;align-items:center;gap:8px;margin-top:20px;
+  font-size:.78rem;color:var(--text-muted);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:8px 16px;
+}
+.paste-hint kbd{
+  background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:5px;padding:2px 7px;font-size:.72rem;
+  color:var(--primary-dark);font-weight:700;font-family:inherit;
+}
 
-/* INFO CARD */
+/* ── RESULT ── */
+#resultSection{display:none;padding:0 20px 50px}
+#resultSection.show{display:block}
+.result-container{max-width:920px;margin:0 auto}
+
+/* SECTION LABEL */
+.section-label{
+  display:flex;align-items:center;gap:8px;
+  font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--primary-dark);margin:24px 0 10px;
+}
+.section-label::after{content:'';flex:1;height:1.5px;background:var(--border)}
+
+/* ── INFO CARD ── */
 .info-card{
-  background:#fff;border-radius:14px;border:1px solid #eef0f3;
-  padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;
-  gap:18px;box-shadow:0 1px 4px rgba(0,0,0,.03);flex-wrap:wrap
+  background:var(--surface);border-radius:16px;
+  border:1.5px solid var(--border);
+  padding:20px 22px;margin-bottom:0;
+  display:flex;align-items:center;gap:18px;
+  box-shadow:var(--shadow2);flex-wrap:wrap;
 }
 .preview-box{
-  width:80px;height:80px;border-radius:10px;background:#f5f7fa;
-  border:1px solid #e8ecf0;overflow:hidden;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center
+  width:82px;height:82px;border-radius:12px;
+  background:var(--surface2);border:2px solid var(--border);
+  overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
 }
 .preview-box img{width:100%;height:100%;object-fit:cover}
+.preview-box .prev-overlay{
+  position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3));
+  opacity:0;transition:.2s;
+}
+.preview-box:hover .prev-overlay{opacity:1}
 .info-details{flex:1;min-width:200px}
-.info-name{font-size:.95rem;font-weight:700;color:#333;margin-bottom:6px;word-break:break-all}
-.info-grid{display:flex;gap:16px;flex-wrap:wrap}
-.info-item{font-size:.78rem;color:#888}
-.info-item span{font-weight:700;color:#4f46e5}
+.info-name{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:8px;word-break:break-all;line-height:1.3}
+.info-grid{display:flex;gap:10px;flex-wrap:wrap}
+.info-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--primary-xlight);border:1px solid var(--border2);
+  border-radius:8px;padding:4px 10px;font-size:.74rem;
+}
+.info-chip i{color:var(--primary);font-size:.68rem}
+.info-chip .ic-label{color:var(--text-muted);font-weight:500}
+.info-chip .ic-val{color:var(--primary-dark);font-weight:800;margin-left:2px}
 .info-actions{display:flex;gap:8px;flex-wrap:wrap}
 .ib{
-  padding:8px 16px;border:1.5px solid #e0e3e7;border-radius:8px;
-  background:#fff;color:#555;font-size:.78rem;font-weight:600;
-  cursor:pointer;transition:all .15s;white-space:nowrap
+  padding:8px 15px;border:1.5px solid var(--border2);border-radius:9px;
+  background:var(--surface);color:var(--text-muted);font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;
+  font-family:inherit;
 }
-.ib:hover{border-color:#4f46e5;color:#4f46e5;background:#faf9ff}
-.ib.danger{border-color:#fde2e2;color:#e74c3c}
-.ib.danger:hover{background:#fdf2f2;border-color:#e74c3c}
+.ib i{font-size:.8rem;color:var(--primary)}
+.ib:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
+.ib.danger{border-color:#fca5a5;color:var(--danger)}
+.ib.danger i{color:var(--danger)}
+.ib.danger:hover{background:var(--danger-light);border-color:var(--danger)}
+.ib.success-btn{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border-color:transparent;
+  box-shadow:0 3px 10px rgba(34,197,94,0.25);
+}
+.ib.success-btn i{color:#fff}
+.ib.success-btn:hover{box-shadow:0 5px 16px rgba(34,197,94,0.35);transform:translateY(-1px);color:#fff}
 
-/* FORMAT BAR */
+/* ── PROGRESS BAR ── */
+.progress-wrap{display:none;width:100%;max-width:620px;margin-top:14px}
+.progress-wrap.show{display:block}
+.progress-bar-bg{background:var(--border);border-radius:10px;height:6px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:10px;transition:width .3s;width:0%}
+.progress-label{font-size:.72rem;color:var(--text-muted);margin-top:5px;text-align:center}
+
+/* ── FORMAT BAR ── */
 .format-bar{
-  background:#fff;border-radius:14px;border:1px solid #eef0f3;
-  margin-bottom:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.03)
+  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
+  overflow:hidden;box-shadow:var(--shadow2);
 }
 .format-tabs{
-  display:flex;border-bottom:1px solid #eef0f3;overflow-x:auto;background:#fafbfc
+  display:flex;border-bottom:1.5px solid var(--border);
+  overflow-x:auto;background:var(--surface2);scrollbar-width:none;
 }
+.format-tabs::-webkit-scrollbar{display:none}
 .ftab{
-  flex:1;min-width:80px;padding:12px 10px;border:none;background:none;
-  color:#999;cursor:pointer;font-size:.78rem;font-weight:600;
+  flex:1;min-width:80px;padding:13px 10px;border:none;background:none;
+  color:var(--text-muted);cursor:pointer;font-size:.77rem;font-weight:700;
   transition:all .15s;text-align:center;white-space:nowrap;
-  border-bottom:2.5px solid transparent
+  border-bottom:2.5px solid transparent;font-family:inherit;display:flex;
+  align-items:center;justify-content:center;gap:5px;
 }
-.ftab:hover{color:#4f46e5;background:#faf9ff}
-.ftab.active{color:#4f46e5;border-bottom-color:#4f46e5;background:#fff}
-.format-content{padding:16px 20px}
+.ftab i{font-size:.78rem}
+.ftab:hover{color:var(--primary-dark);background:var(--primary-xlight)}
+.ftab.active{color:var(--primary-dark);border-bottom-color:var(--primary);background:var(--surface)}
+.format-content{padding:18px 20px}
 .format-label{
-  font-size:.78rem;color:#999;font-weight:600;margin-bottom:8px;
-  display:flex;justify-content:space-between;align-items:center
+  font-size:.75rem;color:var(--text-muted);font-weight:700;
+  margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;
+  text-transform:uppercase;letter-spacing:.8px;
 }
-.char-count{font-size:.72rem;color:#bbb;font-weight:500}
+.char-count{
+  font-size:.72rem;font-weight:600;
+  background:var(--primary-xlight);border:1px solid var(--border2);
+  border-radius:8px;padding:3px 10px;color:var(--primary-dark);
+}
 .code-box{
-  position:relative;background:#f8f9fb;border:1px solid #e8ecf0;
-  border-radius:10px;overflow:hidden
+  position:relative;background:var(--surface2);
+  border:1.5px solid var(--border);border-radius:12px;overflow:hidden;
 }
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:var(--primary-xlight);
+  border-bottom:1.5px solid var(--border);
+}
+.code-dots{display:flex;gap:5px}
+.code-dot{width:9px;height:9px;border-radius:50%}
+.code-dot.r{background:#ef4444}
+.code-dot.y{background:#f59e0b}
+.code-dot.g{background:var(--primary)}
+.code-lang{font-size:.68rem;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:1px}
 .code-area{
-  width:100%;min-height:140px;max-height:300px;padding:14px 16px;
-  font-family:'Courier New',monospace;font-size:.78rem;color:#444;
-  border:none;background:transparent;resize:vertical;outline:none;
-  line-height:1.6;word-break:break-all
+  width:100%;min-height:140px;max-height:280px;
+  padding:14px 16px;font-family:'Courier New',monospace;
+  font-size:.78rem;color:var(--text);border:none;background:transparent;
+  resize:vertical;outline:none;line-height:1.7;word-break:break-all;
 }
 .code-actions{
-  display:flex;gap:6px;padding:8px 12px;border-top:1px solid #eef0f3;background:#fafbfc
+  display:flex;gap:6px;padding:10px 14px;
+  border-top:1.5px solid var(--border);background:var(--surface2);flex-wrap:wrap;
 }
 .cb{
-  padding:6px 14px;border:1.5px solid #e0e3e7;border-radius:6px;
-  background:#fff;color:#555;font-size:.75rem;font-weight:600;
-  cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px
+  padding:6px 14px;border:1.5px solid var(--border2);border-radius:7px;
+  background:var(--surface);color:var(--text-muted);font-size:.75rem;font-weight:600;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
+  font-family:inherit;
 }
-.cb:hover{border-color:#4f46e5;color:#4f46e5}
-.cb.copied{border-color:#10b981;color:#10b981;background:#ecfdf5}
+.cb i{font-size:.75rem;color:var(--primary)}
+.cb:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
+.cb.copied{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
 
-/* REVERSE */
+/* ── STATS STRIP ── */
+.stats-strip{
+  display:flex;gap:1.5px;border-radius:12px;overflow:hidden;
+  border:1.5px solid var(--border);margin-bottom:0;
+}
+.stat-box{
+  flex:1;background:var(--surface);padding:14px 16px;text-align:center;
+  border-right:1.5px solid var(--border);
+}
+.stat-box:last-child{border-right:none}
+.stat-val{font-size:1.15rem;font-weight:900;color:var(--primary-dark);margin-bottom:2px}
+.stat-label{font-size:.68rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+
+/* ── REVERSE CARD ── */
 .reverse-card{
-  background:#fff;border-radius:14px;border:1px solid #eef0f3;
-  padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.03)
+  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
+  overflow:hidden;box-shadow:var(--shadow2);
 }
-.reverse-title{font-size:.92rem;font-weight:700;color:#333;margin-bottom:4px}
-.reverse-desc{font-size:.78rem;color:#999;margin-bottom:12px}
+.reverse-header{
+  background:var(--primary-xlight);padding:16px 20px;
+  border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px;
+}
+.reverse-header-icon{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.reverse-header-icon i{color:#fff;font-size:.9rem}
+.reverse-header-text{}
+.reverse-title{font-size:.92rem;font-weight:800;color:var(--text)}
+.reverse-desc{font-size:.74rem;color:var(--text-muted);margin-top:1px}
+.reverse-body{padding:20px}
 .reverse-input{
-  width:100%;min-height:90px;padding:12px 14px;border:1.5px solid #e0e3e7;
-  border-radius:10px;background:#fafafa;color:#333;font-family:'Courier New',monospace;
-  font-size:.78rem;resize:vertical;outline:none;line-height:1.5
+  width:100%;min-height:100px;padding:13px 15px;
+  border:1.5px solid var(--border2);border-radius:10px;
+  background:var(--surface2);color:var(--text);
+  font-family:'Courier New',monospace;font-size:.78rem;
+  resize:vertical;outline:none;line-height:1.6;transition:border .18s;
 }
-.reverse-input:focus{border-color:#4f46e5;background:#fff}
-.reverse-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.reverse-input:focus{border-color:var(--primary);background:var(--surface)}
+.reverse-input::placeholder{color:var(--text-muted)}
+.reverse-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .reverse-preview{
-  margin-top:12px;display:none;text-align:center;padding:14px;
-  background:#f8f9fb;border-radius:10px;border:1px solid #eef0f3
+  margin-top:16px;display:none;
+  background:var(--surface2);border-radius:12px;
+  border:1.5px solid var(--border);
+  padding:16px;text-align:center;
 }
 .reverse-preview.show{display:block}
-.reverse-preview img{max-width:100%;max-height:300px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.reverse-preview img{max-width:100%;max-height:320px;border-radius:10px;box-shadow:var(--shadow2)}
+.rev-img-info{font-size:.74rem;color:var(--text-muted);margin-top:10px}
 
-/* TOAST */
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:#fff;color:#333;padding:12px 22px;border-radius:10px;
-  font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.1);
-  z-index:300;transition:transform .3s;border-left:4px solid #4f46e5
+/* ── HOW TO CARD ── */
+.howto-card{
+  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
+  padding:20px 22px;box-shadow:var(--shadow2);
 }
-.toast.err{border-left-color:#e74c3c}
+.howto-title{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.howto-title i{color:var(--primary)}
+.howto-steps{display:flex;gap:0;flex-direction:column}
+.howto-step{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:10px 0;border-bottom:1.5px solid var(--border);
+}
+.howto-step:last-child{border-bottom:none;padding-bottom:0}
+.step-num{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:.75rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-content{}
+.step-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.step-desc{font-size:.74rem;color:var(--text-muted);line-height:1.5}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--surface);color:var(--text);
+  padding:12px 20px;border-radius:12px;
+  font-size:.84rem;font-weight:600;
+  box-shadow:0 8px 30px rgba(0,0,0,0.12);
+  z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  border:1.5px solid var(--border);
+  display:flex;align-items:center;gap:8px;min-width:200px;justify-content:center;
+  border-left:4px solid var(--primary);
+}
+.toast.err{border-left-color:var(--danger)}
+.toast.warn{border-left-color:var(--warning)}
+.toast i{font-size:.9rem;color:var(--primary)}
+.toast.err i{color:var(--danger)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer{
-  margin-top:auto;text-align:center;padding:18px;color:#bbb;
-  font-size:.76rem;border-top:1px solid #eef0f3;background:#fff
+  margin-top:auto;text-align:center;padding:18px;
+  color:var(--text-muted);font-size:.74rem;
+  border-top:1.5px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
 }
-footer span{color:#4f46e5;font-weight:600}
+.footer-badge{display:flex;align-items:center;gap:5px;font-weight:600;color:var(--primary-dark)}
+.footer-badge i{color:var(--primary)}
 
+/* ── RESPONSIVE ── */
 @media(max-width:768px){
   .upload-wrap{padding:28px 16px 24px}
-  .upload-wrap h1{font-size:1.35rem}
+  .upload-hero h1{font-size:1.45rem}
   .info-card{padding:14px;gap:12px}
-  .preview-box{width:56px;height:56px}
+  .preview-box{width:60px;height:60px}
   .format-content{padding:12px 14px}
-  .nav-sub{display:none}
+  .nav-sub,.nav-badge,.nav-logo-icon{display:none}
   .nb span{display:none}
+  .stats-strip{flex-wrap:wrap}
+  .stat-box{flex:1;min-width:calc(50% - 1px)}
+  .stat-box:nth-child(2){border-right:none}
+  .stat-box:nth-child(3){border-right:none}
+  .howto-card{display:none}
 }
 @media(max-width:480px){
-  .upload-wrap h1{font-size:1.15rem}
-  #dropZone{padding:28px 16px}
-  .dz-icon{font-size:2.2rem}
-  .ftab{min-width:60px;padding:10px 5px;font-size:.68rem}
-  .info-grid{gap:8px}
-  .code-area{font-size:.7rem;min-height:100px}
+  .upload-hero h1{font-size:1.2rem}
+  #dropZone{padding:30px 16px}
+  .ftab{min-width:60px;padding:10px 6px;font-size:.68rem}
+  .code-area{font-size:.71rem;min-height:100px}
+  .info-grid{gap:6px}
+  .upload-features{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ═══ NAV ═══ -->
 <nav>
-  <span class="nav-title">Image to Base64</span>
-  <span class="nav-sub">Free Converter</span>
+  <div class="nav-logo">
+    <div class="nav-logo-icon"><i class="fas fa-file-code"></i></div>
+    <span class="nav-title">Image to Base64</span>
+    <span class="nav-sub">Pro Converter</span>
+  </div>
+  <div class="nav-badge"><i class="fas fa-lock"></i> 100% Offline</div>
   <div class="nav-right" id="navBtns" style="display:none">
-    <button class="nb sec" onclick="clearAll()">✕ <span>Clear</span></button>
-    <button class="nb pri" onclick="document.getElementById('fileInput').click()">+ <span>New Image</span></button>
+    <button class="nb sec" onclick="clearAll()"><i class="fas fa-times"></i> <span>Clear</span></button>
+    <button class="nb pri" onclick="document.getElementById('fileInput').click()"><i class="fas fa-plus"></i> <span>New Image</span></button>
   </div>
 </nav>
 
-<!-- UPLOAD -->
+<!-- ═══ UPLOAD ═══ -->
 <div class="upload-wrap" id="uploadWrap">
-  <h1>Image to <span>Base64</span></h1>
-  <p>Convert any image to Base64 string instantly. Paste, drag or select.</p>
-  <div id="dropZone">
-    <div class="dz-icon">🖼️</div>
-    <div class="dz-text">Drag & drop your image here</div>
-    <div class="dz-hint">or</div>
-    <button class="dz-btn" onclick="document.getElementById('fileInput').click()">Select Image</button>
-    <div class="dz-fmt">JPG, PNG, WEBP, GIF, BMP, SVG, ICO</div>
+  <div class="upload-hero">
+    <h1>Convert Image to <em>Base64</em></h1>
+    <p>Instantly convert any image to Base64 string. Supports Data URI, CSS, HTML, JSON & more formats.</p>
+    <div class="upload-features">
+      <span class="uf-badge"><i class="fas fa-bolt"></i> Instant Convert</span>
+      <span class="uf-badge"><i class="fas fa-shield-alt"></i> 100% Private</span>
+      <span class="uf-badge"><i class="fas fa-layer-group"></i> 6 Formats</span>
+      <span class="uf-badge"><i class="fas fa-exchange-alt"></i> Reverse Decode</span>
+      <span class="uf-badge"><i class="fas fa-file-download"></i> Download Output</span>
+    </div>
   </div>
+
+  <div id="dropZone">
+    <div class="dz-icon-wrap"><i class="fas fa-cloud-upload-alt"></i></div>
+    <div class="dz-text">Drag & drop your image here</div>
+    <div class="dz-hint">or paste from clipboard (Ctrl+V)</div>
+    <button class="dz-btn" onclick="document.getElementById('fileInput').click()">
+      <i class="fas fa-folder-open"></i> Select Image
+    </button>
+    <div class="dz-fmt">
+      <span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span>
+      <span class="fmt-pill">WEBP</span><span class="fmt-pill">GIF</span>
+      <span class="fmt-pill">BMP</span><span class="fmt-pill">SVG</span>
+      <span class="fmt-pill">ICO</span>
+    </div>
+  </div>
+
+  <div class="paste-hint">
+    <i class="fas fa-keyboard" style="color:var(--primary)"></i>
+    Press <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste image from clipboard
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel">Converting...</div>
+  </div>
+
   <input type="file" id="fileInput" accept="image/*">
 </div>
 
-<!-- RESULT -->
+<!-- ═══ RESULT ═══ -->
 <div id="resultSection">
   <div class="result-container">
 
-    <!-- INFO CARD -->
+    <!-- Image Info -->
+    <div class="section-label"><i class="fas fa-info-circle"></i> Image Information</div>
+
     <div class="info-card">
-      <div class="preview-box"><img id="previewImg" src="" alt=""></div>
+      <div class="preview-box">
+        <img id="previewImg" src="" alt="">
+        <div class="prev-overlay"></div>
+      </div>
       <div class="info-details">
         <div class="info-name" id="fileName">-</div>
         <div class="info-grid">
-          <div class="info-item">Type: <span id="fileType">-</span></div>
-          <div class="info-item">Size: <span id="fileSize">-</span></div>
-          <div class="info-item">Dimensions: <span id="fileDims">-</span></div>
-          <div class="info-item">Base64: <span id="b64Size">-</span></div>
+          <div class="info-chip"><i class="fas fa-file-image"></i><span class="ic-label">Type:</span><span class="ic-val" id="fileType">-</span></div>
+          <div class="info-chip"><i class="fas fa-weight"></i><span class="ic-label">Size:</span><span class="ic-val" id="fileSize">-</span></div>
+          <div class="info-chip"><i class="fas fa-ruler-combined"></i><span class="ic-label">Dims:</span><span class="ic-val" id="fileDims">-</span></div>
+          <div class="info-chip"><i class="fas fa-code"></i><span class="ic-label">B64:</span><span class="ic-val" id="b64Size">-</span></div>
+          <div class="info-chip"><i class="fas fa-expand-arrows-alt"></i><span class="ic-label">Ratio:</span><span class="ic-val" id="fileRatio">-</span></div>
         </div>
       </div>
       <div class="info-actions">
-        <button class="ib" onclick="copyAll()">📋 Copy Base64</button>
-        <button class="ib" onclick="downloadTxt()">⤓ Save .txt</button>
-        <button class="ib danger" onclick="clearAll()">✕ Clear</button>
+        <button class="ib success-btn" onclick="copyAll()"><i class="fas fa-copy"></i> Copy Base64</button>
+        <button class="ib" onclick="downloadTxt()"><i class="fas fa-file-alt"></i> Save .txt</button>
+        <button class="ib" onclick="downloadOriginal()"><i class="fas fa-download"></i> Download</button>
+        <button class="ib danger" onclick="clearAll()"><i class="fas fa-trash"></i> Clear</button>
       </div>
     </div>
 
-    <!-- FORMAT TABS -->
+    <!-- Stats -->
+    <div class="section-label"><i class="fas fa-chart-bar"></i> Statistics</div>
+    <div class="stats-strip">
+      <div class="stat-box"><div class="stat-val" id="stat-chars">-</div><div class="stat-label">Characters</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-b64kb">-</div><div class="stat-label">Base64 Size</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-ratio">-</div><div class="stat-label">Size Increase</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-enc">~33%</div><div class="stat-label">Overhead</div></div>
+    </div>
+
+    <!-- Format Output -->
+    <div class="section-label"><i class="fas fa-code"></i> Output Formats</div>
     <div class="format-bar">
       <div class="format-tabs">
-        <button class="ftab active" data-f="datauri" onclick="switchFormat(this)">Data URI</button>
-        <button class="ftab" data-f="raw" onclick="switchFormat(this)">Raw Base64</button>
-        <button class="ftab" data-f="css" onclick="switchFormat(this)">CSS</button>
-        <button class="ftab" data-f="html" onclick="switchFormat(this)">HTML</button>
-        <button class="ftab" data-f="markdown" onclick="switchFormat(this)">Markdown</button>
-        <button class="ftab" data-f="json" onclick="switchFormat(this)">JSON</button>
+        <button class="ftab active" data-f="datauri" onclick="switchFormat(this)"><i class="fas fa-link"></i> Data URI</button>
+        <button class="ftab" data-f="raw" onclick="switchFormat(this)"><i class="fas fa-file-code"></i> Raw</button>
+        <button class="ftab" data-f="css" onclick="switchFormat(this)"><i class="fab fa-css3-alt"></i> CSS</button>
+        <button class="ftab" data-f="html" onclick="switchFormat(this)"><i class="fab fa-html5"></i> HTML</button>
+        <button class="ftab" data-f="markdown" onclick="switchFormat(this)"><i class="fab fa-markdown"></i> MD</button>
+        <button class="ftab" data-f="json" onclick="switchFormat(this)"><i class="fas fa-brackets-curly"></i> JSON</button>
       </div>
       <div class="format-content">
         <div class="format-label">
           <span id="formatTitle">Data URI</span>
-          <span class="char-count" id="charCount">0 characters</span>
+          <span class="char-count" id="charCount">0 chars</span>
         </div>
         <div class="code-box">
-          <textarea class="code-area" id="codeArea" readonly></textarea>
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="code-dot r"></div>
+              <div class="code-dot y"></div>
+              <div class="code-dot g"></div>
+            </div>
+            <span class="code-lang" id="codeLang">DATA URI</span>
+          </div>
+          <textarea class="code-area" id="codeArea" readonly spellcheck="false"></textarea>
           <div class="code-actions">
-            <button class="cb" id="copyBtn" onclick="copyCode()">📋 Copy</button>
-            <button class="cb" onclick="selectCode()">☐ Select All</button>
-            <button class="cb" onclick="downloadCode()">⤓ Download</button>
+            <button class="cb" id="copyBtn" onclick="copyCode()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="cb" onclick="selectCode()"><i class="fas fa-text-width"></i> Select All</button>
+            <button class="cb" onclick="downloadCode()"><i class="fas fa-download"></i> Download</button>
+            <button class="cb" onclick="wrapToggle()" id="wrapBtn"><i class="fas fa-align-left"></i> Wrap</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- REVERSE -->
+    <!-- Reverse Decode -->
+    <div class="section-label"><i class="fas fa-exchange-alt"></i> Base64 to Image (Decoder)</div>
     <div class="reverse-card">
-      <div class="reverse-title">🔄 Base64 to Image</div>
-      <div class="reverse-desc">Paste a Base64 string to convert back to image</div>
-      <textarea class="reverse-input" id="reverseInput" placeholder="Paste Base64 or Data URI here..."></textarea>
-      <div class="reverse-actions">
-        <button class="ib" onclick="decodeB64()">🔄 Convert</button>
-        <button class="ib" onclick="dlDecoded()">⤓ Download</button>
-        <button class="ib" onclick="clearReverse()">✕ Clear</button>
+      <div class="reverse-header">
+        <div class="reverse-header-icon"><i class="fas fa-rotate"></i></div>
+        <div class="reverse-header-text">
+          <div class="reverse-title">Base64 → Image Decoder</div>
+          <div class="reverse-desc">Paste any Base64 string or Data URI to convert back to image</div>
+        </div>
       </div>
-      <div class="reverse-preview" id="reversePreview">
-        <img id="reverseImg" src="" alt="">
+      <div class="reverse-body">
+        <textarea class="reverse-input" id="reverseInput" placeholder="Paste Base64 or Data URI here... (e.g. data:image/png;base64,iVBOR...)"></textarea>
+        <div class="reverse-actions">
+          <button class="ib success-btn" onclick="decodeB64()"><i class="fas fa-magic"></i> Decode & Preview</button>
+          <button class="ib" onclick="dlDecoded()"><i class="fas fa-download"></i> Download Image</button>
+          <button class="ib" onclick="copyDecodedSrc()"><i class="fas fa-copy"></i> Copy Data URI</button>
+          <button class="ib danger" onclick="clearReverse()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="reverse-preview" id="reversePreview">
+          <img id="reverseImg" src="" alt="">
+          <div class="rev-img-info" id="revImgInfo"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How To Use -->
+    <div class="section-label"><i class="fas fa-question-circle"></i> How to Use</div>
+    <div class="howto-card">
+      <div class="howto-title"><i class="fas fa-lightbulb"></i> Quick Guide</div>
+      <div class="howto-steps">
+        <div class="howto-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Upload Image</div>
+            <div class="step-desc">Drag & drop, click to browse, or paste from clipboard (Ctrl+V). Supports JPG, PNG, WEBP, GIF, BMP, SVG, ICO up to 50MB.</div>
+          </div>
+        </div>
+        <div class="howto-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Choose Format</div>
+            <div class="step-desc">Select from Data URI, Raw Base64, CSS background-image, HTML img tag, Markdown, or JSON format.</div>
+          </div>
+        </div>
+        <div class="howto-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Copy or Download</div>
+            <div class="step-desc">Click Copy to clipboard, or download as .txt, .css, .html, .json, or .md file for direct use in your project.</div>
+          </div>
+        </div>
+        <div class="howto-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Decode Back (Optional)</div>
+            <div class="step-desc">Use the decoder section to paste any Base64 string and convert it back to a viewable/downloadable image.</div>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
-  <span>Image to Base64</span> — 100% browser-based. Your files never leave your device.
+  <span class="footer-badge"><i class="fas fa-image"></i> Image to Base64 Pro</span>
+  <span class="footer-badge"><i class="fas fa-shield-alt"></i> 100% Browser-Based — Files Never Leave Your Device</span>
+  <span class="footer-badge"><i class="fas fa-bolt"></i> No Server • No Upload • Instant</span>
 </footer>
 
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><i class="fas fa-check-circle" id="toastIcon"></i><span id="toastMsg"></span></div>
 
 <script>
-let D={file:null,dataUri:'',raw:'',mime:'',w:0,h:0};
-let curFmt='datauri';
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+let D = { file:null, dataUri:'', raw:'', mime:'', w:0, h:0 };
+let curFmt = 'datauri';
+let wrapMode = false;
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const fi=document.getElementById('fileInput');
-  const dz=document.getElementById('dropZone');
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const fi = document.getElementById('fileInput');
+  const dz = document.getElementById('dropZone');
 
-  fi.addEventListener('change',e=>{if(e.target.files[0])process(e.target.files[0]);fi.value=''});
-  dz.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')fi.click()});
+  fi.addEventListener('change', e => { if(e.target.files[0]) process(e.target.files[0]); fi.value=''; });
+  dz.addEventListener('click', e => { if(e.target.tagName !== 'BUTTON') fi.click(); });
 
-  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));
-  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));
-  dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])process(e.dataTransfer.files[0])});
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
+  dz.addEventListener('drop', e => { if(e.dataTransfer.files[0]) process(e.dataTransfer.files[0]); });
 
-  document.addEventListener('paste',e=>{
-    const items=e.clipboardData?.items;
-    if(!items)return;
-    for(let item of items){
-      if(item.type.startsWith('image/')){e.preventDefault();process(item.getAsFile());break}
+  document.addEventListener('paste', e => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let item of items) {
+      if (item.type.startsWith('image/')) { e.preventDefault(); process(item.getAsFile()); break; }
     }
   });
 });
 
-function process(file){
-  if(!file||!file.type.startsWith('image/')){toast('Select a valid image',true);return}
-  if(file.size>50*1024*1024){toast('Max 50MB',true);return}
-  D.file=file;D.mime=file.type;
-  const r=new FileReader();
-  r.onload=e=>{
-    D.dataUri=e.target.result;
-    D.raw=D.dataUri.split(',')[1];
-    const img=new Image();
-    img.onload=()=>{D.w=img.naturalWidth;D.h=img.naturalHeight;showResult()};
-    img.onerror=()=>{D.w=0;D.h=0;showResult()};
-    img.src=D.dataUri;
+// ════════════════════════════════════
+//  PROCESS FILE
+// ════════════════════════════════════
+function process(file) {
+  if (!file || !file.type.startsWith('image/')) { toast('Please select a valid image file', 'err'); return; }
+  if (file.size > 50 * 1024 * 1024) { toast('File too large — max 50MB', 'err'); return; }
+
+  D.file = file;
+  D.mime = file.type;
+  showProgress(true, 'Reading file...');
+
+  const r = new FileReader();
+  r.onprogress = e => {
+    if (e.lengthComputable) {
+      const pct = Math.round((e.loaded / e.total) * 60);
+      setProgress(pct, 'Converting to Base64...');
+    }
   };
+  r.onload = e => {
+    setProgress(80, 'Loading image...');
+    D.dataUri = e.target.result;
+    D.raw = D.dataUri.split(',')[1];
+    const img = new Image();
+    img.onload = () => {
+      D.w = img.naturalWidth;
+      D.h = img.naturalHeight;
+      setProgress(100, 'Done!');
+      setTimeout(() => { showProgress(false); showResult(); }, 400);
+    };
+    img.onerror = () => { D.w = 0; D.h = 0; setProgress(100, 'Done!'); setTimeout(() => { showProgress(false); showResult(); }, 400); };
+    img.src = D.dataUri;
+  };
+  r.onerror = () => { showProgress(false); toast('Failed to read file', 'err'); };
   r.readAsDataURL(file);
 }
 
-function showResult(){
-  document.getElementById('previewImg').src=D.dataUri;
-  document.getElementById('fileName').textContent=D.file.name;
-  document.getElementById('fileType').textContent=D.mime;
-  document.getElementById('fileSize').textContent=fmtSize(D.file.size);
-  document.getElementById('fileDims').textContent=D.w&&D.h?D.w+' × '+D.h+' px':'Unknown';
-  document.getElementById('b64Size').textContent=fmtSize(D.raw.length);
-
-  document.getElementById('resultSection').classList.add('show');
-  document.getElementById('navBtns').style.display='flex';
-
-  // Shrink upload
-  const uw=document.getElementById('uploadWrap');
-  uw.querySelector('h1').style.display='none';
-  uw.querySelector('p').style.display='none';
-  uw.style.padding='16px 20px 16px';
-  const dz=document.getElementById('dropZone');
-  dz.style.padding='16px 20px';
-  dz.querySelector('.dz-icon').style.display='none';
-  dz.querySelector('.dz-hint').style.display='none';
-  dz.querySelector('.dz-fmt').style.display='none';
-  dz.querySelector('.dz-text').textContent='Drop another image or';
-  dz.querySelector('.dz-btn').textContent='Select New Image';
-
-  updateCode();
-  toast('✓ Converted successfully!');
-  document.getElementById('resultSection').scrollIntoView({behavior:'smooth',block:'start'});
+function showProgress(show, label) {
+  const pw = document.getElementById('progressWrap');
+  pw.classList.toggle('show', show);
+  if (label) document.getElementById('progressLabel').textContent = label;
+  if (!show) setProgress(0, '');
+}
+function setProgress(pct, label) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  if (label) document.getElementById('progressLabel').textContent = label;
 }
 
-function switchFormat(btn){
-  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  curFmt=btn.dataset.f;
-  updateCode();
-}
+// ════════════════════════════════════
+//  SHOW RESULT
+// ════════════════════════════════════
+function showResult() {
+  // Info card
+  document.getElementById('previewImg').src = D.dataUri;
+  document.getElementById('fileName').textContent = D.file.name;
+  document.getElementById('fileType').textContent = D.mime;
+  document.getElementById('fileSize').textContent = fmtSize(D.file.size);
+  document.getElementById('fileDims').textContent = D.w && D.h ? D.w + ' × ' + D.h + ' px' : 'Unknown';
+  document.getElementById('b64Size').textContent = fmtSize(D.raw.length);
 
-function updateCode(){
-  const a=document.getElementById('codeArea');
-  let c='',t='';
-  switch(curFmt){
-    case'datauri':c=D.dataUri;t='Data URI';break;
-    case'raw':c=D.raw;t='Raw Base64';break;
-    case'css':
-      c=`.element {\n  background-image: url("${D.dataUri}");\n  background-size: cover;\n  background-position: center;\n  width: ${D.w}px;\n  height: ${D.h}px;\n}`;
-      t='CSS Background';break;
-    case'html':
-      c=`<img src="${D.dataUri}" alt="${esc(D.file.name)}" width="${D.w}" height="${D.h}" />`;
-      t='HTML <img>';break;
-    case'markdown':
-      c=`![${D.file.name}](${D.dataUri})`;t='Markdown';break;
-    case'json':
-      c=JSON.stringify({filename:D.file.name,mimeType:D.mime,width:D.w,height:D.h,fileSize:D.file.size,base64:D.raw},null,2);
-      t='JSON';break;
+  // Aspect ratio
+  if (D.w && D.h) {
+    const g = gcd(D.w, D.h);
+    document.getElementById('fileRatio').textContent = (D.w/g) + ':' + (D.h/g);
   }
-  a.value=c;
-  document.getElementById('formatTitle').textContent=t;
-  document.getElementById('charCount').textContent=c.length.toLocaleString()+' characters';
+
+  // Stats
+  const chars = D.dataUri.length;
+  const b64kb = fmtSize(D.raw.length);
+  const increase = ((D.raw.length / D.file.size) * 100).toFixed(1) + '%';
+  document.getElementById('stat-chars').textContent = chars.toLocaleString();
+  document.getElementById('stat-b64kb').textContent = b64kb;
+  document.getElementById('stat-ratio').textContent = increase;
+
+  // Show result
+  document.getElementById('resultSection').classList.add('show');
+  document.getElementById('navBtns').style.display = 'flex';
+
+  // Shrink upload area
+  shrinkUpload();
+  updateCode();
+  toast('Image converted successfully!');
+  document.getElementById('resultSection').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-function copyCode(){
-  const a=document.getElementById('codeArea');
-  const b=document.getElementById('copyBtn');
-  navigator.clipboard.writeText(a.value).then(()=>{
-    b.classList.add('copied');b.innerHTML='✓ Copied!';
-    toast('✓ Copied to clipboard!');
-    setTimeout(()=>{b.classList.remove('copied');b.innerHTML='📋 Copy'},2000);
-  }).catch(()=>{a.select();document.execCommand('copy');toast('✓ Copied!')});
+function shrinkUpload() {
+  const uw = document.getElementById('uploadWrap');
+  uw.querySelector('.upload-hero').style.display = 'none';
+  uw.querySelector('.paste-hint').style.display = 'none';
+  uw.style.padding = '14px 20px 14px';
+  uw.style.borderBottom = '2px solid var(--border)';
+  const dz = document.getElementById('dropZone');
+  dz.style.padding = '14px 20px';
+  dz.style.borderRadius = '12px';
+  dz.querySelector('.dz-icon-wrap').style.display = 'none';
+  dz.querySelector('.dz-hint').style.display = 'none';
+  dz.querySelector('.dz-fmt').style.display = 'none';
+  dz.querySelector('.dz-text').textContent = 'Drop another image or';
+  dz.querySelector('.dz-btn').innerHTML = '<i class="fas fa-plus"></i> Select New Image';
+  dz.querySelector('.dz-btn').style.padding = '8px 20px';
+  dz.querySelector('.dz-btn').style.fontSize = '.82rem';
 }
 
-function copyAll(){
-  navigator.clipboard.writeText(D.dataUri).then(()=>toast('✓ Data URI copied!')).catch(()=>toast('Copy failed',true));
+// ════════════════════════════════════
+//  FORMAT SWITCHER
+// ════════════════════════════════════
+function switchFormat(btn) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  curFmt = btn.dataset.f;
+  updateCode();
 }
 
-function selectCode(){
-  const a=document.getElementById('codeArea');
-  a.select();a.setSelectionRange(0,a.value.length);
+function updateCode() {
+  const a = document.getElementById('codeArea');
+  let c = '', t = '', lang = '';
+
+  switch(curFmt) {
+    case 'datauri':
+      c = D.dataUri; t = 'Data URI'; lang = 'DATA URI'; break;
+    case 'raw':
+      c = D.raw; t = 'Raw Base64'; lang = 'BASE64'; break;
+    case 'css':
+      c = `.element {\n  background-image: url("${D.dataUri}");\n  background-size: cover;\n  background-repeat: no-repeat;\n  background-position: center;\n  width: ${D.w}px;\n  height: ${D.h}px;\n}`;
+      t = 'CSS Background'; lang = 'CSS'; break;
+    case 'html':
+      c = `<img\n  src="${D.dataUri}"\n  alt="${esc(D.file.name)}"\n  width="${D.w}"\n  height="${D.h}"\n  style="max-width:100%;height:auto"\n/>`;
+      t = 'HTML <img> Tag'; lang = 'HTML'; break;
+    case 'markdown':
+      c = `![${esc(D.file.name)}](${D.dataUri} "${esc(D.file.name)}")`;
+      t = 'Markdown'; lang = 'MARKDOWN'; break;
+    case 'json':
+      c = JSON.stringify({
+        filename: D.file.name,
+        mimeType: D.mime,
+        width: D.w,
+        height: D.h,
+        originalSize: D.file.size,
+        originalSizeFormatted: fmtSize(D.file.size),
+        base64Size: D.raw.length,
+        base64SizeFormatted: fmtSize(D.raw.length),
+        dataUri: D.dataUri,
+        base64: D.raw
+      }, null, 2);
+      t = 'JSON Object'; lang = 'JSON'; break;
+  }
+
+  a.value = c;
+  a.style.wordBreak = wrapMode ? 'normal' : 'break-all';
+  a.style.whiteSpace = wrapMode ? 'pre' : 'pre-wrap';
+  document.getElementById('formatTitle').textContent = t;
+  document.getElementById('codeLang').textContent = lang;
+  document.getElementById('charCount').textContent = c.length.toLocaleString() + ' chars';
+  // Reset copy btn
+  const cb = document.getElementById('copyBtn');
+  cb.classList.remove('copied');
+  cb.innerHTML = '<i class="fas fa-copy"></i> Copy';
+}
+
+// ════════════════════════════════════
+//  COPY / DOWNLOAD
+// ════════════════════════════════════
+function copyCode() {
+  const a = document.getElementById('codeArea');
+  const b = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(a.value)
+    .then(() => {
+      b.classList.add('copied');
+      b.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      toast('Copied to clipboard!');
+      setTimeout(() => { b.classList.remove('copied'); b.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2200);
+    })
+    .catch(() => { a.select(); document.execCommand('copy'); toast('Copied!'); });
+}
+
+function copyAll() {
+  navigator.clipboard.writeText(D.dataUri)
+    .then(() => toast('Data URI copied to clipboard!'))
+    .catch(() => toast('Copy failed', 'err'));
+}
+
+function selectCode() {
+  const a = document.getElementById('codeArea');
+  a.select();
+  a.setSelectionRange(0, a.value.length);
   toast('All text selected');
 }
 
-function downloadTxt(){
-  dl(D.dataUri,D.file.name.replace(/\.[^.]+$/,'')+'-base64.txt','text/plain');
-  toast('⤓ Saved as .txt');
+function wrapToggle() {
+  wrapMode = !wrapMode;
+  const btn = document.getElementById('wrapBtn');
+  btn.classList.toggle('copied', wrapMode);
+  btn.innerHTML = wrapMode ? '<i class="fas fa-check"></i> Wrap ON' : '<i class="fas fa-align-left"></i> Wrap';
+  updateCode();
 }
 
-function downloadCode(){
-  const c=document.getElementById('codeArea').value;
-  let ext='txt';
-  if(curFmt==='css')ext='css';
-  else if(curFmt==='html')ext='html';
-  else if(curFmt==='json')ext='json';
-  else if(curFmt==='markdown')ext='md';
-  dl(c,D.file.name.replace(/\.[^.]+$/,'')+'-base64.'+ext,'text/plain');
-  toast('⤓ Downloaded');
+function downloadTxt() {
+  dl(D.dataUri, D.file.name.replace(/\.[^.]+$/, '') + '-base64.txt', 'text/plain');
+  toast('Saved as .txt');
 }
 
-function dl(content,name,type){
-  const b=new Blob([content],{type});
-  const u=URL.createObjectURL(b);
-  const a=document.createElement('a');
-  a.href=u;a.download=name;
-  document.body.appendChild(a);a.click();
-  document.body.removeChild(a);URL.revokeObjectURL(u);
+function downloadCode() {
+  const c = document.getElementById('codeArea').value;
+  const extMap = { css:'css', html:'html', json:'json', markdown:'md' };
+  const ext = extMap[curFmt] || 'txt';
+  dl(c, D.file.name.replace(/\.[^.]+$/, '') + '-base64.' + ext, 'text/plain');
+  toast('Downloaded .' + ext);
 }
 
-function clearAll(){
-  D={file:null,dataUri:'',raw:'',mime:'',w:0,h:0};
+function downloadOriginal() {
+  const a = document.createElement('a');
+  a.href = D.dataUri;
+  a.download = D.file.name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('Original image downloaded!');
+}
+
+function dl(content, name, type) {
+  const b = new Blob([content], { type });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(u);
+}
+
+// ════════════════════════════════════
+//  CLEAR
+// ════════════════════════════════════
+function clearAll() {
+  D = { file:null, dataUri:'', raw:'', mime:'', w:0, h:0 };
   document.getElementById('resultSection').classList.remove('show');
-  document.getElementById('navBtns').style.display='none';
-  document.getElementById('codeArea').value='';
+  document.getElementById('navBtns').style.display = 'none';
+  document.getElementById('codeArea').value = '';
   clearReverse();
 
   // Restore upload
-  const uw=document.getElementById('uploadWrap');
-  uw.querySelector('h1').style.display='';
-  uw.querySelector('p').style.display='';
-  uw.style.padding='';
-  const dz=document.getElementById('dropZone');
-  dz.style.padding='';
-  dz.querySelector('.dz-icon').style.display='';
-  dz.querySelector('.dz-hint').style.display='';
-  dz.querySelector('.dz-fmt').style.display='';
-  dz.querySelector('.dz-text').textContent='Drag & drop your image here';
-  dz.querySelector('.dz-btn').textContent='Select Image';
+  const uw = document.getElementById('uploadWrap');
+  uw.querySelector('.upload-hero').style.display = '';
+  uw.querySelector('.paste-hint').style.display = '';
+  uw.style.padding = '';
+  uw.style.borderBottom = '';
+  const dz = document.getElementById('dropZone');
+  dz.style.padding = '';
+  dz.style.borderRadius = '';
+  dz.querySelector('.dz-icon-wrap').style.display = '';
+  dz.querySelector('.dz-hint').style.display = '';
+  dz.querySelector('.dz-fmt').style.display = '';
+  dz.querySelector('.dz-text').textContent = 'Drag & drop your image here';
+  dz.querySelector('.dz-btn').innerHTML = '<i class="fas fa-folder-open"></i> Select Image';
+  dz.querySelector('.dz-btn').style.padding = '';
+  dz.querySelector('.dz-btn').style.fontSize = '';
 
-  toast('Cleared');
+  window.scrollTo({ top:0, behavior:'smooth' });
+  toast('Cleared!');
 }
 
-// REVERSE
-function decodeB64(){
-  let inp=document.getElementById('reverseInput').value.trim();
-  if(!inp){toast('Paste Base64 first',true);return}
-  let src=inp;
-  if(!inp.startsWith('data:')){
-    let m='image/png';
-    if(inp.startsWith('/9j/'))m='image/jpeg';
-    else if(inp.startsWith('iVBOR'))m='image/png';
-    else if(inp.startsWith('R0lGOD'))m='image/gif';
-    else if(inp.startsWith('UklGR'))m='image/webp';
-    else if(inp.startsWith('PHN2Z')||inp.startsWith('PD94b'))m='image/svg+xml';
-    src=`data:${m};base64,${inp}`;
+// ════════════════════════════════════
+//  REVERSE DECODE
+// ════════════════════════════════════
+function decodeB64() {
+  let inp = document.getElementById('reverseInput').value.trim();
+  if (!inp) { toast('Paste Base64 or Data URI first', 'err'); return; }
+
+  let src = inp;
+  if (!inp.startsWith('data:')) {
+    let m = 'image/png';
+    if (inp.startsWith('/9j/'))          m = 'image/jpeg';
+    else if (inp.startsWith('iVBOR'))    m = 'image/png';
+    else if (inp.startsWith('R0lGOD'))   m = 'image/gif';
+    else if (inp.startsWith('UklGR'))    m = 'image/webp';
+    else if (inp.startsWith('PHN2Z') || inp.startsWith('PD94b')) m = 'image/svg+xml';
+    src = `data:${m};base64,${inp}`;
   }
-  const img=document.getElementById('reverseImg');
-  img.onload=()=>{document.getElementById('reversePreview').classList.add('show');toast('✓ Image decoded!')};
-  img.onerror=()=>{document.getElementById('reversePreview').classList.remove('show');toast('Invalid Base64',true)};
-  img.src=src;
+
+  const img = document.getElementById('reverseImg');
+  img.onload = () => {
+    document.getElementById('reversePreview').classList.add('show');
+    document.getElementById('revImgInfo').textContent =
+      `Dimensions: ${img.naturalWidth} × ${img.naturalHeight} px`;
+    toast('Image decoded successfully!');
+  };
+  img.onerror = () => {
+    document.getElementById('reversePreview').classList.remove('show');
+    toast('Invalid Base64 — could not decode', 'err');
+  };
+  img.src = src;
 }
 
-function dlDecoded(){
-  const img=document.getElementById('reverseImg');
-  if(!img.src||img.src===location.href){toast('Decode first',true);return}
-  const a=document.createElement('a');a.href=img.src;
-  let ext='png';
-  if(img.src.includes('jpeg'))ext='jpg';
-  else if(img.src.includes('gif'))ext='gif';
-  else if(img.src.includes('webp'))ext='webp';
-  a.download='decoded.'+ext;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  toast('⤓ Downloaded');
+function dlDecoded() {
+  const img = document.getElementById('reverseImg');
+  if (!img.src || img.src === location.href) { toast('Decode an image first', 'err'); return; }
+  const a = document.createElement('a');
+  a.href = img.src;
+  let ext = 'png';
+  if (img.src.includes('jpeg')) ext = 'jpg';
+  else if (img.src.includes('gif'))  ext = 'gif';
+  else if (img.src.includes('webp')) ext = 'webp';
+  else if (img.src.includes('svg'))  ext = 'svg';
+  a.download = 'decoded-image.' + ext;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('Decoded image downloaded!');
 }
 
-function clearReverse(){
-  document.getElementById('reverseInput').value='';
+function copyDecodedSrc() {
+  const img = document.getElementById('reverseImg');
+  if (!img.src || img.src === location.href) { toast('Decode an image first', 'err'); return; }
+  navigator.clipboard.writeText(img.src)
+    .then(() => toast('Data URI copied!'))
+    .catch(() => toast('Copy failed', 'err'));
+}
+
+function clearReverse() {
+  document.getElementById('reverseInput').value = '';
   document.getElementById('reversePreview').classList.remove('show');
-  document.getElementById('reverseImg').src='';
+  document.getElementById('reverseImg').src = '';
+  document.getElementById('revImgInfo').textContent = '';
 }
 
-function fmtSize(b){
-  if(b<1024)return b+' B';
-  if(b<1048576)return(b/1024).toFixed(1)+' KB';
-  return(b/1048576).toFixed(2)+' MB';
+// ════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════
+function fmtSize(b) {
+  if (b < 1024)    return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(2) + ' MB';
 }
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function toast(m,e){
-  const t=document.getElementById('toast');
-  t.textContent=m;t.className='toast'+(e?' err':'');
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+function toast(msg, type) {
+  const t  = document.getElementById('toast');
+  const ic = document.getElementById('toastIcon');
+  const ms = document.getElementById('toastMsg');
+  ms.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  ic.className = type === 'err'  ? 'fas fa-times-circle'
+               : type === 'warn' ? 'fas fa-exclamation-circle'
+               : 'fas fa-check-circle';
+  ic.style.color = type === 'err'  ? 'var(--danger)'
+                 : type === 'warn' ? 'var(--warning)'
+                 : 'var(--primary)';
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 </script>
 </body>
