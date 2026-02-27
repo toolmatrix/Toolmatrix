@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Word to PDF - Free Online Converter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        * {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -23,41 +23,43 @@
             --primary-lightest: #EAFAF1;
             --bg: #F0FFF4;
             --white: #FFFFFF;
-            --text-dark: #1a1a2e;
-            --text-medium: #4a4a5a;
-            --text-light: #7a7a8a;
-            --shadow-sm: 0 2px 8px rgba(46, 204, 113, 0.1);
-            --shadow-md: 0 4px 20px rgba(46, 204, 113, 0.15);
-            --shadow-lg: 0 10px 40px rgba(46, 204, 113, 0.2);
-            --shadow-xl: 0 20px 60px rgba(46, 204, 113, 0.25);
+            --dark: #1a1a2e;
+            --medium: #4a4a5a;
+            --light: #7a7a8a;
+            --red: #e74c3c;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
-            color: var(--text-dark);
+            color: var(--dark);
+            width: 100%;
             min-height: 100vh;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* === NAVBAR === */
+        /* ========== NAVBAR ========== */
         .navbar {
+            width: 100%;
             background: var(--white);
-            padding: 15px 0;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 2px solid var(--primary-lighter);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 30px;
+            padding: 14px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 2px solid var(--primary-lighter);
+            box-shadow: 0 2px 15px rgba(46,204,113,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            flex-shrink: 0;
         }
 
         .logo {
@@ -67,102 +69,117 @@
             text-decoration: none;
         }
 
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 12px;
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-darker));
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+        }
+
+        .logo-box svg {
+            width: 20px;
+            height: 20px;
             color: white;
-            font-size: 20px;
-            font-weight: 800;
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
         }
 
-        .logo-text {
-            font-size: 22px;
+        .logo-name {
+            font-size: 21px;
             font-weight: 800;
-            color: var(--text-dark);
+            color: var(--dark);
         }
 
-        .logo-text span {
+        .logo-name span {
             color: var(--primary);
         }
 
-        .nav-links {
+        .nav-menu {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .nav-links a {
+        .nav-menu a {
             text-decoration: none;
-            color: var(--text-medium);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--medium);
             padding: 8px 16px;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
-        .nav-links a:hover {
+        .nav-menu a:hover {
             background: var(--primary-lightest);
             color: var(--primary-dark);
         }
 
-        .nav-links a.active {
+        .nav-menu a.active {
             background: var(--primary);
             color: white;
         }
 
-        /* === HERO === */
-        .hero {
-            text-align: center;
-            padding: 60px 20px 30px;
+        /* ========== MAIN CONTENT ========== */
+        .main {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
         }
 
-        .hero::before {
-            content: '';
+        /* ========== HERO GRADIENT BG ========== */
+        .hero-bg {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 300px;
+            width: 100%;
+            height: 320px;
             background: linear-gradient(180deg, var(--primary-lighter) 0%, transparent 100%);
-            z-index: -1;
+            z-index: 0;
         }
 
-        .hero-badge {
+        /* ========== HERO TEXT ========== */
+        .hero {
+            width: 100%;
+            text-align: center;
+            padding: 45px 20px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             background: var(--white);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
             border: 1px solid var(--primary-light);
+            padding: 7px 18px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-darker);
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(46,204,113,0.1);
         }
 
-        .hero-badge svg {
-            width: 16px;
-            height: 16px;
+        .badge svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
         }
 
         .hero h1 {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            color: var(--text-dark);
-            line-height: 1.2;
+            font-size: 40px;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 12px;
         }
 
-        .hero h1 span {
+        .hero h1 .gr {
             background: linear-gradient(135deg, var(--primary), var(--primary-darker));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -170,176 +187,166 @@
         }
 
         .hero p {
-            font-size: 18px;
-            color: var(--text-light);
-            max-width: 550px;
+            font-size: 16px;
+            color: var(--light);
+            max-width: 520px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        /* === MAIN TOOL AREA === */
-        .tool-container {
-            max-width: 800px;
-            margin: 30px auto 60px;
-            padding: 0 20px;
+        /* ========== TOOL CARD ========== */
+        .tool-wrap {
+            width: 100%;
+            max-width: 780px;
+            padding: 0 16px;
+            margin: 25px auto 50px;
+            position: relative;
+            z-index: 1;
         }
 
         .tool-card {
+            width: 100%;
             background: var(--white);
-            border-radius: 24px;
-            box-shadow: var(--shadow-lg);
+            border-radius: 22px;
+            box-shadow: 0 12px 50px rgba(46,204,113,0.13);
+            border: 1.5px solid var(--primary-lighter);
             overflow: hidden;
-            border: 1px solid var(--primary-lighter);
         }
 
-        /* === UPLOAD AREA === */
-        .upload-area {
-            padding: 60px 40px;
+        /* ========== UPLOAD STATE ========== */
+        .state { display: none; }
+        .state.active { display: block; }
+
+        .upload-state {
+            padding: 55px 30px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.4s ease;
             position: relative;
-            overflow: hidden;
+            transition: 0.3s;
         }
 
-        .upload-area::before {
+        .upload-state::after {
             content: '';
             position: absolute;
-            inset: 15px;
+            inset: 14px;
             border: 3px dashed var(--primary-light);
-            border-radius: 16px;
+            border-radius: 14px;
             pointer-events: none;
-            transition: all 0.4s ease;
+            transition: 0.3s;
         }
 
-        .upload-area:hover::before,
-        .upload-area.drag-over::before {
+        .upload-state.drag-over::after {
             border-color: var(--primary);
-            background: var(--primary-lightest);
+            background: rgba(46,204,113,0.04);
         }
 
-        .upload-area.drag-over {
-            transform: scale(1.01);
-        }
-
-        .upload-icon-wrapper {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 25px;
-            position: relative;
-        }
-
-        .upload-icon-bg {
-            width: 100px;
-            height: 100px;
+        .upload-circle {
+            width: 95px;
+            height: 95px;
             background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
             border-radius: 50%;
+            margin: 0 auto 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: pulse-green 3s ease-in-out infinite;
+            animation: breathe 3s ease-in-out infinite;
         }
 
-        @keyframes pulse-green {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(46, 204, 113, 0); }
+        @keyframes breathe {
+            0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46,204,113,0.25); }
+            50% { transform: scale(1.06); box-shadow: 0 0 0 18px rgba(46,204,113,0); }
         }
 
-        .upload-icon-bg svg {
-            width: 45px;
-            height: 45px;
+        .upload-circle svg {
+            width: 42px;
+            height: 42px;
             color: var(--primary-dark);
         }
 
-        .upload-title {
-            font-size: 22px;
+        .upload-state h2 {
+            font-size: 21px;
             font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--text-dark);
+            margin-bottom: 8px;
         }
 
-        .upload-subtitle {
-            font-size: 15px;
-            color: var(--text-light);
-            margin-bottom: 25px;
+        .upload-state .sub {
+            font-size: 14px;
+            color: var(--light);
+            margin-bottom: 22px;
         }
 
-        .upload-btn {
+        .select-btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 16px 40px;
-            border-radius: 14px;
-            font-size: 17px;
+            padding: 15px 38px;
+            border-radius: 13px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.35);
+            transition: 0.3s;
+            box-shadow: 0 6px 22px rgba(46,204,113,0.3);
             font-family: 'Inter', sans-serif;
+            position: relative;
+            z-index: 2;
         }
 
-        .upload-btn:hover {
+        .select-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.45);
+            box-shadow: 0 10px 30px rgba(46,204,113,0.4);
         }
 
-        .upload-btn svg {
-            width: 20px;
-            height: 20px;
+        .select-btn svg {
+            width: 19px;
+            height: 19px;
         }
 
-        .upload-formats {
-            margin-top: 20px;
+        .formats {
+            margin-top: 18px;
             font-size: 12px;
-            color: var(--text-light);
+            color: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            flex-wrap: wrap;
         }
 
-        .format-tag {
+        .ftag {
             background: var(--primary-lightest);
-            color: var(--primary-dark);
+            color: var(--primary-darker);
             padding: 3px 10px;
             border-radius: 5px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 11px;
         }
 
-        .file-input {
-            display: none;
+        .file-inp { display: none; }
+
+        /* ========== FILE READY STATE ========== */
+        .ready-state {
+            padding: 40px 28px;
         }
 
-        /* === FILE SELECTED STATE === */
-        .file-info {
-            display: none;
-            padding: 40px;
-        }
-
-        .file-info.active {
-            display: block;
-        }
-
-        .file-card {
+        .fcard {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             background: var(--primary-lightest);
             border: 2px solid var(--primary-light);
-            border-radius: 16px;
-            padding: 20px 25px;
-            margin-bottom: 30px;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 28px;
         }
 
-        .file-icon-box {
-            width: 60px;
-            height: 60px;
+        .fcard-icon {
+            width: 55px;
+            height: 55px;
             background: linear-gradient(135deg, #2B5EA7, #3B7DD8);
-            border-radius: 14px;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -347,447 +354,424 @@
             position: relative;
         }
 
-        .file-icon-box svg {
-            width: 28px;
-            height: 28px;
+        .fcard-icon svg {
+            width: 24px;
+            height: 24px;
             color: white;
         }
 
-        .file-icon-box::after {
+        .fcard-icon::after {
             content: 'W';
             position: absolute;
-            bottom: 4px;
-            right: 4px;
+            bottom: 3px;
+            right: 3px;
             background: white;
             color: #2B5EA7;
-            width: 18px;
-            height: 18px;
-            border-radius: 5px;
-            font-size: 10px;
-            font-weight: 800;
+            width: 17px;
+            height: 17px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 900;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .file-details {
+        .fcard-info {
             flex: 1;
             min-width: 0;
         }
 
-        .file-name {
-            font-size: 16px;
+        .fcard-name {
+            font-size: 15px;
             font-weight: 700;
-            color: var(--text-dark);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .file-size {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-top: 3px;
+        .fcard-size {
+            font-size: 12px;
+            color: var(--light);
+            margin-top: 2px;
         }
 
-        .file-status {
+        .fcard-ready {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            gap: 5px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--primary-dark);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
-        .file-status svg {
-            width: 14px;
-            height: 14px;
+        .fcard-ready svg {
+            width: 13px;
+            height: 13px;
         }
 
-        .file-remove {
-            width: 40px;
-            height: 40px;
+        .fcard-del {
+            width: 38px;
+            height: 38px;
             border: none;
             background: white;
-            border-radius: 10px;
+            border-radius: 9px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
-            color: var(--text-light);
+            color: var(--light);
+            transition: 0.3s;
             flex-shrink: 0;
         }
 
-        .file-remove:hover {
+        .fcard-del:hover {
             background: #FEE2E2;
-            color: #EF4444;
+            color: var(--red);
         }
 
-        .file-remove svg {
-            width: 18px;
-            height: 18px;
+        .fcard-del svg {
+            width: 17px;
+            height: 17px;
         }
 
-        /* === CONVERT SECTION === */
-        .convert-section {
-            text-align: center;
-        }
-
-        .convert-arrow {
+        .arrow-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 28px;
         }
 
-        .arrow-line {
+        .arr-line {
             height: 2px;
-            width: 80px;
+            width: 70px;
             background: linear-gradient(90deg, var(--primary-light), var(--primary));
             border-radius: 2px;
         }
 
-        .arrow-icon {
-            width: 50px;
-            height: 50px;
+        .arr-circle {
+            width: 46px;
+            height: 46px;
             background: var(--primary-lighter);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary-dark);
+            flex-shrink: 0;
         }
 
-        .arrow-icon svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .convert-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 18px 60px;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.35);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .convert-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(46, 204, 113, 0.45);
-        }
-
-        .convert-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .convert-btn svg {
+        .arr-circle svg {
             width: 22px;
             height: 22px;
         }
 
-        /* === PROGRESS === */
-        .progress-area {
-            display: none;
-            padding: 40px;
+        .convert-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 17px 30px;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 28px rgba(46,204,113,0.3);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(46,204,113,0.4);
+        }
+
+        .convert-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .convert-btn svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        /* ========== PROGRESS STATE ========== */
+        .progress-state {
+            padding: 50px 28px;
             text-align: center;
         }
 
-        .progress-area.active {
-            display: block;
-        }
-
-        .progress-wrapper {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .progress-circle-container {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 25px;
+        .prog-ring-box {
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 22px;
             position: relative;
         }
 
-        .progress-circle-container svg {
-            width: 140px;
-            height: 140px;
+        .prog-ring-box svg {
+            width: 130px;
+            height: 130px;
             transform: rotate(-90deg);
         }
 
-        .progress-bg {
+        .prog-bg {
             fill: none;
             stroke: var(--primary-lighter);
-            stroke-width: 8;
+            stroke-width: 9;
         }
 
-        .progress-fill {
+        .prog-fill {
             fill: none;
-            stroke: var(--primary);
-            stroke-width: 8;
+            stroke: url(#progGrad);
+            stroke-width: 9;
             stroke-linecap: round;
-            stroke-dasharray: 377;
-            stroke-dashoffset: 377;
-            transition: stroke-dashoffset 0.5s ease;
+            stroke-dasharray: 352;
+            stroke-dashoffset: 352;
+            transition: stroke-dashoffset 0.4s ease;
         }
 
-        .progress-text {
+        .prog-pct {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 30px;
+            font-weight: 900;
             color: var(--primary-dark);
         }
 
-        .progress-label {
+        .prog-label {
             font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 5px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
         }
 
-        .progress-sublabel {
+        .prog-sub {
             font-size: 13px;
-            color: var(--text-light);
+            color: var(--light);
         }
 
-        .progress-steps {
+        .dots-row {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 25px;
+            gap: 7px;
+            margin-top: 22px;
         }
 
-        .step-dot {
-            width: 10px;
-            height: 10px;
+        .dot {
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             background: var(--primary-lighter);
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
-        .step-dot.active {
+        .dot.on {
             background: var(--primary);
-            width: 30px;
+            width: 28px;
             border-radius: 5px;
         }
 
-        .step-dot.done {
+        .dot.done {
             background: var(--primary-light);
         }
 
-        /* === DOWNLOAD === */
-        .download-area {
-            display: none;
-            padding: 40px;
+        /* ========== DONE STATE ========== */
+        .done-state {
+            padding: 45px 28px;
             text-align: center;
         }
 
-        .download-area.active {
-            display: block;
-        }
-
-        .success-animation {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 25px;
+        .done-icon {
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 22px;
             background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: success-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: pop 0.5s cubic-bezier(0.68,-0.55,0.265,1.55);
         }
 
-        @keyframes success-pop {
+        @keyframes pop {
             0% { transform: scale(0); }
             100% { transform: scale(1); }
         }
 
-        .success-animation svg {
-            width: 50px;
-            height: 50px;
+        .done-icon svg {
+            width: 46px;
+            height: 46px;
             color: var(--primary-dark);
         }
 
-        .download-title {
-            font-size: 24px;
+        .done-state h2 {
+            font-size: 23px;
             font-weight: 800;
-            color: var(--text-dark);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .download-subtitle {
-            font-size: 15px;
-            color: var(--text-light);
-            margin-bottom: 30px;
+        .done-state .sub {
+            font-size: 14px;
+            color: var(--light);
+            margin-bottom: 28px;
         }
 
-        .download-btn {
+        .dl-btn {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 11px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 18px 50px;
-            border-radius: 16px;
-            font-size: 18px;
+            padding: 17px 48px;
+            border-radius: 14px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.35);
+            transition: 0.3s;
+            box-shadow: 0 8px 28px rgba(46,204,113,0.3);
             text-decoration: none;
             font-family: 'Inter', sans-serif;
         }
 
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(46, 204, 113, 0.45);
+        .dl-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(46,204,113,0.4);
         }
 
-        .download-btn svg {
-            width: 22px;
-            height: 22px;
+        .dl-btn svg {
+            width: 21px;
+            height: 21px;
         }
 
-        .download-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .action-btn {
+        .again-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 24px;
-            border-radius: 12px;
+            margin-top: 18px;
+            padding: 12px 28px;
+            border-radius: 11px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
             border: 2px solid var(--primary-light);
             background: var(--white);
             color: var(--primary-dark);
+            transition: 0.3s;
             font-family: 'Inter', sans-serif;
         }
 
-        .action-btn:hover {
+        .again-btn:hover {
             background: var(--primary-lightest);
             border-color: var(--primary);
         }
 
-        .action-btn svg {
-            width: 16px;
-            height: 16px;
+        .again-btn svg {
+            width: 15px;
+            height: 15px;
         }
 
-        /* === FEATURES === */
+        /* ========== FEATURES ========== */
         .features {
-            max-width: 1000px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
+            width: 100%;
+            padding: 0 16px 50px;
         }
 
-        .features-title {
+        .features h2 {
             text-align: center;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
-            margin-bottom: 40px;
-            color: var(--text-dark);
+            margin-bottom: 35px;
         }
 
-        .features-grid {
+        .feat-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .feature-card {
+        .feat {
             background: var(--white);
-            padding: 30px 25px;
-            border-radius: 18px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--primary-lighter);
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-lightest);
+            padding: 28px 22px;
             border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--primary-lighter);
+            box-shadow: 0 2px 10px rgba(46,204,113,0.06);
+            transition: 0.3s;
+        }
+
+        .feat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(46,204,113,0.12);
+        }
+
+        .feat-ic {
+            width: 54px;
+            height: 54px;
+            background: var(--primary-lightest);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 18px;
+            margin: 0 auto 14px;
             color: var(--primary-dark);
         }
 
-        .feature-icon svg {
-            width: 28px;
-            height: 28px;
+        .feat-ic svg {
+            width: 25px;
+            height: 25px;
         }
 
-        .feature-card h3 {
-            font-size: 16px;
+        .feat h3 {
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-dark);
+            margin-bottom: 6px;
         }
 
-        .feature-card p {
-            font-size: 13px;
-            color: var(--text-light);
+        .feat p {
+            font-size: 12px;
+            color: var(--light);
             line-height: 1.6;
         }
 
-        /* === FOOTER === */
+        /* ========== FOOTER ========== */
         .footer {
+            width: 100%;
             background: var(--white);
             border-top: 2px solid var(--primary-lighter);
-            padding: 30px 20px;
+            padding: 22px 16px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .footer p {
-            font-size: 14px;
-            color: var(--text-light);
+            font-size: 13px;
+            color: var(--light);
         }
 
         .footer a {
             color: var(--primary-dark);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        /* === HIDDEN CONTENT DIV === */
-        #docx-content {
+        /* ========== HIDDEN RENDER DIV ========== */
+        #render-box {
             position: absolute;
-            left: -9999px;
+            left: -99999px;
             top: 0;
             width: 794px;
             padding: 50px 60px;
@@ -795,30 +779,264 @@
             font-family: 'Inter', Arial, sans-serif;
             font-size: 14px;
             line-height: 1.8;
-            color: #333;
+            color: #222;
         }
 
-        #docx-content h1 { font-size: 26px; margin: 20px 0 10px; color: #111; }
-        #docx-content h2 { font-size: 22px; margin: 18px 0 8px; color: #222; }
-        #docx-content h3 { font-size: 18px; margin: 16px 0 8px; color: #333; }
-        #docx-content p { margin: 8px 0; }
-        #docx-content table { border-collapse: collapse; width: 100%; margin: 15px 0; }
-        #docx-content td, #docx-content th { border: 1px solid #ccc; padding: 8px 12px; }
-        #docx-content ul, #docx-content ol { margin: 10px 0 10px 25px; }
-        #docx-content li { margin: 4px 0; }
-        #docx-content img { max-width: 100%; height: auto; }
+        #render-box h1 { font-size: 26px; margin: 18px 0 10px; }
+        #render-box h2 { font-size: 22px; margin: 16px 0 8px; }
+        #render-box h3 { font-size: 18px; margin: 14px 0 8px; }
+        #render-box p { margin: 8px 0; }
+        #render-box table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+        #render-box td, #render-box th { border: 1px solid #bbb; padding: 8px 12px; }
+        #render-box ul, #render-box ol { margin: 10px 0 10px 24px; }
+        #render-box li { margin: 4px 0; }
+        #render-box img { max-width: 100%; height: auto; }
 
-        /* === RESPONSIVE === */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 28px; }
-            .hero p { font-size: 15px; }
-            .features-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .upload-area { padding: 40px 20px; }
-            .file-info, .progress-area, .download-area { padding: 25px; }
-            .convert-btn, .download-btn { padding: 16px 40px; font-size: 16px; }
-            .download-actions { flex-direction: column; align-items: center; }
-            .file-card { flex-direction: column; text-align: center; }
+        /* ========== MOBILE RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .feat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 14px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .logo-name {
+                font-size: 18px;
+            }
+
+            .logo-box {
+                width: 36px;
+                height: 36px;
+                border-radius: 9px;
+            }
+
+            .logo-box svg {
+                width: 17px;
+                height: 17px;
+            }
+
+            .hero {
+                padding: 30px 14px 14px;
+            }
+
+            .badge {
+                font-size: 11px;
+                padding: 6px 14px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .tool-wrap {
+                padding: 0 10px;
+                margin: 18px auto 35px;
+            }
+
+            .tool-card {
+                border-radius: 16px;
+            }
+
+            .upload-state {
+                padding: 40px 16px;
+            }
+
+            .upload-state::after {
+                inset: 10px;
+            }
+
+            .upload-circle {
+                width: 78px;
+                height: 78px;
+                margin-bottom: 18px;
+            }
+
+            .upload-circle svg {
+                width: 34px;
+                height: 34px;
+            }
+
+            .upload-state h2 {
+                font-size: 18px;
+            }
+
+            .upload-state .sub {
+                font-size: 13px;
+            }
+
+            .select-btn {
+                padding: 14px 30px;
+                font-size: 15px;
+                border-radius: 11px;
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .ready-state {
+                padding: 28px 14px;
+            }
+
+            .fcard {
+                padding: 14px 14px;
+                gap: 12px;
+                border-radius: 12px;
+            }
+
+            .fcard-icon {
+                width: 46px;
+                height: 46px;
+                border-radius: 11px;
+            }
+
+            .fcard-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .fcard-icon::after {
+                width: 15px;
+                height: 15px;
+                font-size: 8px;
+            }
+
+            .fcard-name {
+                font-size: 13px;
+            }
+
+            .fcard-size, .fcard-ready {
+                font-size: 11px;
+            }
+
+            .arr-line {
+                width: 45px;
+            }
+
+            .arr-circle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .arr-circle svg {
+                width: 19px;
+                height: 19px;
+            }
+
+            .convert-btn {
+                padding: 15px 24px;
+                font-size: 16px;
+                border-radius: 12px;
+                max-width: 100%;
+            }
+
+            .progress-state {
+                padding: 35px 16px;
+            }
+
+            .prog-ring-box {
+                width: 110px;
+                height: 110px;
+            }
+
+            .prog-ring-box svg {
+                width: 110px;
+                height: 110px;
+            }
+
+            .prog-pct {
+                font-size: 26px;
+            }
+
+            .prog-label {
+                font-size: 15px;
+            }
+
+            .done-state {
+                padding: 35px 16px;
+            }
+
+            .done-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .done-icon svg {
+                width: 38px;
+                height: 38px;
+            }
+
+            .done-state h2 {
+                font-size: 20px;
+            }
+
+            .dl-btn {
+                padding: 15px 36px;
+                font-size: 16px;
+                border-radius: 12px;
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .again-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .feat-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .features h2 {
+                font-size: 21px;
+                margin-bottom: 24px;
+            }
+
+            .feat {
+                padding: 22px 18px;
+                border-radius: 14px;
+            }
+
+            .footer {
+                padding: 18px 14px;
+            }
+
+            .footer p {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .hero h1 {
+                font-size: 22px;
+            }
+
+            .hero p {
+                font-size: 13px;
+            }
+
+            .upload-state h2 {
+                font-size: 16px;
+            }
+
+            .select-btn {
+                font-size: 14px;
+                padding: 13px 24px;
+            }
         }
     </style>
 </head>
@@ -826,404 +1044,289 @@
 
     <!-- NAVBAR -->
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <div class="logo-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <span class="logo-text">Green<span>Tools</span></span>
-            </a>
-            <div class="nav-links">
-                <a href="#" class="active">Word to PDF</a>
-                <a href="#">PDF to Word</a>
-                <a href="#">Merge PDF</a>
-                <a href="#">Compress</a>
+        <a href="#" class="logo">
+            <div class="logo-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
+            <span class="logo-name">Word<span>To Pdf</span></span>
+        </a>
+        <div class="nav-menu">
+            <a href="#" class="active">Word to PDF</a>
+            <a href="#">PDF to Word</a>
+            <a href="#">Merge PDF</a>
+            <a href="#">Compress</a>
         </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="hero">
-        <div class="hero-badge">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            100% Free & Secure — No file stored on server
-        </div>
-        <h1>Convert <span>Word to PDF</span><br>in Seconds</h1>
-        <p>Transform your DOCX documents into professional PDF files easily. Fast, free, and works right in your browser!</p>
-    </section>
+    <!-- MAIN -->
+    <div class="main">
+        <div class="hero-bg"></div>
 
-    <!-- TOOL -->
-    <div class="tool-container">
-        <div class="tool-card">
-
-            <!-- Upload Area -->
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon-wrapper">
-                    <div class="upload-icon-bg">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    </div>
-                </div>
-                <h2 class="upload-title">Drop your Word file here</h2>
-                <p class="upload-subtitle">or click the button below to browse</p>
-                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    Select Word File
-                </button>
-                <div class="upload-formats">
-                    Supported: <span class="format-tag">.DOCX</span> <span class="format-tag">.DOC</span>
-                </div>
-                <input type="file" id="fileInput" class="file-input" accept=".docx,.doc">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                100% Free & Secure — No file uploaded to server
             </div>
+            <h1>Convert <span class="gr">Word to PDF</span><br>in Seconds</h1>
+            <p>Transform your DOCX documents into professional PDF files. Fast, free, and works right in your browser!</p>
+        </section>
 
-            <!-- File Info -->
-            <div class="file-info" id="fileInfo">
-                <div class="file-card">
-                    <div class="file-icon-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <!-- TOOL -->
+        <div class="tool-wrap">
+            <div class="tool-card">
+
+                <!-- 1) UPLOAD -->
+                <div class="state active upload-state" id="stateUpload">
+                    <div class="upload-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     </div>
-                    <div class="file-details">
-                        <div class="file-name" id="fileName">document.docx</div>
-                        <div class="file-size" id="fileSize">2.4 MB</div>
-                        <div class="file-status">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            Ready to convert
-                        </div>
-                    </div>
-                    <button class="file-remove" onclick="removeFile()" title="Remove file">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <h2>Drop your Word file here</h2>
+                    <p class="sub">or click the button below to browse</p>
+                    <button class="select-btn" onclick="document.getElementById('finput').click()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        Select Word File
                     </button>
+                    <div class="formats">
+                        Supported: <span class="ftag">.DOCX</span> <span class="ftag">.DOC</span>
+                    </div>
+                    <input type="file" id="finput" class="file-inp" accept=".docx,.doc">
                 </div>
 
-                <div class="convert-section">
-                    <div class="convert-arrow">
-                        <div class="arrow-line"></div>
-                        <div class="arrow-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                <!-- 2) READY -->
+                <div class="state ready-state" id="stateReady">
+                    <div class="fcard">
+                        <div class="fcard-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         </div>
-                        <div class="arrow-line"></div>
+                        <div class="fcard-info">
+                            <div class="fcard-name" id="fname">document.docx</div>
+                            <div class="fcard-size" id="fsize">2.4 MB</div>
+                            <div class="fcard-ready">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                Ready to convert
+                            </div>
+                        </div>
+                        <button class="fcard-del" onclick="resetAll()" title="Remove">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
                     </div>
-                    <button class="convert-btn" id="convertBtn" onclick="convertToPDF()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                    <div class="arrow-row">
+                        <div class="arr-line"></div>
+                        <div class="arr-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="arr-line"></div>
+                    </div>
+                    <button class="convert-btn" id="convertBtn" onclick="doConvert()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
                         Convert to PDF
                     </button>
                 </div>
-            </div>
 
-            <!-- Progress Area -->
-            <div class="progress-area" id="progressArea">
-                <div class="progress-wrapper">
-                    <div class="progress-circle-container">
+                <!-- 3) PROGRESS -->
+                <div class="state progress-state" id="stateProgress">
+                    <div class="prog-ring-box">
                         <svg viewBox="0 0 130 130">
-                            <circle class="progress-bg" cx="65" cy="65" r="60"/>
-                            <circle class="progress-fill" id="progressCircle" cx="65" cy="65" r="60"/>
+                            <defs>
+                                <linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#2ECC71"/>
+                                    <stop offset="100%" stop-color="#1E8449"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="prog-bg" cx="65" cy="65" r="56"/>
+                            <circle class="prog-fill" id="progCircle" cx="65" cy="65" r="56"/>
                         </svg>
-                        <div class="progress-text" id="progressText">0%</div>
+                        <div class="prog-pct" id="progPct">0%</div>
                     </div>
-                    <div class="progress-label" id="progressLabel">Reading document...</div>
-                    <div class="progress-sublabel" id="progressSublabel">Please wait while we process your file</div>
-                    <div class="progress-steps">
-                        <div class="step-dot active" id="step1"></div>
-                        <div class="step-dot" id="step2"></div>
-                        <div class="step-dot" id="step3"></div>
+                    <div class="prog-label" id="progLabel">Reading document...</div>
+                    <div class="prog-sub" id="progSub">Please wait while we process your file</div>
+                    <div class="dots-row">
+                        <div class="dot on" id="d1"></div>
+                        <div class="dot" id="d2"></div>
+                        <div class="dot" id="d3"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Download Area -->
-            <div class="download-area" id="downloadArea">
-                <div class="success-animation">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                </div>
-                <h2 class="download-title">Conversion Complete! 🎉</h2>
-                <p class="download-subtitle">Your PDF is ready for download</p>
-                <a class="download-btn" id="downloadBtn" href="#" download>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Download PDF
-                </a>
-                <div class="download-actions">
-                    <button class="action-btn" onclick="convertAnother()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                        Convert Another
+                <!-- 4) DONE -->
+                <div class="state done-state" id="stateDone">
+                    <div class="done-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h2>Conversion Complete! 🎉</h2>
+                    <p class="sub">Your PDF is ready for download</p>
+                    <a class="dl-btn" id="dlBtn" href="#" download>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download PDF
+                    </a>
+                    <br>
+                    <button class="again-btn" onclick="resetAll()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Convert Another File
                     </button>
                 </div>
-            </div>
 
-        </div>
+            </div>
+            </div>
+        </section>
     </div>
-
-    <!-- FEATURES -->
-    <section class="features">
-        <h2 class="features-title">Why Choose Our Tool?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <h3>Lightning Fast</h3>
-                <p>Convert your documents in seconds. No waiting, no queues.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3>100% Secure</h3>
-                <p>Files are processed in your browser. Nothing is uploaded to any server.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <h3>Completely Free</h3>
-                <p>No hidden charges, no sign-ups, no limits. Use as much as you want.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                </div>
-                <h3>Works Everywhere</h3>
-                <p>Works on any device — PC, Mac, phone, or tablet. No software needed.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                </div>
-                <h3>Preserves Layout</h3>
-                <p>Your formatting, tables, and images are maintained in the PDF output.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                </div>
-                <h3>High Quality</h3>
-                <p>Professional-grade PDF output suitable for sharing and printing.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- FOOTER -->
     <footer class="footer">
-        <p>Made with 💚 by <a href="#">GreenTools</a> — Free online document converter</p>
+        <p>Made with 💚 by <a href="#">ToolMatrix</a> — Free online document converter</p>
     </footer>
 
-    <!-- Hidden content holder -->
-    <div id="docx-content"></div>
+    <!-- Hidden render area -->
+    <div id="render-box"></div>
 
     <script>
-        let selectedFile = null;
-        let pdfBlob = null;
+        let chosenFile = null;
 
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const progressArea = document.getElementById('progressArea');
-        const downloadArea = document.getElementById('downloadArea');
+        const stUpload = document.getElementById('stateUpload');
+        const stReady = document.getElementById('stateReady');
+        const stProgress = document.getElementById('stateProgress');
+        const stDone = document.getElementById('stateDone');
+        const finput = document.getElementById('finput');
+
+        function showState(el) {
+            [stUpload, stReady, stProgress, stDone].forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+        }
 
         // Drag & Drop
-        uploadArea.addEventListener('dragover', (e) => {
+        stUpload.addEventListener('dragover', e => {
             e.preventDefault();
-            uploadArea.classList.add('drag-over');
+            stUpload.classList.add('drag-over');
         });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
+        stUpload.addEventListener('dragleave', () => stUpload.classList.remove('drag-over'));
+        stUpload.addEventListener('drop', e => {
             e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
+            stUpload.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) pickFile(e.dataTransfer.files[0]);
+        });
+        stUpload.addEventListener('click', e => {
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.select-btn')) finput.click();
+        });
+        finput.addEventListener('change', e => {
+            if (e.target.files.length) pickFile(e.target.files[0]);
         });
 
-        uploadArea.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'BUTTON') {
-                fileInput.click();
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            const validTypes = [
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/msword'
-            ];
+        function pickFile(file) {
             const ext = file.name.split('.').pop().toLowerCase();
-            
-            if (!validTypes.includes(file.type) && !['docx', 'doc'].includes(ext)) {
-                alert('Please select a valid Word document (.docx or .doc)');
+            if (!['docx', 'doc'].includes(ext)) {
+                alert('Please select a Word document (.docx or .doc)');
                 return;
             }
-
             if (ext === 'doc') {
-                alert('⚠️ .doc format has limited support. For best results, please use .docx format.\n\nYou can open your .doc file in MS Word and save it as .docx');
+                alert('⚠️ .doc format has limited support.\nPlease save your file as .docx from MS Word for best results.');
                 return;
             }
-
-            selectedFile = file;
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = formatFileSize(file.size);
-
-            uploadArea.style.display = 'none';
-            fileInfo.classList.add('active');
-            progressArea.classList.remove('active');
-            downloadArea.classList.remove('active');
+            chosenFile = file;
+            document.getElementById('fname').textContent = file.name;
+            document.getElementById('fsize').textContent = fmtSize(file.size);
+            showState(stReady);
         }
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        function fmtSize(b) {
+            if (!b) return '0 B';
+            const u = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(b) / Math.log(1024));
+            return (b / Math.pow(1024, i)).toFixed(1) + ' ' + u[i];
         }
 
-        function removeFile() {
-            selectedFile = null;
-            fileInput.value = '';
-            fileInfo.classList.remove('active');
-            uploadArea.style.display = '';
+        function resetAll() {
+            chosenFile = null;
+            finput.value = '';
+            showState(stUpload);
+            setProg(0, 'Reading document...', 'Please wait...', 1);
         }
 
-        function updateProgress(percent, label, sublabel, step) {
-            const circle = document.getElementById('progressCircle');
-            const circumference = 2 * Math.PI * 60; // r=60
-            const offset = circumference - (percent / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-            
-            document.getElementById('progressText').textContent = percent + '%';
-            if (label) document.getElementById('progressLabel').textContent = label;
-            if (sublabel) document.getElementById('progressSublabel').textContent = sublabel;
-
-            // Update step dots
+        function setProg(pct, label, sub, step) {
+            const circ = document.getElementById('progCircle');
+            const c = 2 * Math.PI * 56;
+            circ.style.strokeDasharray = c;
+            circ.style.strokeDashoffset = c - (pct / 100) * c;
+            document.getElementById('progPct').textContent = pct + '%';
+            if (label) document.getElementById('progLabel').textContent = label;
+            if (sub) document.getElementById('progSub').textContent = sub;
             for (let i = 1; i <= 3; i++) {
-                const dot = document.getElementById('step' + i);
-                dot.className = 'step-dot';
-                if (i < step) dot.classList.add('done');
-                if (i === step) dot.classList.add('active');
+                const d = document.getElementById('d' + i);
+                d.className = 'dot';
+                if (i < step) d.classList.add('done');
+                if (i === step) d.classList.add('on');
             }
         }
 
-        async function convertToPDF() {
-            if (!selectedFile) return;
+        const wait = ms => new Promise(r => setTimeout(r, ms));
 
-            const convertBtn = document.getElementById('convertBtn');
-            convertBtn.disabled = true;
-
-            // Show progress
-            fileInfo.classList.remove('active');
-            progressArea.classList.add('active');
+        async function doConvert() {
+            if (!chosenFile) return;
+            document.getElementById('convertBtn').disabled = true;
+            showState(stProgress);
 
             try {
-                // Step 1: Read file
-                updateProgress(10, 'Reading document...', 'Extracting content from Word file', 1);
-                await sleep(400);
+                setProg(10, 'Reading document...', 'Loading your Word file', 1);
+                await wait(400);
 
-                const arrayBuffer = await selectedFile.arrayBuffer();
-                updateProgress(30, 'Reading document...', 'File loaded successfully', 1);
-                await sleep(300);
+                const buf = await chosenFile.arrayBuffer();
+                setProg(30, 'Reading document...', 'File loaded successfully', 1);
+                await wait(300);
 
-                // Step 2: Convert to HTML
-                updateProgress(40, 'Converting content...', 'Parsing document structure', 2);
-                await sleep(300);
+                setProg(45, 'Converting content...', 'Parsing document structure', 2);
+                await wait(300);
 
-                const result = await mammoth.convertToHtml(
-                    { arrayBuffer: arrayBuffer },
+                const res = await mammoth.convertToHtml(
+                    { arrayBuffer: buf },
                     {
-                        convertImage: mammoth.images.imgElement(function(image) {
-                            return image.read("base64").then(function(imageBuffer) {
-                                return {
-                                    src: "data:" + image.contentType + ";base64," + imageBuffer
-                                };
-                            });
-                        })
+                        convertImage: mammoth.images.imgElement(img =>
+                            img.read("base64").then(b64 => ({
+                                src: "data:" + img.contentType + ";base64," + b64
+                            }))
+                        )
                     }
                 );
 
-                const htmlContent = result.value;
-                updateProgress(60, 'Converting content...', 'Document structure parsed', 2);
-                await sleep(300);
+                if (!res.value || !res.value.trim()) throw new Error('Document is empty or could not be read.');
 
-                // Step 3: Generate PDF
-                updateProgress(70, 'Generating PDF...', 'Creating PDF document', 3);
+                setProg(60, 'Converting content...', 'Structure parsed', 2);
+                await wait(300);
 
-                const contentDiv = document.getElementById('docx-content');
-                contentDiv.innerHTML = htmlContent;
+                setProg(72, 'Generating PDF...', 'Creating PDF pages', 3);
 
-                // If empty content
-                if (!htmlContent || htmlContent.trim().length === 0) {
-                    throw new Error('The document appears to be empty or could not be read.');
-                }
+                const box = document.getElementById('render-box');
+                box.innerHTML = res.value;
+                await wait(300);
 
-                await sleep(300);
-                updateProgress(85, 'Generating PDF...', 'Rendering pages', 3);
+                setProg(85, 'Generating PDF...', 'Rendering content', 3);
 
-                const pdfFileName = selectedFile.name.replace(/\.(docx|doc)$/i, '') + '.pdf';
+                const pdfName = chosenFile.name.replace(/\.(docx|doc)$/i, '') + '.pdf';
 
-                const opt = {
-                    margin:       [15, 15, 15, 15],
-                    filename:     pdfFileName,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { 
-                        scale: 2, 
-                        useCORS: true,
-                        logging: false,
-                        letterRendering: true
-                    },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-                };
+                const blob = await html2pdf().set({
+                    margin: [15, 15, 15, 15],
+                    filename: pdfName,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                }).from(box).outputPdf('blob');
 
-                const pdfBlobResult = await html2pdf().set(opt).from(contentDiv).outputPdf('blob');
-                pdfBlob = pdfBlobResult;
+                setProg(100, 'Complete!', 'Your PDF is ready', 3);
+                await wait(500);
 
-                updateProgress(100, 'Complete!', 'Your PDF is ready', 3);
-                await sleep(600);
+                const dlBtn = document.getElementById('dlBtn');
+                dlBtn.href = URL.createObjectURL(blob);
+                dlBtn.download = pdfName;
 
-                // Show download
-                const downloadBtn = document.getElementById('downloadBtn');
-                const url = URL.createObjectURL(pdfBlob);
-                downloadBtn.href = url;
-                downloadBtn.download = pdfFileName;
+                box.innerHTML = '';
+                showState(stDone);
 
-                progressArea.classList.remove('active');
-                downloadArea.classList.add('active');
-
-                // Cleanup
-                contentDiv.innerHTML = '';
-
-            } catch (error) {
-                console.error('Conversion error:', error);
-                alert('Error converting file: ' + error.message + '\n\nPlease make sure the file is a valid .docx document.');
-                progressArea.classList.remove('active');
-                fileInfo.classList.add('active');
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message + '\n\nMake sure the file is a valid .docx');
+                showState(stReady);
             }
 
-            convertBtn.disabled = false;
-        }
-
-        function convertAnother() {
-            selectedFile = null;
-            pdfBlob = null;
-            fileInput.value = '';
-            
-            downloadArea.classList.remove('active');
-            progressArea.classList.remove('active');
-            fileInfo.classList.remove('active');
-            uploadArea.style.display = '';
-
-            // Reset progress
-            updateProgress(0, 'Reading document...', 'Please wait while we process your file', 1);
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+            document.getElementById('convertBtn').disabled = false;
         }
     </script>
 </body>
