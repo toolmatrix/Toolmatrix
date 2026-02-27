@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SVG to PNG — Convert SVG Vector Files to PNG</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f8e9;color:#333;min-height:100vh;display:flex;flex-direction:column}
+
+/* NAV */
+nav{background:#fff;padding:13px 26px;display:flex;align-items:center;border-bottom:1px solid #c8e6c9;box-shadow:0 1px 5px rgba(0,0,0,.04);position:sticky;top:0;z-index:100}
+.n-logo{width:44px;height:44px;background:linear-gradient(135deg,#43a047,#66bb6a);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.55rem;font-weight:900;margin-right:14px;box-shadow:0 3px 12px rgba(67,160,71,.22);letter-spacing:.3px;line-height:1;text-align:center}
+.n-title{font-weight:800;font-size:1.16rem;color:#2e7d32}
+.n-sep{width:1px;height:22px;background:#c8e6c9;margin:0 14px}
+.n-sub{color:#81c784;font-size:.8rem;font-weight:500}
+.n-right{margin-left:auto;display:flex;gap:8px}
+.nb{padding:9px 18px;border:none;border-radius:9px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nb.sec{background:#e8f5e9;color:#388e3c}
+.nb.sec:hover{background:#c8e6c9}
+.nb.pri{background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;box-shadow:0 2px 10px rgba(67,160,71,.22)}
+.nb.pri:hover{box-shadow:0 5px 18px rgba(67,160,71,.32);transform:translateY(-1px)}
+
+/* HERO */
+.hero{display:flex;flex-direction:column;align-items:center;padding:50px 20px 46px;background:linear-gradient(180deg,#dcedc8 0%,#f1f8e9 100%);text-align:center;transition:all .35s}
+.hero.mini{padding:14px 20px}
+.hero.mini h1,.hero.mini>p,.hero.mini .sub-p,.hero.mini .feats,.hero.mini .h-badge,.hero.mini .how-it{display:none}
+.hero.mini #dropZone{padding:14px 20px;max-width:100%}
+.hero.mini .dz-icon,.hero.mini .dz-hint,.hero.mini .dz-note{display:none}
+.hero.mini .dz-text{font-size:.86rem}
+.hero.mini .dz-btn{padding:8px 22px;font-size:.82rem;border-radius:22px}
+
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #c8e6c9;padding:5px 16px;border-radius:30px;font-size:.72rem;font-weight:600;color:#43a047;margin-bottom:16px;box-shadow:0 2px 8px rgba(67,160,71,.05)}
+.hero h1{font-size:2.3rem;font-weight:800;color:#1b5e20;margin-bottom:10px;line-height:1.15}
+.hero h1 span{background:linear-gradient(135deg,#2e7d32,#66bb6a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero>p{color:#558b2f;font-size:.98rem;margin-bottom:6px;max-width:560px;line-height:1.55}
+.sub-p{color:#9ccc65;font-size:.84rem;margin-bottom:26px}
+.feats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+.feat{display:flex;align-items:center;gap:5px;font-size:.76rem;color:#388e3c;font-weight:600;background:#fff;padding:5px 14px;border-radius:26px;border:1px solid #c8e6c9}
+.feat i{color:#43a047;font-size:.68rem}
+
+/* HOW IT WORKS */
+.how-it{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;max-width:680px}
+.how-step{background:#fff;border:1px solid #c8e6c9;border-radius:14px;padding:16px 14px;width:140px;text-align:center;box-shadow:0 2px 8px rgba(67,160,71,.04)}
+.how-step .num{width:30px;height:30px;background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin:0 auto 8px}
+.how-step .ht{font-size:.76rem;font-weight:700;color:#1b5e20;margin-bottom:3px}
+.how-step .hd{font-size:.62rem;color:#a5d6a7;font-weight:500}
+.how-arrow{display:flex;align-items:center;color:#a5d6a7;font-size:1.1rem}
+
+#dropZone{width:100%;max-width:660px;padding:54px 30px;border:2.5px dashed #a5d6a7;border-radius:20px;background:#fff;cursor:pointer;transition:all .25s;text-align:center}
+#dropZone:hover,#dropZone.dragover{border-color:#43a047;background:#f1f8e9;transform:translateY(-3px);box-shadow:0 12px 35px rgba(67,160,71,.1)}
+.dz-icon{font-size:3.4rem;color:#66bb6a;margin-bottom:16px}
+.dz-text{font-size:1.06rem;color:#444;font-weight:600;margin-bottom:4px}
+.dz-hint{font-size:.82rem;color:#ccc;margin-bottom:18px}
+.dz-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 40px;background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;border:none;border-radius:32px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(67,160,71,.26)}
+.dz-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(67,160,71,.36)}
+.dz-note{font-size:.7rem;color:#ccc;margin-top:14px}
+#fileInput{display:none}
+
+/* EDITOR */
+.editor{display:none;max-width:960px;width:100%;margin:0 auto;padding:0 20px 50px}
+.editor.show{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* FILE LIST */
+.fl-head{display:flex;align-items:center;justify-content:space-between;margin:22px 0 12px;flex-wrap:wrap;gap:8px}
+.fl-head h2{font-size:1rem;font-weight:700;color:#1b5e20;display:flex;align-items:center;gap:8px}
+.fl-head .cnt{background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;font-size:.66rem;padding:3px 11px;border-radius:20px;font-weight:700}
+.fl-acts{display:flex;gap:6px;flex-wrap:wrap}
+.fla{padding:7px 14px;border:1.5px solid #c8e6c9;border-radius:8px;background:#fff;color:#388e3c;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.fla:hover{border-color:#43a047;background:#f1f8e9;transform:translateY(-1px)}
+.fla.red{color:#e53935;border-color:#ffcdd2}
+.fla.red:hover{background:#ffebee;border-color:#e53935}
+
+.flist{display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto;padding-right:4px}
+
+.fc{background:#fff;border:1px solid #c8e6c9;border-radius:11px;padding:11px 15px;display:flex;align-items:center;gap:11px;transition:all .2s}
+.fc:hover{box-shadow:0 3px 14px rgba(67,160,71,.06);border-color:#a5d6a7}
+.fc.done{border-left:3px solid #43a047}
+.fc.err{border-left:3px solid #e53935}
+.fc-th{width:50px;height:50px;border-radius:8px;background:#f9fdf7;border:1px solid #e8f5e9;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:4px}
+.fc-th img{max-width:100%;max-height:100%;object-fit:contain}
+.fc-info{flex:1;min-width:80px;overflow:hidden}
+.fc-name{font-size:.8rem;font-weight:700;color:#1b5e20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.fc-meta{font-size:.68rem;color:#a5d6a7;font-weight:500;display:flex;gap:8px;flex-wrap:wrap}
+.fc-meta b{color:#66bb6a}
+.fc-arr{color:#43a047;font-size:.9rem;flex-shrink:0;opacity:.4}
+.fc-out{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.fc-badge{font-size:.58rem;font-weight:800;padding:3px 9px;border-radius:4px;letter-spacing:.5px;color:#fff;background:#1e88e5}
+.fc-osz{font-size:.68rem;color:#388e3c;font-weight:600}
+.fc-dims{font-size:.62rem;color:#a5d6a7;font-weight:500}
+.fc-st{flex-shrink:0;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem}
+.fc-st.wait{background:#fff8e1;color:#ff8f00}
+.fc-st.ok{background:#e8f5e9;color:#43a047}
+.fc-st.fail{background:#ffebee;color:#e53935}
+.fc-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:.8rem;padding:3px;transition:color .15s;flex-shrink:0}
+.fc-del:hover{color:#e53935}
+
+/* SETTINGS */
+.scard{background:#fff;border:1px solid #c8e6c9;border-radius:14px;padding:22px 26px;margin:16px 0;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.scard:hover{box-shadow:0 4px 16px rgba(67,160,71,.06)}
+.scard-t{font-size:.9rem;font-weight:700;color:#1b5e20;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.scard-t i{color:#43a047}
+.srow{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.srow:last-child{margin-bottom:0}
+.slbl{font-size:.78rem;font-weight:600;color:#388e3c;min-width:100px;display:flex;align-items:center;gap:5px}
+.slbl i{color:#43a047;font-size:.7rem}
+
+/* Scale selector */
+.scale-grid{display:flex;gap:8px;flex-wrap:wrap}
+.sc-btn{padding:10px 18px;border:2px solid #e8f5e9;border-radius:10px;background:#f9fdf7;cursor:pointer;text-align:center;transition:all .2s;min-width:70px}
+.sc-btn:hover{border-color:#a5d6a7;background:#f1f8e9;transform:translateY(-1px)}
+.sc-btn.on{border-color:#43a047;background:#e8f5e9;box-shadow:0 2px 10px rgba(67,160,71,.1)}
+.sc-val{font-size:.88rem;font-weight:800;color:#2e7d32}
+.sc-lbl{font-size:.58rem;color:#a5d6a7;font-weight:500;margin-top:1px}
+
+/* Custom size */
+.custom-size{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sz-input{width:90px;padding:8px 10px;border:1.5px solid #c8e6c9;border-radius:8px;font-size:.82rem;font-weight:600;color:#1b5e20;outline:none;text-align:center;font-family:inherit}
+.sz-input:focus{border-color:#43a047;box-shadow:0 0 0 3px rgba(67,160,71,.1)}
+.sz-x{font-weight:700;color:#a5d6a7;font-size:.9rem}
+.sz-lock{width:34px;height:34px;border-radius:8px;border:1.5px solid #c8e6c9;background:#fff;color:#388e3c;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .15s}
+.sz-lock:hover,.sz-lock.on{background:#43a047;color:#fff;border-color:#43a047}
+.sz-presets{display:flex;gap:5px;flex-wrap:wrap;margin-left:6px}
+.sp{padding:5px 10px;border:1.5px solid #c8e6c9;border-radius:6px;background:#fff;color:#388e3c;font-size:.62rem;font-weight:600;cursor:pointer;transition:all .12s}
+.sp:hover{background:#e8f5e9;border-color:#43a047}
+
+/* BG color */
+.bg-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bg-c{width:32px;height:32px;border-radius:8px;border:2.5px solid #e0e0e0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.bg-c:hover{transform:scale(1.1);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.bg-c.on{border-color:#43a047;box-shadow:0 2px 10px rgba(67,160,71,.18)}
+.bg-c.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;color:#43a047;background:rgba(255,255,255,.5)}
+.bg-t{background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 50%/10px 10px}
+.bg-w{background:#fff}
+.bg-b{background:#1a1a1a}
+.bg-b.on::after{color:#66bb6a}
+.bg-r{background:#e53935}
+.bg-bl{background:#1e88e5}
+.bg-g{background:#43a047}
+.bg-cu{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
+.bg-cu input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.bg-hint{font-size:.64rem;color:#bbb;font-weight:500;margin-left:4px}
+
+/* CONVERT */
+.conv-sec{text-align:center;margin:26px 0}
+.conv-btn{display:inline-flex;align-items:center;gap:11px;padding:17px 56px;background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border:none;border-radius:14px;font-size:1.08rem;font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 5px 20px rgba(67,160,71,.3);letter-spacing:.3px}
+.conv-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(67,160,71,.4)}
+.conv-btn:active{transform:translateY(0)}
+.conv-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.pbar{width:100%;max-width:400px;height:8px;background:#e8f5e9;border-radius:10px;margin:16px auto 8px;overflow:hidden;display:none}
+.pbar.show{display:block}
+.pfill{height:100%;background:linear-gradient(90deg,#43a047,#66bb6a);border-radius:10px;transition:width .3s;width:0%}
+.ptxt{text-align:center;font-size:.78rem;color:#81c784;font-weight:600;display:none}
+.ptxt.show{display:block}
+
+/* DOWNLOAD */
+.dl-sec{display:none;text-align:center;margin:22px 0;padding:30px;background:#fff;border-radius:16px;border:1px solid #c8e6c9;box-shadow:0 3px 16px rgba(67,160,71,.05)}
+.dl-sec.show{display:block;animation:fadeUp .4s ease}
+.dl-sec .ic{font-size:2.6rem;color:#43a047;margin-bottom:10px}
+.dl-sec h3{font-size:1.1rem;font-weight:700;color:#1b5e20;margin-bottom:4px}
+.dl-sec .desc{font-size:.82rem;color:#81c784;margin-bottom:6px}
+.dl-stats{display:flex;gap:10px;justify-content:center;margin:14px 0 18px;flex-wrap:wrap}
+.dl-stat{background:#f1f8e9;border:1px solid #e8f5e9;border-radius:10px;padding:10px 16px;text-align:center;min-width:85px}
+.dl-stat .v{font-size:.95rem;font-weight:800;color:#2e7d32}
+.dl-stat .l{font-size:.58rem;color:#81c784;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.dl-main{display:inline-flex;align-items:center;gap:9px;padding:14px 40px;background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border:none;border-radius:12px;font-size:.98rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(67,160,71,.28)}
+.dl-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(67,160,71,.38)}
+.dl-each{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px}
+.dl-one{padding:6px 14px;border:1.5px solid #c8e6c9;border-radius:7px;background:#fff;color:#388e3c;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.dl-one:hover{border-color:#43a047;background:#f1f8e9}
+
+/* PREVIEW */
+.preview-section{display:none;margin:16px 0}
+.preview-section.show{display:block;animation:fadeUp .3s ease}
+.preview-card{background:#fff;border:1px solid #c8e6c9;border-radius:14px;overflow:hidden}
+.preview-tabs{display:flex;border-bottom:1px solid #e8f5e9;background:#f9fdf7}
+.prev-tab{flex:1;padding:10px;border:none;background:none;color:#81c784;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;border-bottom:2.5px solid transparent}
+.prev-tab:hover{color:#2e7d32;background:#f1f8e9}
+.prev-tab.on{color:#2e7d32;border-bottom-color:#43a047;background:#fff}
+.preview-body{display:flex;align-items:center;justify-content:center;min-height:200px;max-height:400px;overflow:auto;padding:16px}
+.preview-body.checker{background:repeating-conic-gradient(#eee 0% 25%,#fff 0% 50%) 50%/16px 16px}
+.preview-body img{max-width:100%;max-height:370px;object-fit:contain;border-radius:6px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:#fff;color:#1b5e20;padding:13px 24px;border-radius:12px;font-size:.86rem;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:300;transition:transform .35s cubic-bezier(.4,0,.2,1);border-left:4px solid #43a047}
+.toast.err{border-left-color:#e53935;color:#c62828}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f1f8e9}
+::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:10px}
+
+@media(max-width:768px){
+  .hero{padding:32px 16px 28px}
+  .hero h1{font-size:1.6rem}
+  #dropZone{padding:34px 18px}
+  .n-sub,.n-sep{display:none}
+  .nb span{display:none}
+  .conv-btn{padding:14px 34px;font-size:.96rem}
+  .how-arrow{display:none}
+  .how-step{width:100px;padding:10px 8px}
+  .scale-grid{gap:6px}
+  .sc-btn{padding:8px 12px;min-width:60px}
+  .fc-arr{display:none}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.25rem}
+  .hero>p{font-size:.82rem}
+  #dropZone{padding:26px 14px}
+  .feat{font-size:.65rem;padding:4px 8px}
+  .how-it{display:none!important}
+  .dl-main{padding:12px 28px;font-size:.88rem}
+  .h-badge{display:none}
+  .srow{gap:8px}
+  .slbl{min-width:80px;font-size:.72rem}
+  .sz-input{width:70px}
+  .bg-c{width:28px;height:28px}
+  .preview-body{min-height:150px;max-height:280px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="n-logo">SVG<br>→PNG</div>
+  <span class="n-title">SVG to PNG</span>
+  <div class="n-sep"></div>
+  <span class="n-sub">Free SVG Converter</span>
+  <div class="n-right" id="navR" style="display:none">
+    <button class="nb sec" onclick="resetAll()"><i class="fas fa-redo-alt"></i> <span>Start Over</span></button>
+    <button class="nb pri" onclick="$('fileInput').click()"><i class="fas fa-plus"></i> <span>Add More</span></button>
+  </div>
+</nav>
+
+<div class="hero" id="hero">
+  <div class="h-badge"><i class="fas fa-vector-square"></i> SVG → PNG • 100% Free • No Server Upload</div>
+  <h1>Convert SVG to <span>PNG</span></h1>
+  <p>Convert SVG vector files to high-quality PNG images. Set custom scale, dimensions & background — all in your browser.</p>
+  <p class="sub-p">Batch convert multiple SVG files at once. 100% private — your files never leave your device.</p>
+  <div class="feats">
+    <span class="feat"><i class="fas fa-check-circle"></i> Free Forever</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Custom Scale</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Batch Convert</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> High Quality</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Transparent BG</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Custom Size</span>
+  </div>
+  <div class="how-it">
+    <div class="how-step"><div class="num">1</div><div class="ht">Upload SVG</div><div class="hd">Drag, drop or select</div></div>
+    <div class="how-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="how-step"><div class="num">2</div><div class="ht">Set Options</div><div class="hd">Scale, size & background</div></div>
+    <div class="how-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="how-step"><div class="num">3</div><div class="ht">Convert</div><div class="hd">Click convert button</div></div>
+    <div class="how-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="how-step"><div class="num">4</div><div class="ht">Download</div><div class="hd">Get your PNG files</div></div>
+  </div>
+  <div id="dropZone">
+    <div class="dz-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+    <div class="dz-text">Drag & drop your SVG files here</div>
+    <div class="dz-hint">or</div>
+    <button class="dz-btn" onclick="$('fileInput').click()"><i class="fas fa-file-code"></i> Select SVG Files</button>
+    <div class="dz-note">Only .SVG files • Up to 50 files • Unlimited size</div>
+  </div>
+  <input type="file" id="fileInput" accept=".svg,image/svg+xml" multiple>
+</div>
+
+<div class="editor" id="editor">
+  <div class="fl-head">
+    <h2><i class="fas fa-layer-group" style="color:#43a047"></i> SVG Files <span class="cnt" id="fCnt">0</span></h2>
+    <div class="fl-acts">
+      <button class="fla" onclick="$('fileInput').click()"><i class="fas fa-plus"></i> Add More</button>
+      <button class="fla red" onclick="resetAll()"><i class="fas fa-trash-alt"></i> Clear All</button>
+    </div>
+  </div>
+  <div class="flist" id="fList"></div>
+
+  <!-- PREVIEW -->
+  <div class="preview-section" id="prevSec">
+    <div class="preview-card">
+      <div class="preview-tabs">
+        <button class="prev-tab on" onclick="showPrev('svg',this)"><i class="fas fa-vector-square"></i> SVG Original</button>
+        <button class="prev-tab" onclick="showPrev('png',this)"><i class="fas fa-image"></i> PNG Preview</button>
+      </div>
+      <div class="preview-body checker" id="prevBody">
+        <img id="prevImg" src="" alt="Preview">
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="scard">
+    <div class="scard-t"><i class="fas fa-cog"></i> PNG Output Settings</div>
+
+    <!-- Scale -->
+    <div class="srow">
+      <div class="slbl"><i class="fas fa-expand-arrows-alt"></i> Scale:</div>
+      <div class="scale-grid">
+        <div class="sc-btn" onclick="setScale(1,this)"><div class="sc-val">1×</div><div class="sc-lbl">Original</div></div>
+        <div class="sc-btn on" onclick="setScale(2,this)"><div class="sc-val">2×</div><div class="sc-lbl">Double</div></div>
+        <div class="sc-btn" onclick="setScale(3,this)"><div class="sc-val">3×</div><div class="sc-lbl">Triple</div></div>
+        <div class="sc-btn" onclick="setScale(4,this)"><div class="sc-val">4×</div><div class="sc-lbl">4× HD</div></div>
+        <div class="sc-btn" onclick="setScale(5,this)"><div class="sc-val">5×</div><div class="sc-lbl">5× Ultra</div></div>
+        <div class="sc-btn" onclick="setScale(8,this)"><div class="sc-val">8×</div><div class="sc-lbl">8× Max</div></div>
+        <div class="sc-btn" onclick="setScale(0,this)"><div class="sc-val">Custom</div><div class="sc-lbl">Set size</div></div>
+      </div>
+    </div>
+
+    <!-- Custom Size (shown when Custom selected) -->
+    <div id="customSizeSec" style="display:none">
+      <div class="srow">
+        <div class="slbl"><i class="fas fa-ruler-combined"></i> Size (px):</div>
+        <div class="custom-size">
+          <input type="number" class="sz-input" id="cWidth" placeholder="Width" min="1" max="20000">
+          <span class="sz-x">×</span>
+          <input type="number" class="sz-input" id="cHeight" placeholder="Height" min="1" max="20000">
+          <button class="sz-lock on" id="lockBtn" onclick="toggleLock()" title="Lock ratio"><i class="fas fa-lock"></i></button>
+          <div class="sz-presets">
+            <button class="sp" onclick="setSize(512,512)">512×512</button>
+            <button class="sp" onclick="setSize(1024,1024)">1024²</button>
+            <button class="sp" onclick="setSize(1920,1080)">1920×1080</button>
+            <button class="sp" onclick="setSize(2048,2048)">2048²</button>
+            <button class="sp" onclick="setSize(4096,4096)">4096²</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background -->
+    <div class="srow" style="margin-top:4px;padding-top:14px;border-top:1px solid #e8f5e9">
+      <div class="slbl"><i class="fas fa-fill-drip"></i> Background:</div>
+      <div class="bg-row">
+        <div class="bg-c bg-t on" onclick="setBg('transparent',this)" title="Transparent"></div>
+        <div class="bg-c bg-w" onclick="setBg('#ffffff',this)" title="White"></div>
+        <div class="bg-c bg-b" onclick="setBg('#000000',this)" title="Black"></div>
+        <div class="bg-c bg-r" onclick="setBg('#e53935',this)" title="Red"></div>
+        <div class="bg-c bg-bl" onclick="setBg('#1e88e5',this)" title="Blue"></div>
+        <div class="bg-c bg-g" onclick="setBg('#43a047',this)" title="Green"></div>
+        <div class="bg-c bg-cu" title="Custom"><input type="color" value="#8e24aa" onchange="setBg(this.value,this.parentElement)"></div>
+        <span class="bg-hint">Transparent = checkerboard pattern in PNG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVERT -->
+  <div class="conv-sec">
+    <button class="conv-btn" id="convBtn" onclick="convertAll()">
+      <i class="fas fa-bolt"></i> Convert to PNG
+    </button>
+    <div class="pbar" id="pBar"><div class="pfill" id="pFill"></div></div>
+    <div class="ptxt" id="pTxt"></div>
+  </div>
+
+  <!-- DOWNLOAD -->
+  <div class="dl-sec" id="dlSec">
+    <div class="ic"><i class="fas fa-check-circle"></i></div>
+    <h3 id="dlTitle">SVGs Converted to PNG!</h3>
+    <div class="desc" id="dlDesc">All SVG files converted successfully</div>
+    <div class="dl-stats" id="dlStats"></div>
+    <button class="dl-main" onclick="downloadAll()"><i class="fas fa-download"></i> Download All PNGs</button>
+    <div class="dl-each" id="dlEach"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let files=[],converted=[];
+let scale=2,customW=0,customH=0,lockRatio=true,bgMode='transparent',bgColor='';
+let previewIdx=0;
+
+// FILE INPUT
+$('fileInput').addEventListener('change',e=>{addFiles(e.target.files);e.target.value=''});
+
+const dz=$('dropZone');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files)});
+
+document.addEventListener('paste',e=>{
+  const items=e.clipboardData?.items;if(!items)return;
+  const svgs=[];
+  for(let i of items){
+    if(i.type==='image/svg+xml')svgs.push(i.getAsFile());
+    else if(i.type.startsWith('image/'))svgs.push(i.getAsFile());
+  }
+  if(svgs.length){e.preventDefault();addFiles(svgs)}
+});
+
+function addFiles(list){
+  let n=0;
+  for(let f of list){
+    const isSvg=f.type==='image/svg+xml'||f.name.toLowerCase().endsWith('.svg');
+    if(!isSvg){toast('Only SVG files accepted! Skipped: '+f.name,1);continue}
+    if(files.length>=50){toast('Max 50 files!',1);break}
+    files.push({id:uid(),file:f,status:'waiting',blob:null,outSize:0,svgW:0,svgH:0,outW:0,outH:0,svgUrl:URL.createObjectURL(f)});
+    n++;
+  }
+  if(!n&&!files.length)return;
+  if(n)toast('✓ '+n+' SVG file'+(n>1?'s':'')+' added');
+  // Parse SVG dimensions
+  files.forEach(f=>{if(!f.svgW)parseSvgDims(f)});
+  showEditor();render();
+  // Show preview of first file
+  if(files.length>0)showPreviewOf(0);
+}
+
+function parseSvgDims(f){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(e.target.result,'image/svg+xml');
+    const svg=doc.querySelector('svg');
+    if(svg){
+      let w=parseFloat(svg.getAttribute('width'))||0;
+      let h=parseFloat(svg.getAttribute('height'))||0;
+      if(!w||!h){
+        const vb=svg.getAttribute('viewBox');
+        if(vb){const parts=vb.split(/[\s,]+/);w=parseFloat(parts[2])||300;h=parseFloat(parts[3])||150;}
+      }
+      f.svgW=Math.round(w)||300;
+      f.svgH=Math.round(h)||150;
+      render();
+    }
+  };
+  reader.readAsText(f.file);
+}
+
+function showEditor(){
+  $('hero').classList.add('mini');
+  $('editor').classList.add('show');
+  $('navR').style.display='flex';
+}
+
+function render(){
+  const el=$('fList');$('fCnt').textContent=files.length;el.innerHTML='';
+  files.forEach((f,i)=>{
+    const sz=fmtSz(f.file.size);
+    let stH='<div class="fc-st wait"><i class="fas fa-clock"></i></div>';
+    let cls='';
+    if(f.status==='done'){stH='<div class="fc-st ok"><i class="fas fa-check"></i></div>';cls='done'}
+    else if(f.status==='error'){stH='<div class="fc-st fail"><i class="fas fa-times"></i></div>';cls='err'}
+    const osz=f.status==='done'?fmtSz(f.outSize):'—';
+    const dims=f.svgW?f.svgW+'×'+f.svgH:'—';
+    const outDims=f.status==='done'&&f.outW?f.outW+'×'+f.outH+'px':'';
+    el.innerHTML+=`<div class="fc ${cls}" onclick="showPreviewOf(${i})" style="cursor:pointer">
+      <div class="fc-th"><img src="${f.svgUrl}" alt=""></div>
+      <div class="fc-info">
+        <div class="fc-name" title="${esc(f.file.name)}">${esc(f.file.name)}</div>
+        <div class="fc-meta"><b>SVG</b> • ${sz} • ${dims}</div>
+      </div>
+      <div class="fc-arr"><i class="fas fa-long-arrow-alt-right"></i></div>
+      <div class="fc-out">
+        <span class="fc-badge">PNG</span>
+        <span class="fc-osz">${osz}</span>
+        <span class="fc-dims">${outDims}</span>
+      </div>
+      ${stH}
+      <button class="fc-del" onclick="event.stopPropagation();removeFile('${f.id}')" title="Remove"><i class="fas fa-times"></i></button>
+    </div>`;
+  });
+}
+
+function removeFile(id){
+  const f=files.find(x=>x.id===id);
+  if(f&&f.svgUrl)URL.revokeObjectURL(f.svgUrl);
+  files=files.filter(x=>x.id!==id);converted=converted.filter(c=>c.id!==id);
+  if(!files.length){resetAll();return}
+  render();
+}
+
+// PREVIEW
+function showPreviewOf(idx){
+  previewIdx=idx;
+  const f=files[idx];if(!f)return;
+  $('prevSec').classList.add('show');
+  $('prevImg').src=f.svgUrl;
+  $('prevBody').classList.add('checker');
+  document.querySelectorAll('.prev-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.prev-tab')[0].classList.add('on');
+}
+
+function showPrev(type,btn){
+  document.querySelectorAll('.prev-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  const f=files[previewIdx];if(!f)return;
+  if(type==='svg'){
+    $('prevImg').src=f.svgUrl;
+    $('prevBody').classList.add('checker');
+  }else{
+    if(f.status==='done'&&f.blob){
+      $('prevImg').src=URL.createObjectURL(f.blob);
+      $('prevBody').classList.toggle('checker',bgMode==='transparent');
+    }else{
+      toast('Convert first to see PNG preview',1);
+    }
+  }
+}
+
+// SETTINGS
+function setScale(s,el){
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  scale=s;
+  $('customSizeSec').style.display=s===0?'':'none';
+}
+
+function toggleLock(){
+  lockRatio=!lockRatio;
+  const b=$('lockBtn');b.classList.toggle('on');
+  b.innerHTML=lockRatio?'<i class="fas fa-lock"></i>':'<i class="fas fa-unlock"></i>';
+}
+
+$('cWidth').addEventListener('input',function(){
+  if(lockRatio&&files.length>0){
+    const f=files[0];
+    const ratio=f.svgW&&f.svgH?f.svgW/f.svgH:1;
+    $('cHeight').value=Math.round(this.value/ratio)||'';
+  }
+  customW=parseInt(this.value)||0;
+  customH=parseInt($('cHeight').value)||0;
+});
+$('cHeight').addEventListener('input',function(){
+  if(lockRatio&&files.length>0){
+    const f=files[0];
+    const ratio=f.svgW&&f.svgH?f.svgW/f.svgH:1;
+    $('cWidth').value=Math.round(this.value*ratio)||'';
+  }
+  customH=parseInt(this.value)||0;
+  customW=parseInt($('cWidth').value)||0;
+});
+
+function setSize(w,h){
+  $('cWidth').value=w;$('cHeight').value=h;
+  customW=w;customH=h;
+}
+
+function setBg(val,el){
+  document.querySelectorAll('.bg-c').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  if(val==='transparent'){bgMode='transparent'}
+  else{bgMode='color';bgColor=val}
+}
+
+// CONVERT
+async function convertAll(){
+  if(!files.length){toast('Add SVG files first!',1);return}
+  const btn=$('convBtn');btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Converting...';
+  $('pBar').classList.add('show');$('pTxt').classList.add('show');
+  $('dlSec').classList.remove('show');
+  converted=[];
+  let ok=0,fail=0,origTotal=0,newTotal=0;
+  const t0=performance.now();
+
+  for(let i=0;i<files.length;i++){
+    files[i].status='converting';
+    $('pTxt').textContent=`Converting ${i+1} of ${files.length} — ${files[i].file.name}`;
+    $('pFill').style.width=((i/files.length)*100)+'%';
+    render();await sleep(20);
+
+    try{
+      const r=await svgToPng(files[i]);
+      files[i].status='done';files[i].blob=r.blob;files[i].outSize=r.blob.size;
+      files[i].outW=r.w;files[i].outH=r.h;
+      converted.push({id:files[i].id,blob:r.blob,name:files[i].file.name.replace(/\.svg$/i,'')+'.png'});
+      origTotal+=files[i].file.size;newTotal+=r.blob.size;
+      ok++;
+    }catch(err){
+      files[i].status='error';fail++;
+      console.error('Convert error:',files[i].file.name,err);
+    }
+    $('pFill').style.width=(((i+1)/files.length)*100)+'%';
+    render();
+  }
+
+  const elapsed=performance.now()-t0;
+  $('pFill').style.width='100%';
+  $('pTxt').textContent=`✓ ${ok} converted`+(fail?`, ${fail} failed`:'');
+  btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-bolt"></i> Convert to PNG';
+  if(ok>0){showDL(ok,fail,origTotal,newTotal,elapsed);toast('✓ '+ok+' SVG'+(ok>1?'s':'')+' converted to PNG!')}
+  else toast('Conversion failed!',1);
+}
+
+function svgToPng(fileObj){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const svgText=e.target.result;
+
+      // Parse to get proper dimensions
+      const parser=new DOMParser();
+      const doc=parser.parseFromString(svgText,'image/svg+xml');
+      const svg=doc.querySelector('svg');
+      if(!svg){reject(new Error('Invalid SVG'));return}
+
+      let svgW=parseFloat(svg.getAttribute('width'))||0;
+      let svgH=parseFloat(svg.getAttribute('height'))||0;
+      const vb=svg.getAttribute('viewBox');
+      if((!svgW||!svgH)&&vb){
+        const p=vb.split(/[\s,]+/);
+        svgW=parseFloat(p[2])||300;svgH=parseFloat(p[3])||150;
+      }
+      if(!svgW)svgW=300;if(!svgH)svgH=150;
+
+      // Calculate output size
+      let outW,outH;
+      if(scale===0&&customW&&customH){
+        outW=customW;outH=customH;
+      }else if(scale===0&&customW){
+        outW=customW;outH=Math.round(customW*(svgH/svgW));
+      }else if(scale===0&&customH){
+        outH=customH;outW=Math.round(customH*(svgW/svgH));
+      }else{
+        const s=scale||2;
+        outW=Math.round(svgW*s);outH=Math.round(svgH*s);
+      }
+
+      // Ensure SVG has width/height for proper rendering
+      const svgClone=svg.cloneNode(true);
+      svgClone.setAttribute('width',outW);
+      svgClone.setAttribute('height',outH);
+      if(!svgClone.getAttribute('viewBox')){
+        svgClone.setAttribute('viewBox',`0 0 ${svgW} ${svgH}`);
+      }
+
+      const serializer=new XMLSerializer();
+      const svgString=serializer.serializeToString(svgClone);
+      const svgBlob=new Blob([svgString],{type:'image/svg+xml;charset=utf-8'});
+      const url=URL.createObjectURL(svgBlob);
+
+      const img=new Image();
+      img.onload=()=>{
+        try{
+          const canvas=document.createElement('canvas');
+          canvas.width=outW;canvas.height=outH;
+          const ctx=canvas.getContext('2d');
+
+          // Background
+          if(bgMode==='color'){
+            ctx.fillStyle=bgColor;
+            ctx.fillRect(0,0,outW,outH);
+          }
+
+          ctx.drawImage(img,0,0,outW,outH);
+          URL.revokeObjectURL(url);
+
+          canvas.toBlob(blob=>{
+            if(blob)resolve({blob,w:outW,h:outH});
+            else reject(new Error('toBlob failed'));
+          },'image/png');
+        }catch(e){
+          URL.revokeObjectURL(url);reject(e);
+        }
+      };
+      img.onerror=()=>{
+        URL.revokeObjectURL(url);
+        reject(new Error('SVG rendering failed'));
+      };
+      img.src=url;
+    };
+    reader.onerror=()=>reject(new Error('Read failed'));
+    reader.readAsText(fileObj.file);
+  });
+}
+
+function showDL(ok,fail,orig,newSz,ms){
+  const dl=$('dlSec');dl.classList.add('show');
+  $('dlTitle').textContent=ok+' SVG'+(ok>1?'s':'')+' Converted to PNG!';
+  $('dlDesc').textContent=fail?fail+' failed — '+ok+' successful':'All files converted successfully';
+  $('dlStats').innerHTML=`
+    <div class="dl-stat"><div class="v">${ok}</div><div class="l">Converted</div></div>
+    <div class="dl-stat"><div class="v">${fmtSz(orig)}</div><div class="l">SVG Size</div></div>
+    <div class="dl-stat"><div class="v">${fmtSz(newSz)}</div><div class="l">PNG Size</div></div>
+    <div class="dl-stat"><div class="v">${scale===0?(customW||'?')+'×'+(customH||'?'):scale+'×'}</div><div class="l">Scale</div></div>
+    <div class="dl-stat"><div class="v">${ms<1000?Math.round(ms)+'ms':(ms/1000).toFixed(1)+'s'}</div><div class="l">Time</div></div>`;
+  const each=$('dlEach');each.innerHTML='';
+  if(converted.length>1)converted.forEach(c=>{each.innerHTML+=`<button class="dl-one" onclick="dlOne('${c.id}')"><i class="fas fa-download"></i> ${esc(c.name)}</button>`});
+  dl.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// DOWNLOAD
+function dlOne(id){const c=converted.find(x=>x.id===id);if(!c)return;dlBlob(c.blob,c.name);toast('📥 '+c.name)}
+
+async function downloadAll(){
+  if(!converted.length){toast('Convert first!',1);return}
+  if(converted.length===1){dlBlob(converted[0].blob,converted[0].name);toast('📥 Downloaded!');return}
+  toast('Creating ZIP...');
+  try{
+    if(typeof JSZip==='undefined')await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+    const zip=new JSZip();
+    converted.forEach(c=>zip.file(c.name,c.blob));
+    const content=await zip.generateAsync({type:'blob'});
+    dlBlob(content,'svg-to-png.zip');
+    toast('📥 ZIP — '+converted.length+' PNG files!');
+  }catch(e){
+    converted.forEach(c=>dlBlob(c.blob,c.name));
+    toast('📥 Downloaded individually');
+  }
+}
+
+// RESET
+function resetAll(){
+  files.forEach(f=>{if(f.svgUrl)URL.revokeObjectURL(f.svgUrl)});
+  files=[];converted=[];
+  $('editor').classList.remove('show');$('dlSec').classList.remove('show');
+  $('navR').style.display='none';$('fList').innerHTML='';
+  $('pBar').classList.remove('show');$('pTxt').classList.remove('show');
+  $('pFill').style.width='0%';$('prevSec').classList.remove('show');
+  $('hero').classList.remove('mini');
+  scrollTo({top:0,behavior:'smooth'});toast('Cleared ✓');
+}
+
+// UTILS
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2,8)}
+function fmtSz(b){b=Math.abs(b);if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB'}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function dlBlob(b,n){const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function loadJS(s){return new Promise((r,j)=>{const el=document.createElement('script');el.src=s;el.onload=r;el.onerror=j;document.head.appendChild(el)})}
+function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+</script>
+</body>
+</html>
