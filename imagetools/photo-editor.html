@@ -1,55 +1,1605 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photo Editor - iLoveIMG Style</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photo Editor Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    body { background: #0a0a0a; }
-    #tui-image-editor { width: 100% !important; height: calc(100vh - 60px) !important; }
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #574fd6;
+      --secondary: #ff6584;
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #16213e;
+      --surface3: #0d3b66;
+      --text: #e0e0ff;
+      --text-muted: #8888aa;
+      --border: #2a2a4a;
+      --success: #4ecca3;
+      --warning: #ffd166;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo i { font-size: 1.6rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .header-actions { display: flex; gap: 8px; }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(108,99,255,0.4); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-success { background: linear-gradient(135deg, var(--success), #2eb89a); color: #000; }
+    .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(78,204,163,0.4); }
+    .btn-danger { background: linear-gradient(135deg, var(--secondary), #cc3355); color: #fff; }
+    .btn-danger:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+    /* ===== UPLOAD AREA ===== */
+    #upload-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 65px);
+      padding: 20px;
+    }
+    .upload-box {
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      max-width: 520px;
+      width: 100%;
+      background: rgba(108,99,255,0.05);
+      position: relative;
+    }
+    .upload-box:hover, .upload-box.dragover {
+      border-color: var(--secondary);
+      background: rgba(108,99,255,0.12);
+      transform: scale(1.02);
+    }
+    .upload-icon {
+      font-size: 5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .upload-box h2 { font-size: 1.5rem; margin-bottom: 10px; }
+    .upload-box p { color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; }
+    .upload-formats { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 15px; }
+    .format-badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    #file-input { display: none; }
+
+    /* ===== EDITOR LAYOUT ===== */
+    #editor-section { display: none; height: calc(100vh - 65px); }
+    .editor-wrapper {
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      height: 100%;
+    }
+
+    /* ===== SIDEBARS ===== */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .sidebar-right { border-right: none; border-left: 1px solid var(--border); }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .sidebar-section {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sidebar-section-title i { color: var(--primary); }
+
+    /* Tool Buttons */
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .tool-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tool-btn i { font-size: 1.1rem; color: var(--primary); }
+    .tool-btn:hover { background: var(--border); border-color: var(--primary); }
+    .tool-btn.active { background: rgba(108,99,255,0.2); border-color: var(--primary); color: var(--primary); }
+
+    /* Sliders */
+    .slider-group { margin-bottom: 12px; }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+    .slider-label span:last-child { color: var(--primary); font-weight: 600; }
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 6px rgba(108,99,255,0.6);
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none;
+    }
+
+    /* Filter Presets */
+    .filter-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .preset-thumb {
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      aspect-ratio: 1;
+      background: var(--surface2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      padding: 6px;
+    }
+    .preset-thumb:hover { border-color: var(--primary); color: var(--text); }
+    .preset-thumb.active { border-color: var(--primary); background: rgba(108,99,255,0.2); color: var(--primary); }
+    .preset-thumb i { font-size: 1.2rem; }
+
+    /* Color Inputs */
+    .color-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .color-row label { font-size: 0.78rem; color: var(--text-muted); flex: 1; }
+    input[type=color] {
+      width: 36px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+      padding: 2px;
+    }
+    input[type=number], input[type=text], select, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      width: 100%;
+      font-family: inherit;
+      margin-bottom: 8px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type=number]:focus, input[type=text]:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    select option { background: var(--surface2); }
+    textarea { resize: vertical; min-height: 60px; }
+
+    /* ===== CANVAS AREA ===== */
+    .canvas-area {
+      background: #0a0a14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .canvas-container {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    #main-canvas {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 130px);
+      border-radius: 4px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      cursor: crosshair;
+    }
+    #overlay-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+    }
+    .canvas-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .canvas-placeholder i { font-size: 4rem; margin-bottom: 15px; opacity: 0.3; }
+
+    /* Bottom Toolbar */
+    .bottom-toolbar {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(26,26,46,0.95);
+      padding: 8px 12px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+    .zoom-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .zoom-btn:hover { background: var(--primary); border-color: var(--primary); }
+    .zoom-label { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; padding: 0 4px; }
+
+    /* ===== CROP OVERLAY ===== */
+    #crop-overlay {
+      position: absolute;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+      cursor: move;
+      display: none;
+    }
+    .crop-handle {
+      position: absolute;
+      width: 10px; height: 10px;
+      background: #fff;
+      border: 2px solid var(--primary);
+      border-radius: 2px;
+    }
+    .crop-handle.tl { top: -5px; left: -5px; cursor: nw-resize; }
+    .crop-handle.tr { top: -5px; right: -5px; cursor: ne-resize; }
+    .crop-handle.bl { bottom: -5px; left: -5px; cursor: sw-resize; }
+    .crop-handle.br { bottom: -5px; right: -5px; cursor: se-resize; }
+
+    /* ===== TEXT OVERLAY ===== */
+    #text-overlay {
+      position: absolute;
+      cursor: move;
+      display: none;
+      padding: 4px 8px;
+      border: 1px dashed rgba(108,99,255,0.5);
+      user-select: none;
+      touch-action: none;
+    }
+
+    /* ===== DRAW CURSOR ===== */
+    .draw-mode #main-canvas { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='5' fill='%236c63ff' stroke='white' stroke-width='1'/%3E%3C/svg%3E") 10 10, crosshair; }
+
+    /* ===== HISTORY ===== */
+    .history-list { max-height: 160px; overflow-y: auto; }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .history-item:hover { background: var(--border); color: var(--text); }
+    .history-item.current { background: rgba(108,99,255,0.15); color: var(--primary); }
+    .history-item i { font-size: 0.7rem; }
+
+    /* ===== INFO BAR ===== */
+    .info-bar {
+      display: flex;
+      gap: 12px;
+      padding: 8px 14px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .info-item { display: flex; align-items: center; gap: 4px; }
+    .info-item span:last-child { color: var(--text); font-weight: 600; }
+
+    /* ===== NOTIFICATIONS ===== */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideIn 0.3s ease;
+      box-shadow: var(--shadow);
+      max-width: 280px;
+    }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--secondary); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    .mobile-tabs { display: none; }
+    @media (max-width: 768px) {
+      .editor-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+      .sidebar, .sidebar-right { display: none; height: 200px; overflow-y: auto; }
+      .sidebar.mobile-visible, .sidebar-right.mobile-visible { display: block; }
+      .mobile-tabs {
+        display: flex;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .mobile-tabs::-webkit-scrollbar { display: none; }
+      .mobile-tab {
+        padding: 10px 14px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        cursor: pointer;
+        color: var(--text-muted);
+        border-bottom: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+        font-family: inherit;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .mobile-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+      .canvas-area { order: 1; min-height: 250px; }
+      #main-canvas { max-height: 250px; }
+      .bottom-toolbar { bottom: 8px; }
+      header { padding: 8px 12px; }
+      .logo { font-size: 1.1rem; }
+      .btn { padding: 7px 10px; font-size: 0.78rem; }
+      .btn span { display: none; }
+      .editor-wrapper { height: calc(100vh - 65px); }
+    }
+    @media (max-width: 480px) {
+      .header-actions { gap: 5px; }
+    }
+
+    /* ===== LOADING ===== */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Scrollbar overall */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Panel toggle for mobile */
+    .panel-group { display: contents; }
   </style>
 </head>
-<body class="text-white">
+<body>
 
-  <div class="flex items-center justify-between bg-black px-6 py-4 border-b border-zinc-800">
-    <h1 class="text-2xl font-bold flex items-center gap-2">
-      📸 <span>Photo Editor</span>
-    </h1>
-    <p class="text-zinc-400 text-sm">iLoveIMG jaisa powerful tool</p>
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p style="color:var(--text-muted);font-size:0.9rem;">Processing...</p>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <i class="fas fa-wand-magic-sparkles"></i>
+    Photo Editor Pro
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-secondary" id="undo-btn" onclick="undo()" disabled>
+      <i class="fas fa-undo"></i><span>Undo</span>
+    </button>
+    <button class="btn btn-secondary" id="redo-btn" onclick="redo()" disabled>
+      <i class="fas fa-redo"></i><span>Redo</span>
+    </button>
+    <button class="btn btn-danger" id="reset-btn" onclick="resetImage()" disabled>
+      <i class="fas fa-rotate-left"></i><span>Reset</span>
+    </button>
+    <button class="btn btn-primary" id="upload-new-btn" onclick="uploadNew()">
+      <i class="fas fa-upload"></i><span>Upload</span>
+    </button>
+    <button class="btn btn-success" id="download-btn" onclick="downloadImage()" disabled>
+      <i class="fas fa-download"></i><span>Save</span>
+    </button>
+  </div>
+</header>
+
+<!-- Upload Section -->
+<div id="upload-section">
+  <div class="upload-box" id="drop-zone" onclick="document.getElementById('file-input').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+    <h2>Upload Your Photo</h2>
+    <p>Drag & drop your image here, or click to browse</p>
+    <button class="btn btn-primary" style="margin: 0 auto;" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
+      <i class="fas fa-folder-open"></i> Choose File
+    </button>
+    <div class="upload-formats">
+      <span class="format-badge">JPG</span>
+      <span class="format-badge">PNG</span>
+      <span class="format-badge">WebP</span>
+      <span class="format-badge">GIF</span>
+      <span class="format-badge">BMP</span>
+      <span class="format-badge">SVG</span>
+    </div>
+  </div>
+  <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)"/>
+</div>
+
+<!-- Editor Section -->
+<div id="editor-section">
+  <!-- Mobile Tabs -->
+  <div class="mobile-tabs" id="mobile-tabs">
+    <button class="mobile-tab active" onclick="showMobilePanel('tools')" id="tab-tools"><i class="fas fa-tools"></i> Tools</button>
+    <button class="mobile-tab" onclick="showMobilePanel('canvas')" id="tab-canvas"><i class="fas fa-image"></i> Canvas</button>
+    <button class="mobile-tab" onclick="showMobilePanel('adjust')" id="tab-adjust"><i class="fas fa-sliders-h"></i> Adjust</button>
+    <button class="mobile-tab" onclick="showMobilePanel('filters')" id="tab-filters"><i class="fas fa-magic"></i> Filters</button>
+    <button class="mobile-tab" onclick="showMobilePanel('text')" id="tab-text"><i class="fas fa-font"></i> Text</button>
+    <button class="mobile-tab" onclick="showMobilePanel('draw')" id="tab-draw"><i class="fas fa-pen"></i> Draw</button>
+    <button class="mobile-tab" onclick="showMobilePanel('resize')" id="tab-resize"><i class="fas fa-expand-arrows-alt"></i> Resize</button>
   </div>
 
-  <div id="tui-image-editor"></div>
+  <div class="editor-wrapper">
 
-  <script src="https://uicdn.toast.com/tui-code-snippet/v1.5.2/tui-code-snippet.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.22/fabric.min.js"></script>
-  <script src="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.min.js"></script>
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar" id="left-sidebar">
+      <!-- Tools -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-tools"></i> Tools</div>
+        <div class="tool-grid">
+          <button class="tool-btn" id="tool-crop" onclick="activateTool('crop')"><i class="fas fa-crop-alt"></i>Crop</button>
+          <button class="tool-btn" id="tool-rotate-l" onclick="rotateImage(-90)"><i class="fas fa-rotate-left"></i>Rotate L</button>
+          <button class="tool-btn" id="tool-rotate-r" onclick="rotateImage(90)"><i class="fas fa-rotate-right"></i>Rotate R</button>
+          <button class="tool-btn" id="tool-flip-h" onclick="flipImage('h')"><i class="fas fa-arrows-left-right"></i>Flip H</button>
+          <button class="tool-btn" id="tool-flip-v" onclick="flipImage('v')"><i class="fas fa-arrows-up-down"></i>Flip V</button>
+          <button class="tool-btn" id="tool-text" onclick="activateTool('text')"><i class="fas fa-font"></i>Text</button>
+          <button class="tool-btn" id="tool-draw" onclick="activateTool('draw')"><i class="fas fa-pen"></i>Draw</button>
+          <button class="tool-btn" id="tool-erase" onclick="activateTool('erase')"><i class="fas fa-eraser"></i>Eraser</button>
+          <button class="tool-btn" id="tool-move" onclick="activateTool('move')"><i class="fas fa-arrows-up-down-left-right"></i>Move</button>
+          <button class="tool-btn" id="tool-select" onclick="activateTool('select')"><i class="fas fa-vector-square"></i>Select</button>
+        </div>
+      </div>
 
-  <script>
-    const imageEditor = new tui.ImageEditor('#tui-image-editor', {
-      includeUI: {
-        loadImage: {
-          path: '',
-          name: 'Image'
-        },
-        initMenu: 'crop',
-        menuBarPosition: 'left',
-        uiSize: {
-          width: '100%',
-          height: '100%'
+      <!-- Draw Options -->
+      <div class="sidebar-section" id="draw-options" style="display:none">
+        <div class="sidebar-section-title"><i class="fas fa-pen"></i> Draw Options</div>
+        <div class="color-row">
+          <label>Color</label>
+          <input type="color" id="draw-color" value="#6c63ff" onchange="updateDrawSettings()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Brush Size</span><span id="brush-size-val">5</span></div>
+          <input type="range" id="brush-size" min="1" max="50" value="5" oninput="document.getElementById('brush-size-val').textContent=this.value; updateDrawSettings()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Opacity</span><span id="brush-opacity-val">100%</span></div>
+          <input type="range" id="brush-opacity" min="1" max="100" value="100" oninput="document.getElementById('brush-opacity-val').textContent=this.value+'%'; updateDrawSettings()">
+        </div>
+        <div style="margin-bottom:8px">
+          <div class="slider-label"><span style="font-size:0.78rem;color:var(--text-muted)">Brush Style</span></div>
+          <select id="brush-style" onchange="updateDrawSettings()">
+            <option value="round">Round</option>
+            <option value="square">Square</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="clearDrawing()"><i class="fas fa-trash"></i> Clear Drawing</button>
+      </div>
+
+      <!-- Crop Options -->
+      <div class="sidebar-section" id="crop-options" style="display:none">
+        <div class="sidebar-section-title"><i class="fas fa-crop-alt"></i> Crop Options</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(1,1)">1:1</button>
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(16,9)">16:9</button>
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(4,3)">4:3</button>
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(3,2)">3:2</button>
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(0,0)">Free</button>
+          <button class="btn btn-secondary" style="font-size:0.72rem;padding:6px" onclick="setCropAspect(9,16)">9:16</button>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:6px" onclick="applyCrop()"><i class="fas fa-check"></i> Apply Crop</button>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="cancelCrop()"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+
+      <!-- History -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-history"></i> History</div>
+        <div class="history-list" id="history-list">
+          <div style="font-size:0.78rem;color:var(--text-muted);text-align:center;padding:10px">No history yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANVAS AREA -->
+    <div class="canvas-area" id="canvas-area">
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="main-canvas"></canvas>
+        <canvas id="overlay-canvas"></canvas>
+        <div id="crop-overlay">
+          <div class="crop-handle tl"></div>
+          <div class="crop-handle tr"></div>
+          <div class="crop-handle bl"></div>
+          <div class="crop-handle br"></div>
+        </div>
+        <div id="text-overlay"></div>
+      </div>
+      <!-- Bottom Zoom Toolbar -->
+      <div class="bottom-toolbar">
+        <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out"><i class="fas fa-minus"></i></button>
+        <span class="zoom-label" id="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In"><i class="fas fa-plus"></i></button>
+        <button class="zoom-btn" onclick="fitToScreen()" title="Fit"><i class="fas fa-expand"></i></button>
+        <button class="zoom-btn" onclick="zoom100()" title="100%"><i class="fas fa-percent"></i></button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar sidebar-right" id="right-sidebar">
+
+      <!-- Adjustments -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-sliders-h"></i> Adjustments</div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Brightness</span><span id="brightness-val">0</span></div>
+          <input type="range" id="brightness" min="-100" max="100" value="0" oninput="updateVal('brightness-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Contrast</span><span id="contrast-val">0</span></div>
+          <input type="range" id="contrast" min="-100" max="100" value="0" oninput="updateVal('contrast-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Saturation</span><span id="saturation-val">0</span></div>
+          <input type="range" id="saturation" min="-100" max="100" value="0" oninput="updateVal('saturation-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Hue Rotate</span><span id="hue-val">0°</span></div>
+          <input type="range" id="hue" min="0" max="360" value="0" oninput="updateVal('hue-val',this.value+'°');applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Blur</span><span id="blur-val">0</span></div>
+          <input type="range" id="blur" min="0" max="20" value="0" step="0.1" oninput="updateVal('blur-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Sharpen</span><span id="sharpen-val">0</span></div>
+          <input type="range" id="sharpen" min="0" max="10" value="0" step="0.5" oninput="updateVal('sharpen-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Opacity</span><span id="opacity-val">100%</span></div>
+          <input type="range" id="opacity" min="0" max="100" value="100" oninput="updateVal('opacity-val',this.value+'%');applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Temperature</span><span id="temp-val">0</span></div>
+          <input type="range" id="temperature" min="-50" max="50" value="0" oninput="updateVal('temp-val',this.value);applyFilters()">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Vignette</span><span id="vignette-val">0</span></div>
+          <input type="range" id="vignette" min="0" max="100" value="0" oninput="updateVal('vignette-val',this.value);applyFilters()">
+        </div>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:0.78rem" onclick="resetAdjustments()">
+          <i class="fas fa-undo"></i> Reset Adjustments
+        </button>
+      </div>
+
+      <!-- Filter Presets -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-magic"></i> Filter Presets</div>
+        <div class="filter-presets">
+          <div class="preset-thumb active" onclick="applyPreset('none',this)"><i class="fas fa-ban"></i>Normal</div>
+          <div class="preset-thumb" onclick="applyPreset('grayscale',this)"><i class="fas fa-circle-half-stroke"></i>B&W</div>
+          <div class="preset-thumb" onclick="applyPreset('sepia',this)"><i class="fas fa-coffee"></i>Sepia</div>
+          <div class="preset-thumb" onclick="applyPreset('vintage',this)"><i class="fas fa-film"></i>Vintage</div>
+          <div class="preset-thumb" onclick="applyPreset('cool',this)"><i class="fas fa-snowflake"></i>Cool</div>
+          <div class="preset-thumb" onclick="applyPreset('warm',this)"><i class="fas fa-sun"></i>Warm</div>
+          <div class="preset-thumb" onclick="applyPreset('fade',this)"><i class="fas fa-ghost"></i>Fade</div>
+          <div class="preset-thumb" onclick="applyPreset('vivid',this)"><i class="fas fa-rainbow"></i>Vivid</div>
+          <div class="preset-thumb" onclick="applyPreset('dramatic',this)"><i class="fas fa-bolt"></i>Drama</div>
+          <div class="preset-thumb" onclick="applyPreset('matte',this)"><i class="fas fa-square"></i>Matte</div>
+          <div class="preset-thumb" onclick="applyPreset('neon',this)"><i class="fas fa-star"></i>Neon</div>
+          <div class="preset-thumb" onclick="applyPreset('lomo',this)"><i class="fas fa-camera-retro"></i>Lomo</div>
+        </div>
+      </div>
+
+      <!-- Text Options -->
+      <div class="sidebar-section" id="text-options">
+        <div class="sidebar-section-title"><i class="fas fa-font"></i> Text Options</div>
+        <textarea id="text-input" placeholder="Type your text here...">Your Text Here</textarea>
+        <select id="text-font" onchange="updateTextOverlay()">
+          <option>Arial</option>
+          <option>Georgia</option>
+          <option>Times New Roman</option>
+          <option>Courier New</option>
+          <option>Verdana</option>
+          <option>Impact</option>
+          <option>Comic Sans MS</option>
+          <option>Trebuchet MS</option>
+        </select>
+        <div class="slider-group">
+          <div class="slider-label"><span>Font Size</span><span id="font-size-val">30px</span></div>
+          <input type="range" id="font-size" min="10" max="120" value="30" oninput="document.getElementById('font-size-val').textContent=this.value+'px';updateTextOverlay()">
+        </div>
+        <div class="color-row">
+          <label>Text Color</label>
+          <input type="color" id="text-color" value="#ffffff" onchange="updateTextOverlay()">
+        </div>
+        <div class="color-row">
+          <label>Shadow Color</label>
+          <input type="color" id="text-shadow-color" value="#000000" onchange="updateTextOverlay()">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button class="tool-btn" id="bold-btn" onclick="toggleStyle('bold')" style="flex:1;flex-direction:row;padding:7px"><i class="fas fa-bold"></i></button>
+          <button class="tool-btn" id="italic-btn" onclick="toggleStyle('italic')" style="flex:1;flex-direction:row;padding:7px"><i class="fas fa-italic"></i></button>
+          <button class="tool-btn" id="underline-btn" onclick="toggleStyle('underline')" style="flex:1;flex-direction:row;padding:7px"><i class="fas fa-underline"></i></button>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:6px" onclick="applyText()"><i class="fas fa-check"></i> Apply Text</button>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="activateTool('select')"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+
+      <!-- Resize -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-expand-arrows-alt"></i> Resize</div>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1">
+            <div class="slider-label"><span style="font-size:0.75rem">Width</span></div>
+            <input type="number" id="resize-w" placeholder="Width" min="1">
+          </div>
+          <div style="flex:1">
+            <div class="slider-label"><span style="font-size:0.75rem">Height</span></div>
+            <input type="number" id="resize-h" placeholder="Height" min="1">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+          <input type="checkbox" id="lock-ratio" checked style="accent-color:var(--primary)">
+          <label for="lock-ratio" style="font-size:0.78rem;color:var(--text-muted)">Lock Aspect Ratio</label>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="applyResize()"><i class="fas fa-expand-arrows-alt"></i> Apply Resize</button>
+      </div>
+
+      <!-- Export Options -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title"><i class="fas fa-file-export"></i> Export</div>
+        <div style="margin-bottom:8px">
+          <div class="slider-label"><span style="font-size:0.75rem">Format</span></div>
+          <select id="export-format">
+            <option value="image/png">PNG (Lossless)</option>
+            <option value="image/jpeg" selected>JPEG (Compressed)</option>
+            <option value="image/webp">WebP (Modern)</option>
+          </select>
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span>Quality</span><span id="quality-val">90%</span></div>
+          <input type="range" id="export-quality" min="1" max="100" value="90" oninput="document.getElementById('quality-val').textContent=this.value+'%'">
+        </div>
+        <button class="btn btn-success" style="width:100%;justify-content:center" onclick="downloadImage()">
+          <i class="fas fa-download"></i> Download Image
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Bar -->
+  <div class="info-bar" id="info-bar">
+    <div class="info-item"><i class="fas fa-ruler-combined"></i><span>Size:</span><span id="info-size">-</span></div>
+    <div class="info-item"><i class="fas fa-expand"></i><span>Canvas:</span><span id="info-canvas">-</span></div>
+    <div class="info-item"><i class="fas fa-mouse-pointer"></i><span>Cursor:</span><span id="info-cursor">0, 0</span></div>
+    <div class="info-item"><i class="fas fa-file"></i><span>Format:</span><span id="info-format">-</span></div>
+    <div class="info-item"><i class="fas fa-weight"></i><span>Size:</span><span id="info-filesize">-</span></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  STATE
+// ============================================================
+let originalImage = null;
+let currentImageData = null; // ImageData after base edits (rotation, flip)
+let displayCanvas = document.getElementById('main-canvas');
+let displayCtx = displayCanvas.getContext('2d');
+let overlayCanvas = document.getElementById('overlay-canvas');
+let overlayCtx = overlayCanvas.getContext('2d');
+
+let history = [];
+let historyIndex = -1;
+let currentTool = 'select';
+let zoom = 1;
+let cropAspect = {w:0, h:0};
+let cropRect = {x:0,y:0,w:0,h:0};
+let isCropping = false, cropDragging = false, cropResizeHandle = null;
+let cropStart = {};
+let isDrawing = false;
+let drawStart = {};
+let lastDraw = {};
+let drawColor = '#6c63ff';
+let brushSize = 5;
+let brushOpacity = 1;
+let brushStyle = 'round';
+let textX = 50, textY = 50;
+let textDragging = false;
+let textDragStart = {};
+let isBold = false, isItalic = false, isUnderline = false;
+let activePreset = 'none';
+let originalAspectRatio = 1;
+let fileName = 'photo';
+let fileFormat = 'image/jpeg';
+
+// ============================================================
+//  UPLOAD
+// ============================================================
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+}
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('drop-zone').classList.remove('dragover');
+}
+function loadImage(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+function processFile(file) {
+  showLoading(true);
+  fileName = file.name.replace(/\.[^.]+$/, '');
+  fileFormat = file.type || 'image/jpeg';
+  document.getElementById('info-format').textContent = file.type.split('/')[1].toUpperCase();
+  document.getElementById('info-filesize').textContent = formatBytes(file.size);
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = function() {
+      originalImage = img;
+      originalAspectRatio = img.width / img.height;
+      document.getElementById('info-size').textContent = img.width + '×' + img.height;
+      document.getElementById('resize-w').value = img.width;
+      document.getElementById('resize-h').value = img.height;
+      setupCanvas(img.width, img.height);
+      drawImageToCanvas(img);
+      saveHistory('Original');
+      showEditor();
+      showLoading(false);
+      showToast('Image loaded successfully!', 'success');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+function uploadNew() {
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-input').click();
+}
+
+// ============================================================
+//  CANVAS SETUP
+// ============================================================
+function setupCanvas(w, h) {
+  displayCanvas.width = w;
+  displayCanvas.height = h;
+  overlayCanvas.width = w;
+  overlayCanvas.height = h;
+  document.getElementById('info-canvas').textContent = w + '×' + h;
+  fitToScreen();
+}
+function drawImageToCanvas(img) {
+  displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+  displayCtx.drawImage(img, 0, 0);
+  currentImageData = displayCtx.getImageData(0, 0, displayCanvas.width, displayCanvas.height);
+  applyFilters();
+}
+function showEditor() {
+  document.getElementById('upload-section').style.display = 'none';
+  document.getElementById('editor-section').style.display = 'block';
+  document.getElementById('download-btn').disabled = false;
+  document.getElementById('reset-btn').disabled = false;
+}
+
+// ============================================================
+//  ZOOM
+// ============================================================
+function adjustZoom(delta) {
+  zoom = Math.min(5, Math.max(0.1, zoom + delta));
+  applyZoom();
+}
+function fitToScreen() {
+  const area = document.getElementById('canvas-area');
+  const maxW = area.clientWidth - 40;
+  const maxH = area.clientHeight - 80;
+  const scaleW = maxW / displayCanvas.width;
+  const scaleH = maxH / displayCanvas.height;
+  zoom = Math.min(scaleW, scaleH, 1);
+  applyZoom();
+}
+function zoom100() { zoom = 1; applyZoom(); }
+function applyZoom() {
+  const s = Math.round(zoom * 100);
+  document.getElementById('zoom-label').textContent = s + '%';
+  displayCanvas.style.transform = 'scale(' + zoom + ')';
+  overlayCanvas.style.transform = 'scale(' + zoom + ')';
+  displayCanvas.style.transformOrigin = 'center center';
+  overlayCanvas.style.transformOrigin = 'center center';
+}
+
+// ============================================================
+//  FILTERS & ADJUSTMENTS
+// ============================================================
+function updateVal(id, val) {
+  document.getElementById(id).textContent = val;
+}
+function getFilterString() {
+  const brightness = parseFloat(document.getElementById('brightness').value);
+  const contrast = parseFloat(document.getElementById('contrast').value);
+  const saturation = parseFloat(document.getElementById('saturation').value);
+  const hue = parseFloat(document.getElementById('hue').value);
+  const blur = parseFloat(document.getElementById('blur').value);
+  const opacity = parseFloat(document.getElementById('opacity').value);
+  let f = '';
+  f += `brightness(${1 + brightness/100}) `;
+  f += `contrast(${1 + contrast/100}) `;
+  f += `saturate(${1 + saturation/100}) `;
+  f += `hue-rotate(${hue}deg) `;
+  if (blur > 0) f += `blur(${blur}px) `;
+  f += `opacity(${opacity/100}) `;
+  // Preset filters
+  switch(activePreset) {
+    case 'grayscale': f += 'grayscale(100%) '; break;
+    case 'sepia': f += 'sepia(80%) '; break;
+    case 'vintage': f += 'sepia(40%) contrast(1.1) brightness(0.9) '; break;
+    case 'cool': f += 'hue-rotate(20deg) saturate(1.2) '; break;
+    case 'warm': f += 'sepia(20%) saturate(1.3) '; break;
+    case 'fade': f += 'brightness(1.1) saturate(0.7) contrast(0.9) '; break;
+    case 'vivid': f += 'saturate(1.8) contrast(1.1) '; break;
+    case 'dramatic': f += 'contrast(1.5) brightness(0.85) saturate(1.3) '; break;
+    case 'matte': f += 'contrast(0.9) brightness(1.05) saturate(0.8) '; break;
+    case 'neon': f += 'saturate(2) contrast(1.3) hue-rotate(15deg) '; break;
+    case 'lomo': f += 'contrast(1.4) saturate(1.5) brightness(0.9) '; break;
+  }
+  return f.trim();
+}
+function applyFilters() {
+  if (!originalImage) return;
+  // Redraw image
+  displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+  displayCtx.filter = getFilterString();
+  if (currentImageData) {
+    // Draw from imageData (post-transform)
+    const tmp = document.createElement('canvas');
+    tmp.width = displayCanvas.width;
+    tmp.height = displayCanvas.height;
+    tmp.getContext('2d').putImageData(currentImageData, 0, 0);
+    displayCtx.drawImage(tmp, 0, 0);
+  }
+  displayCtx.filter = 'none';
+  // Apply temperature manually
+  applyTemperature();
+  // Apply vignette
+  applyVignette();
+  // Apply sharpen
+  applySharpen();
+}
+function applyTemperature() {
+  const temp = parseFloat(document.getElementById('temperature').value);
+  if (temp === 0) return;
+  const imgData = displayCtx.getImageData(0, 0, displayCanvas.width, displayCanvas.height);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    d[i] = Math.min(255, Math.max(0, d[i] + temp * 2));      // R
+    d[i+2] = Math.min(255, Math.max(0, d[i+2] - temp * 2)); // B
+  }
+  displayCtx.putImageData(imgData, 0, 0);
+}
+function applyVignette() {
+  const v = parseFloat(document.getElementById('vignette').value);
+  if (v === 0) return;
+  const w = displayCanvas.width, h = displayCanvas.height;
+  const grad = displayCtx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.3, w/2, h/2, Math.max(w,h)*0.7);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, `rgba(0,0,0,${v/120})`);
+  displayCtx.fillStyle = grad;
+  displayCtx.fillRect(0, 0, w, h);
+}
+function applySharpen() {
+  const s = parseFloat(document.getElementById('sharpen').value);
+  if (s === 0) return;
+  const w = displayCanvas.width, h = displayCanvas.height;
+  const imgData = displayCtx.getImageData(0, 0, w, h);
+  const d = imgData.data;
+  const tmp = new Uint8ClampedArray(d);
+  const k = s / 10;
+  const kernel = [0,-k,0,-k,1+4*k,-k,0,-k,0];
+  for (let y = 1; y < h-1; y++) {
+    for (let x = 1; x < w-1; x++) {
+      for (let c = 0; c < 3; c++) {
+        let val = 0;
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const idx = ((y+ky)*w + (x+kx)) * 4 + c;
+            val += tmp[idx] * kernel[(ky+1)*3+(kx+1)];
+          }
         }
-      },
-      cssMaxWidth: 1200,
-      cssMaxHeight: 800,
-      usageStatistics: false
-    });
+        d[(y*w+x)*4+c] = Math.min(255, Math.max(0, val));
+      }
+    }
+  }
+  displayCtx.putImageData(imgData, 0, 0);
+}
+function resetAdjustments() {
+  ['brightness','contrast','saturation','hue','blur','sharpen','opacity','temperature','vignette'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = id === 'opacity' ? 100 : 0;
+    el.dispatchEvent(new Event('oninput'));
+  });
+  document.getElementById('brightness-val').textContent = '0';
+  document.getElementById('contrast-val').textContent = '0';
+  document.getElementById('saturation-val').textContent = '0';
+  document.getElementById('hue-val').textContent = '0°';
+  document.getElementById('blur-val').textContent = '0';
+  document.getElementById('sharpen-val').textContent = '0';
+  document.getElementById('opacity-val').textContent = '100%';
+  document.getElementById('temp-val').textContent = '0';
+  document.getElementById('vignette-val').textContent = '0';
+  applyFilters();
+  showToast('Adjustments reset', 'success');
+}
 
-    // Mobile pe better experience ke liye
-    window.addEventListener('resize', () => {
-      imageEditor.resizeCanvasDimension();
-    });
-  </script>
+// ============================================================
+//  PRESETS
+// ============================================================
+function applyPreset(preset, el) {
+  activePreset = preset;
+  document.querySelectorAll('.preset-thumb').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  applyFilters();
+}
 
+// ============================================================
+//  ROTATE & FLIP
+// ============================================================
+function rotateImage(deg) {
+  if (!originalImage) return;
+  const w = displayCanvas.width, h = displayCanvas.height;
+  const tmpCanvas = document.createElement('canvas');
+  if (deg === 90 || deg === -90) { tmpCanvas.width = h; tmpCanvas.height = w; }
+  else { tmpCanvas.width = w; tmpCanvas.height = h; }
+  const tmpCtx = tmpCanvas.getContext('2d');
+  tmpCtx.translate(tmpCanvas.width/2, tmpCanvas.height/2);
+  tmpCtx.rotate(deg * Math.PI / 180);
+  tmpCtx.drawImage(displayCanvas, -w/2, -h/2);
+  setupCanvas(tmpCanvas.width, tmpCanvas.height);
+  currentImageData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+  applyFilters();
+  saveHistory('Rotate ' + (deg > 0 ? 'Right' : 'Left'));
+  showToast('Rotated ' + (deg > 0 ? 'right' : 'left'), 'success');
+}
+function flipImage(dir) {
+  if (!originalImage) return;
+  const w = displayCanvas.width, h = displayCanvas.height;
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = w; tmpCanvas.height = h;
+  const tmpCtx = tmpCanvas.getContext('2d');
+  if (dir === 'h') { tmpCtx.translate(w, 0); tmpCtx.scale(-1, 1); }
+  else { tmpCtx.translate(0, h); tmpCtx.scale(1, -1); }
+  tmpCtx.drawImage(displayCanvas, 0, 0);
+  currentImageData = tmpCtx.getImageData(0, 0, w, h);
+  applyFilters();
+  saveHistory('Flip ' + (dir === 'h' ? 'Horizontal' : 'Vertical'));
+  showToast('Flipped ' + (dir === 'h' ? 'horizontally' : 'vertically'), 'success');
+}
+
+// ============================================================
+//  TOOLS
+// ============================================================
+function activateTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tool-' + tool);
+  if (btn) btn.classList.add('active');
+  // Show/hide panels
+  document.getElementById('crop-options').style.display = tool === 'crop' ? 'block' : 'none';
+  document.getElementById('draw-options').style.display = (tool === 'draw' || tool === 'erase') ? 'block' : 'none';
+  // Text overlay
+  const to = document.getElementById('text-overlay');
+  to.style.display = tool === 'text' ? 'block' : 'none';
+  // Canvas cursor
+  const ca = document.getElementById('canvas-area');
+  ca.className = 'canvas-area ' + (tool === 'draw' || tool === 'erase' ? 'draw-mode' : '');
+
+  if (tool === 'crop') startCrop();
+  else cancelCrop();
+
+  if (tool === 'text') {
+    setupTextOverlay();
+  }
+}
+
+// ============================================================
+//  CROP
+// ============================================================
+function startCrop() {
+  const w = displayCanvas.width, h = displayCanvas.height;
+  cropRect = { x: Math.round(w*0.1), y: Math.round(h*0.1), w: Math.round(w*0.8), h: Math.round(h*0.8) };
+  renderCropOverlay();
+}
+function renderCropOverlay() {
+  const co = document.getElementById('crop-overlay');
+  co.style.display = 'block';
+  const scaleX = zoom, scaleY = zoom;
+  co.style.left = (cropRect.x * scaleX) + 'px';
+  co.style.top = (cropRect.y * scaleY) + 'px';
+  co.style.width = (cropRect.w * scaleX) + 'px';
+  co.style.height = (cropRect.h * scaleY) + 'px';
+}
+function cancelCrop() {
+  document.getElementById('crop-overlay').style.display = 'none';
+  if (currentTool === 'crop') currentTool = 'select';
+}
+function applyCrop() {
+  if (!originalImage) return;
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = cropRect.w; tmpCanvas.height = cropRect.h;
+  const tmpCtx = tmpCanvas.getContext('2d');
+  tmpCtx.drawImage(displayCanvas, cropRect.x, cropRect.y, cropRect.w, cropRect.h, 0, 0, cropRect.w, cropRect.h);
+  setupCanvas(cropRect.w, cropRect.h);
+  currentImageData = tmpCtx.getImageData(0, 0, cropRect.w, cropRect.h);
+  applyFilters();
+  cancelCrop();
+  saveHistory('Crop');
+  activateTool('select');
+  showToast('Crop applied!', 'success');
+}
+function setCropAspect(w, h) {
+  cropAspect = {w, h};
+  if (w && h && cropRect.w) {
+    cropRect.h = Math.round(cropRect.w * (h/w));
+    renderCropOverlay();
+  }
+}
+// Crop drag
+document.getElementById('crop-overlay').addEventListener('mousedown', function(e) {
+  cropDragging = true;
+  cropStart = { mx: e.clientX, my: e.clientY, rx: cropRect.x, ry: cropRect.y };
+  e.stopPropagation();
+});
+document.addEventListener('mousemove', function(e) {
+  if (cropDragging) {
+    const dx = (e.clientX - cropStart.mx) / zoom;
+    const dy = (e.clientY - cropStart.my) / zoom;
+    cropRect.x = Math.max(0, Math.min(displayCanvas.width - cropRect.w, cropStart.rx + dx));
+    cropRect.y = Math.max(0, Math.min(displayCanvas.height - cropRect.h, cropStart.ry + dy));
+    renderCropOverlay();
+  }
+  if (isDrawing && (currentTool === 'draw' || currentTool === 'erase')) {
+    drawOnCanvas(e);
+  }
+  // Info cursor
+  const pos = getCanvasPos(e);
+  if (pos) document.getElementById('info-cursor').textContent = Math.round(pos.x) + ', ' + Math.round(pos.y);
+});
+document.addEventListener('mouseup', function(e) {
+  if (cropDragging) { cropDragging = false; }
+  if (isDrawing) { isDrawing = false; if(currentTool==='draw'||currentTool==='erase') saveHistory('Draw'); }
+  if (textDragging) {
+    textDragging = false;
+    const to = document.getElementById('text-overlay');
+    textX = parseInt(to.style.left)||0;
+    textY = parseInt(to.style.top)||0;
+  }
+});
+
+// ============================================================
+//  DRAW
+// ============================================================
+function updateDrawSettings() {
+  drawColor = document.getElementById('draw-color').value;
+  brushSize = parseInt(document.getElementById('brush-size').value);
+  brushOpacity = parseInt(document.getElementById('brush-opacity').value) / 100;
+  brushStyle = document.getElementById('brush-style').value;
+}
+displayCanvas.addEventListener('mousedown', function(e) {
+  if (currentTool === 'draw' || currentTool === 'erase') {
+    isDrawing = true;
+    const pos = getCanvasPos(e);
+    lastDraw = pos;
+    drawOnCanvas(e);
+  }
+});
+displayCanvas.addEventListener('touchstart', function(e) {
+  if (currentTool === 'draw' || currentTool === 'erase') {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getTouchCanvasPos(e);
+    lastDraw = pos;
+  }
+}, {passive: false});
+displayCanvas.addEventListener('touchmove', function(e) {
+  if (isDrawing && (currentTool === 'draw' || currentTool === 'erase')) {
+    e.preventDefault();
+    drawOnCanvasTouch(e);
+  }
+}, {passive: false});
+displayCanvas.addEventListener('touchend', function() {
+  if (isDrawing) { isDrawing = false; saveHistory('Draw'); }
+});
+function drawOnCanvas(e) {
+  const pos = getCanvasPos(e);
+  if (!pos) return;
+  const ctx = displayCtx;
+  ctx.globalAlpha = brushOpacity;
+  ctx.strokeStyle = currentTool === 'erase' ? '#000' : drawColor;
+  ctx.lineWidth = brushSize;
+  ctx.lineCap = brushStyle === 'round' ? 'round' : 'square';
+  ctx.lineJoin = 'round';
+  if (currentTool === 'erase') ctx.globalCompositeOperation = 'destination-out';
+  else ctx.globalCompositeOperation = 'source-over';
+  ctx.beginPath();
+  ctx.moveTo(lastDraw.x, lastDraw.y);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+  lastDraw = pos;
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+}
+function drawOnCanvasTouch(e) {
+  const pos = getTouchCanvasPos(e);
+  if (!pos) return;
+  const ctx = displayCtx;
+  ctx.globalAlpha = brushOpacity;
+  ctx.strokeStyle = currentTool === 'erase' ? '#000' : drawColor;
+  ctx.lineWidth = brushSize;
+  ctx.lineCap = brushStyle === 'round' ? 'round' : 'square';
+  ctx.lineJoin = 'round';
+  if (currentTool === 'erase') ctx.globalCompositeOperation = 'destination-out';
+  else ctx.globalCompositeOperation = 'source-over';
+  ctx.beginPath();
+  ctx.moveTo(lastDraw.x, lastDraw.y);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+  lastDraw = pos;
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+}
+function clearDrawing() {
+  if (currentImageData) {
+    displayCtx.putImageData(currentImageData, 0, 0);
+    applyFilters();
+  }
+  showToast('Drawing cleared', 'success');
+}
+function getCanvasPos(e) {
+  const rect = displayCanvas.getBoundingClientRect();
+  const scaleX = displayCanvas.width / rect.width;
+  const scaleY = displayCanvas.height / rect.height;
+  return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+}
+function getTouchCanvasPos(e) {
+  const touch = e.touches[0];
+  const rect = displayCanvas.getBoundingClientRect();
+  const scaleX = displayCanvas.width / rect.width;
+  const scaleY = displayCanvas.height / rect.height;
+  return { x: (touch.clientX - rect.left) * scaleX, y: (touch.clientY - rect.top) * scaleY };
+}
+
+// ============================================================
+//  TEXT
+// ============================================================
+function setupTextOverlay() {
+  const to = document.getElementById('text-overlay');
+  to.style.display = 'block';
+  to.style.left = '50px';
+  to.style.top = '50px';
+  textX = 50; textY = 50;
+  updateTextOverlay();
+  makeDraggable(to);
+}
+function updateTextOverlay() {
+  const to = document.getElementById('text-overlay');
+  const text = document.getElementById('text-input').value || 'Your Text';
+  const font = document.getElementById('text-font').value;
+  const size = document.getElementById('font-size').value;
+  const color = document.getElementById('text-color').value;
+  const shadow = document.getElementById('text-shadow-color').value;
+  let style = '';
+  if (isBold) style += 'font-weight:bold;';
+  if (isItalic) style += 'font-style:italic;';
+  if (isUnderline) style += 'text-decoration:underline;';
+  to.style.cssText += `color:${color};font-family:${font};font-size:${size}px;text-shadow:2px 2px 4px ${shadow};${style}`;
+  to.innerHTML = text.replace(/\n/g, '<br>');
+}
+function toggleStyle(style) {
+  if (style === 'bold') { isBold = !isBold; document.getElementById('bold-btn').classList.toggle('active'); }
+  if (style === 'italic') { isItalic = !isItalic; document.getElementById('italic-btn').classList.toggle('active'); }
+  if (style === 'underline') { isUnderline = !isUnderline; document.getElementById('underline-btn').classList.toggle('active'); }
+  updateTextOverlay();
+}
+function applyText() {
+  const to = document.getElementById('text-overlay');
+  const rect = to.getBoundingClientRect();
+  const canvasRect = displayCanvas.getBoundingClientRect();
+  const scaleX = displayCanvas.width / canvasRect.width;
+  const scaleY = displayCanvas.height / canvasRect.height;
+  const x = (rect.left - canvasRect.left) * scaleX;
+  const y = (rect.top - canvasRect.top) * scaleY;
+  const font = document.getElementById('text-font').value;
+  const size = document.getElementById('font-size').value;
+  const color = document.getElementById('text-color').value;
+  const shadow = document.getElementById('text-shadow-color').value;
+  const text = document.getElementById('text-input').value || 'Your Text';
+  displayCtx.save();
+  let fontStr = '';
+  if (isBold) fontStr += 'bold ';
+  if (isItalic) fontStr += 'italic ';
+  fontStr += size + 'px ' + font;
+  displayCtx.font = fontStr;
+  displayCtx.fillStyle = color;
+  displayCtx.shadowColor = shadow;
+  displayCtx.shadowBlur = 4;
+  displayCtx.shadowOffsetX = 2;
+  displayCtx.shadowOffsetY = 2;
+  if (isUnderline) {
+    const metrics = displayCtx.measureText(text);
+    displayCtx.fillRect(x, y + 2, metrics.width, 2);
+  }
+  const lines = text.split('\n');
+  lines.forEach((line, i) => {
+    displayCtx.fillText(line, x, y + (i * parseInt(size) * 1.2));
+  });
+  displayCtx.restore();
+  currentImageData = displayCtx.getImageData(0, 0, displayCanvas.width, displayCanvas.height);
+  to.style.display = 'none';
+  activateTool('select');
+  saveHistory('Add Text');
+  showToast('Text applied!', 'success');
+}
+function makeDraggable(el) {
+  let startX, startY, startLeft, startTop;
+  el.onmousedown = function(e) {
+    e.preventDefault();
+    startX = e.clientX; startY = e.clientY;
+    startLeft = parseInt(el.style.left)||0;
+    startTop = parseInt(el.style.top)||0;
+    function move(e) {
+      el.style.left = (startLeft + e.clientX - startX) + 'px';
+      el.style.top = (startTop + e.clientY - startY) + 'px';
+    }
+    function up() { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); }
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
+  };
+  // Touch
+  el.ontouchstart = function(e) {
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    startLeft = parseInt(el.style.left)||0;
+    startTop = parseInt(el.style.top)||0;
+    function move(e) {
+      const t = e.touches[0];
+      el.style.left = (startLeft + t.clientX - startX) + 'px';
+      el.style.top = (startTop + t.clientY - startY) + 'px';
+    }
+    function end() { document.removeEventListener('touchmove', move); document.removeEventListener('touchend', end); }
+    document.addEventListener('touchmove', move, {passive:false});
+    document.addEventListener('touchend', end);
+  };
+}
+
+// ============================================================
+//  RESIZE
+// ============================================================
+const resizeW = document.getElementById('resize-w');
+const resizeH = document.getElementById('resize-h');
+resizeW.addEventListener('input', function() {
+  if (document.getElementById('lock-ratio').checked && originalAspectRatio) {
+    resizeH.value = Math.round(this.value / originalAspectRatio);
+  }
+});
+resizeH.addEventListener('input', function() {
+  if (document.getElementById('lock-ratio').checked && originalAspectRatio) {
+    resizeW.value = Math.round(this.value * originalAspectRatio);
+  }
+});
+function applyResize() {
+  const w = parseInt(resizeW.value);
+  const h = parseInt(resizeH.value);
+  if (!w || !h || w < 1 || h < 1) { showToast('Enter valid dimensions!', 'error'); return; }
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = w; tmpCanvas.height = h;
+  const tmpCtx = tmpCanvas.getContext('2d');
+  tmpCtx.drawImage(displayCanvas, 0, 0, w, h);
+  setupCanvas(w, h);
+  currentImageData = tmpCtx.getImageData(0, 0, w, h);
+  applyFilters();
+  originalAspectRatio = w / h;
+  saveHistory('Resize to ' + w + '×' + h);
+  showToast('Resized to ' + w + '×' + h, 'success');
+}
+
+// ============================================================
+//  HISTORY
+// ============================================================
+function saveHistory(label) {
+  // Remove future history
+  if (historyIndex < history.length - 1) {
+    history = history.slice(0, historyIndex + 1);
+  }
+  const snapshot = displayCanvas.toDataURL();
+  history.push({ label, snapshot, imageData: currentImageData ? new ImageData(new Uint8ClampedArray(currentImageData.data), currentImageData.width, currentImageData.height) : null });
+  if (history.length > 30) history.shift();
+  historyIndex = history.length - 1;
+  renderHistory();
+  updateHistoryBtns();
+}
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  history.slice().reverse().forEach((h, revIdx) => {
+    const idx = history.length - 1 - revIdx;
+    const item = document.createElement('div');
+    item.className = 'history-item' + (idx === historyIndex ? ' current' : '');
+    item.innerHTML = `<i class="fas fa-circle"></i>${h.label}`;
+    item.onclick = () => restoreHistory(idx);
+    list.appendChild(item);
+  });
+}
+function restoreHistory(idx) {
+  historyIndex = idx;
+  const h = history[idx];
+  const img = new Image();
+  img.onload = function() {
+    displayCanvas.width = img.width;
+    displayCanvas.height = img.height;
+    overlayCanvas.width = img.width;
+    overlayCanvas.height = img.height;
+    displayCtx.drawImage(img, 0, 0);
+    currentImageData = displayCtx.getImageData(0, 0, img.width, img.height);
+    document.getElementById('info-canvas').textContent = img.width + '×' + img.height;
+    applyFilters();
+    fitToScreen();
+    renderHistory();
+    updateHistoryBtns();
+  };
+  img.src = h.snapshot;
+}
+function undo() {
+  if (historyIndex > 0) restoreHistory(historyIndex - 1);
+}
+function redo() {
+  if (historyIndex < history.length - 1) restoreHistory(historyIndex + 1);
+}
+function updateHistoryBtns() {
+  document.getElementById('undo-btn').disabled = historyIndex <= 0;
+  document.getElementById('redo-btn').disabled = historyIndex >= history.length - 1;
+}
+function resetImage() {
+  if (!originalImage) return;
+  setupCanvas(originalImage.width, originalImage.height);
+  drawImageToCanvas(originalImage);
+  resetAdjustments();
+  activePreset = 'none';
+  document.querySelectorAll('.preset-thumb').forEach(e => e.classList.remove('active'));
+  document.querySelector('.preset-thumb').classList.add('active');
+  saveHistory('Reset');
+  showToast('Image reset to original', 'success');
+}
+
+// ============================================================
+//  DOWNLOAD
+// ============================================================
+function downloadImage() {
+  if (!originalImage) return;
+  showLoading(true);
+  setTimeout(() => {
+    const format = document.getElementById('export-format').value;
+    const quality = parseFloat(document.getElementById('export-quality').value) / 100;
+    const ext = format === 'image/png' ? 'png' : format === 'image/webp' ? 'webp' : 'jpg';
+    const link = document.createElement('a');
+    link.download = fileName + '_edited.' + ext;
+    link.href = displayCanvas.toDataURL(format, quality);
+    link.click();
+    showLoading(false);
+    showToast('Image downloaded!', 'success');
+  }, 500);
+}
+
+// ============================================================
+//  MOBILE TABS
+// ============================================================
+function showMobilePanel(panel) {
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + panel).classList.add('active');
+  const left = document.getElementById('left-sidebar');
+  const right = document.getElementById('right-sidebar');
+  const canvas = document.getElementById('canvas-area');
+  left.classList.remove('mobile-visible');
+  right.classList.remove('mobile-visible');
+  canvas.style.display = 'flex';
+  if (panel === 'tools' || panel === 'draw') { left.classList.add('mobile-visible'); canvas.style.display = 'none'; }
+  else if (panel === 'adjust' || panel === 'filters' || panel === 'text' || panel === 'resize') { right.classList.add('mobile-visible'); canvas.style.display = 'none'; }
+  else { canvas.style.display = 'flex'; }
+}
+
+// ============================================================
+//  UTILS
+// ============================================================
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+function showToast(msg, type='success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}" style="color:${type==='success'?'var(--success)':'var(--secondary)'}"></i>${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = '0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+// ============================================================
+//  KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 'z') { e.preventDefault(); undo(); }
+    if (e.key === 'y') { e.preventDefault(); redo(); }
+    if (e.key === 's') { e.preventDefault(); downloadImage(); }
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustZoom(0.1); }
+    if (e.key === '-') { e.preventDefault(); adjustZoom(-0.1); }
+  }
+  if (e.key === 'Escape') cancelCrop();
+  if (e.key === 'Enter' && currentTool === 'crop') applyCrop();
+  if (e.key === 'Enter' && currentTool === 'text') applyText();
+});
+
+// Paste from clipboard
+document.addEventListener('paste', function(e) {
+  const items = (e.clipboardData || window.clipboardData).items;
+  for (let item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile();
+      processFile(file);
+      break;
+    }
+  }
+});
+</script>
 </body>
 </html>
