@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF to Text - Extract Text from PDF Free</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+        :root{
+            --pri:#2ECC71;--pri-d:#27AE60;--pri-dd:#1E8449;
+            --pri-l:#A9DFBF;--pri-ll:#D5F5E3;--pri-lll:#EAFAF1;
+            --bg:#F0FFF4;--w:#FFFFFF;
+            --dk:#1a1a2e;--md:#4a4a5a;--lt:#7a7a8a;
+            --red:#e74c3c;--blue:#2B5EA7;
+        }
+
+        html{width:100%;height:100%;overflow-x:hidden}
+
+        body{
+            font-family:'Inter',sans-serif;
+            background:var(--bg);color:var(--dk);
+            width:100%;min-height:100vh;overflow-x:hidden;
+            display:flex;flex-direction:column;
+        }
+
+        /* ===== NAVBAR ===== */
+        .nav{
+            width:100%;background:var(--w);
+            padding:14px 24px;display:flex;align-items:center;
+            justify-content:space-between;
+            border-bottom:2px solid var(--pri-ll);
+            box-shadow:0 2px 15px rgba(46,204,113,.08);
+            position:sticky;top:0;z-index:999;flex-shrink:0;
+        }
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .logo-b{
+            width:40px;height:40px;
+            background:linear-gradient(135deg,var(--pri),var(--pri-dd));
+            border-radius:11px;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 4px 12px rgba(46,204,113,.3);
+        }
+        .logo-b svg{width:20px;height:20px;color:#fff}
+        .logo-t{font-size:21px;font-weight:800;color:var(--dk)}
+        .logo-t span{color:var(--pri)}
+        .nav-m{display:flex;gap:6px}
+        .nav-m a{
+            text-decoration:none;font-size:13px;font-weight:600;
+            color:var(--md);padding:8px 16px;border-radius:8px;transition:.3s;
+        }
+        .nav-m a:hover{background:var(--pri-lll);color:var(--pri-d)}
+        .nav-m a.on{background:var(--pri);color:#fff}
+
+        /* ===== MAIN ===== */
+        .main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
+
+        .hero-bg{
+            position:absolute;top:0;left:0;width:100%;height:320px;
+            background:linear-gradient(180deg,var(--pri-ll) 0%,transparent 100%);z-index:0;
+        }
+
+        /* ===== HERO ===== */
+        .hero{width:100%;text-align:center;padding:45px 20px 20px;position:relative;z-index:1}
+        .badge{
+            display:inline-flex;align-items:center;gap:7px;
+            background:var(--w);border:1px solid var(--pri-l);
+            padding:7px 18px;border-radius:50px;
+            font-size:12px;font-weight:600;color:var(--pri-dd);
+            margin-bottom:18px;box-shadow:0 2px 8px rgba(46,204,113,.1);
+        }
+        .badge svg{width:14px;height:14px;flex-shrink:0}
+        .hero h1{font-size:40px;font-weight:900;line-height:1.15;margin-bottom:12px}
+        .hero h1 .gr{
+            background:linear-gradient(135deg,var(--pri),var(--pri-dd));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .hero p{font-size:16px;color:var(--lt);max-width:540px;margin:0 auto;line-height:1.6}
+
+        /* ===== TOOL CARD ===== */
+        .tool-w{width:100%;max-width:800px;padding:0 16px;margin:25px auto 50px;position:relative;z-index:1}
+        .tool-c{
+            width:100%;background:var(--w);border-radius:22px;
+            box-shadow:0 12px 50px rgba(46,204,113,.13);
+            border:1.5px solid var(--pri-ll);overflow:hidden;
+        }
+
+        /* ===== STATES ===== */
+        .st{display:none}
+        .st.on{display:block}
+
+        /* == UPLOAD == */
+        .st-up{padding:55px 30px;text-align:center;cursor:pointer;position:relative;transition:.3s}
+        .st-up::after{
+            content:'';position:absolute;inset:14px;
+            border:3px dashed var(--pri-l);border-radius:14px;
+            pointer-events:none;transition:.3s;
+        }
+        .st-up.drag::after{border-color:var(--pri);background:rgba(46,204,113,.04)}
+
+        .up-circ{
+            width:95px;height:95px;
+            background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));
+            border-radius:50%;margin:0 auto 22px;
+            display:flex;align-items:center;justify-content:center;
+            animation:breathe 3s ease-in-out infinite;
+        }
+        @keyframes breathe{
+            0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(46,204,113,.25)}
+            50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(46,204,113,0)}
+        }
+        .up-circ svg{width:42px;height:42px;color:var(--pri-d)}
+        .st-up h2{font-size:21px;font-weight:700;margin-bottom:8px}
+        .st-up .sub{font-size:14px;color:var(--lt);margin-bottom:22px}
+
+        .sel-btn{
+            display:inline-flex;align-items:center;gap:10px;
+            background:linear-gradient(135deg,var(--pri),var(--pri-d));
+            color:#fff;border:none;padding:15px 38px;border-radius:13px;
+            font-size:16px;font-weight:700;cursor:pointer;transition:.3s;
+            box-shadow:0 6px 22px rgba(46,204,113,.3);
+            font-family:'Inter',sans-serif;position:relative;z-index:2;
+        }
+        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
+        .sel-btn svg{width:19px;height:19px}
+
+        .fmts{
+            margin-top:18px;font-size:12px;color:var(--lt);
+            display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;
+        }
+        .ftg{
+            background:var(--pri-lll);color:var(--pri-dd);
+            padding:3px 10px;border-radius:5px;font-weight:700;font-size:11px;
+        }
+        .finp{display:none}
+
+        /* == READY == */
+        .st-rdy{padding:40px 28px}
+        .fc{
+            display:flex;align-items:center;gap:16px;
+            background:var(--pri-lll);border:2px solid var(--pri-l);
+            border-radius:14px;padding:18px 20px;margin-bottom:28px;
+        }
+        .fc-ic{
+            width:55px;height:55px;
+            background:linear-gradient(135deg,#C0392B,#E74C3C);
+            border-radius:13px;display:flex;align-items:center;justify-content:center;
+            flex-shrink:0;position:relative;
+        }
+        .fc-ic svg{width:24px;height:24px;color:#fff}
+        .fc-ic::after{
+            content:'PDF';position:absolute;bottom:2px;right:2px;
+            background:#fff;color:#C0392B;
+            padding:1px 4px;border-radius:3px;
+            font-size:7px;font-weight:900;
+        }
+        .fc-nfo{flex:1;min-width:0}
+        .fc-nm{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fc-sz{font-size:12px;color:var(--lt);margin-top:2px}
+        .fc-pg{font-size:12px;color:var(--pri-d);font-weight:600;margin-top:3px;display:flex;align-items:center;gap:5px}
+        .fc-pg svg{width:13px;height:13px}
+        .fc-del{
+            width:38px;height:38px;border:none;background:#fff;
+            border-radius:9px;cursor:pointer;display:flex;align-items:center;
+            justify-content:center;color:var(--lt);transition:.3s;flex-shrink:0;
+        }
+        .fc-del:hover{background:#FEE2E2;color:var(--red)}
+        .fc-del svg{width:17px;height:17px}
+
+        .arr-r{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px}
+        .arr-l{height:2px;width:70px;background:linear-gradient(90deg,var(--pri-l),var(--pri));border-radius:2px}
+        .arr-c{
+            width:46px;height:46px;background:var(--pri-ll);border-radius:50%;
+            display:flex;align-items:center;justify-content:center;color:var(--pri-d);flex-shrink:0;
+        }
+        .arr-c svg{width:22px;height:22px}
+
+        .ext-btn{
+            display:flex;align-items:center;justify-content:center;gap:11px;
+            width:100%;max-width:340px;margin:0 auto;
+            background:linear-gradient(135deg,var(--pri),var(--pri-d));
+            color:#fff;border:none;padding:17px 30px;border-radius:14px;
+            font-size:17px;font-weight:700;cursor:pointer;transition:.3s;
+            box-shadow:0 8px 28px rgba(46,204,113,.3);font-family:'Inter',sans-serif;
+        }
+        .ext-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 35px rgba(46,204,113,.4)}
+        .ext-btn:disabled{opacity:.65;cursor:not-allowed}
+        .ext-btn svg{width:21px;height:21px}
+
+        /* == PROGRESS == */
+        .st-prog{padding:50px 28px;text-align:center}
+        .prg-box{width:130px;height:130px;margin:0 auto 22px;position:relative}
+        .prg-box svg{width:130px;height:130px;transform:rotate(-90deg)}
+        .prg-bg{fill:none;stroke:var(--pri-ll);stroke-width:9}
+        .prg-fl{
+            fill:none;stroke:url(#pG);stroke-width:9;stroke-linecap:round;
+            stroke-dasharray:352;stroke-dashoffset:352;transition:stroke-dashoffset .4s ease;
+        }
+        .prg-pct{
+            position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+            font-size:30px;font-weight:900;color:var(--pri-d);
+        }
+        .prg-lb{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:4px}
+        .prg-sb{font-size:13px;color:var(--lt)}
+        .dots{display:flex;justify-content:center;gap:7px;margin-top:22px}
+        .dot{width:9px;height:9px;border-radius:50%;background:var(--pri-ll);transition:.3s}
+        .dot.on{background:var(--pri);width:28px;border-radius:5px}
+        .dot.dn{background:var(--pri-l)}
+
+        /* == DONE == */
+        .st-done{padding:35px 20px;text-align:center}
+        .ok-ic{
+            width:90px;height:90px;margin:0 auto 20px;
+            background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            animation:pop .5s cubic-bezier(.68,-.55,.265,1.55);
+        }
+        @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+        .ok-ic svg{width:44px;height:44px;color:var(--pri-d)}
+
+        .st-done h2{font-size:22px;font-weight:800;margin-bottom:6px}
+        .st-done .sub{font-size:14px;color:var(--lt);margin-bottom:8px}
+
+        .stats-row{
+            display:flex;justify-content:center;gap:20px;
+            margin-bottom:24px;flex-wrap:wrap;
+        }
+        .stat-box{
+            background:var(--pri-lll);border:1px solid var(--pri-l);
+            border-radius:12px;padding:12px 20px;text-align:center;min-width:100px;
+        }
+        .stat-box .num{font-size:22px;font-weight:800;color:var(--pri-d)}
+        .stat-box .lbl{font-size:11px;color:var(--lt);font-weight:600;margin-top:2px}
+
+        /* TEXT OUTPUT */
+        .txt-wrap{
+            width:100%;background:var(--pri-lll);
+            border:2px solid var(--pri-l);border-radius:16px;
+            padding:4px;margin-bottom:20px;position:relative;
+        }
+        .txt-head{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:10px 16px;background:var(--w);border-radius:12px 12px 0 0;
+            border-bottom:1px solid var(--pri-ll);
+        }
+        .txt-head span{font-size:13px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:6px}
+        .txt-head span svg{width:16px;height:16px;color:var(--pri-d)}
+        .copy-btn{
+            display:flex;align-items:center;gap:6px;
+            padding:7px 16px;border-radius:8px;border:1.5px solid var(--pri-l);
+            background:var(--w);color:var(--pri-d);font-size:12px;font-weight:700;
+            cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;
+        }
+        .copy-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
+        .copy-btn.copied{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .copy-btn svg{width:14px;height:14px}
+
+        .txt-out{
+            width:100%;min-height:200px;max-height:400px;
+            padding:18px 20px;border:none;outline:none;resize:vertical;
+            font-family:'Inter',monospace;font-size:13px;line-height:1.8;
+            color:var(--dk);background:var(--w);border-radius:0 0 12px 12px;
+            overflow-y:auto;
+        }
+
+        .btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+        .dl-btn{
+            display:inline-flex;align-items:center;gap:10px;
+            background:linear-gradient(135deg,var(--pri),var(--pri-d));
+            color:#fff;border:none;padding:16px 40px;border-radius:14px;
+            font-size:16px;font-weight:700;cursor:pointer;transition:.3s;
+            box-shadow:0 8px 28px rgba(46,204,113,.3);
+            text-decoration:none;font-family:'Inter',sans-serif;
+        }
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(46,204,113,.4)}
+        .dl-btn svg{width:20px;height:20px}
+
+        .sec-btn{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:14px 28px;border-radius:12px;font-size:14px;font-weight:600;
+            cursor:pointer;border:2px solid var(--pri-l);background:var(--w);
+            color:var(--pri-d);transition:.3s;font-family:'Inter',sans-serif;
+        }
+        .sec-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
+        .sec-btn svg{width:16px;height:16px}
+
+        /* ===== FEATURES ===== */
+        .feats{width:100%;padding:0 16px 50px}
+        .feats h2{text-align:center;font-size:26px;font-weight:800;margin-bottom:35px}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1000px;margin:0 auto}
+        .ft{
+            background:var(--w);padding:28px 22px;border-radius:16px;text-align:center;
+            border:1px solid var(--pri-ll);box-shadow:0 2px 10px rgba(46,204,113,.06);transition:.3s;
+        }
+        .ft:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(46,204,113,.12)}
+        .ft-ic{
+            width:54px;height:54px;background:var(--pri-lll);border-radius:14px;
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 14px;color:var(--pri-d);
+        }
+        .ft-ic svg{width:25px;height:25px}
+        .ft h3{font-size:15px;font-weight:700;margin-bottom:6px}
+        .ft p{font-size:12px;color:var(--lt);line-height:1.6}
+
+        /* ===== FOOTER ===== */
+        .foot{
+            width:100%;background:var(--w);border-top:2px solid var(--pri-ll);
+            padding:22px 16px;text-align:center;flex-shrink:0;
+        }
+        .foot p{font-size:13px;color:var(--lt)}
+        .foot a{color:var(--pri-d);text-decoration:none;font-weight:700}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){.fg{grid-template-columns:repeat(2,1fr)}}
+
+        @media(max-width:600px){
+            .nav{padding:12px 14px}
+            .nav-m{display:none}
+            .logo-t{font-size:18px}
+            .logo-b{width:36px;height:36px;border-radius:9px}
+            .logo-b svg{width:17px;height:17px}
+
+            .hero{padding:30px 14px 14px}
+            .badge{font-size:11px;padding:6px 14px}
+            .hero h1{font-size:26px}
+            .hero p{font-size:14px}
+
+            .tool-w{padding:0 10px;margin:18px auto 35px}
+            .tool-c{border-radius:16px}
+
+            .st-up{padding:40px 16px}
+            .st-up::after{inset:10px}
+            .up-circ{width:78px;height:78px;margin-bottom:18px}
+            .up-circ svg{width:34px;height:34px}
+            .st-up h2{font-size:18px}
+            .st-up .sub{font-size:13px}
+            .sel-btn{padding:14px 30px;font-size:15px;border-radius:11px;width:100%;max-width:280px;justify-content:center}
+
+            .st-rdy{padding:28px 14px}
+            .fc{padding:14px;gap:12px;border-radius:12px}
+            .fc-ic{width:46px;height:46px;border-radius:11px}
+            .fc-ic svg{width:20px;height:20px}
+            .fc-ic::after{font-size:6px;padding:1px 3px}
+            .fc-nm{font-size:13px}
+            .fc-sz,.fc-pg{font-size:11px}
+            .arr-l{width:45px}
+            .arr-c{width:40px;height:40px}
+            .arr-c svg{width:19px;height:19px}
+            .ext-btn{padding:15px 24px;font-size:16px;border-radius:12px;max-width:100%}
+
+            .st-prog{padding:35px 16px}
+            .prg-box{width:110px;height:110px}
+            .prg-box svg{width:110px;height:110px}
+            .prg-pct{font-size:26px}
+            .prg-lb{font-size:15px}
+
+            .st-done{padding:28px 12px}
+            .ok-ic{width:75px;height:75px}
+            .ok-ic svg{width:36px;height:36px}
+            .st-done h2{font-size:19px}
+            .stats-row{gap:10px}
+            .stat-box{padding:10px 14px;min-width:80px}
+            .stat-box .num{font-size:18px}
+
+            .txt-out{min-height:160px;max-height:300px;font-size:12px;padding:14px 14px}
+            .txt-head{padding:8px 12px}
+            .txt-head span{font-size:12px}
+            .copy-btn{padding:6px 12px;font-size:11px}
+
+            .dl-btn{padding:14px 32px;font-size:15px;border-radius:12px;width:100%;max-width:300px;justify-content:center}
+            .sec-btn{width:100%;max-width:300px;justify-content:center}
+            .btn-row{flex-direction:column;align-items:center}
+
+            .fg{grid-template-columns:1fr;gap:14px}
+            .feats h2{font-size:21px;margin-bottom:24px}
+            .ft{padding:22px 18px;border-radius:14px}
+            .foot{padding:18px 14px}
+            .foot p{font-size:12px}
+        }
+
+        @media(max-width:360px){
+            .hero h1{font-size:22px}
+            .hero p{font-size:13px}
+            .st-up h2{font-size:16px}
+            .sel-btn{font-size:14px;padding:13px 24px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="#" class="logo">
+        <div class="logo-b">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <span class="logo-t">Green<span>Tools</span></span>
+    </a>
+    <div class="nav-m">
+        <a href="#">Word to PDF</a>
+        <a href="#" class="on">PDF to Text</a>
+        <a href="#">Merge PDF</a>
+        <a href="#">Compress</a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="hero-bg"></div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            100% Free & Secure — No file uploaded to server
+        </div>
+        <h1>Extract <span class="gr">Text from PDF</span><br>Instantly</h1>
+        <p>Pull out all text from any PDF file in seconds. Free, private, and works entirely in your browser!</p>
+    </section>
+
+    <!-- TOOL -->
+    <div class="tool-w">
+        <div class="tool-c">
+
+            <!-- 1) UPLOAD -->
+            <div class="st on st-up" id="sUp">
+                <div class="up-circ">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h2>Drop your PDF file here</h2>
+                <p class="sub">or click the button below to browse</p>
+                <button class="sel-btn" onclick="document.getElementById('finp').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Select PDF File
+                </button>
+                <div class="fmts">
+                    Supported: <span class="ftg">.PDF</span>
+                </div>
+                <input type="file" id="finp" class="finp" accept=".pdf,application/pdf">
+            </div>
+
+            <!-- 2) READY -->
+            <div class="st st-rdy" id="sRdy">
+                <div class="fc">
+                    <div class="fc-ic">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="fc-nfo">
+                        <div class="fc-nm" id="fname">document.pdf</div>
+                        <div class="fc-sz" id="fsize">2.4 MB</div>
+                        <div class="fc-pg" id="fpages">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            Ready to extract
+                        </div>
+                    </div>
+                    <button class="fc-del" onclick="resetAll()" title="Remove">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="arr-r">
+                    <div class="arr-l"></div>
+                    <div class="arr-c">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div class="arr-l"></div>
+                </div>
+                <button class="ext-btn" id="extBtn" onclick="doExtract()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                    Extract Text
+                </button>
+            </div>
+
+            <!-- 3) PROGRESS -->
+            <div class="st st-prog" id="sProg">
+                <div class="prg-box">
+                    <svg viewBox="0 0 130 130">
+                        <defs>
+                            <linearGradient id="pG" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#2ECC71"/>
+                                <stop offset="100%" stop-color="#1E8449"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="prg-bg" cx="65" cy="65" r="56"/>
+                        <circle class="prg-fl" id="pCirc" cx="65" cy="65" r="56"/>
+                    </svg>
+                    <div class="prg-pct" id="pPct">0%</div>
+                </div>
+                <div class="prg-lb" id="pLb">Reading PDF...</div>
+                <div class="prg-sb" id="pSb">Please wait while we process your file</div>
+                <div class="dots">
+                    <div class="dot on" id="d1"></div>
+                    <div class="dot" id="d2"></div>
+                    <div class="dot" id="d3"></div>
+                </div>
+            </div>
+
+            <!-- 4) DONE -->
+            <div class="st st-done" id="sDone">
+                <div class="ok-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2>Text Extracted Successfully! 🎉</h2>
+                <p class="sub">All text has been extracted from your PDF</p>
+
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="num" id="stPages">0</div>
+                        <div class="lbl">Pages</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num" id="stWords">0</div>
+                        <div class="lbl">Words</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num" id="stChars">0</div>
+                        <div class="lbl">Characters</div>
+                    </div>
+                </div>
+
+                <!-- Text Output -->
+                <div class="txt-wrap">
+                    <div class="txt-head">
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            Extracted Text
+                        </span>
+                        <button class="copy-btn" id="copyBtn" onclick="copyText()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            Copy All
+                        </button>
+                    </div>
+                    <textarea class="txt-out" id="txtOut" readonly></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div class="btn-row">
+                    <button class="dl-btn" onclick="downloadTxt()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download .TXT
+                    </button>
+                    <button class="sec-btn" onclick="resetAll()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Extract Another
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="feats">
+        <h2>Why Choose Our Tool?</h2>
+        <div class="fg">
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3>Instant Extraction</h3>
+                <p>Extract text from any PDF in seconds. Fast and efficient processing.</p>
+            </div>
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>100% Private</h3>
+                <p>Everything happens in your browser. Your files never leave your device.</p>
+            </div>
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h3>Totally Free</h3>
+                <p>No charges, no sign-ups, no limits. Use unlimited times.</p>
+            </div>
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </div>
+                <h3>Copy & Download</h3>
+                <p>Copy text to clipboard or download as .TXT file instantly.</p>
+            </div>
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3>All Devices</h3>
+                <p>Works perfectly on PC, Mac, phone, and tablet browsers.</p>
+            </div>
+            <div class="ft">
+                <div class="ft-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <h3>Multi-Page Support</h3>
+                <p>Handles PDFs with hundreds of pages. Extracts every single word.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+    <p>Made with 💚 by <a href="#">GreenTools</a> — Free online PDF text extractor</p>
+</footer>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let chosenFile = null;
+    let extractedText = '';
+    let totalPages = 0;
+
+    const sUp = document.getElementById('sUp');
+    const sRdy = document.getElementById('sRdy');
+    const sProg = document.getElementById('sProg');
+    const sDone = document.getElementById('sDone');
+    const finp = document.getElementById('finp');
+
+    function show(el) {
+        [sUp, sRdy, sProg, sDone].forEach(s => s.classList.remove('on'));
+        el.classList.add('on');
+    }
+
+    // Drag & Drop
+    sUp.addEventListener('dragover', e => { e.preventDefault(); sUp.classList.add('drag'); });
+    sUp.addEventListener('dragleave', () => sUp.classList.remove('drag'));
+    sUp.addEventListener('drop', e => {
+        e.preventDefault(); sUp.classList.remove('drag');
+        if (e.dataTransfer.files.length) pickFile(e.dataTransfer.files[0]);
+    });
+    sUp.addEventListener('click', e => {
+        if (e.target.tagName !== 'BUTTON' && !e.target.closest('.sel-btn')) finp.click();
+    });
+    finp.addEventListener('change', e => { if (e.target.files.length) pickFile(e.target.files[0]); });
+
+    function pickFile(file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext !== 'pdf' && file.type !== 'application/pdf') {
+            alert('Please select a PDF file (.pdf)');
+            return;
+        }
+        chosenFile = file;
+        document.getElementById('fname').textContent = file.name;
+        document.getElementById('fsize').textContent = fmtSz(file.size);
+        document.getElementById('fpages').innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Ready to extract text
+        `;
+        show(sRdy);
+    }
+
+    function fmtSz(b) {
+        if (!b) return '0 B';
+        const u = ['Bytes','KB','MB','GB'];
+        const i = Math.floor(Math.log(b) / Math.log(1024));
+        return (b / Math.pow(1024, i)).toFixed(1) + ' ' + u[i];
+    }
+
+    function resetAll() {
+        chosenFile = null;
+        extractedText = '';
+        totalPages = 0;
+        finp.value = '';
+        show(sUp);
+        setProg(0, 'Reading PDF...', 'Please wait...', 1);
+    }
+
+    function setProg(pct, lb, sb, step) {
+        const c = 2 * Math.PI * 56;
+        const ci = document.getElementById('pCirc');
+        ci.style.strokeDasharray = c;
+        ci.style.strokeDashoffset = c - (pct / 100) * c;
+        document.getElementById('pPct').textContent = pct + '%';
+        if (lb) document.getElementById('pLb').textContent = lb;
+        if (sb) document.getElementById('pSb').textContent = sb;
+        for (let i = 1; i <= 3; i++) {
+            const d = document.getElementById('d' + i);
+            d.className = 'dot';
+            if (i < step) d.classList.add('dn');
+            if (i === step) d.classList.add('on');
+        }
+    }
+
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+
+    async function doExtract() {
+        if (!chosenFile) return;
+        document.getElementById('extBtn').disabled = true;
+        show(sProg);
+
+        try {
+            setProg(5, 'Loading PDF...', 'Reading file data', 1);
+            await wait(300);
+
+            const buf = await chosenFile.arrayBuffer();
+            setProg(15, 'Loading PDF...', 'File loaded successfully', 1);
+            await wait(200);
+
+            setProg(20, 'Opening PDF...', 'Initializing PDF reader', 1);
+            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+            totalPages = pdf.numPages;
+
+            setProg(30, 'Extracting text...', `Found ${totalPages} page${totalPages > 1 ? 's' : ''}`, 2);
+            await wait(200);
+
+            let allText = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                let pageText = '';
+                let lastY = null;
+
+                content.items.forEach(item => {
+                    if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+                        pageText += '\n';
+                    }
+                    pageText += item.str;
+                    if (item.hasEOL) pageText += '\n';
+                    lastY = item.transform[5];
+                });
+
+                allText += `--- Page ${i} ---\n${pageText.trim()}\n\n`;
+
+                const pct = 30 + Math.round((i / totalPages) * 55);
+                setProg(pct, 'Extracting text...', `Processing page ${i} of ${totalPages}`, 2);
+            }
+
+            extractedText = allText.trim();
+
+            setProg(90, 'Finalizing...', 'Preparing output', 3);
+            await wait(300);
+
+            setProg(100, 'Complete!', 'Text extracted successfully', 3);
+            await wait(400);
+
+            // Stats
+            const words = extractedText.split(/\s+/).filter(w => w.length > 0).length;
+            const chars = extractedText.length;
+
+            document.getElementById('stPages').textContent = totalPages.toLocaleString();
+            document.getElementById('stWords').textContent = words.toLocaleString();
+            document.getElementById('stChars').textContent = chars.toLocaleString();
+
+            document.getElementById('txtOut').value = extractedText;
+
+            show(sDone);
+
+        } catch (err) {
+            console.error(err);
+            alert('Error: ' + err.message + '\n\nMake sure the file is a valid PDF.');
+            show(sRdy);
+        }
+
+        document.getElementById('extBtn').disabled = false;
+    }
+
+    function copyText() {
+        const btn = document.getElementById('copyBtn');
+        const ta = document.getElementById('txtOut');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(ta.value).then(() => showCopied(btn));
+        } else {
+            ta.select();
+            ta.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            showCopied(btn);
+        }
+    }
+
+    function showCopied(btn) {
+        btn.classList.add('copied');
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Copied!
+        `;
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy All
+            `;
+        }, 2000);
+    }
+
+    function downloadTxt() {
+        if (!extractedText) return;
+        const name = chosenFile ? chosenFile.name.replace(/\.pdf$/i, '') + '.txt' : 'extracted-text.txt';
+        const blob = new Blob([extractedText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+</body>
+</html>
