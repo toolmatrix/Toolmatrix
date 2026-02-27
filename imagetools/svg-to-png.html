@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEBP Converter — Convert To/From WEBP Free</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f8e9;color:#333;min-height:100vh;display:flex;flex-direction:column}
+
+/* NAV */
+nav{background:#fff;padding:13px 26px;display:flex;align-items:center;border-bottom:1px solid #c8e6c9;box-shadow:0 1px 5px rgba(0,0,0,.04);position:sticky;top:0;z-index:100}
+.n-logo{width:44px;height:44px;background:linear-gradient(135deg,#43a047,#66bb6a);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.6rem;font-weight:900;margin-right:14px;box-shadow:0 3px 12px rgba(67,160,71,.22);letter-spacing:.3px;line-height:1;text-align:center}
+.n-title{font-weight:800;font-size:1.16rem;color:#2e7d32}
+.n-sep{width:1px;height:22px;background:#c8e6c9;margin:0 14px}
+.n-sub{color:#81c784;font-size:.8rem;font-weight:500}
+.n-right{margin-left:auto;display:flex;gap:8px}
+.nb{padding:9px 18px;border:none;border-radius:9px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nb.sec{background:#e8f5e9;color:#388e3c}
+.nb.sec:hover{background:#c8e6c9}
+.nb.pri{background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;box-shadow:0 2px 10px rgba(67,160,71,.22)}
+.nb.pri:hover{box-shadow:0 5px 18px rgba(67,160,71,.32);transform:translateY(-1px)}
+
+/* MODE TABS */
+.mode-wrap{background:#fff;border-bottom:1px solid #e8f5e9;padding:0 20px;display:flex;justify-content:center}
+.mode-tabs{display:flex;gap:0}
+.mtab{padding:14px 36px;border:none;background:none;color:#81c784;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;border-bottom:3px solid transparent;position:relative;display:flex;align-items:center;gap:8px}
+.mtab:hover{color:#2e7d32;background:#f9fdf7}
+.mtab.on{color:#2e7d32;border-bottom-color:#43a047}
+.mtab .arrow{font-size:.7rem;color:#a5d6a7}
+.mtab.on .arrow{color:#43a047}
+
+/* HERO */
+.hero{display:flex;flex-direction:column;align-items:center;padding:48px 20px 42px;background:linear-gradient(180deg,#dcedc8 0%,#f1f8e9 100%);text-align:center;transition:all .35s}
+.hero.mini{padding:14px 20px;min-height:auto}
+.hero.mini h1,.hero.mini>p,.hero.mini .sub-p,.hero.mini .feats,.hero.mini .h-badge,.hero.mini .fmt-list{display:none}
+.hero.mini #dropZone{padding:14px 20px;max-width:100%}
+.hero.mini .dz-icon,.hero.mini .dz-hint,.hero.mini .dz-note{display:none}
+.hero.mini .dz-text{font-size:.86rem}
+.hero.mini .dz-btn{padding:8px 22px;font-size:.82rem;border-radius:22px}
+
+.h-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #c8e6c9;padding:5px 16px;border-radius:30px;font-size:.72rem;font-weight:600;color:#43a047;margin-bottom:16px;box-shadow:0 2px 8px rgba(67,160,71,.05)}
+.hero h1{font-size:2.2rem;font-weight:800;color:#1b5e20;margin-bottom:10px;line-height:1.15}
+.hero h1 span{background:linear-gradient(135deg,#2e7d32,#66bb6a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero>p{color:#558b2f;font-size:.98rem;margin-bottom:6px;max-width:580px;line-height:1.5}
+.sub-p{color:#9ccc65;font-size:.82rem;margin-bottom:24px}
+.fmt-list{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
+.fmt-list span{background:#e8f5e9;color:#2e7d32;padding:3px 12px;border-radius:20px;font-weight:700;border:1px solid #c8e6c9;font-size:.68rem;letter-spacing:.3px}
+.feats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+.feat{display:flex;align-items:center;gap:5px;font-size:.76rem;color:#388e3c;font-weight:600;background:#fff;padding:5px 14px;border-radius:26px;border:1px solid #c8e6c9}
+.feat i{color:#43a047;font-size:.68rem}
+
+#dropZone{width:100%;max-width:660px;padding:52px 30px;border:2.5px dashed #a5d6a7;border-radius:20px;background:#fff;cursor:pointer;transition:all .25s;text-align:center}
+#dropZone:hover,#dropZone.dragover{border-color:#43a047;background:#f1f8e9;transform:translateY(-3px);box-shadow:0 12px 35px rgba(67,160,71,.1)}
+.dz-icon{font-size:3.4rem;color:#66bb6a;margin-bottom:16px}
+.dz-text{font-size:1.06rem;color:#444;font-weight:600;margin-bottom:4px}
+.dz-hint{font-size:.82rem;color:#ccc;margin-bottom:18px}
+.dz-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 40px;background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;border:none;border-radius:32px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(67,160,71,.26)}
+.dz-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(67,160,71,.36)}
+.dz-note{font-size:.7rem;color:#ccc;margin-top:14px}
+#fileInput{display:none}
+
+/* EDITOR */
+.editor{display:none;max-width:960px;width:100%;margin:0 auto;padding:0 20px 50px}
+.editor.show{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* FILE LIST */
+.fl-head{display:flex;align-items:center;justify-content:space-between;margin:22px 0 12px;flex-wrap:wrap;gap:8px}
+.fl-head h2{font-size:1rem;font-weight:700;color:#1b5e20;display:flex;align-items:center;gap:8px}
+.fl-head .cnt{background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;font-size:.66rem;padding:3px 11px;border-radius:20px;font-weight:700}
+.fl-acts{display:flex;gap:6px;flex-wrap:wrap}
+.fla{padding:7px 14px;border:1.5px solid #c8e6c9;border-radius:8px;background:#fff;color:#388e3c;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.fla:hover{border-color:#43a047;background:#f1f8e9;transform:translateY(-1px)}
+.fla.red{color:#e53935;border-color:#ffcdd2}
+.fla.red:hover{background:#ffebee;border-color:#e53935}
+
+.flist{display:flex;flex-direction:column;gap:6px;max-height:380px;overflow-y:auto;padding-right:4px}
+
+.fc{background:#fff;border:1px solid #c8e6c9;border-radius:11px;padding:11px 15px;display:flex;align-items:center;gap:11px;transition:all .2s}
+.fc:hover{box-shadow:0 3px 14px rgba(67,160,71,.06);border-color:#a5d6a7}
+.fc.done{border-left:3px solid #43a047}
+.fc.err{border-left:3px solid #e53935}
+.fc-th{width:46px;height:46px;border-radius:8px;background:#f1f8e9;border:1px solid #e8f5e9;overflow:hidden;flex-shrink:0}
+.fc-th img{width:100%;height:100%;object-fit:cover}
+.fc-info{flex:1;min-width:80px;overflow:hidden}
+.fc-name{font-size:.8rem;font-weight:700;color:#1b5e20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.fc-meta{font-size:.68rem;color:#a5d6a7;font-weight:500;display:flex;gap:8px;flex-wrap:wrap}
+.fc-meta b{color:#66bb6a}
+.fc-arr{color:#43a047;font-size:.9rem;flex-shrink:0;opacity:.4}
+.fc-out{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.fc-badge{font-size:.58rem;font-weight:800;padding:3px 9px;border-radius:4px;letter-spacing:.5px;color:#fff}
+.fc-badge.webp{background:linear-gradient(135deg,#43a047,#2e7d32)}
+.fc-badge.png{background:#1e88e5}
+.fc-badge.jpg{background:#f57c00}
+.fc-badge.gif{background:#e53935}
+.fc-badge.bmp{background:#6d4c41}
+.fc-badge.ico{background:#546e7a}
+.fc-badge.tiff{background:#00838f}
+.fc-osz{font-size:.68rem;color:#388e3c;font-weight:600}
+.fc-st{flex-shrink:0;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem}
+.fc-st.wait{background:#fff8e1;color:#ff8f00}
+.fc-st.ok{background:#e8f5e9;color:#43a047}
+.fc-st.fail{background:#ffebee;color:#e53935}
+.fc-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:.8rem;padding:3px;transition:color .15s;flex-shrink:0}
+.fc-del:hover{color:#e53935}
+
+/* SETTINGS */
+.scard{background:#fff;border:1px solid #c8e6c9;border-radius:14px;padding:20px 24px;margin:16px 0;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.scard:hover{box-shadow:0 4px 16px rgba(67,160,71,.06)}
+.scard-t{font-size:.88rem;font-weight:700;color:#1b5e20;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.scard-t i{color:#43a047}
+.srow{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.srow:last-child{margin-bottom:0}
+.slbl{font-size:.78rem;font-weight:600;color:#388e3c;min-width:95px}
+
+/* Quality slider */
+.q-wrap{display:flex;align-items:center;gap:12px;flex:1;min-width:180px}
+.q-wrap input[type=range]{-webkit-appearance:none;flex:1;height:6px;background:linear-gradient(90deg,#ef5350 0%,#ffa726 35%,#66bb6a 65%,#43a047 100%);border-radius:5px;outline:none;cursor:pointer}
+.q-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:#fff;border:3px solid #43a047;border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.q-val{background:#e8f5e9;color:#2e7d32;font-size:.82rem;font-weight:800;padding:4px 12px;border-radius:8px;min-width:48px;text-align:center;border:1px solid #c8e6c9}
+.q-presets{display:flex;gap:6px;flex-wrap:wrap}
+.qp{padding:5px 13px;border:1.5px solid #c8e6c9;border-radius:7px;background:#fff;color:#388e3c;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .13s}
+.qp:hover,.qp.on{background:#43a047;color:#fff;border-color:#43a047}
+
+/* Format select (from webp) */
+.fmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:8px}
+.fmt-opt{padding:12px 8px;border:2px solid #e8f5e9;border-radius:11px;background:#f9fdf7;cursor:pointer;text-align:center;transition:all .2s}
+.fmt-opt:hover{border-color:#a5d6a7;background:#f1f8e9;transform:translateY(-2px)}
+.fmt-opt.on{border-color:#43a047;background:#e8f5e9;box-shadow:0 3px 14px rgba(67,160,71,.1)}
+.fmt-opt.on::after{content:'✓';display:block;color:#43a047;font-size:.6rem;font-weight:800;margin-top:3px}
+.fmt-icon{font-size:1.3rem;margin-bottom:4px}
+.fmt-name{font-size:.82rem;font-weight:700;color:#1b5e20}
+.fmt-desc{font-size:.6rem;color:#a5d6a7;margin-top:1px;font-weight:500}
+
+/* BG Color */
+.bg-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bg-c{width:30px;height:30px;border-radius:8px;border:2.5px solid #e0e0e0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.bg-c:hover{transform:scale(1.1);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.bg-c.on{border-color:#43a047;box-shadow:0 2px 10px rgba(67,160,71,.18)}
+.bg-c.w{background:#fff}
+.bg-c.b{background:#1a1a1a}
+.bg-c.cu{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
+.bg-c.cu input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.bg-hint{font-size:.65rem;color:#bbb;font-weight:500;margin-left:4px}
+
+/* CONVERT */
+.conv-sec{text-align:center;margin:26px 0}
+.conv-btn{display:inline-flex;align-items:center;gap:11px;padding:17px 56px;background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border:none;border-radius:14px;font-size:1.08rem;font-weight:700;cursor:pointer;transition:all .22s;box-shadow:0 5px 20px rgba(67,160,71,.3);letter-spacing:.3px}
+.conv-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(67,160,71,.4)}
+.conv-btn:active{transform:translateY(0)}
+.conv-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.pbar{width:100%;max-width:400px;height:8px;background:#e8f5e9;border-radius:10px;margin:16px auto 8px;overflow:hidden;display:none}
+.pbar.show{display:block}
+.pfill{height:100%;background:linear-gradient(90deg,#43a047,#66bb6a);border-radius:10px;transition:width .3s;width:0%}
+.ptxt{text-align:center;font-size:.78rem;color:#81c784;font-weight:600;display:none}
+.ptxt.show{display:block}
+
+/* DOWNLOAD */
+.dl-sec{display:none;text-align:center;margin:22px 0;padding:30px;background:#fff;border-radius:16px;border:1px solid #c8e6c9;box-shadow:0 3px 16px rgba(67,160,71,.05)}
+.dl-sec.show{display:block;animation:fadeUp .4s ease}
+.dl-sec .ic{font-size:2.6rem;color:#43a047;margin-bottom:10px}
+.dl-sec h3{font-size:1.1rem;font-weight:700;color:#1b5e20;margin-bottom:4px}
+.dl-sec .desc{font-size:.82rem;color:#81c784;margin-bottom:6px}
+
+.dl-stats{display:flex;gap:10px;justify-content:center;margin:14px 0 18px;flex-wrap:wrap}
+.dl-stat{background:#f1f8e9;border:1px solid #e8f5e9;border-radius:10px;padding:10px 16px;text-align:center;min-width:85px}
+.dl-stat .v{font-size:.95rem;font-weight:800;color:#2e7d32}
+.dl-stat .l{font-size:.58rem;color:#81c784;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+
+.dl-main{display:inline-flex;align-items:center;gap:9px;padding:14px 40px;background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border:none;border-radius:12px;font-size:.98rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(67,160,71,.28)}
+.dl-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(67,160,71,.38)}
+.dl-each{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px}
+.dl-one{padding:6px 14px;border:1.5px solid #c8e6c9;border-radius:7px;background:#fff;color:#388e3c;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.dl-one:hover{border-color:#43a047;background:#f1f8e9}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:#fff;color:#1b5e20;padding:13px 24px;border-radius:12px;font-size:.86rem;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:300;transition:transform .35s cubic-bezier(.4,0,.2,1);border-left:4px solid #43a047}
+.toast.err{border-left-color:#e53935;color:#c62828}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f1f8e9}
+::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:10px}
+
+@media(max-width:768px){
+  .hero{padding:32px 16px 28px}
+  .hero h1{font-size:1.6rem}
+  #dropZone{padding:34px 18px}
+  .mtab{padding:12px 20px;font-size:.82rem}
+  .n-sub,.n-sep{display:none}
+  .nb span{display:none}
+  .conv-btn{padding:14px 34px;font-size:.96rem}
+  .q-wrap{min-width:140px}
+  .fmt-grid{grid-template-columns:repeat(3,1fr)}
+  .fc-arr{display:none}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.25rem}
+  .hero>p{font-size:.82rem}
+  #dropZone{padding:26px 14px}
+  .mtab{padding:10px 14px;font-size:.74rem}
+  .feat{font-size:.65rem;padding:4px 8px}
+  .fmt-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .fmt-opt{padding:8px 4px}
+  .fmt-name{font-size:.72rem}
+  .dl-main{padding:12px 28px;font-size:.88rem}
+  .h-badge{display:none}
+  .srow{gap:8px}
+  .bg-c{width:26px;height:26px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="n-logo">WEBP</div>
+  <span class="n-title">WEBP Converter</span>
+  <div class="n-sep"></div>
+  <span class="n-sub">Free Online Converter</span>
+  <div class="n-right" id="navR" style="display:none">
+    <button class="nb sec" onclick="resetAll()"><i class="fas fa-redo-alt"></i> <span>Start Over</span></button>
+    <button class="nb pri" onclick="$('fileInput').click()"><i class="fas fa-plus"></i> <span>Add More</span></button>
+  </div>
+</nav>
+
+<!-- MODE TABS -->
+<div class="mode-wrap">
+  <div class="mode-tabs">
+    <button class="mtab on" id="tabTo" onclick="switchMode('to')"><i class="fas fa-file-image"></i> <span class="arrow">→</span> Convert <b>to</b> WEBP</button>
+    <button class="mtab" id="tabFrom" onclick="switchMode('from')"><b>WEBP</b> <span class="arrow">→</span> Convert <b>from</b> WEBP</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="h-badge"><i class="fas fa-bolt"></i> 100% Free • Private • No Server Upload</div>
+  <h1 id="heroTitle">Convert Images to <span>WEBP</span></h1>
+  <p id="heroDesc">Transform JPG, PNG, GIF, BMP, TIFF, ICO to WEBP format. Smaller file sizes with exceptional quality.</p>
+  <p class="sub-p">Convert many images at once — 100% browser-based &amp; private.</p>
+  <div class="fmt-list" id="fmtList">
+    <span>JPG</span><span>PNG</span><span>GIF</span><span>BMP</span><span>TIFF</span><span>ICO</span><span>AVIF</span><span>SVG</span><span>JFIF</span>
+  </div>
+  <div class="feats">
+    <span class="feat"><i class="fas fa-check-circle"></i> Free</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Batch Convert</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> High Quality</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Fast</span>
+    <span class="feat"><i class="fas fa-check-circle"></i> Private</span>
+  </div>
+  <div id="dropZone">
+    <div class="dz-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+    <div class="dz-text" id="dzText">Drag & drop your images here</div>
+    <div class="dz-hint">or</div>
+    <button class="dz-btn" onclick="$('fileInput').click()"><i class="fas fa-images"></i> Select Images</button>
+    <div class="dz-note" id="dzNote">All common image formats • Up to 50 images • Max 50MB each</div>
+  </div>
+  <input type="file" id="fileInput" accept="image/*,.jfif,.webp" multiple>
+</div>
+
+<!-- EDITOR -->
+<div class="editor" id="editor">
+  <div class="fl-head">
+    <h2><i class="fas fa-layer-group" style="color:#43a047"></i> <span id="flTitle">Images</span> <span class="cnt" id="fCnt">0</span></h2>
+    <div class="fl-acts">
+      <button class="fla" onclick="$('fileInput').click()"><i class="fas fa-plus"></i> Add More</button>
+      <button class="fla red" onclick="resetAll()"><i class="fas fa-trash-alt"></i> Clear All</button>
+    </div>
+  </div>
+  <div class="flist" id="fList"></div>
+
+  <!-- SETTINGS -->
+  <div class="scard" id="settingsCard">
+    <div class="scard-t"><i class="fas fa-cog"></i> <span id="settingsTitle">WEBP Conversion Settings</span></div>
+
+    <!-- Quality (to WEBP mode) -->
+    <div id="qualitySec">
+      <div class="srow">
+        <div class="slbl"><i class="fas fa-star" style="color:#ffa000;margin-right:4px"></i> Quality:</div>
+        <div class="q-wrap">
+          <input type="range" id="qSlider" min="1" max="100" value="85" oninput="setQ(this.value)">
+          <div class="q-val" id="qVal">85%</div>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="slbl"></div>
+        <div class="q-presets">
+          <button class="qp" onclick="preQ(50)">Low 50%</button>
+          <button class="qp" onclick="preQ(75)">Medium 75%</button>
+          <button class="qp on" onclick="preQ(85)">High 85%</button>
+          <button class="qp" onclick="preQ(100)">Max 100%</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Format (from WEBP mode) -->
+    <div id="formatSec" style="display:none">
+      <div class="srow">
+        <div class="slbl">Output:</div>
+      </div>
+      <div class="fmt-grid" id="fmtGrid">
+        <div class="fmt-opt on" data-fmt="png" onclick="pickFmt(this)">
+          <div class="fmt-icon">🖼️</div>
+          <div class="fmt-name">PNG</div>
+          <div class="fmt-desc">Lossless</div>
+        </div>
+        <div class="fmt-opt" data-fmt="jpg" onclick="pickFmt(this)">
+          <div class="fmt-icon">📷</div>
+          <div class="fmt-name">JPG</div>
+          <div class="fmt-desc">Small size</div>
+        </div>
+        <div class="fmt-opt" data-fmt="gif" onclick="pickFmt(this)">
+          <div class="fmt-icon">🎞️</div>
+          <div class="fmt-name">GIF</div>
+          <div class="fmt-desc">256 colors</div>
+        </div>
+        <div class="fmt-opt" data-fmt="bmp" onclick="pickFmt(this)">
+          <div class="fmt-icon">🗺️</div>
+          <div class="fmt-name">BMP</div>
+          <div class="fmt-desc">Bitmap</div>
+        </div>
+        <div class="fmt-opt" data-fmt="ico" onclick="pickFmt(this)">
+          <div class="fmt-icon">⭐</div>
+          <div class="fmt-name">ICO</div>
+          <div class="fmt-desc">Favicon</div>
+        </div>
+        <div class="fmt-opt" data-fmt="tiff" onclick="pickFmt(this)">
+          <div class="fmt-icon">📐</div>
+          <div class="fmt-name">TIFF</div>
+          <div class="fmt-desc">Print</div>
+        </div>
+      </div>
+      <!-- JPG quality (shown when JPG selected) -->
+      <div id="jpgQSec" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #e8f5e9">
+        <div class="srow">
+          <div class="slbl">JPG Quality:</div>
+          <div class="q-wrap">
+            <input type="range" id="jpgQSlider" min="1" max="100" value="92" oninput="jpgQ=this.value/100;$('jpgQVal').textContent=this.value+'%'">
+            <div class="q-val" id="jpgQVal">92%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BG color for transparent -->
+    <div id="bgSec" style="margin-top:12px;padding-top:12px;border-top:1px solid #e8f5e9">
+      <div class="srow">
+        <div class="slbl"><i class="fas fa-fill-drip" style="color:#66bb6a;margin-right:4px"></i> Background:</div>
+        <div class="bg-row">
+          <div class="bg-c w on" onclick="setBgC('#ffffff',this)" title="White"></div>
+          <div class="bg-c b" onclick="setBgC('#000000',this)" title="Black"></div>
+          <div class="bg-c cu" title="Custom"><input type="color" value="#ffffff" onchange="setBgC(this.value,this.parentElement)"></div>
+          <span class="bg-hint">For transparent images (PNG→JPG etc.)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVERT -->
+  <div class="conv-sec">
+    <button class="conv-btn" id="convBtn" onclick="convertAll()">
+      <i class="fas fa-bolt"></i> <span id="convTxt">Convert to WEBP</span>
+    </button>
+    <div class="pbar" id="pBar"><div class="pfill" id="pFill"></div></div>
+    <div class="ptxt" id="pTxt"></div>
+  </div>
+
+  <!-- DOWNLOAD -->
+  <div class="dl-sec" id="dlSec">
+    <div class="ic"><i class="fas fa-check-circle"></i></div>
+    <h3 id="dlTitle">Conversion Complete!</h3>
+    <div class="desc" id="dlDesc">All images converted</div>
+    <div class="dl-stats" id="dlStats"></div>
+    <button class="dl-main" onclick="downloadAll()"><i class="fas fa-download"></i> <span id="dlBtnTxt">Download All</span></button>
+    <div class="dl-each" id="dlEach"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+let mode='to'; // 'to' or 'from'
+let outFmt='png'; // for 'from' mode
+let files=[],converted=[];
+let quality=0.85,jpgQ=0.92,bgColor='#ffffff';
+
+// ======== MODE SWITCH ========
+function switchMode(m){
+  if(files.length>0){if(!confirm('Switching mode will clear current files. Continue?'))return;resetAll()}
+  mode=m;
+  $('tabTo').classList.toggle('on',m==='to');
+  $('tabFrom').classList.toggle('on',m==='from');
+
+  if(m==='to'){
+    $('heroTitle').innerHTML='Convert Images to <span>WEBP</span>';
+    $('heroDesc').textContent='Transform JPG, PNG, GIF, BMP, TIFF, ICO to WEBP format. Smaller file sizes with exceptional quality.';
+    $('fmtList').innerHTML='<span>JPG</span><span>PNG</span><span>GIF</span><span>BMP</span><span>TIFF</span><span>ICO</span><span>AVIF</span><span>SVG</span><span>JFIF</span>';
+    $('dzText').textContent='Drag & drop your images here';
+    $('dzNote').textContent='All common image formats • Up to 50 images';
+    $('fileInput').accept='image/*,.jfif';
+    $('qualitySec').style.display='';
+    $('formatSec').style.display='none';
+    $('settingsTitle').textContent='WEBP Conversion Settings';
+    $('convTxt').textContent='Convert to WEBP';
+    $('flTitle').textContent='Images';
+  }else{
+    $('heroTitle').innerHTML='Convert <span>WEBP</span> to Other Formats';
+    $('heroDesc').textContent='Convert WEBP images to PNG, JPG, GIF, BMP, ICO or TIFF format instantly.';
+    $('fmtList').innerHTML='<span>PNG</span><span>JPG</span><span>GIF</span><span>BMP</span><span>ICO</span><span>TIFF</span>';
+    $('dzText').textContent='Drag & drop your WEBP images here';
+    $('dzNote').textContent='Only WEBP files • Up to 50 images';
+    $('fileInput').accept='.webp,image/webp';
+    $('qualitySec').style.display='none';
+    $('formatSec').style.display='';
+    $('settingsTitle').textContent='Output Format Settings';
+    $('convTxt').textContent='Convert from WEBP';
+    $('flTitle').textContent='WEBP Images';
+  }
+}
+
+// ======== FILE INPUT ========
+$('fileInput').addEventListener('change',e=>{addFiles(e.target.files);e.target.value=''});
+
+const dz=$('dropZone');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files)});
+
+document.addEventListener('paste',e=>{
+  const items=e.clipboardData?.items;if(!items)return;
+  const imgs=[];for(let i of items)if(i.type.startsWith('image/'))imgs.push(i.getAsFile());
+  if(imgs.length){e.preventDefault();addFiles(imgs)}
+});
+
+function addFiles(list){
+  let n=0;
+  for(let f of list){
+    if(!f.type.startsWith('image/')&&!/\.(jfif|webp)$/i.test(f.name))continue;
+    if(mode==='from'&&f.type!=='image/webp'&&!f.name.endsWith('.webp')){toast('Only WEBP files in "From WEBP" mode',1);continue}
+    if(f.size>52428800){toast('Too large: '+f.name,1);continue}
+    if(files.length>=50){toast('Max 50 images!',1);break}
+    files.push({id:uid(),file:f,status:'waiting',blob:null,outSize:0,w:0,h:0});
+    n++;
+  }
+  if(!n&&!files.length)return;
+  if(n)toast('✓ '+n+' image'+(n>1?'s':'')+' added');
+  showEditor();render();
+}
+
+function showEditor(){
+  $('hero').classList.add('mini');
+  $('editor').classList.add('show');
+  $('navR').style.display='flex';
+}
+
+function render(){
+  const el=$('fList');$('fCnt').textContent=files.length;el.innerHTML='';
+  const targetFmt=mode==='to'?'webp':outFmt;
+  const targetBadge=mode==='to'?'webp':outFmt;
+  files.forEach(f=>{
+    const ext=f.file.name.split('.').pop().toUpperCase();
+    const sz=fmtSz(f.file.size);
+    const url=URL.createObjectURL(f.file);
+    let stH='<div class="fc-st wait"><i class="fas fa-clock"></i></div>';
+    let cls='';
+    if(f.status==='done'){stH='<div class="fc-st ok"><i class="fas fa-check"></i></div>';cls='done'}
+    else if(f.status==='error'){stH='<div class="fc-st fail"><i class="fas fa-times"></i></div>';cls='err'}
+    const osz=f.status==='done'?fmtSz(f.outSize):'—';
+    el.innerHTML+=`<div class="fc ${cls}">
+      <div class="fc-th"><img src="${url}" onerror="this.style.display='none'" alt=""></div>
+      <div class="fc-info"><div class="fc-name" title="${esc(f.file.name)}">${esc(f.file.name)}</div><div class="fc-meta"><b>${ext}</b> • ${sz}${f.w?' • '+f.w+'×'+f.h:''}</div></div>
+      <div class="fc-arr"><i class="fas fa-long-arrow-alt-right"></i></div>
+      <div class="fc-out"><span class="fc-badge ${targetBadge}">${targetFmt.toUpperCase()}</span><span class="fc-osz">${osz}</span></div>
+      ${stH}
+      <button class="fc-del" onclick="removeFile('${f.id}')" title="Remove"><i class="fas fa-times"></i></button>
+    </div>`;
+  });
+}
+
+function removeFile(id){
+  files=files.filter(f=>f.id!==id);converted=converted.filter(c=>c.id!==id);
+  if(!files.length){resetAll();return}
+  render();
+}
+
+// ======== QUALITY ========
+function setQ(v){quality=v/100;$('qVal').textContent=v+'%';document.querySelectorAll('#qualitySec .qp').forEach(b=>b.classList.remove('on'))}
+function preQ(v){quality=v/100;$('qSlider').value=v;$('qVal').textContent=v+'%';document.querySelectorAll('#qualitySec .qp').forEach(b=>{b.classList.remove('on');if(b.textContent.includes(v+'%'))b.classList.add('on')})}
+
+// ======== FORMAT (from mode) ========
+function pickFmt(el){
+  document.querySelectorAll('.fmt-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+  outFmt=el.dataset.fmt;
+  $('jpgQSec').style.display=outFmt==='jpg'?'':'none';
+  $('convTxt').textContent='Convert to '+outFmt.toUpperCase();
+  render();
+}
+
+// ======== BG COLOR ========
+function setBgC(c,el){
+  bgColor=c;
+  document.querySelectorAll('.bg-c').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ======== CONVERT ========
+async function convertAll(){
+  if(!files.length){toast('Add images first!',1);return}
+  const btn=$('convBtn');btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Converting...';
+  $('pBar').classList.add('show');$('pTxt').classList.add('show');
+  $('dlSec').classList.remove('show');
+  converted=[];
+  let ok=0,fail=0,origTotal=0,newTotal=0;
+  const t0=performance.now();
+
+  for(let i=0;i<files.length;i++){
+    files[i].status='converting';
+    $('pTxt').textContent=`Converting ${i+1} of ${files.length}...`;
+    $('pFill').style.width=((i/files.length)*100)+'%';
+    render();
+    await sleep(20);
+
+    try{
+      const r=await doConvert(files[i].file);
+      files[i].status='done';files[i].blob=r.blob;files[i].outSize=r.blob.size;files[i].w=r.w;files[i].h=r.h;
+      const ext=mode==='to'?'webp':outFmt;
+      converted.push({id:files[i].id,blob:r.blob,name:files[i].file.name.replace(/\.[^.]+$/,'')+'.'+ext});
+      origTotal+=files[i].file.size;newTotal+=r.blob.size;
+      ok++;
+    }catch(err){
+      files[i].status='error';fail++;
+      console.error(err);
+    }
+    $('pFill').style.width=(((i+1)/files.length)*100)+'%';
+    render();
+  }
+
+  const elapsed=performance.now()-t0;
+  $('pFill').style.width='100%';
+  $('pTxt').textContent=`✓ ${ok} converted`+(fail?`, ${fail} failed`:'');
+  btn.disabled=false;
+  btn.innerHTML=`<i class="fas fa-bolt"></i> <span>${mode==='to'?'Convert to WEBP':'Convert to '+outFmt.toUpperCase()}</span>`;
+  if(ok>0){showDL(ok,fail,origTotal,newTotal,elapsed);toast('✓ '+ok+' image'+(ok>1?'s':'')+' converted!')}
+  else toast('Conversion failed!',1);
+}
+
+function doConvert(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+        if(!w||!h){reject(new Error('Invalid'));return}
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        const ctx=c.getContext('2d');
+        ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+
+        // BG for non-transparent formats
+        const targetFmt=mode==='to'?'webp':outFmt;
+        if(targetFmt==='jpg'||targetFmt==='bmp'){
+          ctx.fillStyle=bgColor;ctx.fillRect(0,0,w,h);
+        }
+
+        ctx.drawImage(img,0,0,w,h);
+
+        if(targetFmt==='bmp'){
+          resolve({blob:toBMP(c),w,h});return;
+        }
+
+        let mime,q;
+        if(mode==='to'){mime='image/webp';q=quality}
+        else{
+          if(outFmt==='png')mime='image/png';
+          else if(outFmt==='jpg'){mime='image/jpeg';q=jpgQ}
+          else if(outFmt==='gif')mime='image/gif';
+          else if(outFmt==='ico')mime='image/png';
+          else if(outFmt==='tiff')mime='image/png';
+          else mime='image/png';
+        }
+
+        c.toBlob(blob=>{
+          if(blob)resolve({blob,w,h});
+          else reject(new Error('toBlob failed'));
+        },mime,q);
+      }catch(e){reject(e)}
+    };
+    img.onerror=()=>reject(new Error('Load failed'));
+    img.crossOrigin='anonymous';
+    // Pre-convert for exotic formats
+    if(file.type==='image/svg+xml'||file.name.endsWith('.svg')){
+      const reader=new FileReader();
+      reader.onload=e=>{const b=new Blob([e.target.result],{type:'image/svg+xml'});img.src=URL.createObjectURL(b)};
+      reader.readAsText(file);
+    }else{
+      img.src=URL.createObjectURL(file);
+    }
+  });
+}
+
+// BMP encoder
+function toBMP(canvas){
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const d=ctx.getImageData(0,0,w,h).data;
+  const rb=Math.ceil((w*3)/4)*4;
+  const ps=rb*h,fs=54+ps;
+  const buf=new ArrayBuffer(fs);
+  const v=new DataView(buf);
+  v.setUint8(0,0x42);v.setUint8(1,0x4D);
+  v.setUint32(2,fs,true);v.setUint32(10,54,true);
+  v.setUint32(14,40,true);v.setInt32(18,w,true);v.setInt32(22,-h,true);
+  v.setUint16(26,1,true);v.setUint16(28,24,true);v.setUint32(34,ps,true);
+  let o=54;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4;
+      v.setUint8(o++,d[i+2]);v.setUint8(o++,d[i+1]);v.setUint8(o++,d[i]);
+    }
+    const pad=rb-w*3;
+    for(let p=0;p<pad;p++)v.setUint8(o++,0);
+  }
+  return new Blob([buf],{type:'image/bmp'});
+}
+
+function showDL(ok,fail,orig,newSz,ms){
+  const dl=$('dlSec');dl.classList.add('show');
+  const saved=orig-newSz;
+  const pct=orig>0?Math.round((saved/orig)*100):0;
+  const fmt=mode==='to'?'WEBP':outFmt.toUpperCase();
+  $('dlTitle').textContent=ok+' Image'+(ok>1?'s':'')+' Converted to '+fmt+'!';
+  $('dlDesc').textContent=fail?fail+' failed':'All images converted successfully';
+  $('dlBtnTxt').textContent=converted.length>1?'Download All (ZIP)':'Download '+fmt;
+  $('dlStats').innerHTML=`
+    <div class="dl-stat"><div class="v">${ok}</div><div class="l">Converted</div></div>
+    <div class="dl-stat"><div class="v">${fmtSz(orig)}</div><div class="l">Original</div></div>
+    <div class="dl-stat"><div class="v">${fmtSz(newSz)}</div><div class="l">${fmt} Size</div></div>
+    <div class="dl-stat"><div class="v">${saved>0?'−':'+'}${Math.abs(pct)}%</div><div class="l">${saved>0?'Saved':'Increase'}</div></div>
+    <div class="dl-stat"><div class="v">${ms<1000?Math.round(ms)+'ms':(ms/1000).toFixed(1)+'s'}</div><div class="l">Time</div></div>`;
+  const each=$('dlEach');each.innerHTML='';
+  if(converted.length>1)converted.forEach(c=>{each.innerHTML+=`<button class="dl-one" onclick="dlOne('${c.id}')"><i class="fas fa-download"></i> ${esc(c.name)}</button>`});
+  dl.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ======== DOWNLOAD ========
+function dlOne(id){const c=converted.find(x=>x.id===id);if(!c)return;dlBlob(c.blob,c.name);toast('📥 '+c.name)}
+
+async function downloadAll(){
+  if(!converted.length){toast('Convert first!',1);return}
+  if(converted.length===1){dlBlob(converted[0].blob,converted[0].name);toast('📥 Downloaded!');return}
+  toast('Creating ZIP...');
+  try{
+    if(typeof JSZip==='undefined')await loadJS('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+    const zip=new JSZip();
+    converted.forEach(c=>zip.file(c.name,c.blob));
+    const fmt=mode==='to'?'webp':outFmt;
+    const content=await zip.generateAsync({type:'blob'});
+    dlBlob(content,`converted-${fmt}-images.zip`);
+    toast('📥 ZIP — '+converted.length+' images!');
+  }catch(e){
+    converted.forEach(c=>dlBlob(c.blob,c.name));
+    toast('📥 Downloaded individually');
+  }
+}
+
+// ======== RESET ========
+function resetAll(){
+  files=[];converted=[];
+  $('editor').classList.remove('show');
+  $('dlSec').classList.remove('show');
+  $('navR').style.display='none';
+  $('fList').innerHTML='';
+  $('pBar').classList.remove('show');$('pTxt').classList.remove('show');
+  $('pFill').style.width='0%';
+  $('hero').classList.remove('mini');
+  scrollTo({top:0,behavior:'smooth'});toast('Cleared ✓');
+}
+
+// ======== UTILS ========
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2,8)}
+function fmtSz(b){b=Math.abs(b);if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB'}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function dlBlob(b,n){const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function loadJS(s){return new Promise((r,j)=>{const el=document.createElement('script');el.src=s;el.onload=r;el.onerror=j;document.head.appendChild(el)})}
+function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+</script>
+</body>
+</html>
