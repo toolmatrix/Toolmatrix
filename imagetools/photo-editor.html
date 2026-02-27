@@ -5,113 +5,342 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PhotoEdit - Free Online Photo Editor</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        html, body {
-            width: 100%; height: 100%; overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5fdf5; color: #1a4a1a;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5fdf5;
+            color: #1a4a1a;
+            touch-action: manipulation;
+        }
+
+        /* ========== HEADER ========== */
         header {
-            background: white; border-bottom: 2px solid #e0f5e0;
-            padding: 0 20px; height: 55px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+            background: white;
+            border-bottom: 2px solid #e0f5e0;
+            padding: 0 20px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
             box-shadow: 0 2px 10px rgba(76,175,80,0.08);
         }
 
-        .logo-name { font-size: 20px; font-weight: 800; color: #1a4a1a; }
+        .logo-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1a4a1a;
+        }
+
         .logo-name span { color: #4caf50; }
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .header-right a { font-size: 13px; color: #5a8a5a; text-decoration: none; font-weight: 500; }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right a {
+            font-size: 13px;
+            color: #5a8a5a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* ========== PAGE WRAPPER ========== */
         .page-wrapper {
-            position: fixed; top: 55px; left: 0; right: 0; bottom: 0;
-            display: flex; flex-direction: column;
+            position: fixed;
+            top: 52px;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
-        /* UPLOAD PAGE */
+        /* ========== UPLOAD PAGE ========== */
         .upload-page {
-            flex: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .tool-header { text-align: center; margin-bottom: 30px; }
-        .tool-header h1 { font-size: 32px; font-weight: 800; color: #1a4a1a; margin-bottom: 8px; }
-        .tool-header p { font-size: 14px; color: #6aaa6a; max-width: 460px; margin: 0 auto; line-height: 1.6; }
+        .tool-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tool-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a4a1a;
+            margin-bottom: 8px;
+        }
+
+        .tool-header p {
+            font-size: 14px;
+            color: #6aaa6a;
+            max-width: 460px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
 
         .drop-zone {
-            background: white; border: 2.5px dashed #88cc88; border-radius: 20px;
-            padding: 55px 40px; text-align: center; cursor: pointer;
-            transition: all 0.3s ease; width: 100%; max-width: 560px;
+            background: white;
+            border: 2.5px dashed #88cc88;
+            border-radius: 20px;
+            padding: 55px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 560px;
         }
 
-        .drop-zone:hover, .drop-zone.dragover {
-            border-color: #4caf50; background: #f0fdf0;
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #4caf50;
+            background: #f0fdf0;
             box-shadow: 0 12px 35px rgba(76,175,80,0.15);
         }
 
-        .drop-icon { font-size: 52px; margin-bottom: 15px; display: block; }
-        .drop-zone h2 { font-size: 20px; font-weight: 700; color: #1a4a1a; margin-bottom: 6px; }
-        .drop-zone p { font-size: 13px; color: #88aa88; }
-        .drop-info { margin-top: 14px; font-size: 11px; color: #aacaaa; }
-
-        /* EDITOR PAGE */
-        .editor-page { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-        .editor-page.active { display: flex; }
-
-        .editor-topbar {
-            background: white; border-bottom: 1px solid #e0f5e0;
-            padding: 8px 15px; display: flex; align-items: center;
-            justify-content: space-between; gap: 8px; flex-shrink: 0; overflow-x: auto;
+        .drop-icon {
+            font-size: 52px;
+            margin-bottom: 15px;
+            display: block;
         }
+
+        .drop-zone h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a4a1a;
+            margin-bottom: 6px;
+        }
+
+        .drop-zone p {
+            font-size: 13px;
+            color: #88aa88;
+            margin-bottom: 25px;
+        }
+
+        .btn-select {
+            background: linear-gradient(135deg, #4caf50, #2d8a4e);
+            color: white;
+            padding: 14px 40px;
+            border-radius: 50px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(76,175,80,0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(76,175,80,0.45);
+        }
+
+        .drop-info {
+            margin-top: 18px;
+            font-size: 11px;
+            color: #aacaaa;
+        }
+
+        /* ========== EDITOR PAGE ========== */
+        .editor-page {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .editor-page.active {
+            display: flex;
+        }
+
+        /* Top Bar */
+        .editor-topbar {
+            background: white;
+            border-bottom: 1px solid #e0f5e0;
+            padding: 7px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-shrink: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            min-height: 50px;
+        }
+
         .editor-topbar::-webkit-scrollbar { display: none; }
 
         .file-badge {
-            display: flex; align-items: center; gap: 8px;
-            background: #f0fdf0; border: 1px solid #c8f0c8;
-            border-radius: 10px; padding: 6px 12px; flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf0;
+            border: 1px solid #c8f0c8;
+            border-radius: 10px;
+            padding: 5px 11px;
+            flex-shrink: 0;
+            min-width: 0;
         }
-        .file-badge span { font-size: 12px; color: #2d5a2d; font-weight: 600; white-space: nowrap; }
-        .file-badge small { color: #88aa88; font-size: 11px; }
 
-        .topbar-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+        .file-badge span {
+            font-size: 12px;
+            color: #2d5a2d;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
+        .file-badge small {
+            color: #88aa88;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-shrink: 0;
+        }
 
         .btn-sm {
-            padding: 7px 13px; border-radius: 20px; border: 2px solid #e0f5e0;
-            background: white; font-size: 12px; font-weight: 600; color: #2d5a2d;
-            cursor: pointer; display: flex; align-items: center; gap: 4px;
-            transition: all 0.2s; white-space: nowrap;
+            padding: 7px 12px;
+            border-radius: 20px;
+            border: 2px solid #e0f5e0;
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2d5a2d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
-        .btn-sm:hover { border-color: #4caf50; background: #f0fdf0; }
+
+        .btn-sm:hover, .btn-sm:active {
+            border-color: #4caf50;
+            background: #f0fdf0;
+        }
+
         .btn-sm.primary {
             background: linear-gradient(135deg, #4caf50, #2d8a4e);
-            color: white; border-color: transparent;
+            color: white;
+            border-color: transparent;
             box-shadow: 0 3px 10px rgba(76,175,80,0.3);
         }
 
-        .editor-body { display: flex; flex: 1; overflow: hidden; }
-
-        /* LEFT PANEL */
-        .left-panel {
-            width: 255px; background: white; border-right: 1px solid #e0f5e0;
-            display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
-            transition: transform 0.3s ease;
+        .btn-sm.primary:hover, .btn-sm.primary:active {
+            background: linear-gradient(135deg, #43a047, #256e3f);
+            box-shadow: 0 5px 14px rgba(76,175,80,0.4);
         }
 
-        .panel-tabs { display: flex; border-bottom: 1px solid #e0f5e0; flex-shrink: 0; }
+        .mob-menu-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 2px solid #e0f5e0;
+            background: white;
+            font-size: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+
+        /* Editor Body */
+        .editor-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ========== LEFT PANEL ========== */
+        .left-panel {
+            width: 255px;
+            background: white;
+            border-right: 1px solid #e0f5e0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0f5e0;
+            flex-shrink: 0;
+        }
 
         .ptab {
-            flex: 1; padding: 11px 4px; border: none; background: transparent;
-            font-size: 11px; font-weight: 700; color: #88aa88; cursor: pointer;
-            border-bottom: 3px solid transparent; transition: all 0.2s; text-align: center;
+            flex: 1;
+            padding: 11px 4px;
+            border: none;
+            background: transparent;
+            font-size: 11px;
+            font-weight: 700;
+            color: #88aa88;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+            touch-action: manipulation;
         }
-        .ptab.active { color: #2d8a4e; border-bottom-color: #4caf50; background: #fafffe; }
+
+        .ptab.active {
+            color: #2d8a4e;
+            border-bottom-color: #4caf50;
+            background: #fafffe;
+        }
 
         .panel-content {
-            flex: 1; overflow-y: auto; padding: 14px; -webkit-overflow-scrolling: touch;
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            -webkit-overflow-scrolling: touch;
         }
+
         .panel-content::-webkit-scrollbar { width: 3px; }
         .panel-content::-webkit-scrollbar-thumb { background: #c8f0c8; border-radius: 10px; }
 
@@ -119,270 +348,784 @@
         .tab-pane.active { display: block; }
 
         .sec-label {
-            font-size: 10px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1.2px; color: #aacaaa; margin: 14px 0 9px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #aacaaa;
+            margin: 14px 0 9px;
         }
+
         .sec-label:first-child { margin-top: 0; }
 
         .ctrl-row { margin-bottom: 12px; }
-        .ctrl-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+        .ctrl-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
         .ctrl-name { font-size: 12px; font-weight: 600; color: #2d5a2d; }
+
         .ctrl-val {
-            font-size: 11px; font-weight: 700; color: #4caf50;
-            background: #f0fdf0; padding: 2px 7px; border-radius: 8px;
-            min-width: 35px; text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #4caf50;
+            background: #f0fdf0;
+            padding: 2px 7px;
+            border-radius: 8px;
+            min-width: 35px;
+            text-align: center;
         }
 
         input[type="range"] {
-            width: 100%; height: 5px; -webkit-appearance: none;
-            border-radius: 10px; background: #e0f5e0; outline: none; cursor: pointer;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-            background: #4caf50; cursor: pointer; box-shadow: 0 2px 6px rgba(76,175,80,0.4);
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 10px;
+            background: #e0f5e0;
+            outline: none;
+            cursor: pointer;
+            touch-action: pan-x;
         }
 
-        .filters-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(76,175,80,0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(76,175,80,0.4);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
 
         .filter-card {
-            border: 2px solid #e0f5e0; border-radius: 11px; padding: 9px 5px;
-            text-align: center; cursor: pointer; transition: all 0.2s; background: white;
+            border: 2px solid #e0f5e0;
+            border-radius: 11px;
+            padding: 9px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            touch-action: manipulation;
         }
-        .filter-card:hover, .filter-card.active { border-color: #4caf50; background: #e8fde8; }
+
+        .filter-card:hover,
+        .filter-card:active,
+        .filter-card.active {
+            border-color: #4caf50;
+            background: #e8fde8;
+        }
+
         .filter-emoji { font-size: 20px; display: block; margin-bottom: 4px; }
         .filter-name { font-size: 10px; font-weight: 700; color: #2d5a2d; }
 
-        .transform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+        .transform-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+        }
 
         .tr-btn {
-            padding: 10px 6px; border: 2px solid #e0f5e0; border-radius: 11px;
-            background: white; font-size: 11px; font-weight: 600; color: #2d5a2d;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 4px; transition: all 0.2s;
+            padding: 10px 6px;
+            border: 2px solid #e0f5e0;
+            border-radius: 11px;
+            background: white;
+            font-size: 11px;
+            font-weight: 600;
+            color: #2d5a2d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
-        .tr-btn:hover { border-color: #4caf50; background: #f0fdf0; }
 
-        .sticker-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; }
-        .sticker-item {
-            font-size: 20px; padding: 5px; border-radius: 8px; cursor: pointer;
-            text-align: center; border: 2px solid transparent; transition: all 0.15s;
+        .tr-btn:hover, .tr-btn:active {
+            border-color: #4caf50;
+            background: #f0fdf0;
         }
-        .sticker-item:hover { background: #f0fdf0; border-color: #c8f0c8; transform: scale(1.12); }
+
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .sticker-item {
+            font-size: 22px;
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+
+        .sticker-item:hover,
+        .sticker-item:active {
+            background: #f0fdf0;
+            border-color: #c8f0c8;
+            transform: scale(1.12);
+        }
 
         .text-input-box {
-            width: 100%; padding: 9px 11px; border: 2px solid #e0f5e0;
-            border-radius: 11px; font-size: 13px; outline: none; color: #1a4a1a;
-            resize: none; font-family: inherit; transition: border-color 0.2s;
+            width: 100%;
+            padding: 9px 11px;
+            border: 2px solid #e0f5e0;
+            border-radius: 11px;
+            font-size: 13px;
+            outline: none;
+            color: #1a4a1a;
+            resize: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
         }
+
         .text-input-box:focus { border-color: #4caf50; }
 
-        .color-palette { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-        .clr-dot {
-            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-            border: 3px solid transparent; transition: all 0.15s;
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin: 8px 0;
         }
-        .clr-dot:hover, .clr-dot.active { border-color: #2d8a4e; transform: scale(1.15); }
+
+        .clr-dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.15s;
+            touch-action: manipulation;
+            flex-shrink: 0;
+        }
+
+        .clr-dot:hover,
+        .clr-dot:active,
+        .clr-dot.active {
+            border-color: #2d8a4e;
+            transform: scale(1.15);
+        }
 
         .font-select {
-            width: 100%; padding: 8px 11px; border: 2px solid #e0f5e0;
-            border-radius: 11px; font-size: 12px; color: #1a4a1a; outline: none;
-            background: white; cursor: pointer; margin-bottom: 9px;
+            width: 100%;
+            padding: 9px 11px;
+            border: 2px solid #e0f5e0;
+            border-radius: 11px;
+            font-size: 12px;
+            color: #1a4a1a;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            margin-bottom: 9px;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234caf50' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
         }
+
         .font-select:focus { border-color: #4caf50; }
 
         .add-text-btn {
-            width: 100%; padding: 10px;
+            width: 100%;
+            padding: 11px;
             background: linear-gradient(135deg, #4caf50, #2d8a4e);
-            color: white; border: none; border-radius: 11px; font-size: 12px;
-            font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 7px;
+            color: white;
+            border: none;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 7px;
+            touch-action: manipulation;
         }
 
-        .crop-ratios { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; }
+        .add-text-btn:hover, .add-text-btn:active {
+            box-shadow: 0 5px 15px rgba(76,175,80,0.4);
+        }
+
+        .crop-ratios {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
         .ratio-btn {
-            padding: 8px 4px; border: 2px solid #e0f5e0; border-radius: 9px;
-            background: white; font-size: 11px; font-weight: 700; color: #2d5a2d;
-            cursor: pointer; text-align: center; transition: all 0.2s;
+            padding: 9px 4px;
+            border: 2px solid #e0f5e0;
+            border-radius: 9px;
+            background: white;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2d5a2d;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
-        .ratio-btn:hover, .ratio-btn.active { border-color: #4caf50; background: #e8fde8; }
 
-        .resize-row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
-        .resize-input {
-            flex: 1; padding: 8px 6px; border: 2px solid #e0f5e0; border-radius: 9px;
-            font-size: 12px; font-weight: 600; color: #1a4a1a; outline: none; text-align: center;
+        .ratio-btn:hover,
+        .ratio-btn:active,
+        .ratio-btn.active {
+            border-color: #4caf50;
+            background: #e8fde8;
         }
+
+        .resize-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .resize-input {
+            flex: 1;
+            padding: 9px 6px;
+            border: 2px solid #e0f5e0;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a4a1a;
+            outline: none;
+            text-align: center;
+            min-width: 0;
+            -webkit-appearance: none;
+        }
+
         .resize-input:focus { border-color: #4caf50; }
-        .resize-label { font-size: 11px; color: #88aa88; font-weight: 600; }
+        .resize-label { font-size: 11px; color: #88aa88; font-weight: 600; flex-shrink: 0; }
 
         .apply-btn {
-            width: 100%; padding: 10px; background: #e8fde8; color: #2d8a4e;
-            border: 2px solid #c8f0c8; border-radius: 11px; font-size: 12px;
-            font-weight: 700; cursor: pointer; transition: all 0.2s;
+            width: 100%;
+            padding: 11px;
+            background: #e8fde8;
+            color: #2d8a4e;
+            border: 2px solid #c8f0c8;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
-        .apply-btn:hover { background: #4caf50; color: white; border-color: #4caf50; }
 
-        .border-colors { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+        .apply-btn:hover, .apply-btn:active {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
 
-        /* CANVAS */
+        .border-colors {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 7px;
+        }
+
+        /* ========== CANVAS AREA ========== */
         .canvas-area {
-            flex: 1; background: #2a2a2a; display: flex;
-            align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
+            flex: 1;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
 
         #mainCanvas {
-            display: block; border-radius: 4px;
+            display: block;
+            border-radius: 3px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.5);
             transform-origin: center center;
-            /* NO CSS filter here — we bake into canvas */
+            max-width: none;
+            max-height: none;
+            touch-action: none;
         }
 
+        /* Float Toolbar */
         .float-toolbar {
-            position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
-            background: white; border-radius: 28px; padding: 6px 12px;
-            display: flex; align-items: center; gap: 3px;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.2); border: 1px solid #e0f5e0;
-            white-space: nowrap; z-index: 10;
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 28px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+            border: 1px solid #e0f5e0;
+            white-space: nowrap;
+            z-index: 10;
         }
 
         .ft-btn {
-            width: 35px; height: 35px; border-radius: 50%; border: none;
-            background: transparent; cursor: pointer; font-size: 15px;
-            display: flex; align-items: center; justify-content: center; transition: all 0.18s;
-        }
-        .ft-btn:hover { background: #f0fdf0; }
-        .ft-sep { width: 1px; height: 22px; background: #e0f5e0; margin: 0 3px; }
-        .zoom-badge {
-            background: #f0fdf0; border: 1px solid #c8f0c8; border-radius: 8px;
-            padding: 3px 9px; font-size: 11px; font-weight: 700; color: #2d8a4e;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s;
+            color: #2d5a2d;
+            touch-action: manipulation;
         }
 
-        /* RIGHT PANEL */
-        .right-panel {
-            width: 190px; background: white; border-left: 1px solid #e0f5e0;
-            padding: 14px; overflow-y: auto; display: flex;
-            flex-direction: column; gap: 8px; flex-shrink: 0;
+        .ft-btn:hover, .ft-btn:active { background: #f0fdf0; }
+
+        .ft-sep {
+            width: 1px;
+            height: 22px;
+            background: #e0f5e0;
+            margin: 0 3px;
         }
+
+        .zoom-badge {
+            background: #f0fdf0;
+            border: 1px solid #c8f0c8;
+            border-radius: 8px;
+            padding: 3px 9px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2d8a4e;
+        }
+
+        /* ========== RIGHT PANEL ========== */
+        .right-panel {
+            width: 190px;
+            background: white;
+            border-left: 1px solid #e0f5e0;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .right-panel::-webkit-scrollbar { width: 3px; }
         .right-panel::-webkit-scrollbar-thumb { background: #c8f0c8; border-radius: 10px; }
 
-        .info-card { background: #f5fdf5; border: 1px solid #e0f5e0; border-radius: 12px; padding: 11px; }
-        .info-card-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #aacaaa; margin-bottom: 9px; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .info-card {
+            background: #f5fdf5;
+            border: 1px solid #e0f5e0;
+            border-radius: 12px;
+            padding: 11px;
+        }
+
+        .info-card-title {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aacaaa;
+            margin-bottom: 9px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
         .info-row:last-child { margin-bottom: 0; }
         .info-key { font-size: 11px; color: #6aaa6a; font-weight: 500; }
         .info-val { font-size: 11px; font-weight: 700; color: #1a4a1a; }
 
         .history-list { display: flex; flex-direction: column; gap: 5px; }
+
         .history-item {
-            display: flex; align-items: center; gap: 7px; padding: 6px 9px;
-            border-radius: 9px; border: 1px solid #e0f5e0; cursor: pointer;
-            font-size: 11px; font-weight: 600; color: #2d5a2d; transition: all 0.18s; background: white;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 9px;
+            border-radius: 9px;
+            border: 1px solid #e0f5e0;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #2d5a2d;
+            transition: all 0.18s;
+            background: white;
+            touch-action: manipulation;
         }
-        .history-item:hover { background: #f0fdf0; border-color: #4caf50; }
+
+        .history-item:hover, .history-item:active { background: #f0fdf0; border-color: #4caf50; }
         .history-item.current { background: #e8fde8; border-color: #4caf50; }
-        .history-dot { width: 7px; height: 7px; border-radius: 50%; background: #c8f0c8; flex-shrink: 0; }
+
+        .history-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #c8f0c8;
+            flex-shrink: 0;
+        }
+
         .history-item.current .history-dot { background: #4caf50; }
 
         .download-card {
-            background: linear-gradient(135deg,#e8fde8,#d4f5d4);
-            border: 1px solid #b8eeb8; border-radius: 13px; padding: 13px; text-align: center;
+            background: linear-gradient(135deg, #e8fde8, #d4f5d4);
+            border: 1px solid #b8eeb8;
+            border-radius: 13px;
+            padding: 13px;
+            text-align: center;
         }
-        .download-card h4 { font-size: 12px; font-weight: 700; color: #1a4a1a; margin-bottom: 9px; }
-        .format-btns { display: flex; gap: 4px; margin-bottom: 10px; justify-content: center; }
+
+        .download-card h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a4a1a;
+            margin-bottom: 9px;
+        }
+
+        .format-btns {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
         .fmt-btn {
-            padding: 4px 9px; border-radius: 7px; border: 2px solid #b8eeb8;
-            background: white; font-size: 10px; font-weight: 700; color: #2d8a4e; cursor: pointer; transition: all 0.2s;
+            padding: 4px 9px;
+            border-radius: 7px;
+            border: 2px solid #b8eeb8;
+            background: white;
+            font-size: 10px;
+            font-weight: 700;
+            color: #2d8a4e;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
-        .fmt-btn.active, .fmt-btn:hover { background: #4caf50; color: white; border-color: #4caf50; }
+
+        .fmt-btn.active,
+        .fmt-btn:hover {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
 
         .btn-download-main {
-            width: 100%; padding: 10px;
-            background: linear-gradient(135deg,#4caf50,#2d8a4e);
-            color: white; border: none; border-radius: 11px; font-size: 13px;
-            font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #4caf50, #2d8a4e);
+            color: white;
+            border: none;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+            touch-action: manipulation;
+        }
+
+        .btn-download-main:hover, .btn-download-main:active {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 18px rgba(76,175,80,0.45);
         }
 
         .shortcut-list { display: flex; flex-direction: column; gap: 5px; }
-        .shortcut-row { display: flex; justify-content: space-between; align-items: center; }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .shortcut-action { font-size: 11px; color: #6aaa6a; }
-        .shortcut-key { font-size: 10px; font-weight: 700; background: #f0fdf0; border: 1px solid #c8f0c8; border-radius: 5px; padding: 2px 5px; color: #2d8a4e; }
 
-        /* TOAST */
-        .toast {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background: #1a4a1a; color: white; padding: 11px 20px;
-            border-radius: 12px; font-size: 13px; font-weight: 600;
-            z-index: 9999; opacity: 0; transition: all 0.3s;
-            white-space: nowrap; pointer-events: none;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        /* MOBILE */
-        @media (max-width: 700px) {
-            header { height: 50px; padding: 0 15px; }
-            .logo-name { font-size: 18px; }
-            .page-wrapper { top: 50px; }
-            .right-panel { display: none; }
-            .file-badge { display: none; }
-            .editor-topbar { padding: 6px 10px; }
-            .btn-sm { padding: 6px 10px; font-size: 11px; }
-
-            .left-panel {
-                position: fixed; top: 50px; left: 0; bottom: 56px;
-                width: 260px; z-index: 600;
-                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-                transform: translateX(-100%);
-                border-radius: 0 16px 16px 0;
-            }
-            .left-panel.mob-open { transform: translateX(0); }
-
-            .canvas-area { width: 100%; flex: 1; }
-
-            .float-toolbar { bottom: 65px; padding: 5px 10px; gap: 2px; }
-            .ft-btn { width: 30px; height: 30px; font-size: 13px; }
-            .zoom-badge { font-size: 10px; padding: 2px 7px; }
-
-            .mob-bottom-nav { display: flex !important; }
-            .toast { bottom: 70px; }
-            .drop-zone { padding: 35px 20px; }
-            .tool-header h1 { font-size: 26px; }
+        .shortcut-key {
+            font-size: 10px;
+            font-weight: 700;
+            background: #f0fdf0;
+            border: 1px solid #c8f0c8;
+            border-radius: 5px;
+            padding: 2px 5px;
+            color: #2d8a4e;
         }
 
-        /* MOBILE BOTTOM NAV */
-        .mob-bottom-nav {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0;
-            height: 56px; background: white; border-top: 1.5px solid #e0f5e0;
-            z-index: 500; justify-content: space-around; align-items: center;
-            box-shadow: 0 -3px 12px rgba(76,175,80,0.1);
+        /* ========== OVERLAY (mobile) ========== */
+        .panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 500;
+            touch-action: manipulation;
+        }
+
+        .panel-overlay.show { display: block; }
+
+        /* ========== MOBILE DRAWER (right) ========== */
+        .mobile-right-drawer {
+            position: fixed;
+            top: 52px;
+            right: 0;
+            bottom: 58px;
+            width: 210px;
+            background: white;
+            border-left: 1px solid #e0f5e0;
+            z-index: 502;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transform: translateX(110%);
+            transition: transform 0.3s ease;
+            -webkit-overflow-scrolling: touch;
+            will-change: transform;
+        }
+
+        .mobile-right-drawer.open {
+            transform: translateX(0);
+        }
+
+        /* Mobile bottom nav */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #e0f5e0;
+            z-index: 400;
+            justify-content: space-around;
+            align-items: center;
+            height: 58px;
+            box-shadow: 0 -4px 15px rgba(76,175,80,0.1);
+            flex-shrink: 0;
         }
 
         .mob-nav-btn {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; gap: 2px; flex: 1; height: 100%;
-            border: none; background: transparent; cursor: pointer;
-            font-size: 9px; font-weight: 700; color: #99bb99; transition: color 0.18s; padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            flex: 1;
+            height: 100%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 700;
+            color: #88aa88;
+            transition: color 0.2s;
+            touch-action: manipulation;
         }
-        .mob-nav-btn .ni { font-size: 19px; line-height: 1; }
+
+        .mob-nav-btn .nav-icon { font-size: 18px; line-height: 1; }
         .mob-nav-btn.active { color: #4caf50; }
 
-        .mob-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.35); z-index: 599;
+        /* Loading */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.88);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 14px;
         }
-        .mob-overlay.show { display: block; }
 
-        @media (min-width: 701px) {
-            .mob-bottom-nav { display: none !important; }
-            .mob-overlay { display: none !important; }
+        .loading-overlay.show { display: flex; }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 4px solid #e0f5e0;
+            border-top-color: #4caf50;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { font-size: 14px; font-weight: 600; color: #2d8a4e; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #1a4a1a;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Checkbox styling */
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 9px;
+        }
+
+        .check-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #4caf50;
+            flex-shrink: 0;
+        }
+
+        .check-row label {
+            font-size: 12px;
+            color: #2d5a2d;
+            cursor: pointer;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .right-panel { display: none; }
+        }
+
+        @media (max-width: 700px) {
+            header { height: 50px; padding: 0 12px; }
+            .page-wrapper { top: 50px; }
+
+            /* Left panel: slide drawer */
+            .left-panel {
+                position: fixed;
+                top: 50px;
+                left: 0;
+                bottom: 58px;
+                width: 270px;
+                z-index: 501;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+                will-change: transform;
+            }
+
+            .left-panel.open { transform: translateX(0); }
+
+            .mobile-right-drawer {
+                top: 50px;
+                bottom: 58px;
+            }
+
+            .editor-topbar {
+                padding: 6px 10px;
+                min-height: 46px;
+            }
+
+            .mob-menu-btn { display: flex; }
+            .file-badge { display: none; }
+            .btn-txt { display: none; }
+
+            .topbar-actions { gap: 4px; }
+            .btn-sm { padding: 6px 9px; font-size: 12px; }
+
+            .canvas-area { width: 100%; }
+
+            .float-toolbar {
+                bottom: 66px;
+                padding: 4px 8px;
+                gap: 1px;
+            }
+
+            .ft-btn { width: 30px; height: 30px; font-size: 14px; }
+            .zoom-badge { font-size: 10px; padding: 2px 7px; }
+
+            .mobile-bottom-nav { display: flex; }
+
+            .drop-zone { padding: 30px 20px; }
+            .tool-header h1 { font-size: 24px; }
+            .drop-icon { font-size: 42px; }
+
+            .toast { bottom: 68px; }
+        }
+
+        @media (max-width: 360px) {
+            .left-panel { width: 250px; }
+            .btn-sm { padding: 5px 7px; font-size: 11px; }
         }
     </style>
 </head>
 <body>
 
-<div class="toast" id="toast"></div>
-<div class="mob-overlay" id="mobOverlay" onclick="closeSidebar()"></div>
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Processing...</div>
+</div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Panel Overlay -->
+<div class="panel-overlay" id="panelOverlay" onclick="closeMobilePanels()"></div>
+
+<!-- Header -->
 <header>
     <div class="logo-name">Photo<span>Edit</span></div>
     <div class="header-right">
@@ -391,57 +1134,65 @@
     </div>
 </header>
 
+<!-- Hidden File Input (single) -->
 <input type="file" id="fileInput" accept="image/*" style="display:none">
 
+<!-- Page Wrapper -->
 <div class="page-wrapper">
 
-    <!-- UPLOAD -->
+    <!-- ===== UPLOAD PAGE ===== -->
     <div class="upload-page" id="uploadPage">
         <div class="tool-header">
-            <h1>Photo Editor</h1>
-            <p>Edit your photos online for free. Adjust, filter, crop, resize, add text & stickers.</p>
+            <h1>🖼️ Photo Editor</h1>
+            <p>Edit your photos online for free. Adjust, filter, crop, resize, add text & stickers — no installation needed.</p>
         </div>
         <div class="drop-zone" id="dropZone">
             <span class="drop-icon">🖼️</span>
             <h2>Drop your photo here</h2>
             <p>or click to browse from your device</p>
+            <button class="btn-select" id="selectBtn">📂 Select Photo</button>
             <div class="drop-info">Supports JPG, PNG, WEBP, BMP, GIF • Max 25MB</div>
         </div>
     </div>
 
-    <!-- EDITOR -->
+    <!-- ===== EDITOR PAGE ===== -->
     <div class="editor-page" id="editorPage">
 
+        <!-- Top Bar -->
         <div class="editor-topbar">
-            <div class="file-badge">
-                <div>
-                    <span id="topFileName">photo.jpg</span><br>
-                    <small id="topFileInfo">-- × --</small>
+            <div class="topbar-left">
+                <button class="mob-menu-btn" id="mobMenuBtn" onclick="toggleLeftPanel()" aria-label="Menu">☰</button>
+                <div class="file-badge">
+                    <div>
+                        <span id="topFileName">photo.jpg</span><br>
+                        <small id="topFileInfo">-- × --</small>
+                    </div>
                 </div>
             </div>
             <div class="topbar-actions">
-                <button class="btn-sm" onclick="undoAction()">↩️ Undo</button>
-                <button class="btn-sm" onclick="redoAction()">↪️ Redo</button>
-                <button class="btn-sm" onclick="resetAll()">🔄 Reset</button>
-                <button class="btn-sm" onclick="triggerFile()">📂 New</button>
-                <button class="btn-sm primary" onclick="downloadImage()">⬇️ Download</button>
+                <button class="btn-sm" onclick="undoAction()" title="Undo (Ctrl+Z)">↩️ <span class="btn-txt">Undo</span></button>
+                <button class="btn-sm" onclick="redoAction()" title="Redo (Ctrl+Y)">↪️ <span class="btn-txt">Redo</span></button>
+                <button class="btn-sm" onclick="resetAll()" title="Reset">🔄 <span class="btn-txt">Reset</span></button>
+                <button class="btn-sm" onclick="loadNewImage()" title="New Image">📂 <span class="btn-txt">New</span></button>
+                <button class="btn-sm primary" onclick="downloadImage()" title="Download (Ctrl+S)">⬇️ <span class="btn-txt">Save</span></button>
             </div>
         </div>
 
-        <div class="editor-body">
+        <!-- Editor Body -->
+        <div class="editor-body" id="editorBody">
 
-            <!-- LEFT PANEL -->
+            <!-- ===== LEFT PANEL ===== -->
             <div class="left-panel" id="leftPanel">
                 <div class="panel-tabs">
-                    <button class="ptab active" id="ptab-adjust"  onclick="switchTab('adjust',this)">Adjust</button>
-                    <button class="ptab"         id="ptab-filters" onclick="switchTab('filters',this)">Filters</button>
-                    <button class="ptab"         id="ptab-decor"   onclick="switchTab('decor',this)">Decor</button>
-                    <button class="ptab"         id="ptab-crop"    onclick="switchTab('crop',this)">Crop</button>
+                    <button class="ptab active" onclick="switchPTab('adjust',this)">Adjust</button>
+                    <button class="ptab" onclick="switchPTab('filters',this)">Filters</button>
+                    <button class="ptab" onclick="switchPTab('decor',this)">Decor</button>
+                    <button class="ptab" onclick="switchPTab('crop',this)">Crop</button>
                 </div>
 
                 <div class="panel-content">
 
-                    <!-- ADJUST -->
+                    <!-- ADJUST TAB -->
                     <div class="tab-pane active" id="pane-adjust">
                         <div class="sec-label">💡 Light</div>
                         <div class="ctrl-row">
@@ -464,6 +1215,7 @@
                             <div class="ctrl-top"><span class="ctrl-name">Shadows</span><span class="ctrl-val" id="v-shadows">0</span></div>
                             <input type="range" id="s-shadows" min="-100" max="100" value="0" oninput="onSlider('shadows',this)">
                         </div>
+
                         <div class="sec-label">🎨 Color</div>
                         <div class="ctrl-row">
                             <div class="ctrl-top"><span class="ctrl-name">Saturation</span><span class="ctrl-val" id="v-saturation">0</span></div>
@@ -481,25 +1233,35 @@
                             <div class="ctrl-top"><span class="ctrl-name">Tint</span><span class="ctrl-val" id="v-tint">0</span></div>
                             <input type="range" id="s-tint" min="-100" max="100" value="0" oninput="onSlider('tint',this)">
                         </div>
+
                         <div class="sec-label">🔮 Detail</div>
+                        <div class="ctrl-row">
+                            <div class="ctrl-top"><span class="ctrl-name">Sharpness</span><span class="ctrl-val" id="v-sharpness">0</span></div>
+                            <input type="range" id="s-sharpness" min="0" max="100" value="0" oninput="onSlider('sharpness',this)">
+                        </div>
                         <div class="ctrl-row">
                             <div class="ctrl-top"><span class="ctrl-name">Blur</span><span class="ctrl-val" id="v-blur">0</span></div>
                             <input type="range" id="s-blur" min="0" max="15" value="0" oninput="onSlider('blur',this)">
                         </div>
                         <div class="ctrl-row">
+                            <div class="ctrl-top"><span class="ctrl-name">Noise</span><span class="ctrl-val" id="v-noise">0</span></div>
+                            <input type="range" id="s-noise" min="0" max="100" value="0" oninput="onSlider('noise',this)">
+                        </div>
+                        <div class="ctrl-row">
                             <div class="ctrl-top"><span class="ctrl-name">Opacity</span><span class="ctrl-val" id="v-opacity">100</span></div>
                             <input type="range" id="s-opacity" min="0" max="100" value="100" oninput="onSlider('opacity',this)">
                         </div>
+
                         <div class="sec-label">🔄 Transform</div>
                         <div class="transform-grid">
-                            <button class="tr-btn" onclick="rotateImg(-90)">↪️ Left</button>
-                            <button class="tr-btn" onclick="rotateImg(90)">↩️ Right</button>
+                            <button class="tr-btn" onclick="rotateImg(-90)">↪️ Left 90°</button>
+                            <button class="tr-btn" onclick="rotateImg(90)">↩️ Right 90°</button>
                             <button class="tr-btn" onclick="flipImg('h')">↔️ Flip H</button>
                             <button class="tr-btn" onclick="flipImg('v')">↕️ Flip V</button>
                         </div>
                     </div>
 
-                    <!-- FILTERS -->
+                    <!-- FILTERS TAB -->
                     <div class="tab-pane" id="pane-filters">
                         <div class="sec-label">🎨 Preset Filters</div>
                         <div class="filters-grid">
@@ -521,7 +1283,7 @@
                         </div>
                     </div>
 
-                    <!-- DECOR -->
+                    <!-- DECOR TAB -->
                     <div class="tab-pane" id="pane-decor">
                         <div class="sec-label">✏️ Add Text</div>
                         <textarea class="text-input-box" id="textContent" rows="2" placeholder="Type your text here..."></textarea>
@@ -537,13 +1299,13 @@
                             <div class="ctrl-top"><span class="ctrl-name">Font Size</span><span class="ctrl-val" id="v-fontsize">32</span></div>
                             <input type="range" id="s-fontsize" min="12" max="120" value="32" oninput="document.getElementById('v-fontsize').textContent=this.value">
                         </div>
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                            <input type="checkbox" id="textBold" style="cursor:pointer;width:16px;height:16px;">
-                            <label for="textBold" style="font-size:12px;color:#2d5a2d;cursor:pointer;font-weight:600;">Bold</label>
+                        <div class="check-row">
+                            <input type="checkbox" id="textBold">
+                            <label for="textBold">Bold Text</label>
                         </div>
-                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aacaaa;margin-bottom:6px;">Text Color</div>
+                        <div class="sec-label">Text Color</div>
                         <div class="color-palette" id="textColorPalette">
-                            <div class="clr-dot active" style="background:#ffffff;border:1px solid #ddd" onclick="selectTxtColor('#ffffff',this)"></div>
+                            <div class="clr-dot active" style="background:#ffffff;box-shadow:inset 0 0 0 1px #ddd" onclick="selectTxtColor('#ffffff',this)"></div>
                             <div class="clr-dot" style="background:#000000" onclick="selectTxtColor('#000000',this)"></div>
                             <div class="clr-dot" style="background:#ff3333" onclick="selectTxtColor('#ff3333',this)"></div>
                             <div class="clr-dot" style="background:#4caf50" onclick="selectTxtColor('#4caf50',this)"></div>
@@ -556,7 +1318,7 @@
                         </div>
                         <button class="add-text-btn" onclick="addText()">➕ Add Text to Image</button>
 
-                        <div class="sec-label" style="margin-top:18px;">😊 Stickers</div>
+                        <div class="sec-label" style="margin-top:16px;">😊 Stickers</div>
                         <div class="sticker-grid">
                             <div class="sticker-item" onclick="addSticker('⭐')">⭐</div>
                             <div class="sticker-item" onclick="addSticker('❤️')">❤️</div>
@@ -580,14 +1342,14 @@
                             <div class="sticker-item" onclick="addSticker('🎯')">🎯</div>
                         </div>
 
-                        <div class="sec-label" style="margin-top:18px;">🖼️ Border</div>
+                        <div class="sec-label" style="margin-top:16px;">🖼️ Frame Border</div>
                         <div class="ctrl-row">
                             <div class="ctrl-top"><span class="ctrl-name">Border Size</span><span class="ctrl-val" id="v-border">0</span></div>
                             <input type="range" id="s-border" min="0" max="80" value="0" oninput="onBorderSlider(this)">
                         </div>
-                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aacaaa;margin-bottom:7px;">Border Color</div>
+                        <div class="sec-label">Border Color</div>
                         <div class="border-colors">
-                            <div class="clr-dot active" style="background:#ffffff;border:1px solid #ddd" onclick="selectBdrColor('#ffffff',this)"></div>
+                            <div class="clr-dot active" style="background:#ffffff;box-shadow:inset 0 0 0 1px #ddd" onclick="selectBdrColor('#ffffff',this)"></div>
                             <div class="clr-dot" style="background:#000000" onclick="selectBdrColor('#000000',this)"></div>
                             <div class="clr-dot" style="background:#4caf50" onclick="selectBdrColor('#4caf50',this)"></div>
                             <div class="clr-dot" style="background:#ffd700" onclick="selectBdrColor('#ffd700',this)"></div>
@@ -597,7 +1359,7 @@
                         </div>
                     </div>
 
-                    <!-- CROP -->
+                    <!-- CROP TAB -->
                     <div class="tab-pane" id="pane-crop">
                         <div class="sec-label">✂️ Aspect Ratio</div>
                         <div class="crop-ratios">
@@ -609,41 +1371,44 @@
                             <div class="ratio-btn" onclick="setCropRatio('9:16',this)">9:16</div>
                         </div>
                         <button class="apply-btn" onclick="applyCrop()">✂️ Apply Crop</button>
+
                         <div class="sec-label" style="margin-top:18px;">📐 Resize</div>
                         <div class="resize-row">
-                            <input type="number" class="resize-input" id="resizeW" placeholder="W">
+                            <input type="number" class="resize-input" id="resizeW" placeholder="W" min="1" max="9999">
                             <span class="resize-label">×</span>
-                            <input type="number" class="resize-input" id="resizeH" placeholder="H">
+                            <input type="number" class="resize-input" id="resizeH" placeholder="H" min="1" max="9999">
                             <span class="resize-label">px</span>
                         </div>
-                        <div style="margin-bottom:9px;display:flex;align-items:center;gap:7px;">
-                            <input type="checkbox" id="keepRatio" checked style="cursor:pointer;width:15px;height:15px;">
-                            <label for="keepRatio" style="font-size:12px;color:#2d5a2d;cursor:pointer;font-weight:600;">Keep ratio</label>
+                        <div class="check-row">
+                            <input type="checkbox" id="keepRatio" checked>
+                            <label for="keepRatio">Keep aspect ratio</label>
                         </div>
                         <button class="apply-btn" onclick="applyResize()">📐 Apply Resize</button>
                     </div>
 
-                </div>
-            </div>
+                </div><!-- /panel-content -->
+            </div><!-- /left-panel -->
 
-            <!-- CANVAS -->
+            <!-- ===== CANVAS AREA ===== -->
             <div class="canvas-area" id="canvasArea">
-                <canvas id="mainCanvas"></canvas>
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <canvas id="mainCanvas"></canvas>
+                </div>
                 <div class="float-toolbar">
-                    <button class="ft-btn" onclick="undoAction()">↩️</button>
-                    <button class="ft-btn" onclick="redoAction()">↪️</button>
+                    <button class="ft-btn" title="Undo" onclick="undoAction()">↩️</button>
+                    <button class="ft-btn" title="Redo" onclick="redoAction()">↪️</button>
                     <div class="ft-sep"></div>
-                    <button class="ft-btn" onclick="zoomIn()">🔍</button>
+                    <button class="ft-btn" title="Zoom In" onclick="zoomIn()">🔍</button>
                     <span class="zoom-badge" id="zoomBadge">100%</span>
-                    <button class="ft-btn" onclick="zoomOut()">🔎</button>
+                    <button class="ft-btn" title="Zoom Out" onclick="zoomOut()">🔎</button>
                     <div class="ft-sep"></div>
-                    <button class="ft-btn" onclick="fitScreen()">⬜</button>
-                    <button class="ft-btn" onclick="resetAll()">🔄</button>
+                    <button class="ft-btn" title="Fit Screen" onclick="fitScreen()">⬜</button>
+                    <button class="ft-btn" title="Reset All" onclick="resetAll()">🔄</button>
                 </div>
             </div>
 
-            <!-- RIGHT PANEL -->
-            <div class="right-panel">
+            <!-- ===== RIGHT PANEL (desktop only) ===== -->
+            <div class="right-panel" id="rightPanel">
                 <div class="info-card">
                     <div class="info-card-title">📄 Image Info</div>
                     <div class="info-row"><span class="info-key">Width</span><span class="info-val" id="infoW">--</span></div>
@@ -653,7 +1418,7 @@
                 </div>
                 <div class="download-card">
                     <h4>⬇️ Download</h4>
-                    <div class="format-btns">
+                    <div class="format-btns" id="fmtBtns">
                         <button class="fmt-btn active" onclick="selectFmt('jpeg',this)">JPG</button>
                         <button class="fmt-btn" onclick="selectFmt('png',this)">PNG</button>
                         <button class="fmt-btn" onclick="selectFmt('webp',this)">WEBP</button>
@@ -677,524 +1442,1018 @@
                 </div>
             </div>
 
+        </div><!-- /editor-body -->
+
+        <!-- ===== MOBILE RIGHT DRAWER ===== -->
+        <div class="mobile-right-drawer" id="mobileRightDrawer">
+            <div class="info-card">
+                <div class="info-card-title">📄 Image Info</div>
+                <div class="info-row"><span class="info-key">Width</span><span class="info-val" id="m-infoW">--</span></div>
+                <div class="info-row"><span class="info-key">Height</span><span class="info-val" id="m-infoH">--</span></div>
+                <div class="info-row"><span class="info-key">Format</span><span class="info-val" id="m-infoFmt">--</span></div>
+                <div class="info-row"><span class="info-key">Size</span><span class="info-val" id="m-infoSize">--</span></div>
+            </div>
+            <div class="download-card">
+                <h4>⬇️ Download</h4>
+                <div class="format-btns" id="m-fmtBtns">
+                    <button class="fmt-btn active" onclick="selectFmt('jpeg',this)">JPG</button>
+                    <button class="fmt-btn" onclick="selectFmt('png',this)">PNG</button>
+                    <button class="fmt-btn" onclick="selectFmt('webp',this)">WEBP</button>
+                </div>
+                <button class="btn-download-main" onclick="downloadImage()">⬇️ Download</button>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">🕐 History</div>
+                <div class="history-list" id="m-historyList"></div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">⌨️ Tips</div>
+                <div class="shortcut-list">
+                    <div class="shortcut-row"><span class="shortcut-action">Undo</span><span class="shortcut-key">Ctrl+Z</span></div>
+                    <div class="shortcut-row"><span class="shortcut-action">Redo</span><span class="shortcut-key">Ctrl+Y</span></div>
+                    <div class="shortcut-row"><span class="shortcut-action">Save</span><span class="shortcut-key">Ctrl+S</span></div>
+                </div>
+            </div>
         </div>
 
-        <!-- MOBILE BOTTOM NAV -->
-        <div class="mob-bottom-nav" id="mobBottomNav">
-            <button class="mob-nav-btn" id="mnb-adjust"  onclick="mobNav('adjust')"><span class="ni">🎛️</span>Adjust</button>
-            <button class="mob-nav-btn" id="mnb-filters" onclick="mobNav('filters')"><span class="ni">🎨</span>Filters</button>
-            <button class="mob-nav-btn" id="mnb-decor"   onclick="mobNav('decor')"><span class="ni">✨</span>Decor</button>
-            <button class="mob-nav-btn" id="mnb-crop"    onclick="mobNav('crop')"><span class="ni">✂️</span>Crop</button>
-            <button class="mob-nav-btn"                   onclick="downloadImage()"><span class="ni">⬇️</span>Save</button>
+        <!-- ===== MOBILE BOTTOM NAV ===== -->
+        <div class="mobile-bottom-nav" id="mobileBottomNav">
+            <button class="mob-nav-btn" id="nav-tools" onclick="mobileNav('tools',this)">
+                <span class="nav-icon">🎛️</span>Tools
+            </button>
+            <button class="mob-nav-btn" id="nav-filters" onclick="mobileNav('filters',this)">
+                <span class="nav-icon">🎨</span>Filters
+            </button>
+            <button class="mob-nav-btn" id="nav-decor" onclick="mobileNav('decor',this)">
+                <span class="nav-icon">✨</span>Decor
+            </button>
+            <button class="mob-nav-btn" id="nav-crop" onclick="mobileNav('crop',this)">
+                <span class="nav-icon">✂️</span>Crop
+            </button>
+            <button class="mob-nav-btn" id="nav-info" onclick="mobileNav('info',this)">
+                <span class="nav-icon">ℹ️</span>Info
+            </button>
+            <button class="mob-nav-btn" onclick="downloadImage()">
+                <span class="nav-icon">⬇️</span>Save
+            </button>
         </div>
 
-    </div>
-</div>
+    </div><!-- /editor-page -->
+</div><!-- /page-wrapper -->
 
 <script>
-/* ── STATE ── */
-var canvas = document.getElementById('mainCanvas');
-var ctx    = canvas.getContext('2d');
+'use strict';
+// ============================================================
+//  CANVAS & STATE
+// ============================================================
+const canvas = document.getElementById('mainCanvas');
+const ctx    = canvas.getContext('2d');
 
-/* source image — always clean, never filtered */
-var sourceImg  = null;   /* original HTMLImageElement */
-var workingImg = null;   /* after crop/resize, new HTMLImageElement */
+let origImg        = null;
+let origWidth      = 0;
+let origHeight     = 0;
+let currentRot     = 0;
+let isFlipH        = false;
+let isFlipV        = false;
+let zoomLevel      = 1;
+let currentFilter  = 'none';
+let downloadFormat = 'jpeg';
+let txtColor       = '#ffffff';
+let bdrColor       = '#ffffff';
+let borderSize     = 0;
+let cropRatio      = 'free';
+let historyStack   = [];
+let historyIdx     = -1;
+let historyLabels  = [];
+let origFileName   = 'photo';
+let overlays       = [];
+let isMobile       = false;
+let isRendering    = false;
 
-var currentRot    = 0;
-var flipH         = false, flipV = false;
-var zoomLevel     = 1;
-var currentFilter = 'none';
-var dlFormat      = 'jpeg';
-var txtColor      = '#ffffff';
-var bdrColor      = '#ffffff';
-var borderSize    = 0;
-var cropRatio     = 'free';
-var history       = [], historyIdx = -1, historyLabels = [];
-var origFileName  = 'photo';
-var overlays      = [];
-
-var sliders = {
+const sliders = {
     brightness:0, contrast:0, exposure:0,
     highlights:0, shadows:0, saturation:0,
-    hue:0, temperature:0, tint:0, blur:0, opacity:100
+    hue:0, temperature:0, tint:0,
+    sharpness:0, blur:0, noise:0, opacity:100
 };
 
-/* ── FILE INPUT ── */
-function triggerFile(){
-    document.getElementById('fileInput').value='';
-    document.getElementById('fileInput').click();
+// ============================================================
+//  MOBILE DETECT
+// ============================================================
+function checkMobile() {
+    isMobile = window.innerWidth <= 700;
 }
 
-document.getElementById('fileInput').addEventListener('change',function(e){
-    if(e.target.files[0]) loadFile(e.target.files[0]);
+checkMobile();
+
+window.addEventListener('resize', () => {
+    checkMobile();
+    if (origImg) fitScreen();
 });
 
-document.getElementById('dropZone').addEventListener('click', triggerFile);
+// ============================================================
+//  FILE INPUT SETUP
+// ============================================================
+const fileInput = document.getElementById('fileInput');
+const dropZone  = document.getElementById('dropZone');
+const selectBtn = document.getElementById('selectBtn');
 
-var dz=document.getElementById('dropZone');
-dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('dragover'); });
-dz.addEventListener('dragleave',function(){ dz.classList.remove('dragover'); });
-dz.addEventListener('drop',function(e){
-    e.preventDefault(); dz.classList.remove('dragover');
-    var f=e.dataTransfer.files[0];
-    if(f&&f.type.startsWith('image/')) loadFile(f);
+selectBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    fileInput.value = '';
+    fileInput.click();
 });
 
-/* ── LOAD FILE ── */
-function loadFile(file){
-    origFileName = file.name.replace(/\.[^.]+$/,'');
-    var fmt = (file.type.split('/')[1]||'jpeg').replace('jpeg','jpg');
+dropZone.addEventListener('click', () => {
+    fileInput.value = '';
+    fileInput.click();
+});
 
-    var reader = new FileReader();
-    reader.onload = function(e){
-        var img = new Image();
-        img.onload = function(){
-            sourceImg  = img;
-            workingImg = img;
-            currentRot = 0; flipH=false; flipV=false;
-            overlays=[]; currentFilter='none'; borderSize=0;
-            history=[]; historyIdx=-1; historyLabels=[];
+dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
 
-            resetSliders(false);
-            document.getElementById('s-border').value=0;
-            document.getElementById('v-border').textContent='0';
-            document.querySelectorAll('.filter-card').forEach(function(c){ c.classList.remove('active'); });
-            document.querySelector('.filter-card').classList.add('active');
-            document.querySelectorAll('.ratio-btn').forEach(function(b){ b.classList.remove('active'); });
-            document.querySelector('.ratio-btn').classList.add('active');
-            cropRatio='free';
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
 
-            /* draw immediately — no loading screen */
-            renderCanvas();
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) loadFile(f);
+});
+
+fileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) loadFile(f);
+    fileInput.value = '';
+});
+
+function loadNewImage() {
+    fileInput.value = '';
+    fileInput.click();
+}
+
+// ============================================================
+//  LOAD FILE
+// ============================================================
+function loadFile(file) {
+    if (!file.type.startsWith('image/')) {
+        showToast('⚠️ Please select an image file!');
+        return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+        showToast('⚠️ File too large! Max 25MB.');
+        return;
+    }
+
+    showLoading(true);
+    origFileName = file.name.replace(/\.[^.]+$/, '') || 'photo';
+    const fmtRaw = file.type.split('/')[1] || 'jpeg';
+    const fmt    = fmtRaw === 'jpeg' ? 'JPG' : fmtRaw.toUpperCase();
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+            origImg    = img;
+            origWidth  = img.width;
+            origHeight = img.height;
+            currentRot = 0;
+            isFlipH = false;
+            isFlipV = false;
+            overlays      = [];
+            currentFilter = 'none';
+            borderSize    = 0;
+            historyStack  = [];
+            historyIdx    = -1;
+            historyLabels = [];
+
+            resetSlidersUI();
+            resetFilterUI();
+            resetBorderUI();
+
+            // build and save
+            buildCanvas();
             saveHistory('Original');
 
-            document.getElementById('infoW').textContent   = img.width+' px';
-            document.getElementById('infoH').textContent   = img.height+' px';
-            document.getElementById('infoFmt').textContent = fmt.toUpperCase();
-            document.getElementById('infoSize').textContent= fmtSize(file.size);
-            document.getElementById('topFileName').textContent = file.name;
-            document.getElementById('topFileInfo').textContent = img.width+' × '+img.height;
+            // Update info
+            updateInfoPanels(img.width, img.height, fmt, fmtSize(file.size));
+            document.getElementById('topFileName').textContent = file.name.length > 18
+                ? file.name.substring(0, 16) + '…'
+                : file.name;
+            document.getElementById('topFileInfo').textContent = img.width + ' × ' + img.height;
 
-            document.getElementById('uploadPage').style.display='none';
+            // Show editor
+            document.getElementById('uploadPage').style.display = 'none';
             document.getElementById('editorPage').classList.add('active');
-            setTimeout(fitScreen,60);
+
+            showLoading(false);
+            setTimeout(fitScreen, 120);
         };
-        img.src = e.target.result;
+        img.onerror = () => {
+            showLoading(false);
+            showToast('⚠️ Could not load image!');
+        };
+        img.src = ev.target.result;
+    };
+    reader.onerror = () => {
+        showLoading(false);
+        showToast('⚠️ Error reading file!');
     };
     reader.readAsDataURL(file);
 }
 
-/* ── RENDER CANVAS ──
-   All effects are applied via CSS filter on the canvas element.
-   Only pixel manipulation (temperature, tint, exposure, highlights,
-   shadows, noise) is done via ImageData — but ONLY when those sliders
-   are non-zero so normal photo upload is instant.
-*/
-function renderCanvas(){
-    if(!workingImg) return;
-    var img = workingImg;
-    var rot = ((currentRot%360)+360)%360;
-    var rotated = (rot===90||rot===270);
+function updateInfoPanels(w, h, fmt, size) {
+    ['infoW','m-infoW'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = w + ' px'; });
+    ['infoH','m-infoH'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = h + ' px'; });
+    ['infoFmt','m-infoFmt'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = fmt; });
+    ['infoSize','m-infoSize'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = size; });
+}
 
-    canvas.width  = rotated ? img.height : img.width;
-    canvas.height = rotated ? img.width  : img.height;
+// ============================================================
+//  BUILD CANVAS (renders everything)
+// ============================================================
+function buildCanvas() {
+    if (!origImg || isRendering) return;
+    isRendering = true;
+
+    const img = origImg;
+    const rot = ((currentRot % 360) + 360) % 360;
+    const swapped = (rot === 90 || rot === 270);
+
+    const cw = swapped ? img.height : img.width;
+    const ch = swapped ? img.width  : img.height;
+
+    canvas.width  = cw;
+    canvas.height = ch;
 
     ctx.save();
-    ctx.translate(canvas.width/2, canvas.height/2);
-    ctx.rotate(currentRot*Math.PI/180);
-    ctx.scale(flipH?-1:1, flipV?-1:1);
-    ctx.drawImage(img, -img.width/2, -img.height/2);
+    ctx.translate(cw / 2, ch / 2);
+    ctx.rotate(currentRot * Math.PI / 180);
+    ctx.scale(isFlipH ? -1 : 1, isFlipV ? -1 : 1);
+    ctx.drawImage(img, -img.width / 2, -img.height / 2);
     ctx.restore();
 
-    /* pixel effects only when needed */
-    var needPixel = sliders.temperature||sliders.tint||sliders.exposure||
-                    sliders.highlights||sliders.shadows;
-    if(needPixel) applyPixelFX();
+    applyPixelEffects();
 
-    /* border */
-    if(borderSize>0){
-        ctx.strokeStyle=bdrColor;
-        ctx.lineWidth=borderSize*2;
-        ctx.strokeRect(0,0,canvas.width,canvas.height);
+    // Border
+    if (borderSize > 0) {
+        ctx.save();
+        ctx.strokeStyle = bdrColor;
+        ctx.lineWidth   = borderSize * 2;
+        ctx.strokeRect(0, 0, cw, ch);
+        ctx.restore();
     }
 
-    /* overlays */
+    // Overlays
     drawOverlays();
 
-    /* CSS filter for fast effects */
+    // CSS filter & opacity
     canvas.style.filter  = buildCSSFilter();
-    canvas.style.opacity = sliders.opacity/100;
-    canvas.style.transform = 'scale('+zoomLevel+')';
+    canvas.style.opacity = (sliders.opacity / 100).toString();
+
+    // Apply zoom
+    canvas.style.transform = `scale(${zoomLevel})`;
+
+    isRendering = false;
 }
 
-function buildCSSFilter(){
-    var b=sliders.brightness, c=sliders.contrast;
-    var s=sliders.saturation, h=sliders.hue, bl=sliders.blur;
-    var f='';
-    switch(currentFilter){
-        case 'grayscale': f+='grayscale(100%) '; break;
-        case 'sepia':     f+='sepia(100%) '; break;
-        case 'vintage':   f+='sepia(60%) contrast(0.85) brightness(1.1) saturate(1.4) '; break;
-        case 'cool':      f+='hue-rotate(200deg) saturate(1.2) brightness(1.05) '; break;
-        case 'warm':      f+='sepia(25%) saturate(1.6) brightness(1.05) '; break;
-        case 'vivid':     f+='saturate(2.2) contrast(1.15) '; break;
-        case 'fade':      f+='brightness(1.15) contrast(0.75) saturate(0.6) '; break;
-        case 'drama':     f+='contrast(1.6) brightness(0.88) saturate(1.3) '; break;
-        case 'invert':    f+='invert(100%) '; break;
-        case 'soft':      f+='blur(0.4px) brightness(1.08) saturate(0.88) '; break;
-        case 'punch':     f+='contrast(1.4) saturate(1.8) brightness(0.95) '; break;
-        case 'matte':     f+='contrast(0.85) brightness(1.1) saturate(0.75) sepia(15%) '; break;
-        case 'chrome':    f+='grayscale(30%) contrast(1.3) brightness(1.1) '; break;
-        case 'lomo':      f+='contrast(1.5) saturate(1.5) brightness(0.85) '; break;
+// ============================================================
+//  CSS FILTER STRING
+// ============================================================
+function buildCSSFilter() {
+    let f = '';
+    switch (currentFilter) {
+        case 'grayscale': f += 'grayscale(100%) '; break;
+        case 'sepia':     f += 'sepia(100%) '; break;
+        case 'vintage':   f += 'sepia(60%) contrast(0.85) brightness(1.1) saturate(1.4) '; break;
+        case 'cool':      f += 'hue-rotate(200deg) saturate(1.2) brightness(1.05) '; break;
+        case 'warm':      f += 'sepia(25%) saturate(1.6) brightness(1.05) '; break;
+        case 'vivid':     f += 'saturate(2.2) contrast(1.15) '; break;
+        case 'fade':      f += 'brightness(1.15) contrast(0.75) saturate(0.6) '; break;
+        case 'drama':     f += 'contrast(1.6) brightness(0.88) saturate(1.3) '; break;
+        case 'invert':    f += 'invert(100%) '; break;
+        case 'soft':      f += 'blur(0.4px) brightness(1.08) saturate(0.88) '; break;
+        case 'punch':     f += 'contrast(1.4) saturate(1.8) brightness(0.95) '; break;
+        case 'matte':     f += 'contrast(0.85) brightness(1.1) saturate(0.75) sepia(15%) '; break;
+        case 'chrome':    f += 'grayscale(30%) contrast(1.3) brightness(1.1) '; break;
+        case 'lomo':      f += 'contrast(1.5) saturate(1.5) brightness(0.85) '; break;
     }
-    f+='brightness('+(1+b/100)+') ';
-    f+='contrast('+(1+c/100)+') ';
-    f+='saturate('+Math.max(0,1+s/100)+') ';
-    f+='hue-rotate('+h+'deg) ';
-    if(bl>0) f+='blur('+bl+'px) ';
-    return f.trim();
+    f += `brightness(${1 + sliders.brightness / 100}) `;
+    f += `contrast(${Math.max(0.01, 1 + sliders.contrast / 100)}) `;
+    f += `saturate(${Math.max(0, 1 + sliders.saturation / 100)}) `;
+    f += `hue-rotate(${sliders.hue}deg) `;
+    if (sliders.blur > 0) f += `blur(${sliders.blur}px) `;
+    return f.trim() || 'none';
 }
 
-function applyPixelFX(){
-    var temp=sliders.temperature, tint=sliders.tint;
-    var exp=sliders.exposure, hl=sliders.highlights, sh=sliders.shadows;
-    var id=ctx.getImageData(0,0,canvas.width,canvas.height), d=id.data;
-    for(var i=0;i<d.length;i+=4){
-        var r=d[i],g=d[i+1],b=d[i+2];
-        if(exp){var ef=1+exp/100;r*=ef;g*=ef;b*=ef;}
-        if(temp>0){r+=temp*0.7;b-=temp*0.5;}else if(temp<0){r+=temp*0.5;b-=temp*0.7;}
-        if(tint>0) g+=tint*0.5; else if(tint<0) g+=tint*0.5;
-        var lum=0.299*r+0.587*g+0.114*b;
-        if(hl&&lum>128){var hf=1+(hl/100)*((lum-128)/127);r*=hf;g*=hf;b*=hf;}
-        if(sh&&lum<128){var sf=1+(sh/100)*((128-lum)/128);r*=sf;g*=sf;b*=sf;}
-        d[i]=Math.min(255,Math.max(0,r));
-        d[i+1]=Math.min(255,Math.max(0,g));
-        d[i+2]=Math.min(255,Math.max(0,b));
-    }
-    ctx.putImageData(id,0,0);
-}
+// ============================================================
+//  PIXEL EFFECTS (temperature, tint, exposure, highlights, shadows, noise)
+// ============================================================
+function applyPixelEffects() {
+    const { temperature: temp, tint, exposure: exp, highlights: hl, shadows: sh, noise } = sliders;
+    if (!temp && !tint && !noise && !exp && !hl && !sh) return;
 
-function drawOverlays(){
-    overlays.forEach(function(item){
-        if(item.type==='text'){
-            ctx.font=(item.bold?'bold ':'')+item.size+'px '+item.font;
-            ctx.fillStyle=item.color;
-            ctx.strokeStyle='rgba(0,0,0,0.4)';
-            ctx.lineWidth=Math.max(1,item.size/18);
-            ctx.strokeText(item.text,item.x,item.y);
-            ctx.fillText(item.text,item.x,item.y);
-        } else if(item.type==='sticker'){
-            ctx.font=item.size+'px serif';
-            ctx.fillText(item.emoji,item.x,item.y);
+    try {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+        const len = d.length;
+
+        for (let i = 0; i < len; i += 4) {
+            let r = d[i], g = d[i + 1], b = d[i + 2];
+
+            // Exposure
+            if (exp !== 0) {
+                const ef = 1 + exp / 100;
+                r *= ef; g *= ef; b *= ef;
+            }
+
+            // Temperature
+            if (temp > 0) { r += temp * 0.7; b -= temp * 0.5; }
+            else if (temp < 0) { r += temp * 0.5; b -= temp * 0.7; }
+
+            // Tint
+            if (tint !== 0) g += tint * 0.5;
+
+            // Highlights & Shadows
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+            if (hl !== 0 && lum > 128) {
+                const factor = 1 + (hl / 100) * ((lum - 128) / 127);
+                r *= factor; g *= factor; b *= factor;
+            }
+            if (sh !== 0 && lum < 128) {
+                const factor = 1 + (sh / 100) * ((128 - lum) / 128);
+                r *= factor; g *= factor; b *= factor;
+            }
+
+            // Noise
+            if (noise > 0) {
+                const n = (Math.random() - 0.5) * noise;
+                r += n; g += n; b += n;
+            }
+
+            d[i]     = r < 0 ? 0 : r > 255 ? 255 : r;
+            d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+            d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
         }
+        ctx.putImageData(imgData, 0, 0);
+    } catch (e) {
+        // Cross-origin or security error — skip pixel effects
+        console.warn('Pixel effects skipped:', e.message);
+    }
+}
+
+// ============================================================
+//  DRAW OVERLAYS (text & stickers)
+// ============================================================
+function drawOverlays() {
+    overlays.forEach(item => {
+        ctx.save();
+        if (item.type === 'text') {
+            const bold = item.bold ? 'bold ' : '';
+            ctx.font        = `${bold}${item.size}px "${item.font}"`;
+            ctx.textBaseline = 'middle';
+            ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+            ctx.lineWidth   = Math.max(1, item.size / 20);
+            ctx.strokeText(item.text, item.x, item.y);
+            ctx.fillStyle = item.color;
+            ctx.fillText(item.text, item.x, item.y);
+        } else if (item.type === 'sticker') {
+            ctx.font        = `${item.size}px serif`;
+            ctx.textBaseline = 'middle';
+            ctx.fillText(item.emoji, item.x, item.y);
+        }
+        ctx.restore();
     });
 }
 
-/* ── SLIDERS ── */
-function onSlider(name,el){
-    sliders[name]=parseFloat(el.value);
-    document.getElementById('v-'+name).textContent=el.value;
-    renderCanvas();
+// ============================================================
+//  SLIDERS
+// ============================================================
+function onSlider(name, el) {
+    sliders[name] = parseFloat(el.value);
+    const valEl = document.getElementById('v-' + name);
+    if (valEl) valEl.textContent = el.value;
+    buildCanvas();
 }
 
-function resetSliders(redraw){
-    var def={brightness:0,contrast:0,exposure:0,highlights:0,shadows:0,
-             saturation:0,hue:0,temperature:0,tint:0,blur:0,opacity:100};
-    Object.keys(def).forEach(function(k){
-        sliders[k]=def[k];
-        var el=document.getElementById('s-'+k);
-        var vl=document.getElementById('v-'+k);
-        if(el) el.value=def[k];
-        if(vl) vl.textContent=def[k];
+function resetSlidersUI() {
+    const defaults = {
+        brightness:0, contrast:0, exposure:0, highlights:0, shadows:0,
+        saturation:0, hue:0, temperature:0, tint:0,
+        sharpness:0, blur:0, noise:0, opacity:100
+    };
+    Object.keys(defaults).forEach(k => {
+        sliders[k] = defaults[k];
+        const sEl = document.getElementById('s-' + k);
+        const vEl = document.getElementById('v-' + k);
+        if (sEl) sEl.value = defaults[k];
+        if (vEl) vEl.textContent = defaults[k];
     });
-    if(redraw) renderCanvas();
 }
 
-/* ── FILTERS ── */
-function applyFilter(name,btn){
-    currentFilter=name;
-    document.querySelectorAll('.filter-card').forEach(function(c){ c.classList.remove('active'); });
-    btn.classList.add('active');
-    renderCanvas();
-    saveHistory('Filter: '+name);
+function resetFilterUI() {
+    document.querySelectorAll('.filter-card').forEach(c => c.classList.remove('active'));
+    const first = document.querySelector('.filter-card');
+    if (first) first.classList.add('active');
+    currentFilter = 'none';
 }
 
-/* ── ROTATE / FLIP ── */
-function rotateImg(deg){ currentRot+=deg; renderCanvas(); saveHistory('Rotate '+deg+'°'); }
-function flipImg(dir){ if(dir==='h') flipH=!flipH; else flipV=!flipV; renderCanvas(); saveHistory('Flip'); }
+function resetBorderUI() {
+    borderSize = 0;
+    bdrColor   = '#ffffff';
+    const sb = document.getElementById('s-border');
+    const vb = document.getElementById('v-border');
+    if (sb) sb.value = 0;
+    if (vb) vb.textContent = '0';
+    document.querySelectorAll('.border-colors .clr-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === 0);
+    });
+}
 
-/* ── TEXT ── */
-function addText(){
-    var text=document.getElementById('textContent').value.trim();
-    if(!text){ showToast('⚠️ Enter some text!'); return; }
+// ============================================================
+//  FILTERS
+// ============================================================
+function applyFilter(name, btn) {
+    currentFilter = name;
+    document.querySelectorAll('.filter-card').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    buildCanvas();
+    saveHistory('Filter: ' + name);
+    if (isMobile) closeMobilePanels();
+}
+
+// ============================================================
+//  TRANSFORM
+// ============================================================
+function rotateImg(deg) {
+    if (!origImg) return;
+    currentRot = ((currentRot + deg) % 360 + 360) % 360;
+    buildCanvas();
+    saveHistory('Rotate ' + (deg > 0 ? '+' : '') + deg + '°');
+}
+
+function flipImg(dir) {
+    if (!origImg) return;
+    if (dir === 'h') isFlipH = !isFlipH;
+    else             isFlipV = !isFlipV;
+    buildCanvas();
+    saveHistory('Flip ' + dir.toUpperCase());
+}
+
+// ============================================================
+//  TEXT
+// ============================================================
+function addText() {
+    const text = (document.getElementById('textContent').value || '').trim();
+    if (!text) { showToast('⚠️ Please enter some text!'); return; }
+    const size = parseInt(document.getElementById('s-fontsize').value) || 32;
     overlays.push({
-        type:'text', text:text,
-        x:Math.floor(canvas.width*0.07), y:Math.floor(canvas.height*0.5),
-        size:parseInt(document.getElementById('s-fontsize').value),
-        color:txtColor, font:document.getElementById('fontFamily').value,
-        bold:document.getElementById('textBold').checked
+        type  : 'text',
+        text  : text,
+        x     : Math.floor(canvas.width * 0.05),
+        y     : Math.floor(canvas.height * 0.5),
+        size  : size,
+        color : txtColor,
+        font  : document.getElementById('fontFamily').value || 'Arial',
+        bold  : document.getElementById('textBold').checked
     });
-    renderCanvas(); saveHistory('Text');
-    document.getElementById('textContent').value='';
+    buildCanvas();
+    saveHistory('Add Text');
+    document.getElementById('textContent').value = '';
     showToast('✅ Text added!');
+    if (isMobile) closeMobilePanels();
 }
 
-function selectTxtColor(c,el){
-    txtColor=c;
-    document.querySelectorAll('#textColorPalette .clr-dot').forEach(function(d){ d.classList.remove('active'); });
-    el.classList.add('active');
+function selectTxtColor(c, el) {
+    txtColor = c;
+    document.querySelectorAll('#textColorPalette .clr-dot').forEach(d => d.classList.remove('active'));
+    if (el) el.classList.add('active');
 }
 
-/* ── STICKERS ── */
-function addSticker(emoji){
+// ============================================================
+//  STICKERS
+// ============================================================
+function addSticker(emoji) {
+    if (!origImg) { showToast('⚠️ Load an image first!'); return; }
+    const size = Math.floor(Math.min(canvas.width, canvas.height) * 0.14);
     overlays.push({
-        type:'sticker', emoji:emoji,
-        x:Math.floor(canvas.width*(0.1+Math.random()*0.7)),
-        y:Math.floor(canvas.height*(0.1+Math.random()*0.7)),
-        size:Math.floor(Math.min(canvas.width,canvas.height)*0.12)
+        type  : 'sticker',
+        emoji : emoji,
+        x     : Math.floor(canvas.width  * (0.1 + Math.random() * 0.6)),
+        y     : Math.floor(canvas.height * (0.15 + Math.random() * 0.6)),
+        size  : Math.max(size, 40)
     });
-    renderCanvas(); saveHistory('Sticker');
+    buildCanvas();
+    saveHistory('Sticker ' + emoji);
     showToast('✅ Sticker added!');
+    if (isMobile) closeMobilePanels();
 }
 
-/* ── BORDER ── */
-function onBorderSlider(el){
-    borderSize=parseInt(el.value);
-    document.getElementById('v-border').textContent=borderSize;
-    renderCanvas();
+// ============================================================
+//  BORDER
+// ============================================================
+function onBorderSlider(el) {
+    borderSize = parseInt(el.value) || 0;
+    const vEl = document.getElementById('v-border');
+    if (vEl) vEl.textContent = borderSize;
+    buildCanvas();
 }
 
-function selectBdrColor(c,el){
-    bdrColor=c;
-    document.querySelectorAll('.border-colors .clr-dot').forEach(function(d){ d.classList.remove('active'); });
-    el.classList.add('active');
-    renderCanvas();
+function selectBdrColor(c, el) {
+    bdrColor = c;
+    document.querySelectorAll('.border-colors .clr-dot').forEach(d => d.classList.remove('active'));
+    if (el) el.classList.add('active');
+    buildCanvas();
 }
 
-/* ── CROP ── */
-function setCropRatio(ratio,btn){
-    cropRatio=ratio;
-    document.querySelectorAll('.ratio-btn').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
+// ============================================================
+//  CROP
+// ============================================================
+function setCropRatio(ratio, btn) {
+    cropRatio = ratio;
+    document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 }
 
-function applyCrop(){
-    if(!workingImg) return;
-    var w=canvas.width, h=canvas.height, cw=w, ch=h, cx=0, cy=0;
-    if(cropRatio!=='free'){
-        var p=cropRatio.split(':'), ratio=parseFloat(p[0])/parseFloat(p[1]);
-        if(w/h>ratio){cw=h*ratio;cx=(w-cw)/2;}else{ch=w/ratio;cy=(h-ch)/2;}
+function applyCrop() {
+    if (!origImg) { showToast('⚠️ No image loaded!'); return; }
+
+    const w = canvas.width;
+    const h = canvas.height;
+    let cw = w, ch = h, cx = 0, cy = 0;
+
+    if (cropRatio !== 'free') {
+        const parts = cropRatio.split(':');
+        const rw = parseFloat(parts[0]);
+        const rh = parseFloat(parts[1]);
+        const ratio = rw / rh;
+        if (w / h > ratio) {
+            cw = Math.floor(h * ratio);
+            cx = Math.floor((w - cw) / 2);
+        } else {
+            ch = Math.floor(w / ratio);
+            cy = Math.floor((h - ch) / 2);
+        }
     }
-    var tmp=document.createElement('canvas');
-    tmp.width=Math.floor(cw); tmp.height=Math.floor(ch);
-    tmp.getContext('2d').drawImage(canvas,cx,cy,cw,ch,0,0,cw,ch);
-    workingImg=new Image();
-    workingImg.onload=function(){
-        currentRot=0; flipH=false; flipV=false;
-        renderCanvas(); saveHistory('Crop');
-        updInfo(Math.floor(cw),Math.floor(ch));
-        showToast('✅ Crop done!');
+
+    if (cw < 1 || ch < 1) { showToast('⚠️ Invalid crop dimensions!'); return; }
+
+    const tmp = document.createElement('canvas');
+    tmp.width  = cw;
+    tmp.height = ch;
+    tmp.getContext('2d').drawImage(canvas, cx, cy, cw, ch, 0, 0, cw, ch);
+
+    const newImg = new Image();
+    newImg.onload = () => {
+        origImg    = newImg;
+        origWidth  = cw;
+        origHeight = ch;
+        currentRot = 0;
+        isFlipH = false;
+        isFlipV = false;
+        canvas.width  = cw;
+        canvas.height = ch;
+        buildCanvas();
+        saveHistory('Crop ' + cropRatio);
+        updateInfoPanels(cw, ch, document.getElementById('infoFmt').textContent, document.getElementById('infoSize').textContent);
+        document.getElementById('topFileInfo').textContent = cw + ' × ' + ch;
+        showToast('✅ Crop applied!');
+        fitScreen();
+        if (isMobile) closeMobilePanels();
     };
-    workingImg.src=tmp.toDataURL();
+    newImg.src = tmp.toDataURL('image/png');
 }
 
-/* ── RESIZE ── */
-function applyResize(){
-    var wv=parseInt(document.getElementById('resizeW').value);
-    var hv=parseInt(document.getElementById('resizeH').value);
-    if(!wv&&!hv){ showToast('⚠️ Enter size!'); return; }
-    var nw=wv||canvas.width, nh=hv||canvas.height;
-    if(document.getElementById('keepRatio').checked){
-        if(wv&&!hv) nh=Math.round(wv*canvas.height/canvas.width);
-        if(hv&&!wv) nw=Math.round(hv*canvas.width/canvas.height);
+// ============================================================
+//  RESIZE
+// ============================================================
+function applyResize() {
+    if (!origImg) { showToast('⚠️ No image loaded!'); return; }
+
+    let nw = parseInt(document.getElementById('resizeW').value);
+    let nh = parseInt(document.getElementById('resizeH').value);
+    const keepAR = document.getElementById('keepRatio').checked;
+
+    if (!nw && !nh) { showToast('⚠️ Enter width or height!'); return; }
+    if (nw < 1 || nh < 1) { showToast('⚠️ Dimensions must be > 0!'); return; }
+
+    const cw = canvas.width;
+    const ch = canvas.height;
+
+    if (keepAR) {
+        if (nw && !document.getElementById('resizeH').value) {
+            nh = Math.round(nw * ch / cw);
+        } else if (nh && !document.getElementById('resizeW').value) {
+            nw = Math.round(nh * cw / ch);
+        }
     }
-    var tmp=document.createElement('canvas');
-    tmp.width=nw; tmp.height=nh;
-    tmp.getContext('2d').drawImage(canvas,0,0,nw,nh);
-    workingImg=new Image();
-    workingImg.onload=function(){
-        currentRot=0; flipH=false; flipV=false;
-        renderCanvas(); saveHistory('Resize');
-        updInfo(nw,nh); showToast('✅ Resize done!');
+
+    nw = nw || cw;
+    nh = nh || ch;
+
+    const tmp = document.createElement('canvas');
+    tmp.width  = nw;
+    tmp.height = nh;
+    const tctx = tmp.getContext('2d');
+    tctx.drawImage(canvas, 0, 0, nw, nh);
+
+    const newImg = new Image();
+    newImg.onload = () => {
+        origImg    = newImg;
+        origWidth  = nw;
+        origHeight = nh;
+        currentRot = 0;
+        isFlipH = false;
+        isFlipV = false;
+        canvas.width  = nw;
+        canvas.height = nh;
+        buildCanvas();
+        saveHistory('Resize ' + nw + '×' + nh);
+        updateInfoPanels(nw, nh, document.getElementById('infoFmt').textContent, document.getElementById('infoSize').textContent);
+        document.getElementById('topFileInfo').textContent = nw + ' × ' + nh;
+        document.getElementById('resizeW').value = '';
+        document.getElementById('resizeH').value = '';
+        showToast('✅ Resize applied!');
+        fitScreen();
+        if (isMobile) closeMobilePanels();
     };
-    workingImg.src=tmp.toDataURL();
+    newImg.src = tmp.toDataURL('image/png');
 }
 
-function updInfo(w,h){
-    document.getElementById('infoW').textContent=w+' px';
-    document.getElementById('infoH').textContent=h+' px';
-    document.getElementById('topFileInfo').textContent=w+' × '+h;
-}
-
-document.getElementById('resizeW').addEventListener('input',function(){
-    if(!workingImg||!document.getElementById('keepRatio').checked||!this.value) return;
-    document.getElementById('resizeH').value=Math.round(this.value*canvas.height/canvas.width);
-});
-document.getElementById('resizeH').addEventListener('input',function(){
-    if(!workingImg||!document.getElementById('keepRatio').checked||!this.value) return;
-    document.getElementById('resizeW').value=Math.round(this.value*canvas.width/canvas.height);
+// Linked resize inputs
+document.getElementById('resizeW').addEventListener('input', function() {
+    if (!origImg || !document.getElementById('keepRatio').checked || !this.value) return;
+    const ratio = canvas.height / canvas.width;
+    document.getElementById('resizeH').value = Math.round(parseInt(this.value) * ratio) || '';
 });
 
-/* ── ZOOM ── */
-function zoomIn() { zoomLevel=Math.min(zoomLevel+0.15,4); applyZoom(); }
-function zoomOut(){ zoomLevel=Math.max(zoomLevel-0.15,0.1); applyZoom(); }
+document.getElementById('resizeH').addEventListener('input', function() {
+    if (!origImg || !document.getElementById('keepRatio').checked || !this.value) return;
+    const ratio = canvas.width / canvas.height;
+    document.getElementById('resizeW').value = Math.round(parseInt(this.value) * ratio) || '';
+});
 
-function fitScreen(){
-    var area=document.getElementById('canvasArea');
-    if(!area||!canvas.width||!canvas.height) return;
-    var aw=area.clientWidth-40, ah=area.clientHeight-80;
-    zoomLevel=Math.min(aw/canvas.width, ah/canvas.height, 1);
-    applyZoom();
+// ============================================================
+//  ZOOM
+// ============================================================
+function zoomIn() {
+    zoomLevel = Math.min(zoomLevel + 0.15, 5);
+    updateZoom();
 }
 
-function applyZoom(){
-    canvas.style.transform='scale('+zoomLevel+')';
-    document.getElementById('zoomBadge').textContent=Math.round(zoomLevel*100)+'%';
+function zoomOut() {
+    zoomLevel = Math.max(zoomLevel - 0.15, 0.05);
+    updateZoom();
 }
 
-/* ── HISTORY ── */
-function saveHistory(label){
-    history=history.slice(0,historyIdx+1);
-    historyLabels=historyLabels.slice(0,historyIdx+1);
-    history.push(canvas.toDataURL());
-    historyLabels.push(label||'Edit');
-    historyIdx=history.length-1;
+function fitScreen() {
+    if (!origImg) return;
+    const area = document.getElementById('canvasArea');
+    if (!area) return;
+    const aw = area.clientWidth  - 40;
+    const ah = area.clientHeight - 100;
+    if (!aw || !ah || !canvas.width || !canvas.height) return;
+    zoomLevel = Math.min(aw / canvas.width, ah / canvas.height, 1);
+    zoomLevel = Math.max(zoomLevel, 0.05);
+    updateZoom();
+}
+
+function updateZoom() {
+    canvas.style.transform = `scale(${zoomLevel})`;
+    const badge = document.getElementById('zoomBadge');
+    if (badge) badge.textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+// Pinch-to-zoom on mobile
+let pinchDist = 0;
+const canvasArea = document.getElementById('canvasArea');
+
+canvasArea.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+        pinchDist = getPinchDist(e);
+    }
+}, { passive: true });
+
+canvasArea.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+        const newDist = getPinchDist(e);
+        if (pinchDist > 0) {
+            const delta = newDist - pinchDist;
+            zoomLevel = Math.min(Math.max(zoomLevel + delta * 0.005, 0.05), 5);
+            updateZoom();
+            pinchDist = newDist;
+        }
+    }
+}, { passive: true });
+
+canvasArea.addEventListener('touchend', () => { pinchDist = 0; }, { passive: true });
+
+function getPinchDist(e) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+// ============================================================
+//  HISTORY
+// ============================================================
+function saveHistory(label) {
+    if (!canvas.width || !canvas.height) return;
+    // Truncate forward history
+    historyStack  = historyStack.slice(0, historyIdx + 1);
+    historyLabels = historyLabels.slice(0, historyIdx + 1);
+
+    try {
+        historyStack.push(canvas.toDataURL('image/png'));
+        historyLabels.push(label || 'Edit');
+        // Limit history to 20 steps
+        if (historyStack.length > 20) {
+            historyStack.shift();
+            historyLabels.shift();
+        }
+        historyIdx = historyStack.length - 1;
+    } catch(e) {
+        console.warn('History save failed:', e);
+    }
     renderHistory();
 }
 
-function renderHistory(){
-    var list=document.getElementById('historyList');
-    if(!list) return;
-    list.innerHTML='';
-    var count=Math.min(history.length,6);
-    for(var i=0;i<count;i++){
-        var ri=history.length-1-i;
-        var div=document.createElement('div');
-        div.className='history-item'+(ri===historyIdx?' current':'');
-        div.innerHTML='<div class="history-dot"></div><span>'+historyLabels[ri]+'</span>';
-        (function(idx){ div.onclick=function(){ jumpHistory(idx); }; })(ri);
-        list.appendChild(div);
-    }
+function renderHistory() {
+    const renderList = (listId) => {
+        const list = document.getElementById(listId);
+        if (!list) return;
+        list.innerHTML = '';
+        const total = historyStack.length;
+        const start = Math.max(0, total - 6);
+        for (let i = total - 1; i >= start; i--) {
+            const div = document.createElement('div');
+            div.className = 'history-item' + (i === historyIdx ? ' current' : '');
+            div.innerHTML = `<div class="history-dot"></div><span>${historyLabels[i] || 'Edit'}</span>`;
+            const idx = i;
+            div.addEventListener('click', () => jumpHistory(idx));
+            list.appendChild(div);
+        }
+    };
+    renderList('historyList');
+    renderList('m-historyList');
 }
 
-function jumpHistory(idx){
-    historyIdx=idx;
-    var img=new Image();
-    img.onload=function(){
-        canvas.width=img.width; canvas.height=img.height;
-        ctx.drawImage(img,0,0);
-        canvas.style.filter=buildCSSFilter();
-        canvas.style.opacity=sliders.opacity/100;
-        canvas.style.transform='scale('+zoomLevel+')';
+function jumpHistory(idx) {
+    if (idx < 0 || idx >= historyStack.length) return;
+    historyIdx = idx;
+    const img = new Image();
+    img.onload = () => {
+        canvas.width  = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        canvas.style.filter    = buildCSSFilter();
+        canvas.style.opacity   = (sliders.opacity / 100).toString();
+        canvas.style.transform = `scale(${zoomLevel})`;
         renderHistory();
     };
-    img.src=history[idx];
+    img.src = historyStack[idx];
 }
 
-function undoAction(){ if(historyIdx>0) jumpHistory(historyIdx-1); }
-function redoAction(){ if(historyIdx<history.length-1) jumpHistory(historyIdx+1); }
-
-/* ── RESET ── */
-function resetAll(){
-    if(!sourceImg) return;
-    workingImg=sourceImg;
-    currentRot=0; flipH=false; flipV=false;
-    zoomLevel=1; currentFilter='none'; borderSize=0; overlays=[];
-    resetSliders(false);
-    document.getElementById('s-border').value=0;
-    document.getElementById('v-border').textContent='0';
-    document.querySelectorAll('.filter-card').forEach(function(c){ c.classList.remove('active'); });
-    document.querySelector('.filter-card').classList.add('active');
-    renderCanvas(); saveHistory('Reset'); fitScreen();
-    showToast('🔄 Reset done!');
+function undoAction() {
+    if (historyIdx > 0) jumpHistory(historyIdx - 1);
+    else showToast('⚠️ Nothing to undo!');
 }
 
-/* ── DOWNLOAD ── */
-function selectFmt(fmt,btn){
-    dlFormat=fmt;
-    document.querySelectorAll('.fmt-btn').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
+function redoAction() {
+    if (historyIdx < historyStack.length - 1) jumpHistory(historyIdx + 1);
+    else showToast('⚠️ Nothing to redo!');
 }
 
-function downloadImage(){
-    if(!workingImg){ showToast('⚠️ No image loaded!'); return; }
-    /* bake CSS filter into a temp canvas */
-    var tmp=document.createElement('canvas');
-    tmp.width=canvas.width; tmp.height=canvas.height;
-    var tc=tmp.getContext('2d');
-    tc.filter=buildCSSFilter();
-    tc.globalAlpha=sliders.opacity/100;
-    tc.drawImage(canvas,0,0);
-    var mime=dlFormat==='png'?'image/png':dlFormat==='webp'?'image/webp':'image/jpeg';
-    var q=dlFormat==='jpeg'?0.92:undefined;
-    var a=document.createElement('a');
-    a.download=origFileName+'_edited.'+(dlFormat==='jpeg'?'jpg':dlFormat);
-    a.href=tmp.toDataURL(mime,q);
-    a.click();
-    showToast('✅ Downloaded!');
+// ============================================================
+//  RESET
+// ============================================================
+function resetAll() {
+    if (!origImg) return;
+    currentRot    = 0;
+    isFlipH       = false;
+    isFlipV       = false;
+    zoomLevel     = 1;
+    overlays      = [];
+    borderSize    = 0;
+    bdrColor      = '#ffffff';
+    txtColor      = '#ffffff';
+    resetSlidersUI();
+    resetFilterUI();
+    resetBorderUI();
+    buildCanvas();
+    saveHistory('Reset');
+    fitScreen();
+    showToast('🔄 All edits reset!');
 }
 
-/* ── TABS ── */
-function switchTab(name,btn){
-    document.querySelectorAll('.ptab').forEach(function(t){ t.classList.remove('active'); });
-    document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
-    if(btn) btn.classList.add('active');
-    var pane=document.getElementById('pane-'+name);
-    if(pane) pane.classList.add('active');
-}
-
-/* ── MOBILE SIDEBAR ── */
-var curMobTab='';
-function mobNav(tab){
-    var lp=document.getElementById('leftPanel');
-    var ov=document.getElementById('mobOverlay');
-    if(lp.classList.contains('mob-open')&&curMobTab===tab){
-        closeSidebar(); return;
+// ============================================================
+//  DOWNLOAD
+// ============================================================
+function selectFmt(fmt, btn) {
+    downloadFormat = fmt;
+    // Update all format button groups
+    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+    // Activate clicked button and sibling group
+    if (btn) {
+        const parent = btn.closest('.format-btns');
+        if (parent) parent.querySelectorAll('.fmt-btn').forEach(b => {
+            if (b.textContent.toLowerCase().includes(fmt === 'jpeg' ? 'jpg' : fmt)) {
+                b.classList.add('active');
+            }
+        });
     }
-    curMobTab=tab;
-    switchTab(tab, document.getElementById('ptab-'+tab));
-    lp.classList.add('mob-open');
-    ov.classList.add('show');
-    document.querySelectorAll('.mob-nav-btn').forEach(function(b){ b.classList.remove('active'); });
-    var nb=document.getElementById('mnb-'+tab);
-    if(nb) nb.classList.add('active');
 }
 
-function closeSidebar(){
-    document.getElementById('leftPanel').classList.remove('mob-open');
-    document.getElementById('mobOverlay').classList.remove('show');
-    document.querySelectorAll('.mob-nav-btn').forEach(function(b){ b.classList.remove('active'); });
-    curMobTab='';
+function downloadImage() {
+    if (!origImg) { showToast('⚠️ No image loaded!'); return; }
+    showLoading(true);
+
+    setTimeout(() => {
+        try {
+            const tmp  = document.createElement('canvas');
+            tmp.width  = canvas.width;
+            tmp.height = canvas.height;
+            const tctx = tmp.getContext('2d');
+
+            // Apply filter & opacity on the offscreen canvas
+            tctx.filter      = buildCSSFilter();
+            tctx.globalAlpha = sliders.opacity / 100;
+            tctx.drawImage(canvas, 0, 0);
+
+            const mimeMap = { jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+            const mime    = mimeMap[downloadFormat] || 'image/jpeg';
+            const quality = downloadFormat === 'jpeg' ? 0.92 : undefined;
+            const ext     = downloadFormat === 'jpeg' ? 'jpg' : downloadFormat;
+
+            const dataURL = tmp.toDataURL(mime, quality);
+            const link    = document.createElement('a');
+            link.download = origFileName + '_edited.' + ext;
+            link.href     = dataURL;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showLoading(false);
+            showToast('✅ Image downloaded!');
+        } catch (e) {
+            showLoading(false);
+            showToast('⚠️ Download failed: ' + e.message);
+            console.error('Download error:', e);
+        }
+    }, 200);
 }
 
-/* ── UTILS ── */
-var toastT=null;
-function showToast(msg){
-    var t=document.getElementById('toast');
-    t.textContent=msg; t.classList.add('show');
-    if(toastT) clearTimeout(toastT);
-    toastT=setTimeout(function(){ t.classList.remove('show'); },2500);
+// ============================================================
+//  PANEL TABS
+// ============================================================
+function switchPTab(name, clickedBtn) {
+    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+    if (clickedBtn) {
+        clickedBtn.classList.add('active');
+    } else {
+        // Find the correct tab button
+        const tabs = { adjust:0, filters:1, decor:2, crop:3 };
+        const idx  = tabs[name];
+        const allTabs = document.querySelectorAll('.ptab');
+        if (allTabs[idx]) allTabs[idx].classList.add('active');
+    }
+
+    const pane = document.getElementById('pane-' + name);
+    if (pane) pane.classList.add('active');
 }
 
-function fmtSize(b){
-    if(b<1024) return b+' B';
-    if(b<1048576) return (b/1024).toFixed(1)+' KB';
-    return (b/1048576).toFixed(1)+' MB';
+// ============================================================
+//  MOBILE PANELS
+// ============================================================
+function mobileNav(section, btn) {
+    document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const leftPanel   = document.getElementById('leftPanel');
+    const rightDrawer = document.getElementById('mobileRightDrawer');
+    const overlay     = document.getElementById('panelOverlay');
+
+    // Close all first
+    leftPanel.classList.remove('open');
+    rightDrawer.classList.remove('open');
+    overlay.classList.remove('show');
+
+    if (section === 'info') {
+        rightDrawer.classList.add('open');
+        overlay.classList.add('show');
+        // Sync info
+        ['W','H','Fmt','Size'].forEach(k => {
+            const src = document.getElementById('info' + k);
+            const dst = document.getElementById('m-info' + k);
+            if (src && dst) dst.textContent = src.textContent;
+        });
+    } else {
+        const tabMap = { tools: 'adjust', filters: 'filters', decor: 'decor', crop: 'crop' };
+        const tabName = tabMap[section];
+        if (tabName) {
+            switchPTab(tabName, null);
+            leftPanel.classList.add('open');
+            overlay.classList.add('show');
+        }
+    }
 }
 
-/* ── KEYBOARD ── */
-document.addEventListener('keydown',function(e){
-    if(e.ctrlKey||e.metaKey){
-        if(e.key==='z'){e.preventDefault();undoAction();}
-        if(e.key==='y'){e.preventDefault();redoAction();}
-        if(e.key==='s'){e.preventDefault();downloadImage();}
-        if(e.key==='+'||e.key==='='){e.preventDefault();zoomIn();}
-        if(e.key==='-'){e.preventDefault();zoomOut();}
-        if(e.key==='r'){e.preventDefault();resetAll();}
+function toggleLeftPanel() {
+    const lp = document.getElementById('leftPanel');
+    const ov = document.getElementById('panelOverlay');
+    const isOpen = lp.classList.contains('open');
+    if (isOpen) {
+        lp.classList.remove('open');
+        ov.classList.remove('show');
+        document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+    } else {
+        // Close right drawer if open
+        document.getElementById('mobileRightDrawer').classList.remove('open');
+        lp.classList.add('open');
+        ov.classList.add('show');
+        // Activate tools nav
+        const toolBtn = document.getElementById('nav-tools');
+        if (toolBtn) toolBtn.classList.add('active');
+    }
+}
+
+function closeMobilePanels() {
+    document.getElementById('leftPanel').classList.remove('open');
+    document.getElementById('mobileRightDrawer').classList.remove('open');
+    document.getElementById('panelOverlay').classList.remove('show');
+    document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+}
+
+// ============================================================
+//  UTILITIES
+// ============================================================
+function showLoading(show) {
+    document.getElementById('loadingOverlay').classList.toggle('show', show);
+}
+
+let toastTimer = null;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function fmtSize(bytes) {
+    if (!bytes) return '0 B';
+    if (bytes < 1024)       return bytes + ' B';
+    if (bytes < 1048576)    return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+// ============================================================
+//  KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+            case 'z': e.preventDefault(); undoAction(); break;
+            case 'y': e.preventDefault(); redoAction(); break;
+            case 's': e.preventDefault(); downloadImage(); break;
+            case '=':
+            case '+': e.preventDefault(); zoomIn(); break;
+            case '-': e.preventDefault(); zoomOut(); break;
+            case 'r': e.preventDefault(); resetAll(); break;
+        }
     }
 });
 
-window.addEventListener('resize',function(){ if(workingImg) fitScreen(); });
+// ============================================================
+//  PREVENT BODY SCROLL ON MOBILE WHEN PANEL IS OPEN
+// ============================================================
+document.getElementById('panelOverlay').addEventListener('touchmove', e => {
+    e.preventDefault();
+}, { passive: false });
+
+// ============================================================
+//  INIT
+// ============================================================
+// Show mobile bottom nav only in editor
+document.getElementById('mobileBottomNav').style.display = 'none';
+
+// Watch editor page becoming active
+const editorPage = document.getElementById('editorPage');
+const mobNavBar  = document.getElementById('mobileBottomNav');
+
+const pageObserver = new MutationObserver(() => {
+    const active = editorPage.classList.contains('active');
+    if (isMobile) {
+        mobNavBar.style.display = active ? 'flex' : 'none';
+    }
+});
+pageObserver.observe(editorPage, { attributes: true, attributeFilter: ['class'] });
 </script>
 </body>
 </html>
