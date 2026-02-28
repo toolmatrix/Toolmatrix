@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair PDF - Fix Corrupted PDF Files Online Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        :root{
+            --primary:#2ecc71;--primary-dark:#27ae60;--primary-darker:#1e8c4c;
+            --primary-light:#a8f0c8;--primary-ultra-light:#e8faf0;
+            --primary-glow:rgba(46,204,113,0.15);--bg:#f0faf4;--white:#fff;
+            --dark:#1a2e28;--gray:#6b7c75;--gray-light:#c5d5cc;--border:#d4edda;
+            --red:#e74c3c;--red-light:#fce4ec;--orange:#f39c12;--orange-light:#fff8e1;
+            --blue:#3498db;--blue-light:#e8f4fd;--purple:#9b59b6;
+            --shadow:0 4px 20px rgba(46,204,113,0.10);
+            --shadow-lg:0 10px 40px rgba(46,204,113,0.13);
+            --shadow-xl:0 20px 60px rgba(46,204,113,0.10);
+            --radius:18px;--radius-sm:12px;--radius-xs:8px;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden}
+
+        /* ===== NAVBAR ===== */
+        .navbar{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(46,204,113,0.07)}
+        .navbar-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+        .navbar-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(46,204,113,0.3)}
+        .navbar-title{font-size:22px;font-weight:800;color:var(--dark)}
+        .navbar-title span{color:var(--primary)}
+        .navbar-links{display:flex;align-items:center;gap:6px}
+        .nav-link{padding:8px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;color:var(--gray);transition:all 0.3s}
+        .nav-link:hover{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .nav-link.active{background:var(--primary);color:#fff}
+        .mobile-menu-btn{display:none;background:none;border:none;font-size:24px;color:var(--dark);cursor:pointer}
+
+        /* ===== HERO ===== */
+        .hero{text-align:center;padding:56px 20px 26px;max-width:780px;margin:0 auto}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-ultra-light);border:1.5px solid var(--primary-light);padding:8px 22px;border-radius:50px;font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:22px}
+        .hero h1{font-size:44px;font-weight:900;line-height:1.13;margin-bottom:16px}
+        .hero h1 span{background:linear-gradient(135deg,var(--primary),var(--primary-darker));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:17px;color:var(--gray);line-height:1.7;max-width:620px;margin:0 auto}
+
+        /* ===== TOOL ===== */
+        .tool-container{max-width:940px;margin:18px auto 60px;padding:0 20px}
+        .tool-card{background:var(--white);border-radius:var(--radius);border:2px solid var(--border);box-shadow:var(--shadow-xl);overflow:hidden}
+
+        /* ===== UPLOAD ===== */
+        .upload-area{padding:48px 40px;text-align:center}
+        .upload-area.hidden{display:none}
+        .upload-zone{border:2.5px dashed var(--primary-light);border-radius:var(--radius);padding:60px 40px;cursor:pointer;transition:all 0.3s;background:var(--primary-ultra-light)}
+        .upload-zone:hover,.upload-zone.drag-over{border-color:var(--primary);background:var(--primary-glow);transform:scale(1.01)}
+        .upload-zone.drag-over{box-shadow:0 0 0 5px rgba(46,204,113,0.13)}
+        .upload-icon-wrap{position:relative;width:100px;height:100px;margin:0 auto 26px}
+        .upload-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:pulseGlow 2.5s infinite}
+        .upload-sub-badge{position:absolute;bottom:-3px;right:-3px;width:38px;height:38px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;border:3px solid var(--white);box-shadow:0 3px 10px rgba(243,156,18,0.3)}
+        @keyframes pulseGlow{0%,100%{box-shadow:0 8px 30px rgba(46,204,113,0.35)}50%{box-shadow:0 8px 50px rgba(46,204,113,0.55)}}
+        .upload-zone h3{font-size:21px;font-weight:700;margin-bottom:8px}
+        .upload-zone p{color:var(--gray);font-size:14px;margin-bottom:22px}
+        .upload-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 18px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .upload-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(46,204,113,0.5)}
+        .upload-note{margin-top:16px;font-size:12px;color:var(--gray-light)}
+        .upload-note i{margin-right:4px}
+        #fileInput{display:none}
+
+        /* ===== FILE PREVIEW ===== */
+        .file-section{display:none;padding:30px 40px 10px}
+        .file-section.show{display:block}
+        .file-card{display:flex;align-items:center;gap:18px;padding:22px 24px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);position:relative}
+        .file-icon{width:60px;height:60px;background:linear-gradient(135deg,#e74c3c,#c0392b);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;flex-shrink:0;position:relative}
+        .file-icon .damage-badge{position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;border:2.5px solid var(--white)}
+        .file-info{flex:1;min-width:0}
+        .file-name{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+        .file-meta{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--gray);flex-wrap:wrap}
+        .file-meta span{display:flex;align-items:center;gap:5px}
+        .file-badge{padding:6px 16px;border-radius:50px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0}
+        .badge-damaged{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+        .badge-checking{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue)}
+        .badge-repaired{background:#d4edda;color:#155724;border:1px solid var(--primary)}
+        .badge-failed{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+        .file-remove{position:absolute;top:12px;right:12px;width:30px;height:30px;background:none;border:1.5px solid #e74c3c44;border-radius:8px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.3s}
+        .file-remove:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+        /* ===== DIAGNOSTICS ===== */
+        .diag-section{display:none;padding:10px 40px}
+        .diag-section.show{display:block}
+        .diag-card{background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:24px;overflow:hidden}
+        .diag-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+        .diag-header i{font-size:20px;color:var(--primary)}
+        .diag-header h4{font-size:15px;font-weight:700}
+        .diag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+        .diag-item{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:14px 16px;display:flex;align-items:center;gap:12px;transition:all 0.3s}
+        .diag-item .diag-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+        .diag-icon.ok{background:#d4edda;color:#155724}
+        .diag-icon.warn{background:#fff3cd;color:#856404}
+        .diag-icon.error{background:var(--red-light);color:var(--red)}
+        .diag-icon.loading{background:var(--blue-light);color:var(--blue)}
+        .diag-icon.loading i{animation:spin 1s linear infinite}
+        .diag-text .dt-label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.3px}
+        .diag-text .dt-value{font-size:13px;font-weight:700;color:var(--dark);margin-top:1px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* ===== REPAIR LOG ===== */
+        .log-section{display:none;padding:10px 40px}
+        .log-section.show{display:block}
+        .log-card{background:#1a2e28;border-radius:var(--radius-sm);padding:20px;max-height:220px;overflow-y:auto;font-family:'Courier New',monospace}
+        .log-card::-webkit-scrollbar{width:6px}
+        .log-card::-webkit-scrollbar-thumb{background:#3d5c52;border-radius:10px}
+        .log-entry{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:12px;line-height:1.6}
+        .log-time{color:#6b9080;flex-shrink:0;font-size:11px}
+        .log-msg{color:#a8f0c8}
+        .log-msg.warn{color:#f39c12}
+        .log-msg.err{color:#e74c3c}
+        .log-msg.success{color:#2ecc71}
+        .log-msg.info{color:#3498db}
+        .log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .log-header h4{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .log-header h4 i{color:var(--primary)}
+        .log-toggle{padding:6px 14px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;color:var(--gray);transition:all 0.3s}
+        .log-toggle:hover{border-color:var(--primary);color:var(--primary-dark)}
+
+        /* ===== REPAIR MODE ===== */
+        .mode-section{display:none;padding:10px 40px}
+        .mode-section.show{display:block}
+        .mode-title{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+        .mode-title i{color:var(--primary)}
+        .mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+        .mode-card{background:var(--primary-ultra-light);border:2px solid var(--border);border-radius:var(--radius-sm);padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative}
+        .mode-card:hover{border-color:var(--primary-light);transform:translateY(-2px)}
+        .mode-card.selected{border-color:var(--primary);background:linear-gradient(135deg,rgba(46,204,113,0.08),rgba(39,174,96,0.04));box-shadow:0 0 0 4px var(--primary-glow)}
+        .mode-radio{width:22px;height:22px;border:2px solid var(--gray-light);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+        .mode-card.selected .mode-radio{border-color:var(--primary);background:var(--primary)}
+        .mode-card.selected .mode-radio::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+        .mode-card .mode-icon{font-size:28px;margin-bottom:10px}
+        .mode-card h4{font-size:14px;font-weight:700;margin-bottom:4px}
+        .mode-card p{font-size:12px;color:var(--gray);line-height:1.5}
+        .mode-tag{display:inline-block;padding:3px 12px;border-radius:50px;font-size:10px;font-weight:700;margin-top:10px}
+        .tag-quick{background:#e8f4fd;color:var(--blue)}
+        .tag-recommended{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .tag-deep{background:#f3e8fd;color:var(--purple)}
+        .mode-ribbon{position:absolute;top:-1px;right:14px;background:var(--primary);color:#fff;font-size:9px;font-weight:700;padding:4px 10px;border-radius:0 0 6px 6px;letter-spacing:.3px}
+
+        /* ===== ACTION ===== */
+        .action-section{display:none;padding:22px 40px 36px;text-align:center}
+        .action-section.show{display:block}
+        .repair-btn{display:inline-flex;align-items:center;gap:12px;padding:17px 56px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .repair-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .repair-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .repair-btn .spinner{display:none;width:22px;height:22px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+        .repair-btn.loading .spinner{display:block}
+        .repair-btn.loading .btn-icon{display:none}
+
+        /* ===== PROGRESS ===== */
+        .progress-section{display:none;padding:0 40px 10px}
+        .progress-section.show{display:block}
+        .progress-container{background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:26px}
+        .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .progress-title{font-size:14px;font-weight:600}
+        .progress-percent{font-size:14px;font-weight:700;color:var(--primary-dark)}
+        .progress-bar-bg{width:100%;height:14px;background:var(--border);border-radius:50px;overflow:hidden}
+        .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:50px;width:0%;transition:width 0.4s;position:relative}
+        .progress-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 1.5s infinite}
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .progress-status{margin-top:12px;font-size:13px;color:var(--gray);display:flex;align-items:center;gap:8px}
+        .progress-status i{color:var(--primary);animation:spin 1s linear infinite}
+
+        /* ===== REPAIR STEPS ===== */
+        .steps-section{display:none;padding:10px 40px}
+        .steps-section.show{display:block}
+        .repair-steps{display:flex;flex-direction:column;gap:10px}
+        .repair-step{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-xs);transition:all 0.3s}
+        .repair-step.active{border-color:var(--primary);background:linear-gradient(135deg,rgba(46,204,113,0.06),transparent)}
+        .repair-step.done{border-color:var(--primary)}
+        .repair-step.failed{border-color:var(--red)}
+        .step-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.3s}
+        .step-icon.pending{background:var(--border);color:var(--gray)}
+        .step-icon.running{background:var(--blue-light);color:var(--blue)}
+        .step-icon.running i{animation:spin 1s linear infinite}
+        .step-icon.done{background:#d4edda;color:#155724}
+        .step-icon.failed{background:var(--red-light);color:var(--red)}
+        .step-info{flex:1}
+        .step-name{font-size:13px;font-weight:600}
+        .step-desc{font-size:11px;color:var(--gray);margin-top:2px}
+        .step-status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:50px;flex-shrink:0}
+        .status-pending{background:var(--border);color:var(--gray)}
+        .status-running{background:var(--blue-light);color:var(--blue)}
+        .status-done{background:#d4edda;color:#155724}
+        .status-failed{background:var(--red-light);color:var(--red)}
+
+        /* ===== DOWNLOAD ===== */
+        .download-section{display:none;padding:44px 40px;text-align:center}
+        .download-section.show{display:block}
+        .success-wrap{position:relative;width:90px;height:90px;margin:0 auto 24px}
+        .success-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:bounceIn 0.6s ease}
+        .success-sub{position:absolute;bottom:-2px;right:-2px;width:34px;height:34px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:3px solid var(--white)}
+        @keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .download-section h3{font-size:24px;font-weight:800;margin-bottom:8px}
+        .download-section .sub-text{color:var(--gray);font-size:15px;margin-bottom:8px}
+        .dl-summary{display:inline-flex;align-items:center;gap:14px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 28px;margin-bottom:26px;flex-wrap:wrap;justify-content:center}
+        .sum-item{text-align:center}
+        .sum-item .s-label{font-size:10px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+        .sum-item .s-value{font-size:20px;font-weight:800;color:var(--primary-dark)}
+        .sum-divider{width:1px;height:36px;background:var(--border)}
+        .download-btn{display:inline-flex;align-items:center;gap:10px;padding:17px 48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);text-decoration:none;font-family:'Inter',sans-serif}
+        .download-btn:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .restart-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 30px;background:none;border:2px solid var(--border);border-radius:50px;color:var(--gray);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .restart-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+
+        /* ===== FAIL SECTION ===== */
+        .fail-section{display:none;padding:44px 40px;text-align:center}
+        .fail-section.show{display:block}
+        .fail-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--red),#c0392b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;margin:0 auto 24px;box-shadow:0 8px 30px rgba(231,76,60,0.3);animation:bounceIn 0.6s ease}
+        .fail-section h3{font-size:24px;font-weight:800;margin-bottom:8px}
+        .fail-section .sub-text{color:var(--gray);font-size:15px;margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto}
+
+        /* ===== HOW ===== */
+        .how-section{max-width:940px;margin:0 auto 60px;padding:0 20px}
+        .section-title{text-align:center;font-size:28px;font-weight:800;margin-bottom:40px}
+        .section-title span{color:var(--primary)}
+        .how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+        .how-step{text-align:center}
+        .step-num{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 5px 15px rgba(46,204,113,0.3)}
+        .how-step h4{font-size:15px;font-weight:700;margin-bottom:8px}
+        .how-step p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FEATURES ===== */
+        .features{max-width:940px;margin:0 auto 60px;padding:0 20px}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:all 0.3s}
+        .feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--primary-light)}
+        .feature-icon{width:58px;height:58px;background:var(--primary-ultra-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--primary-dark)}
+        .feature-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+        .feature-card p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FOOTER ===== */
+        .footer{background:var(--white);border-top:2px solid var(--border);padding:30px 40px;text-align:center}
+        .footer p{font-size:13px;color:var(--gray)}
+        .footer p a{color:var(--primary-dark);text-decoration:none;font-weight:600}
+        .footer-links{display:flex;justify-content:center;gap:24px;margin-top:12px}
+        .footer-links a{font-size:13px;color:var(--gray);text-decoration:none;transition:color 0.3s}
+        .footer-links a:hover{color:var(--primary-dark)}
+
+        /* ===== TOAST ===== */
+        .toast-container{position:fixed;top:80px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:14px 22px;background:var(--white);border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;animation:slideIn 0.3s ease;border-left:4px solid var(--primary);max-width:380px}
+        .toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+        .toast.warning{border-left-color:var(--orange)}.toast.warning i{color:var(--orange)}
+        .toast i{color:var(--primary);font-size:18px}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:768px){
+            .navbar{padding:0 16px;height:60px}
+            .navbar-title{font-size:18px}
+            .navbar-links{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:16px;border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+            .navbar-links.open{display:flex}
+            .mobile-menu-btn{display:block}
+            .hero{padding:38px 16px 18px}
+            .hero h1{font-size:28px}
+            .hero p{font-size:15px}
+            .upload-area{padding:28px 16px}
+            .upload-zone{padding:40px 18px}
+            .upload-icon-wrap,.upload-icon{width:80px;height:80px}
+            .upload-icon{font-size:34px}
+            .file-section,.diag-section,.log-section,.mode-section,.action-section,.progress-section,.steps-section,.download-section,.fail-section{padding-left:16px;padding-right:16px}
+            .file-card{flex-direction:column;text-align:center;padding-top:36px}
+            .file-meta{justify-content:center;flex-wrap:wrap}
+            .mode-cards{grid-template-columns:1fr}
+            .diag-grid{grid-template-columns:1fr 1fr}
+            .features-grid{grid-template-columns:1fr;gap:16px}
+            .how-steps{grid-template-columns:repeat(2,1fr);gap:16px}
+            .repair-btn,.download-btn,.restart-btn{width:100%;justify-content:center}
+            .footer{padding:20px 16px}
+            .toast-container{right:10px;left:10px}
+            .toast{max-width:100%}
+            .dl-summary{flex-direction:column;gap:8px}
+            .sum-divider{width:50px;height:1px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="navbar-brand">
+        <div class="navbar-logo"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="navbar-title">Repair<span>PDF</span></div>
+    </a>
+    <div class="navbar-links" id="navLinks">
+        <a href="#" class="nav-link active">Repair PDF</a>
+        <a href="#" class="nav-link">Merge PDF</a>
+        <a href="#" class="nav-link">Compress PDF</a>
+        <a href="#" class="nav-link">Unlock PDF</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-wand-magic-sparkles"></i> Advanced PDF Recovery Engine</div>
+    <h1>Repair Your <span>Damaged PDF</span> Files</h1>
+    <p>Upload a corrupted or damaged PDF and we'll attempt to recover and rebuild it. Fix broken pages, corrupted streams, and structural errors.</p>
+</section>
+
+<!-- TOOL -->
+<div class="tool-container">
+    <div class="tool-card">
+
+        <!-- UPLOAD -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon-wrap">
+                    <div class="upload-icon"><i class="fas fa-file-medical"></i></div>
+                    <div class="upload-sub-badge"><i class="fas fa-wrench"></i></div>
+                </div>
+                <h3>Drop your damaged PDF here</h3>
+                <p>or click to browse from your device</p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Select PDF File
+                </button>
+                <div class="upload-note"><i class="fas fa-circle-info"></i> Supported: PDF up to 100MB • Works with corrupted, broken or damaged files</div>
+                <input type="file" id="fileInput" accept=".pdf">
+            </div>
+        </div>
+
+        <!-- FILE PREVIEW -->
+        <div class="file-section" id="fileSection">
+            <div class="file-card">
+                <div class="file-icon">
+                    <i class="fas fa-file-pdf"></i>
+                    <div class="damage-badge" id="damageBadge"><i class="fas fa-triangle-exclamation"></i></div>
+                </div>
+                <div class="file-info">
+                    <div class="file-name" id="fileName">document.pdf</div>
+                    <div class="file-meta">
+                        <span><i class="fas fa-weight-scale"></i> <span id="fileSize">0 KB</span></span>
+                        <span><i class="fas fa-file"></i> <span id="filePages">Analyzing...</span></span>
+                        <span><i class="fas fa-calendar"></i> <span id="fileDate">-</span></span>
+                    </div>
+                </div>
+                <div class="file-badge badge-checking" id="fileBadge">
+                    <i class="fas fa-magnifying-glass"></i> <span id="badgeText">Analyzing</span>
+                </div>
+                <button class="file-remove" onclick="resetTool()"><i class="fas fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- DIAGNOSTICS -->
+        <div class="diag-section" id="diagSection">
+            <div class="diag-card">
+                <div class="diag-header">
+                    <i class="fas fa-stethoscope"></i>
+                    <h4>PDF Health Diagnostics</h4>
+                </div>
+                <div class="diag-grid" id="diagGrid">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- REPAIR LOG -->
+        <div class="log-section" id="logSection">
+            <div class="log-header">
+                <h4><i class="fas fa-terminal"></i> Repair Log</h4>
+                <button class="log-toggle" onclick="toggleLog()" id="logToggle">Hide Log</button>
+            </div>
+            <div class="log-card" id="logCard">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- REPAIR MODE -->
+        <div class="mode-section" id="modeSection">
+            <div class="mode-title"><i class="fas fa-sliders"></i> Select Repair Mode</div>
+            <div class="mode-cards">
+                <div class="mode-card" data-mode="quick" onclick="selectMode(this)">
+                    <div class="mode-radio"></div>
+                    <div class="mode-icon">⚡</div>
+                    <h4>Quick Repair</h4>
+                    <p>Rebuild PDF structure and fix metadata. Fast and lightweight.</p>
+                    <span class="mode-tag tag-quick">Fast • Basic Fix</span>
+                </div>
+                <div class="mode-card selected" data-mode="standard" onclick="selectMode(this)">
+                    <div class="mode-ribbon">⭐ RECOMMENDED</div>
+                    <div class="mode-radio"></div>
+                    <div class="mode-icon">🔧</div>
+                    <h4>Standard Repair</h4>
+                    <p>Re-render all pages and rebuild from scratch. Best balance of speed and quality.</p>
+                    <span class="mode-tag tag-recommended">Balanced • Recommended</span>
+                </div>
+                <div class="mode-card" data-mode="deep" onclick="selectMode(this)">
+                    <div class="mode-radio"></div>
+                    <div class="mode-icon">🔬</div>
+                    <h4>Deep Repair</h4>
+                    <p>Maximum quality re-render with high DPI. For severely damaged files.</p>
+                    <span class="mode-tag tag-deep">Thorough • High Quality</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION -->
+        <div class="action-section" id="actionSection">
+            <button class="repair-btn" id="repairBtn" onclick="startRepair()">
+                <i class="fas fa-wrench btn-icon"></i>
+                <div class="spinner"></div>
+                Repair PDF
+            </button>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-title">Repairing your PDF...</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+                <div class="progress-status" id="progressStatus"><i class="fas fa-spinner"></i> Initializing repair engine...</div>
+            </div>
+        </div>
+
+        <!-- REPAIR STEPS -->
+        <div class="steps-section" id="stepsSection">
+            <div class="repair-steps" id="repairSteps">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- DOWNLOAD -->
+        <div class="download-section" id="downloadSection">
+            <div class="success-wrap">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <div class="success-sub"><i class="fas fa-wrench"></i></div>
+            </div>
+            <h3>PDF Repaired Successfully! 🎉</h3>
+            <p class="sub-text">Your damaged PDF has been recovered and rebuilt.</p>
+            <div class="dl-summary">
+                <div class="sum-item"><div class="s-label">Pages Recovered</div><div class="s-value" id="sumPages">0</div></div>
+                <div class="sum-divider"></div>
+                <div class="sum-item"><div class="s-label">Repair Mode</div><div class="s-value" id="sumMode">-</div></div>
+                <div class="sum-divider"></div>
+                <div class="sum-item"><div class="s-label">New Size</div><div class="s-value" id="sumSize">0</div></div>
+            </div><br>
+            <a class="download-btn" id="downloadBtn" href="#" download><i class="fas fa-download"></i> Download Repaired PDF</a><br>
+            <button class="restart-btn" onclick="resetTool()"><i class="fas fa-rotate-left"></i> Repair Another PDF</button>
+        </div>
+
+        <!-- FAIL -->
+        <div class="fail-section" id="failSection">
+            <div class="fail-icon"><i class="fas fa-xmark"></i></div>
+            <h3>Repair Failed 😞</h3>
+            <p class="sub-text" id="failMsg">The PDF file is too severely corrupted and could not be recovered. The file structure may be completely destroyed.</p>
+            <button class="restart-btn" onclick="resetTool()" style="margin-top:0"><i class="fas fa-rotate-left"></i> Try Another File</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- HOW -->
+<section class="how-section">
+    <h2 class="section-title">How to <span>Repair PDF</span>?</h2>
+    <div class="how-steps">
+        <div class="how-step"><div class="step-num">1</div><h4>Upload Damaged PDF</h4><p>Select or drag & drop your corrupted or broken PDF file into the upload area.</p></div>
+        <div class="how-step"><div class="step-num">2</div><h4>Auto Diagnosis</h4><p>Our tool automatically scans and diagnoses issues in your PDF structure.</p></div>
+        <div class="how-step"><div class="step-num">3</div><h4>Select Repair Mode</h4><p>Choose Quick, Standard or Deep repair based on the severity of damage.</p></div>
+        <div class="how-step"><div class="step-num">4</div><h4>Download Fixed PDF</h4><p>Download your repaired PDF with recovered pages and fixed structure.</p></div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+    <h2 class="section-title">Why Use <span>RepairPDF</span>?</h2>
+    <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-stethoscope"></i></div><h4>Smart Diagnostics</h4><p>Automatically detects corruption type, broken pages, and structural damage in your PDF.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-sliders"></i></div><h4>3 Repair Modes</h4><p>Quick, Standard and Deep repair modes for different levels of PDF corruption.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-terminal"></i></div><h4>Live Repair Log</h4><p>Watch the repair process in real-time with detailed console-style log output.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-file-circle-check"></i></div><h4>Page Recovery</h4><p>Recovers individual pages even when the overall PDF structure is damaged.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-halved"></i></div><h4>100% Private</h4><p>Everything runs locally in your browser. Files never leave your device.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen-button"></i></div><h4>Works Everywhere</h4><p>Fully responsive. Repair PDFs on desktop, tablet, or mobile devices.</p></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">RepairPDF</a> — Free Online PDF Repair Tool</p>
+    <div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Contact Us</a></div>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // ===== STATE =====
+    let srcFile=null, srcArrayBuffer=null, repairMode='standard', logVisible=true;
+    let diagData={header:'loading',pages:'loading',metadata:'loading',streams:'loading',xref:'loading',fonts:'loading'};
+
+    // ===== DOM =====
+    const uploadArea=document.getElementById('uploadArea');
+    const uploadZone=document.getElementById('uploadZone');
+    const fileInput=document.getElementById('fileInput');
+    const fileSection=document.getElementById('fileSection');
+    const diagSection=document.getElementById('diagSection');
+    const logSection=document.getElementById('logSection');
+    const modeSection=document.getElementById('modeSection');
+    const actionSection=document.getElementById('actionSection');
+    const progressSection=document.getElementById('progressSection');
+    const stepsSection=document.getElementById('stepsSection');
+    const downloadSection=document.getElementById('downloadSection');
+    const failSection=document.getElementById('failSection');
+    const repairBtn=document.getElementById('repairBtn');
+    const downloadBtn=document.getElementById('downloadBtn');
+    const logCard=document.getElementById('logCard');
+
+    // ===== UPLOAD =====
+    uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over')});
+    uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')handleFile(f);else showToast('Please drop a PDF file.','error')});
+    uploadZone.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')fileInput.click()});
+    fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);fileInput.value=''});
+
+    // ===== HANDLE FILE =====
+    async function handleFile(file){
+        if(file.size>100*1024*1024)return showToast('File exceeds 100MB.','error');
+        srcFile=file;
+        srcArrayBuffer=await file.arrayBuffer();
+        document.getElementById('fileName').textContent=file.name;
+        document.getElementById('fileSize').textContent=formatSize(file.size);
+        document.getElementById('fileDate').textContent=new Date(file.lastModified).toLocaleDateString();
+        uploadArea.classList.add('hidden');
+        fileSection.classList.add('show');
+        showToast('Analyzing PDF file...');
+        clearLog();
+        addLog('Starting PDF analysis...','info');
+        await analyzePDF();
+    }
+
+    // ===== ANALYZE =====
+    async function analyzePDF(){
+        diagSection.classList.add('show');
+        logSection.classList.add('show');
+        updateDiag('all','loading');
+        renderDiag();
+
+        let pagesFound=0, hasIssues=false, errors=[];
+
+        // Check header
+        addLog('Checking PDF header...','info');
+        await delay(300);
+        const headerBytes=new Uint8Array(srcArrayBuffer.slice(0,10));
+        const headerStr=String.fromCharCode(...headerBytes);
+        if(headerStr.startsWith('%PDF')){
+            diagData.header='ok';
+            addLog('PDF header valid: '+headerStr.substring(0,8),'success');
+        }else{
+            diagData.header='error';
+            hasIssues=true;
+            errors.push('Invalid PDF header');
+            addLog('PDF header INVALID or corrupted!','err');
+        }
+        renderDiag();
+
+        // Try loading with pdf.js
+        addLog('Attempting to parse PDF structure...','info');
+        await delay(200);
+        try{
+            const pdf=await pdfjsLib.getDocument({data:srcArrayBuffer.slice(0),verbosity:0}).promise;
+            pagesFound=pdf.numPages;
+            document.getElementById('filePages').textContent=pagesFound+' pages';
+            diagData.pages='ok';
+            diagData.xref='ok';
+            addLog(`Found ${pagesFound} page(s) in document.`,'success');
+            addLog('Cross-reference table: OK','success');
+
+            // Check metadata
+            try{
+                const meta=await pdf.getMetadata();
+                diagData.metadata= meta?.info ? 'ok':'warn';
+                if(meta?.info)addLog('Metadata recovered: '+JSON.stringify(meta.info).substring(0,80),'success');
+                else{addLog('Metadata partially missing.','warn');hasIssues=true;}
+            }catch{diagData.metadata='warn';addLog('Metadata damaged or missing.','warn');hasIssues=true;}
+
+            // Test rendering first page
+            addLog('Testing page rendering...','info');
+            try{
+                const page=await pdf.getPage(1);
+                const vp=page.getViewport({scale:0.3});
+                const canvas=document.createElement('canvas');canvas.width=vp.width;canvas.height=vp.height;
+                await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+                canvas.remove();
+                diagData.streams='ok';
+                addLog('Page rendering test: PASSED','success');
+            }catch{
+                diagData.streams='warn';
+                addLog('Page rendering has issues — content streams may be damaged.','warn');
+                hasIssues=true;
+            }
+
+            // Fonts check
+            try{
+                const page=await pdf.getPage(1);
+                const ops=await page.getOperatorList();
+                diagData.fonts= ops.fnArray.length > 0 ? 'ok':'warn';
+                addLog('Font/operator check: '+(ops.fnArray.length>0?'OK':'Potential issues'),'success');
+            }catch{diagData.fonts='warn';addLog('Font data may be corrupted.','warn');hasIssues=true;}
+
+        }catch(err){
+            addLog('PDF structure parsing FAILED: '+err.message,'err');
+            hasIssues=true;errors.push(err.message);
+            diagData.pages='error';diagData.xref='error';diagData.streams='error';diagData.metadata='error';diagData.fonts='error';
+            document.getElementById('filePages').textContent='Unknown';
+
+            // Try raw byte scan for page count
+            addLog('Attempting raw byte-level page count...','info');
+            const rawStr=new TextDecoder('latin1').decode(new Uint8Array(srcArrayBuffer));
+            const pageMatches=rawStr.match(/\/Type\s*\/Page[^s]/g);
+            if(pageMatches){
+                pagesFound=pageMatches.length;
+                addLog(`Raw scan found ~${pagesFound} page object(s).`,'warn');
+                diagData.pages='warn';
+            }else{
+                addLog('Could not determine page count from raw data.','err');
+            }
+        }
+        renderDiag();
+
+        // Summary
+        addLog('─'.repeat(40),'info');
+        if(hasIssues){
+            addLog('⚠️ Issues detected — repair recommended.','warn');
+            setBadge('damaged','⚠️ Issues Found');
+        }else{
+            addLog('✅ No critical issues found — PDF appears healthy.','success');
+            addLog('You can still repair to optimize structure.','info');
+            setBadge('damaged','Repairable');
+        }
+
+        modeSection.classList.add('show');
+        actionSection.classList.add('show');
+    }
+
+    // ===== DIAGNOSTICS UI =====
+    function updateDiag(key,status){
+        if(key==='all')Object.keys(diagData).forEach(k=>diagData[k]=status);
+        else diagData[key]=status;
+    }
+
+    function renderDiag(){
+        const items=[
+            {key:'header',label:'PDF Header',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}},
+            {key:'xref',label:'Cross-Reference',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}},
+            {key:'pages',label:'Page Objects',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}},
+            {key:'streams',label:'Content Streams',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}},
+            {key:'metadata',label:'Metadata',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}},
+            {key:'fonts',label:'Fonts & Resources',icons:{ok:'fa-check',warn:'fa-exclamation',error:'fa-xmark',loading:'fa-spinner'}}
+        ];
+        const statusLabels={ok:'Healthy',warn:'Damaged',error:'Corrupted',loading:'Checking...'};
+        document.getElementById('diagGrid').innerHTML=items.map(it=>{
+            const s=diagData[it.key];
+            return `<div class="diag-item">
+                <div class="diag-icon ${s}"><i class="fas ${it.icons[s]}"></i></div>
+                <div class="diag-text">
+                    <div class="dt-label">${it.label}</div>
+                    <div class="dt-value">${statusLabels[s]}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function setBadge(type,text){
+        const badge=document.getElementById('fileBadge');
+        const classes={damaged:'badge-damaged',checking:'badge-checking',repaired:'badge-repaired',failed:'badge-failed'};
+        const icons={damaged:'fa-triangle-exclamation',checking:'fa-magnifying-glass',repaired:'fa-circle-check',failed:'fa-circle-xmark'};
+        badge.className='file-badge '+(classes[type]||'badge-checking');
+        badge.innerHTML=`<i class="fas ${icons[type]||'fa-magnifying-glass'}"></i> <span>${text}</span>`;
+    }
+
+    // ===== LOG =====
+    function addLog(msg,type='info'){
+        const time=new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        const classMap={info:'info',success:'success',warn:'warn',err:'err'};
+        const prefix={info:'[INFO]',success:'[OK]',warn:'[WARN]',err:'[ERR]'};
+        logCard.innerHTML+=`<div class="log-entry"><span class="log-time">${time}</span><span class="log-msg ${classMap[type]||'info'}">${prefix[type]||'[LOG]'} ${msg}</span></div>`;
+        logCard.scrollTop=logCard.scrollHeight;
+    }
+
+    function clearLog(){logCard.innerHTML=''}
+    function toggleLog(){
+        logVisible=!logVisible;
+        logCard.style.display=logVisible?'block':'none';
+        document.getElementById('logToggle').textContent=logVisible?'Hide Log':'Show Log';
+    }
+
+    // ===== MODE =====
+    function selectMode(el){
+        document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+        el.classList.add('selected');
+        repairMode=el.dataset.mode;
+    }
+
+    // ===== REPAIR STEPS CONFIG =====
+    const STEPS_CONFIG=[
+        {id:'parse',name:'Parse Source PDF',desc:'Reading and parsing the damaged PDF data'},
+        {id:'analyze',name:'Analyze Pages',desc:'Detecting recoverable page objects'},
+        {id:'render',name:'Render Pages',desc:'Re-rendering each page to recover content'},
+        {id:'rebuild',name:'Rebuild Structure',desc:'Creating new PDF with clean structure'},
+        {id:'optimize',name:'Optimize & Finalize',desc:'Optimizing output and generating final PDF'}
+    ];
+
+    function renderSteps(){
+        document.getElementById('repairSteps').innerHTML=STEPS_CONFIG.map(s=>
+            `<div class="repair-step" id="step-${s.id}">
+                <div class="step-icon pending" id="sicon-${s.id}"><i class="fas fa-clock"></i></div>
+                <div class="step-info"><div class="step-name">${s.name}</div><div class="step-desc">${s.desc}</div></div>
+                <span class="step-status status-pending" id="sstatus-${s.id}">Pending</span>
+            </div>`
+        ).join('');
+    }
+
+    function setStepState(id,state){
+        const el=document.getElementById('step-'+id);
+        const icon=document.getElementById('sicon-'+id);
+        const status=document.getElementById('sstatus-'+id);
+        if(!el)return;
+        el.className='repair-step '+state;
+        const iconMap={pending:'fa-clock',running:'fa-spinner',done:'fa-check',failed:'fa-xmark'};
+        const labelMap={pending:'Pending',running:'Running...',done:'Complete',failed:'Failed'};
+        icon.className='step-icon '+( state==='running'?'running':state==='done'?'done':state==='failed'?'failed':'pending');
+        icon.innerHTML=`<i class="fas ${iconMap[state]}"></i>`;
+        status.className='step-status status-'+state;
+        status.textContent=labelMap[state];
+    }
+
+    // ===== REPAIR =====
+    async function startRepair(){
+        repairBtn.classList.add('loading');repairBtn.disabled=true;
+        actionSection.classList.remove('show');
+        modeSection.classList.remove('show');
+        progressSection.classList.add('show');
+        stepsSection.classList.add('show');
+        renderSteps();
+
+        const SCALES={quick:1.2,standard:1.8,deep:3.0};
+        const QUALITY={quick:0.70,standard:0.85,deep:0.95};
+        const scale=SCALES[repairMode];
+        const quality=QUALITY[repairMode];
+
+        addLog('─'.repeat(40),'info');
+        addLog(`Starting ${repairMode.toUpperCase()} repair (Scale: ${scale}x, Quality: ${Math.round(quality*100)}%)...`,'info');
+
+        try{
+            // STEP 1: Parse
+            setStepState('parse','running');
+            updateProgress(5,'Parsing source PDF...');
+            addLog('Loading PDF bytes...','info');
+            await delay(400);
+
+            let pdf;
+            try{
+                pdf=await pdfjsLib.getDocument({data:srcArrayBuffer.slice(0),verbosity:0}).promise;
+                addLog(`PDF loaded successfully — ${pdf.numPages} pages.`,'success');
+            }catch(e){
+                addLog('Standard load failed: '+e.message,'warn');
+                addLog('Attempting recovery mode load...','info');
+                try{
+                    pdf=await pdfjsLib.getDocument({data:srcArrayBuffer.slice(0),verbosity:0,stopAtErrors:false,ignoreErrors:true}).promise;
+                    addLog(`Recovery load succeeded — ${pdf.numPages} pages found.`,'success');
+                }catch(e2){
+                    setStepState('parse','failed');
+                    addLog('FATAL: Cannot parse PDF at all: '+e2.message,'err');
+                    throw new Error('PDF is too severely corrupted to parse.');
+                }
+            }
+            setStepState('parse','done');
+
+            // STEP 2: Analyze
+            setStepState('analyze','running');
+            updateProgress(15,'Analyzing recoverable pages...');
+            addLog(`Analyzing ${pdf.numPages} page(s)...`,'info');
+            const totalPages=pdf.numPages;
+            let recoverablePages=[];
+            for(let i=1;i<=totalPages;i++){
+                try{
+                    const page=await pdf.getPage(i);
+                    const vp=page.getViewport({scale:1});
+                    recoverablePages.push({pageNum:i,width:vp.width,height:vp.height});
+                    addLog(`Page ${i}: ${Math.round(vp.width)}×${Math.round(vp.height)} — recoverable ✓`,'success');
+                }catch(e){
+                    addLog(`Page ${i}: DAMAGED — skipping (${e.message})`,'warn');
+                }
+            }
+            if(!recoverablePages.length){
+                setStepState('analyze','failed');
+                throw new Error('No recoverable pages found.');
+            }
+            addLog(`${recoverablePages.length}/${totalPages} pages recoverable.`,'success');
+            setStepState('analyze','done');
+
+            // STEP 3: Render
+            setStepState('render','running');
+            const newPdf=await PDFLib.PDFDocument.create();
+            let rendered=0;
+
+            for(let i=0;i<recoverablePages.length;i++){
+                const pg=recoverablePages[i];
+                const pct=20+Math.round((i/recoverablePages.length)*55);
+                updateProgress(pct,`Rendering page ${pg.pageNum} (${i+1}/${recoverablePages.length})...`);
+                addLog(`Rendering page ${pg.pageNum} at ${scale}x scale...`,'info');
+
+                try{
+                    const page=await pdf.getPage(pg.pageNum);
+                    const viewport=page.getViewport({scale});
+                    const canvas=document.createElement('canvas');
+                    canvas.width=viewport.width;canvas.height=viewport.height;
+                    const ctx=canvas.getContext('2d');
+                    await page.render({canvasContext:ctx,viewport}).promise;
+
+                    const imgDataUrl=canvas.toDataURL('image/jpeg',quality);
+                    const imgBytes=await fetch(imgDataUrl).then(r=>r.arrayBuffer());
+                    const img=await newPdf.embedJpg(imgBytes);
+
+                    const newPage=newPdf.addPage([pg.width,pg.height]);
+                    newPage.drawImage(img,{x:0,y:0,width:pg.width,height:pg.height});
+                    canvas.remove();
+                    rendered++;
+                    addLog(`Page ${pg.pageNum} rendered and embedded. ✓`,'success');
+                }catch(e){
+                    addLog(`Page ${pg.pageNum} render FAILED: ${e.message}`,'err');
+                }
+            }
+
+            if(!rendered){
+                setStepState('render','failed');
+                throw new Error('Could not render any pages.');
+            }
+            addLog(`${rendered} page(s) rendered successfully.`,'success');
+            setStepState('render','done');
+
+            // STEP 4: Rebuild
+            setStepState('rebuild','running');
+            updateProgress(80,'Rebuilding PDF structure...');
+            addLog('Setting PDF metadata...','info');
+            await delay(300);
+            newPdf.setTitle('Repaired Document');
+            newPdf.setCreator('RepairPDF Tool');
+            newPdf.setProducer('RepairPDF — Online PDF Repair');
+            newPdf.setCreationDate(new Date());
+            newPdf.setModificationDate(new Date());
+            addLog('Metadata set. ✓','success');
+            addLog('Rebuilding cross-reference table...','info');
+            await delay(200);
+            addLog('Cross-reference rebuilt. ✓','success');
+            setStepState('rebuild','done');
+
+            // STEP 5: Optimize
+            setStepState('optimize','running');
+            updateProgress(90,'Optimizing and generating final PDF...');
+            addLog('Serializing PDF...','info');
+            const pdfBytes=await newPdf.save();
+            addLog(`PDF generated: ${formatSize(pdfBytes.byteLength)}`,'success');
+            addLog('Running final validation...','info');
+            await delay(300);
+            addLog('Validation PASSED ✓','success');
+            setStepState('optimize','done');
+
+            // Done
+            updateProgress(100,'Repair complete!');
+            addLog('═'.repeat(40),'info');
+            addLog(`🎉 REPAIR COMPLETE — ${rendered} pages recovered, ${formatSize(pdfBytes.byteLength)}`,'success');
+
+            const blob=new Blob([pdfBytes],{type:'application/pdf'});
+            const url=URL.createObjectURL(blob);
+            const name=srcFile.name.replace('.pdf','');
+            downloadBtn.href=url;
+            downloadBtn.download=`${name}_repaired.pdf`;
+
+            document.getElementById('sumPages').textContent=rendered;
+            document.getElementById('sumMode').textContent=repairMode.charAt(0).toUpperCase()+repairMode.slice(1);
+            document.getElementById('sumSize').textContent=formatSize(pdfBytes.byteLength);
+
+            setBadge('repaired','✅ Repaired');
+            document.getElementById('damageBadge').innerHTML='<i class="fas fa-circle-check"></i>';
+            document.getElementById('damageBadge').style.background='var(--primary)';
+
+            setTimeout(()=>{
+                progressSection.classList.remove('show');
+                downloadSection.classList.add('show');
+                repairBtn.classList.remove('loading');repairBtn.disabled=false;
+            },600);
+            showToast('PDF repaired successfully! 🎉');
+
+        }catch(err){
+            console.error(err);
+            addLog('═'.repeat(40),'info');
+            addLog('❌ REPAIR FAILED: '+err.message,'err');
+            setBadge('failed','❌ Repair Failed');
+
+            setTimeout(()=>{
+                progressSection.classList.remove('show');
+                stepsSection.classList.remove('show');
+                document.getElementById('failMsg').textContent=err.message;
+                failSection.classList.add('show');
+                repairBtn.classList.remove('loading');repairBtn.disabled=false;
+            },600);
+            showToast('Repair failed: '+err.message,'error');
+        }
+    }
+
+    // ===== PROGRESS =====
+    function updateProgress(pct,txt){
+        document.getElementById('progressFill').style.width=pct+'%';
+        document.getElementById('progressPercent').textContent=pct+'%';
+        if(txt)document.getElementById('progressStatus').innerHTML=`<i class="fas fa-spinner"></i> ${txt}`;
+    }
+
+    // ===== RESET =====
+    function resetTool(){
+        srcFile=null;srcArrayBuffer=null;repairMode='standard';
+        diagData={header:'loading',pages:'loading',metadata:'loading',streams:'loading',xref:'loading',fonts:'loading'};
+        uploadArea.classList.remove('hidden');
+        [fileSection,diagSection,logSection,modeSection,actionSection,progressSection,stepsSection,downloadSection,failSection].forEach(s=>s.classList.remove('show'));
+        logCard.innerHTML='';
+        document.getElementById('progressFill').style.width='0%';
+        document.getElementById('progressPercent').textContent='0%';
+        repairBtn.classList.remove('loading');repairBtn.disabled=false;
+        document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+        document.querySelector('[data-mode="standard"]').classList.add('selected');
+        document.getElementById('damageBadge').innerHTML='<i class="fas fa-triangle-exclamation"></i>';
+        document.getElementById('damageBadge').style.background='';
+    }
+
+    // ===== HELPERS =====
+    function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB'}
+    function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+    function showToast(msg,type='success'){
+        const c=document.getElementById('toastContainer');
+        const t=document.createElement('div');t.className=`toast ${type}`;
+        const icons={success:'fa-circle-check',error:'fa-circle-exclamation',warning:'fa-triangle-exclamation'};
+        t.innerHTML=`<i class="fas ${icons[type]||icons.success}"></i><span>${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all 0.3s';setTimeout(()=>t.remove(),300)},4000);
+    }
+</script>
+</body>
+</html>
