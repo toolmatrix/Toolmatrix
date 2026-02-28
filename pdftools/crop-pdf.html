@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crop PDF — Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;--g400:#81C784;
+            --g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;--g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
+            --w:#fff;--txt:#2c3e2c;--txtL:#6b7e6b;--txtM:#94a894;--bdr:#d4ead4;
+            --red:#EF5350;--blue:#42A5F5;--yellow:#FFCA28;
+            --sh:0 8px 30px rgba(46,125,50,.10);--shL:0 20px 60px rgba(46,125,50,.15);
+            --r:16px;--rs:10px;--rx:6px;--t:.25s cubic-bezier(.4,0,.2,1)
+        }
+        html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;
+            background:var(--g100);color:var(--txt);-webkit-font-smoothing:antialiased}
+        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== NAVBAR ===== */
+        .nav{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
+            padding:0 20px;height:58px;display:flex;align-items:center;gap:12px;
+            box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:200}
+        .nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+        .logo-ic{width:38px;height:38px;background:var(--w);border-radius:10px;display:flex;
+            align-items:center;justify-content:center;font-size:18px;color:var(--g700)}
+        .logo-t{font-size:19px;font-weight:800;color:var(--w)}
+        .logo-t span{color:#FFEB3B}
+        .n-sep{width:1px;height:28px;background:rgba(255,255,255,.15);flex-shrink:0}
+        .n-file{display:flex;align-items:center;gap:8px;flex-shrink:0;max-width:200px}
+        .n-fname{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;white-space:nowrap;
+            overflow:hidden;text-overflow:ellipsis}
+        .n-fpg{font-size:10px;color:rgba(255,255,255,.45);font-weight:600}
+
+        /* NAV STEPS */
+        .n-steps{display:flex;align-items:center;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
+        .n-step{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4)}
+        .n-step.active{color:#FFEB3B}
+        .n-step.done{color:var(--g300)}
+        .n-step .sn{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+        .n-step.active .sn{border-color:#FFEB3B;background:rgba(255,235,59,.15);color:#FFEB3B}
+        .n-step.done .sn{border-color:var(--g300);background:var(--g600);color:#fff}
+        .sl{width:32px;height:2px;background:rgba(255,255,255,.12);border-radius:2px}
+        .sl.done{background:var(--g400)}
+
+        .nav-r{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+        .nb{height:36px;padding:0 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:6px}
+        .nb:hover{background:rgba(255,255,255,.2)}
+        .nb.yel{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
+            border-color:transparent;box-shadow:0 3px 12px rgba(255,193,7,.3)}
+        .nb.yel:hover{transform:translateY(-1px)}
+        .nb.yel:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .mob-menu{display:none;width:36px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;
+            align-items:center;justify-content:center}
+
+        /* ===== MAIN ===== */
+        .main{flex:1;display:flex;overflow:hidden;position:relative}
+
+        /* ===== SIDEBAR ===== */
+        .sidebar{width:290px;flex-shrink:0;background:var(--w);border-right:1px solid var(--bdr);
+            display:flex;flex-direction:column;overflow:hidden;z-index:50}
+        .sb-hdr{flex-shrink:0;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--g50);
+            display:flex;align-items:center;justify-content:space-between}
+        .sb-title{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .sb-title i{font-size:15px}
+        .sb-close{display:none;width:28px;height:28px;border-radius:7px;border:none;background:var(--g200);
+            color:var(--g800);font-size:13px;cursor:pointer;align-items:center;justify-content:center;transition:var(--t)}
+        .sb-close:hover{background:var(--g600);color:#fff}
+        .sb-scroll{flex:1;overflow-y:auto;padding:16px 18px}
+        .sb-scroll::-webkit-scrollbar{width:5px}
+        .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+
+        /* Setting groups */
+        .sg{margin-bottom:22px}
+        .sg-label{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .sg-label i{color:var(--g600);font-size:13px}
+        .sg-desc{font-size:11px;color:var(--txtM);margin-bottom:10px;line-height:1.5}
+
+        /* Crop Mode Chips */
+        .mode-chips{display:flex;gap:6px;flex-wrap:wrap}
+        .mc{flex:1;min-width:80px;padding:10px 8px;border:2px solid var(--g200);border-radius:var(--rs);
+            text-align:center;cursor:pointer;transition:var(--t);background:var(--w);font-family:inherit}
+        .mc:hover{border-color:var(--g400);background:var(--g50)}
+        .mc.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .mc i{font-size:18px;display:block;margin-bottom:4px}
+        .mc span{font-size:10px;font-weight:700;display:block}
+
+        /* Margin Inputs */
+        .margin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .mg-item{position:relative}
+        .mg-item label{font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;
+            letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+        .mg-item label i{font-size:11px;color:var(--g500)}
+        .mg-input{width:100%;padding:9px 12px;border:2px solid var(--g200);border-radius:8px;
+            font-size:13px;font-family:inherit;color:var(--txt);outline:none;transition:var(--t);
+            background:var(--w);text-align:center;font-weight:600}
+        .mg-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+        .mg-unit{position:absolute;right:10px;top:50%;transform:translateY(30%);font-size:10px;
+            color:var(--txtM);font-weight:600;pointer-events:none}
+
+        /* Quick Presets */
+        .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+        .preset{padding:10px 8px;border:2px solid var(--g200);border-radius:var(--rs);font-size:11px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--t);background:var(--w);
+            color:var(--txt);font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px}
+        .preset:hover{border-color:var(--g500);background:var(--g50)}
+        .preset i{font-size:16px;color:var(--g600)}
+
+        /* Page Apply Mode */
+        .apply-chips{display:flex;gap:6px}
+        .ac{flex:1;padding:9px 6px;border:2px solid var(--g200);border-radius:8px;font-size:11px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--t);background:var(--w);
+            color:var(--txt);font-family:inherit}
+        .ac:hover{border-color:var(--g400);background:var(--g50)}
+        .ac.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+
+        /* Page selector */
+        .page-sel-wrap{margin-top:10px;display:none}
+        .page-sel-wrap.show{display:block}
+        .page-sel{display:flex;flex-wrap:wrap;gap:5px}
+        .pc{width:34px;height:34px;border-radius:7px;border:2px solid var(--g200);
+            display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+            cursor:pointer;transition:var(--t);color:var(--txt);background:var(--w)}
+        .pc:hover{border-color:var(--g500)}
+        .pc.sel{background:var(--g600);color:#fff;border-color:var(--g600)}
+
+        /* Sidebar footer */
+        .sb-foot{flex-shrink:0;padding:14px 18px;border-top:1px solid var(--bdr);background:var(--g50)}
+        .crop-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--g600),var(--g900));
+            color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;
+            gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);position:relative;overflow:hidden}
+        .crop-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
+        .crop-btn:hover::after{left:100%}
+        .crop-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(46,125,50,.4)}
+        .crop-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+        /* ===== CENTER AREA ===== */
+        .center{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+        /* FILE BAR */
+        .fbar{flex-shrink:0;display:none;align-items:center;gap:12px;padding:10px 18px;
+            background:var(--w);border-bottom:1px solid var(--bdr)}
+        .fbar.show{display:flex}
+        .fbar-ic{width:42px;height:42px;background:linear-gradient(135deg,var(--red),#D32F2F);
+            border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff}
+        .fbar-info{flex:1;min-width:0}
+        .fbar-name{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fbar-meta{font-size:11px;color:var(--txtM);display:flex;gap:12px;margin-top:2px}
+        .fbar-meta span{display:flex;align-items:center;gap:4px}
+        .fbar-rm{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);background:transparent;
+            color:var(--red);font-size:13px;cursor:pointer;transition:var(--t);display:flex;
+            align-items:center;justify-content:center;flex-shrink:0}
+        .fbar-rm:hover{background:var(--red);color:#fff}
+
+        /* UPLOAD SCREEN */
+        .screen{display:none;flex:1;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+        .screen.active{display:flex}
+        .up-card{width:100%;max-width:660px;background:var(--w);border-radius:24px;box-shadow:var(--shL);
+            padding:48px 40px;text-align:center;animation:fadeUp .5s ease}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .up-ic{width:100px;height:100px;background:linear-gradient(135deg,var(--g200),var(--g100));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+            font-size:42px;color:var(--g600);transition:var(--t)}
+        .up-card:hover .up-ic{transform:scale(1.08);background:linear-gradient(135deg,var(--g400),var(--g300));color:#fff}
+        .up-card h2{font-size:28px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .up-card>p{font-size:15px;color:var(--txtM);margin-bottom:28px;max-width:440px;margin-left:auto;margin-right:auto}
+        .dz{border:3px dashed var(--g300);border-radius:18px;padding:42px 28px;cursor:pointer;
+            transition:var(--t);margin-bottom:24px;background:var(--g50)}
+        .dz:hover,.dz.drag{border-color:var(--g600);background:var(--g100);transform:scale(1.01)}
+        .dz i{font-size:34px;color:var(--g500);margin-bottom:10px}
+        .dz h3{font-size:16px;font-weight:700;color:var(--g800);margin-bottom:4px}
+        .dz span{font-size:13px;color:var(--txtM)}
+        .br-btn{padding:13px 34px;background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:inline-flex;align-items:center;gap:10px;
+            box-shadow:0 5px 20px rgba(46,125,50,.3)}
+        .br-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(46,125,50,.4)}
+        .up-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+        .uf{display:flex;align-items:center;gap:8px;padding:12px;background:var(--g50);border-radius:10px;text-align:left}
+        .uf i{font-size:18px;color:var(--g600);flex-shrink:0}
+        .uf strong{font-size:12px;color:var(--txt);display:block}
+        .uf em{font-size:10px;color:var(--txtM);font-style:normal}
+
+        /* ===== CROP WORKSPACE ===== */
+        .crop-ws{display:none;flex:1;overflow:auto;background:#5a5a5a;position:relative}
+        .crop-ws.show{display:flex;flex-direction:column;align-items:center;padding:30px}
+        .page-nav-bar{flex-shrink:0;display:flex;align-items:center;gap:12px;margin-bottom:20px;
+            background:rgba(0,0,0,.4);padding:8px 18px;border-radius:50px;backdrop-filter:blur(8px)}
+        .pn-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);
+            background:rgba(255,255,255,.1);color:#fff;font-size:14px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;transition:var(--t)}
+        .pn-btn:hover{background:rgba(255,255,255,.25)}
+        .pn-btn:disabled{opacity:.3;cursor:not-allowed}
+        .pn-label{font-size:13px;font-weight:700;color:#fff;min-width:100px;text-align:center}
+
+        /* Page Canvas Container */
+        .page-container{position:relative;display:inline-block;box-shadow:0 8px 40px rgba(0,0,0,.3);
+            background:var(--w);flex-shrink:0;user-select:none}
+        .page-container canvas{display:block}
+
+        /* Crop Overlay */
+        .crop-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;cursor:crosshair}
+        /* Dark overlay outside crop */
+        .co-dark-top,.co-dark-bottom,.co-dark-left,.co-dark-right{position:absolute;background:rgba(0,0,0,.45);pointer-events:none;transition:all .05s}
+        /* Crop box */
+        .crop-box{position:absolute;border:2.5px dashed var(--g400);z-index:12;
+            box-shadow:0 0 0 9999px rgba(0,0,0,.45);cursor:move;transition:border-color .2s}
+        .crop-box:hover{border-color:#FFEB3B}
+        .crop-box .crop-info{position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+            background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;
+            border-radius:4px;white-space:nowrap;pointer-events:none}
+        /* Resize handles */
+        .ch{position:absolute;width:14px;height:14px;background:var(--w);border:2.5px solid var(--g600);
+            border-radius:3px;z-index:14;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+        .ch-tl{top:-7px;left:-7px;cursor:nw-resize}
+        .ch-tr{top:-7px;right:-7px;cursor:ne-resize}
+        .ch-bl{bottom:-7px;left:-7px;cursor:sw-resize}
+        .ch-br{bottom:-7px;right:-7px;cursor:se-resize}
+        .ch-t{top:-7px;left:50%;transform:translateX(-50%);cursor:n-resize}
+        .ch-b{bottom:-7px;left:50%;transform:translateX(-50%);cursor:s-resize}
+        .ch-l{left:-7px;top:50%;transform:translateY(-50%);cursor:w-resize}
+        .ch-r{right:-7px;top:50%;transform:translateY(-50%);cursor:e-resize}
+
+        /* Crop dimension display */
+        .crop-dims{flex-shrink:0;display:flex;align-items:center;gap:16px;margin-top:16px;
+            background:rgba(0,0,0,.4);padding:8px 20px;border-radius:50px;backdrop-filter:blur(8px)}
+        .cd-item{font-size:11px;color:rgba(255,255,255,.7);font-weight:600}
+        .cd-item strong{color:#fff;margin-left:4px}
+
+        /* ===== OVERLAYS ===== */
+        .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
+            align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+        .ov.show{display:flex}
+        .ov-modal{background:var(--w);border-radius:24px;padding:48px 42px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,.2);max-width:420px;width:92%;animation:pop .35s ease}
+        @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .ov-sp{width:70px;height:70px;margin:0 auto 20px}
+        .ov-ring{width:70px;height:70px;border:5px solid var(--g200);border-top-color:var(--g600);
+            border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .ov h3{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:6px}
+        .ov p{font-size:14px;color:var(--txtM)}
+        .suc-ic{width:80px;height:80px;background:linear-gradient(135deg,var(--g500),var(--g800));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+            font-size:36px;color:#fff;animation:bounce .5s ease}
+        @keyframes bounce{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .dl-btn{padding:14px 42px;background:linear-gradient(135deg,var(--g600),var(--g900));color:#fff;
+            border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:var(--t);
+            font-family:inherit;box-shadow:0 6px 25px rgba(46,125,50,.35);display:inline-flex;align-items:center;gap:10px}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(46,125,50,.45)}
+        .cl-btn{margin-top:14px;padding:9px 26px;background:transparent;border:2px solid var(--g200);
+            color:var(--g800);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:inline-block}
+        .cl-btn:hover{background:var(--g100);border-color:var(--g400)}
+        .stats-row{display:flex;gap:10px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+        .stat-pill{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--g50);
+            border-radius:50px;font-size:11px;font-weight:600;color:var(--g800);border:1px solid var(--g200)}
+        .stat-pill i{color:var(--g600)}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:var(--g900);color:#fff;padding:11px 26px;border-radius:50px;font-size:13px;
+            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
+            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+        /* MOB BOTTOM */
+        .mob-bar{display:none;flex-shrink:0;background:var(--w);border-top:1px solid var(--bdr);
+            padding:8px 10px;gap:6px;z-index:80}
+        .mob-bar .mb{flex:1;padding:10px 6px;background:var(--g50);border:1.5px solid var(--g200);
+            border-radius:10px;font-size:11px;font-weight:600;color:var(--g800);cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;flex-direction:column;
+            align-items:center;gap:3px}
+        .mob-bar .mb i{font-size:16px}
+        .mob-bar .mb.go{background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:#fff;border-color:var(--g600);box-shadow:0 3px 12px rgba(46,125,50,.3)}
+
+        .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+        .sb-ov.show{display:block}
+
+        /* Aspect Ratio Lock */
+        .lock-btn{width:100%;padding:9px;border:2px solid var(--g200);border-radius:8px;font-size:12px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--t);background:var(--w);
+            color:var(--txt);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+        .lock-btn.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .lock-btn:hover{border-color:var(--g400)}
+
+        /* Reset button */
+        .reset-btn{width:100%;padding:9px;border:2px solid #ffcdd2;border-radius:8px;font-size:12px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--t);background:var(--w);
+            color:var(--red);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+        .reset-btn:hover{background:#ffebee;border-color:var(--red)}
+
+        #fileInput{display:none}
+
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .n-steps{display:none}
+            .n-sep,.n-file{display:none}
+            .mob-menu{display:flex}
+            .mob-bar{display:flex}
+            .nb.desk{display:none}
+            .sidebar{position:fixed;left:-310px;top:0;bottom:0;z-index:100;
+                transition:left var(--t);box-shadow:var(--shL)}
+            .sidebar.open{left:0}
+            .sb-close{display:flex}
+            .nav{height:50px;padding:0 12px}
+            .logo-t{font-size:15px}
+            .logo-ic{width:32px;height:32px;font-size:15px;border-radius:8px}
+            .up-feats{grid-template-columns:1fr}
+            .up-card{padding:28px 20px}
+            .up-card h2{font-size:22px}
+        }
+        @media(max-width:480px){
+            .dz{padding:30px 16px}
+            .up-card h2{font-size:20px}
+            .page-nav-bar{padding:6px 12px;gap:8px}
+            .crop-dims{padding:6px 14px;gap:10px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <!-- NAVBAR -->
+    <nav class="nav">
+        <div class="nav-logo">
+            <button class="mob-menu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
+            <div class="logo-ic"><i class="fas fa-crop-alt"></i></div>
+            <div class="logo-t">Crop<span>PDF</span></div>
+        </div>
+        <div class="n-sep"></div>
+        <div class="n-file" id="nFile">
+            <div>
+                <div class="n-fname" id="nFname">No file</div>
+                <div class="n-fpg" id="nFpg"></div>
+            </div>
+        </div>
+        <div class="n-steps">
+            <div class="n-step active" id="s1"><span class="sn">1</span> Upload</div>
+            <div class="sl" id="sl1"></div>
+            <div class="n-step" id="s2"><span class="sn">2</span> Crop</div>
+            <div class="sl" id="sl2"></div>
+            <div class="n-step" id="s3"><span class="sn">3</span> Download</div>
+        </div>
+        <div class="nav-r">
+            <button class="nb desk" onclick="toggleSB()"><i class="fas fa-sliders-h"></i> Settings</button>
+            <button class="nb yel" id="cropNavBtn" onclick="cropPDF()" disabled><i class="fas fa-crop-alt"></i> Crop PDF</button>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="sb-ov" id="sbOv" onclick="closeSB()"></div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sb-hdr">
+                <div class="sb-title"><i class="fas fa-crop-alt"></i> Crop Settings</div>
+                <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sb-scroll">
+                <!-- Crop Mode -->
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-vector-square"></i> Crop Mode</div>
+                    <div class="mode-chips">
+                        <div class="mc active" onclick="setCropMode('visual',this)">
+                            <i class="fas fa-hand-pointer"></i><span>Visual</span>
+                        </div>
+                        <div class="mc" onclick="setCropMode('margin',this)">
+                            <i class="fas fa-ruler-combined"></i><span>Margins</span>
+                        </div>
+                        <div class="mc" onclick="setCropMode('preset',this)">
+                            <i class="fas fa-th-large"></i><span>Presets</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Mode Info -->
+                <div class="sg" id="visualInfo">
+                    <div class="sg-desc"><i class="fas fa-info-circle" style="color:var(--g600)"></i> Drag on the page to select the crop area. Use handles to resize.</div>
+                </div>
+
+                <!-- Margin Mode -->
+                <div class="sg" id="marginMode" style="display:none">
+                    <div class="sg-label"><i class="fas fa-arrows-alt"></i> Margins to Remove (px)</div>
+                    <div class="margin-grid">
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrow-up"></i> Top</label>
+                            <input class="mg-input" type="number" id="mTop" value="0" min="0" oninput="applyMargins()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrow-down"></i> Bottom</label>
+                            <input class="mg-input" type="number" id="mBottom" value="0" min="0" oninput="applyMargins()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrow-left"></i> Left</label>
+                            <input class="mg-input" type="number" id="mLeft" value="0" min="0" oninput="applyMargins()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrow-right"></i> Right</label>
+                            <input class="mg-input" type="number" id="mRight" value="0" min="0" oninput="applyMargins()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presets Mode -->
+                <div class="sg" id="presetMode" style="display:none">
+                    <div class="sg-label"><i class="fas fa-th-large"></i> Quick Presets</div>
+                    <div class="preset-grid">
+                        <button class="preset" onclick="applyPreset('a4')"><i class="fas fa-file-alt"></i>A4 Crop</button>
+                        <button class="preset" onclick="applyPreset('letter')"><i class="fas fa-file"></i>Letter</button>
+                        <button class="preset" onclick="applyPreset('half')"><i class="fas fa-columns"></i>Half Page</button>
+                        <button class="preset" onclick="applyPreset('quarter')"><i class="fas fa-th-large"></i>Quarter</button>
+                        <button class="preset" onclick="applyPreset('center50')"><i class="fas fa-compress-arrows-alt"></i>Center 50%</button>
+                        <button class="preset" onclick="applyPreset('center75')"><i class="fas fa-compress"></i>Center 75%</button>
+                        <button class="preset" onclick="applyPreset('top-half')"><i class="fas fa-arrow-up"></i>Top Half</button>
+                        <button class="preset" onclick="applyPreset('bottom-half')"><i class="fas fa-arrow-down"></i>Bottom Half</button>
+                    </div>
+                </div>
+
+                <!-- Crop Dimensions -->
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-ruler"></i> Crop Area (px)</div>
+                    <div class="margin-grid">
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrows-alt-h"></i> X</label>
+                            <input class="mg-input" type="number" id="cX" value="0" min="0" oninput="updateCropFromInputs()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrows-alt-v"></i> Y</label>
+                            <input class="mg-input" type="number" id="cY" value="0" min="0" oninput="updateCropFromInputs()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrows-alt-h"></i> Width</label>
+                            <input class="mg-input" type="number" id="cW" value="0" min="1" oninput="updateCropFromInputs()">
+                        </div>
+                        <div class="mg-item">
+                            <label><i class="fas fa-arrows-alt-v"></i> Height</label>
+                            <input class="mg-input" type="number" id="cH" value="0" min="1" oninput="updateCropFromInputs()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lock Ratio -->
+                <div class="sg">
+                    <button class="lock-btn" id="lockBtn" onclick="toggleLock()">
+                        <i class="fas fa-lock-open"></i> Lock Aspect Ratio
+                    </button>
+                </div>
+
+                <!-- Apply To -->
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-copy"></i> Apply To</div>
+                    <div class="apply-chips">
+                        <div class="ac active" onclick="setApply('all',this)">All Pages</div>
+                        <div class="ac" onclick="setApply('current',this)">Current</div>
+                        <div class="ac" onclick="setApply('custom',this)">Custom</div>
+                    </div>
+                    <div class="page-sel-wrap" id="pgSelWrap">
+                        <div class="page-sel" id="pgSel"></div>
+                    </div>
+                </div>
+
+                <!-- Reset -->
+                <div class="sg">
+                    <button class="reset-btn" onclick="resetCrop()"><i class="fas fa-undo"></i> Reset Crop</button>
+                </div>
+            </div>
+
+            <div class="sb-foot">
+                <button class="crop-btn" id="cropSBBtn" onclick="cropPDF()" disabled>
+                    <i class="fas fa-crop-alt"></i> Crop & Download
+                </button>
+            </div>
+        </div>
+
+        <!-- CENTER -->
+        <div class="center">
+            <div class="fbar" id="fbar">
+                <div class="fbar-ic"><i class="fas fa-file-pdf"></i></div>
+                <div class="fbar-info">
+                    <div class="fbar-name" id="fbarName"></div>
+                    <div class="fbar-meta">
+                        <span><i class="fas fa-file"></i> <span id="fbarPg">0</span> pages</span>
+                        <span><i class="fas fa-weight-hanging"></i> <span id="fbarSz">0</span></span>
+                    </div>
+                </div>
+                <button class="fbar-rm" onclick="removeFile()" title="Remove"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Upload Screen -->
+            <div class="screen active" id="scrUpload">
+                <div class="up-card">
+                    <div class="up-ic"><i class="fas fa-crop-alt"></i></div>
+                    <h2>Crop PDF Pages</h2>
+                    <p>PDF file ki pages ko visually crop karein — margins remove karein, resize karein, ya preset use karein!</p>
+                    <div class="dz" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drop PDF File Here</h3>
+                        <span>or click to browse your files</span>
+                    </div>
+                    <button class="br-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Select PDF File
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <div class="up-feats">
+                        <div class="uf"><i class="fas fa-hand-pointer"></i><div><strong>Visual Crop</strong><em>Drag & resize</em></div></div>
+                        <div class="uf"><i class="fas fa-ruler-combined"></i><div><strong>Margin Trim</strong><em>Exact margins</em></div></div>
+                        <div class="uf"><i class="fas fa-lock"></i><div><strong>100% Secure</strong><em>Browser only</em></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crop Workspace -->
+            <div class="crop-ws" id="cropWS">
+                <!-- Page Nav -->
+                <div class="page-nav-bar">
+                    <button class="pn-btn" id="prevBtn" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
+                    <span class="pn-label" id="pgLabel">Page 1 / 1</span>
+                    <button class="pn-btn" id="nextBtn" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <!-- Page + Crop Overlay -->
+                <div class="page-container" id="pageCon">
+                    <canvas id="pageCanvas"></canvas>
+                    <div class="crop-overlay" id="cropOverlay">
+                        <div class="crop-box" id="cropBox">
+                            <div class="crop-info" id="cropInfo">0 × 0</div>
+                            <div class="ch ch-tl" data-dir="tl"></div>
+                            <div class="ch ch-tr" data-dir="tr"></div>
+                            <div class="ch ch-bl" data-dir="bl"></div>
+                            <div class="ch ch-br" data-dir="br"></div>
+                            <div class="ch ch-t" data-dir="t"></div>
+                            <div class="ch ch-b" data-dir="b"></div>
+                            <div class="ch ch-l" data-dir="l"></div>
+                            <div class="ch ch-r" data-dir="r"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dimensions -->
+                <div class="crop-dims" id="cropDims">
+                    <span class="cd-item">X:<strong id="dimX">0</strong></span>
+                    <span class="cd-item">Y:<strong id="dimY">0</strong></span>
+                    <span class="cd-item">W:<strong id="dimW">0</strong></span>
+                    <span class="cd-item">H:<strong id="dimH">0</strong></span>
+                    <span class="cd-item">Page:<strong id="dimPg">0×0</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOB BOTTOM -->
+    <div class="mob-bar">
+        <button class="mb" onclick="toggleSB()"><i class="fas fa-sliders-h"></i> Settings</button>
+        <button class="mb" onclick="resetCrop()"><i class="fas fa-undo"></i> Reset</button>
+        <button class="mb go" onclick="cropPDF()"><i class="fas fa-crop-alt"></i> Crop</button>
+    </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="ov" id="procOv">
+    <div class="ov-modal">
+        <div class="ov-sp"><div class="ov-ring"></div></div>
+        <h3 id="procT">Processing...</h3>
+        <p id="procD">Please wait</p>
+    </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="ov" id="sucOv">
+    <div class="ov-modal">
+        <div class="suc-ic"><i class="fas fa-check"></i></div>
+        <h3>PDF Cropped! 🎉</h3>
+        <p>Your cropped PDF is ready to download.</p>
+        <div class="stats-row" id="statsRow"></div><br>
+        <button class="dl-btn" id="dlBtn"><i class="fas fa-download"></i> Download PDF</button><br>
+        <button class="cl-btn" onclick="document.getElementById('sucOv').classList.remove('show')"><i class="fas fa-times"></i> Close</button>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
+
+    // ========== STATE ==========
+    let pdfDoc=null,pdfBytes=null,totalPages=0,curPage=1;
+    let renderScale=1.3;
+    let crop={x:0,y:0,w:0,h:0};
+    let pageW=0,pageH=0,canvasW=0,canvasH=0;
+    let cropMode='visual',applyMode='all',lockRatio=false,ratioWH=1;
+    let selectedPages=new Set();
+    let isDragging=false,isResizing=false,resizeDir='',dragStart={x:0,y:0},cropStart={};
+
+    // ========== UPLOAD ==========
+    const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+    dz.addEventListener('click',()=>fi.click());
+    fi.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0])});
+
+    async function handleFile(file){
+        if(file.type!=='application/pdf'){toast('Select a PDF file ⚠️');return}
+        showProc('Loading PDF...','Rendering pages...');
+        pdfBytes=await file.arrayBuffer();
+        pdfDoc=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;
+        totalPages=pdfDoc.numPages;curPage=1;
+
+        document.getElementById('nFname').textContent=file.name;
+        document.getElementById('nFpg').textContent=totalPages+' pages';
+        document.getElementById('fbarName').textContent=file.name;
+        document.getElementById('fbarPg').textContent=totalPages;
+        document.getElementById('fbarSz').textContent=fmtSz(file.size);
+        document.getElementById('fbar').classList.add('show');
+        document.getElementById('cropNavBtn').disabled=false;
+        document.getElementById('cropSBBtn').disabled=false;
+
+        buildPageSel();
+        await renderPage(1);
+
+        document.getElementById('scrUpload').classList.remove('active');
+        document.getElementById('cropWS').classList.add('show');
+        setStep(1);hideProc();
+        toast('PDF loaded! '+totalPages+' pages ✅');
+    }
+
+    function removeFile(){
+        pdfDoc=null;pdfBytes=null;totalPages=0;
+        document.getElementById('fbar').classList.remove('show');
+        document.getElementById('cropNavBtn').disabled=true;
+        document.getElementById('cropSBBtn').disabled=true;
+        document.getElementById('cropWS').classList.remove('show');
+        document.getElementById('scrUpload').classList.add('active');
+        fi.value='';setStep(0);
+    }
+
+    function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+
+    function buildPageSel(){
+        const c=document.getElementById('pgSel');c.innerHTML='';selectedPages.clear();
+        for(let i=1;i<=totalPages;i++){
+            selectedPages.add(i);
+            const d=document.createElement('div');d.className='pc sel';d.textContent=i;
+            d.onclick=()=>{d.classList.toggle('sel');selectedPages.has(i)?selectedPages.delete(i):selectedPages.add(i)};
+            c.appendChild(d);
+        }
+    }
+
+    // ========== RENDER PAGE ==========
+    async function renderPage(num){
+        curPage=num;
+        const page=await pdfDoc.getPage(num);
+        const vp=page.getViewport({scale:renderScale});
+        const canvas=document.getElementById('pageCanvas');
+        canvas.width=vp.width;canvas.height=vp.height;
+        canvasW=vp.width;canvasH=vp.height;
+
+        const ogVP=page.getViewport({scale:1});
+        pageW=ogVP.width;pageH=ogVP.height;
+
+        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+
+        document.getElementById('pageCon').style.width=canvasW+'px';
+        document.getElementById('pageCon').style.height=canvasH+'px';
+        document.getElementById('pgLabel').textContent='Page '+num+' / '+totalPages;
+        document.getElementById('prevBtn').disabled=num<=1;
+        document.getElementById('nextBtn').disabled=num>=totalPages;
+        document.getElementById('dimPg').textContent=Math.round(pageW)+'×'+Math.round(pageH);
+
+        // Default crop = full page
+        crop={x:0,y:0,w:canvasW,h:canvasH};
+        updateCropBox();
+    }
+
+    function prevPage(){if(curPage>1)renderPage(curPage-1)}
+    function nextPage(){if(curPage<totalPages)renderPage(curPage+1)}
+
+    // ========== CROP BOX ==========
+    function updateCropBox(){
+        const box=document.getElementById('cropBox');
+        box.style.left=crop.x+'px';box.style.top=crop.y+'px';
+        box.style.width=crop.w+'px';box.style.height=crop.h+'px';
+
+        // Update info
+        const rw=Math.round(crop.w/renderScale),rh=Math.round(crop.h/renderScale);
+        document.getElementById('cropInfo').textContent=rw+' × '+rh+' px';
+
+        // Update sidebar inputs
+        document.getElementById('cX').value=Math.round(crop.x/renderScale);
+        document.getElementById('cY').value=Math.round(crop.y/renderScale);
+        document.getElementById('cW').value=rw;
+        document.getElementById('cH').value=rh;
+
+        // Bottom dims
+        document.getElementById('dimX').textContent=Math.round(crop.x/renderScale);
+        document.getElementById('dimY').textContent=Math.round(crop.y/renderScale);
+        document.getElementById('dimW').textContent=rw;
+        document.getElementById('dimH').textContent=rh;
+    }
+
+    function updateCropFromInputs(){
+        const x=parseFloat(document.getElementById('cX').value)||0;
+        const y=parseFloat(document.getElementById('cY').value)||0;
+        const w=parseFloat(document.getElementById('cW').value)||1;
+        const h=parseFloat(document.getElementById('cH').value)||1;
+        crop.x=Math.max(0,Math.min(x*renderScale,canvasW-10));
+        crop.y=Math.max(0,Math.min(y*renderScale,canvasH-10));
+        crop.w=Math.max(10,Math.min(w*renderScale,canvasW-crop.x));
+        crop.h=Math.max(10,Math.min(h*renderScale,canvasH-crop.y));
+        updateCropBox();
+    }
+
+    // ========== VISUAL CROP INTERACTION ==========
+    const overlay=document.getElementById('cropOverlay');
+    const cropBox=document.getElementById('cropBox');
+
+    // Drawing new crop area
+    overlay.addEventListener('mousedown',function(e){
+        if(e.target.classList.contains('ch')){startResize(e);return}
+        if(e.target===cropBox||cropBox.contains(e.target)){startDrag(e);return}
+        // New selection
+        const rect=overlay.getBoundingClientRect();
+        const x=e.clientX-rect.left,y=e.clientY-rect.top;
+        crop={x,y,w:0,h:0};isDragging=false;isResizing=true;resizeDir='br';
+        cropStart={x:crop.x,y:crop.y,w:0,h:0};dragStart={x:e.clientX,y:e.clientY};
+        updateCropBox();
+    });
+
+    overlay.addEventListener('touchstart',function(e){
+        const t=e.touches[0];
+        if(e.target.classList.contains('ch')){startResize(e,true);return}
+        if(e.target===cropBox||cropBox.contains(e.target)){startDrag(e,true);return}
+        const rect=overlay.getBoundingClientRect();
+        const x=t.clientX-rect.left,y=t.clientY-rect.top;
+        crop={x,y,w:0,h:0};isDragging=false;isResizing=true;resizeDir='br';
+        cropStart={x:crop.x,y:crop.y,w:0,h:0};dragStart={x:t.clientX,y:t.clientY};
+        updateCropBox();
+    },{passive:false});
+
+    function startDrag(e,touch=false){
+        isDragging=true;isResizing=false;
+        const pt=touch?e.touches[0]:e;
+        dragStart={x:pt.clientX,y:pt.clientY};
+        cropStart={...crop};
+        e.preventDefault();
+    }
+
+    function startResize(e,touch=false){
+        isResizing=true;isDragging=false;
+        resizeDir=e.target.dataset.dir;
+        const pt=touch?e.touches[0]:e;
+        dragStart={x:pt.clientX,y:pt.clientY};
+        cropStart={...crop};
+        if(lockRatio)ratioWH=crop.w/crop.h;
+        e.preventDefault();
+    }
+
+    document.addEventListener('mousemove',handleMove);
+    document.addEventListener('touchmove',e=>handleMove(e,true),{passive:false});
+    function handleMove(e,touch=false){
+        if(!isDragging&&!isResizing)return;
+        e.preventDefault();
+        const pt=touch?e.touches[0]:e;
+        const dx=pt.clientX-dragStart.x,dy=pt.clientY-dragStart.y;
+
+        if(isDragging){
+            let nx=cropStart.x+dx,ny=cropStart.y+dy;
+            nx=Math.max(0,Math.min(nx,canvasW-crop.w));
+            ny=Math.max(0,Math.min(ny,canvasH-crop.h));
+            crop.x=nx;crop.y=ny;
+        }
+
+        if(isResizing){
+            let nx=cropStart.x,ny=cropStart.y,nw=cropStart.w,nh=cropStart.h;
+            const dir=resizeDir;
+
+            if(dir.includes('r'))nw=Math.max(20,cropStart.w+dx);
+            if(dir.includes('l')){nx=cropStart.x+dx;nw=cropStart.w-dx;if(nw<20){nx=cropStart.x+cropStart.w-20;nw=20}}
+            if(dir.includes('b'))nh=Math.max(20,cropStart.h+dy);
+            if(dir.includes('t')){ny=cropStart.y+dy;nh=cropStart.h-dy;if(nh<20){ny=cropStart.y+cropStart.h-20;nh=20}}
+
+            if(lockRatio&&ratioWH){
+                if(dir==='t'||dir==='b')nw=nh*ratioWH;
+                else nh=nw/ratioWH;
+            }
+
+            // Clamp
+            nx=Math.max(0,nx);ny=Math.max(0,ny);
+            nw=Math.min(nw,canvasW-nx);nh=Math.min(nh,canvasH-ny);
+
+            crop={x:nx,y:ny,w:nw,h:nh};
+        }
+        updateCropBox();
+    }
+
+    document.addEventListener('mouseup',stopInteract);
+    document.addEventListener('touchend',stopInteract);
+    function stopInteract(){isDragging=false;isResizing=false}
+
+    // ========== SIDEBAR FUNCTIONS ==========
+    function setCropMode(mode,el){
+        cropMode=mode;
+        document.querySelectorAll('.mc').forEach(c=>c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('visualInfo').style.display=mode==='visual'?'block':'none';
+        document.getElementById('marginMode').style.display=mode==='margin'?'block':'none';
+        document.getElementById('presetMode').style.display=mode==='preset'?'block':'none';
+    }
+
+    function setApply(mode,el){
+        applyMode=mode;
+        document.querySelectorAll('.ac').forEach(c=>c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('pgSelWrap').classList.toggle('show',mode==='custom');
+    }
+
+    function toggleLock(){
+        lockRatio=!lockRatio;
+        const btn=document.getElementById('lockBtn');
+        btn.classList.toggle('active');
+        btn.innerHTML=lockRatio?'<i class="fas fa-lock"></i> Ratio Locked':'<i class="fas fa-lock-open"></i> Lock Aspect Ratio';
+        if(lockRatio)ratioWH=crop.w/crop.h;
+    }
+
+    function resetCrop(){
+        crop={x:0,y:0,w:canvasW,h:canvasH};
+        document.getElementById('mTop').value=0;
+        document.getElementById('mBottom').value=0;
+        document.getElementById('mLeft').value=0;
+        document.getElementById('mRight').value=0;
+        updateCropBox();toast('Crop reset ↩️');
+    }
+
+    function applyMargins(){
+        const t=parseFloat(document.getElementById('mTop').value)||0;
+        const b=parseFloat(document.getElementById('mBottom').value)||0;
+        const l=parseFloat(document.getElementById('mLeft').value)||0;
+        const r=parseFloat(document.getElementById('mRight').value)||0;
+        const sx=l*renderScale,sy=t*renderScale;
+        const sw=canvasW-(l+r)*renderScale,sh=canvasH-(t+b)*renderScale;
+        crop={x:Math.max(0,sx),y:Math.max(0,sy),w:Math.max(20,sw),h:Math.max(20,sh)};
+        updateCropBox();
+    }
+
+    function applyPreset(type){
+        let x=0,y=0,w=canvasW,h=canvasH;
+        switch(type){
+            case'a4':w=canvasW;h=canvasW*297/210;if(h>canvasH)h=canvasH;x=(canvasW-w)/2;y=(canvasH-h)/2;break;
+            case'letter':w=canvasW;h=canvasW*11/8.5;if(h>canvasH)h=canvasH;x=(canvasW-w)/2;y=(canvasH-h)/2;break;
+            case'half':w=canvasW/2;h=canvasH;break;
+            case'quarter':w=canvasW/2;h=canvasH/2;break;
+            case'center50':w=canvasW*.5;h=canvasH*.5;x=(canvasW-w)/2;y=(canvasH-h)/2;break;
+            case'center75':w=canvasW*.75;h=canvasH*.75;x=(canvasW-w)/2;y=(canvasH-h)/2;break;
+            case'top-half':h=canvasH/2;break;
+            case'bottom-half':y=canvasH/2;h=canvasH/2;break;
+        }
+        crop={x,y,w,h};
+        updateCropBox();toast('Preset applied ✅');
+    }
+
+    function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOv').classList.toggle('show')}
+    function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOv').classList.remove('show')}
+
+    // ========== STEPS ==========
+    function setStep(s){
+        ['s1','s2','s3'].forEach((id,i)=>{
+            const el=document.getElementById(id);el.classList.remove('active','done');
+            if(i<s)el.classList.add('done');else if(i===s)el.classList.add('active');
+        });
+        ['sl1','sl2'].forEach((id,i)=>{document.getElementById(id).classList.toggle('done',i<s)});
+    }
+
+    // ========== CROP PDF ==========
+    async function cropPDF(){
+        if(!pdfDoc){toast('Upload a PDF first ⚠️');return}
+        closeSB();showProc('Cropping PDF...','Applying crop to pages...');setStep(1);
+
+        const{PDFDocument}=PDFLib;
+        const srcDoc=await PDFDocument.load(pdfBytes);
+        const newDoc=await PDFDocument.create();
+
+        // Determine pages
+        let pages=[];
+        if(applyMode==='all')for(let i=0;i<totalPages;i++)pages.push(i);
+        else if(applyMode==='current')pages=[curPage-1];
+        else pages=[...selectedPages].map(p=>p-1);
+
+        // Crop coords in PDF units (unscaled)
+        const cx=crop.x/renderScale;
+        const cy=crop.y/renderScale;
+        const cw=crop.w/renderScale;
+        const ch=crop.h/renderScale;
+
+        for(let i=0;i<totalPages;i++){
+            const[copied]=await newDoc.copyPages(srcDoc,[i]);
+            newDoc.addPage(copied);
+            const pg=newDoc.getPage(i);
+            const{width:pw,height:ph}=pg.getSize();
+
+            if(pages.includes(i)){
+                // PDF coords: origin bottom-left, y flipped
+                const pdfX=cx;
+                const pdfY=ph-cy-ch;
+                pg.setCropBox(pdfX,pdfY,cw,ch);
+                pg.setMediaBox(pdfX,pdfY,cw,ch);
+            }
+        }
+
+        const saved=await newDoc.save();
+        const blob=new Blob([saved],{type:'application/pdf'});
+        hideProc();setStep(2);
+
+        document.getElementById('statsRow').innerHTML=`
+            <div class="stat-pill"><i class="fas fa-file"></i> ${pages.length} pages cropped</div>
+            <div class="stat-pill"><i class="fas fa-crop-alt"></i> ${Math.round(cw)}×${Math.round(ch)} px</div>
+            <div class="stat-pill"><i class="fas fa-weight-hanging"></i> ${fmtSz(blob.size)}</div>`;
+
+        document.getElementById('sucOv').classList.add('show');
+        document.getElementById('dlBtn').onclick=()=>{
+            const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+            a.download=(document.getElementById('nFname').textContent.replace('.pdf',''))+'_cropped.pdf';
+            a.click();URL.revokeObjectURL(a.href);toast('Downloaded! 🎉');
+            document.getElementById('s3').classList.add('done');
+        };
+    }
+
+    // ========== HELPERS ==========
+    function showProc(t,d){document.getElementById('procT').textContent=t;document.getElementById('procD').textContent=d;document.getElementById('procOv').classList.add('show')}
+    function hideProc(){document.getElementById('procOv').classList.remove('show')}
+    function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
