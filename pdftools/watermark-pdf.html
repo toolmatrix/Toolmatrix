@@ -1,114 +1,790 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Remove Watermark Tool – ToolMatrix</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watermark PDF - Add Text or Image Watermark Free</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --pri:#2ECC71;--pri-d:#27AE60;--pri-dd:#1E8449;
+            --pri-l:#A9DFBF;--pri-ll:#D5F5E3;--pri-lll:#EAFAF1;
+            --bg:#F0FFF4;--w:#FFFFFF;
+            --dk:#1a1a2e;--md:#4a4a5a;--lt:#7a7a8a;
+            --red:#e74c3c;
+        }
+        html{width:100%;height:100%;overflow-x:hidden}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dk);width:100%;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        /* ===== NAV ===== */
+        .nav{width:100%;background:var(--w);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--pri-ll);box-shadow:0 2px 15px rgba(46,204,113,.08);position:sticky;top:0;z-index:999;flex-shrink:0}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .logo-b{width:40px;height:40px;background:linear-gradient(135deg,var(--pri),var(--pri-dd));border-radius:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(46,204,113,.3)}
+        .logo-b svg{width:20px;height:20px;color:#fff}
+        .logo-t{font-size:21px;font-weight:800;color:var(--dk)}.logo-t span{color:var(--pri)}
+        .nav-m{display:flex;gap:5px}
+        .nav-m a{text-decoration:none;font-size:13px;font-weight:600;color:var(--md);padding:8px 15px;border-radius:8px;transition:.3s}
+        .nav-m a:hover{background:var(--pri-lll);color:var(--pri-d)}
+        .nav-m a.on{background:var(--pri);color:#fff}
 
-<style>
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#0f172a,#1e3a8a);
-    color:#fff;
-}
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:40px 20px;
-}
-.tool-box{
-    background:#111827;
-    padding:30px;
-    border-radius:15px;
-    box-shadow:0 0 20px rgba(0,0,0,0.4);
-    text-align:center;
-}
-input[type=file]{
-    background:#1e293b;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    color:#fff;
-    width:100%;
-    margin-bottom:20px;
-}
-button{
-    padding:12px 20px;
-    border:none;
-    border-radius:8px;
-    margin:10px 5px;
-    cursor:pointer;
-    font-weight:bold;
-}
-.primary{background:#2563eb;color:#fff;}
-.success{background:#16a34a;color:#fff;}
-.danger{background:#dc2626;color:#fff;}
-.status{
-    margin-top:20px;
-    font-weight:bold;
-}
-</style>
+        .main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
+        .hero-bg{position:absolute;top:0;left:0;width:100%;height:320px;background:linear-gradient(180deg,var(--pri-ll) 0%,transparent 100%);z-index:0}
+
+        /* ===== HERO ===== */
+        .hero{width:100%;text-align:center;padding:40px 20px 16px;position:relative;z-index:1}
+        .badge{display:inline-flex;align-items:center;gap:7px;background:var(--w);border:1px solid var(--pri-l);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:600;color:var(--pri-dd);margin-bottom:14px;box-shadow:0 2px 8px rgba(46,204,113,.1)}
+        .badge svg{width:14px;height:14px;flex-shrink:0}
+        .hero h1{font-size:36px;font-weight:900;line-height:1.15;margin-bottom:10px}
+        .hero h1 .gr{background:linear-gradient(135deg,var(--pri),var(--pri-dd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero>p{font-size:15px;color:var(--lt);max-width:580px;margin:0 auto;line-height:1.6}
+
+        /* ===== TOOL ===== */
+        .tool-w{width:100%;max-width:1050px;padding:0 16px;margin:20px auto 50px;position:relative;z-index:1}
+        .tool-c{width:100%;background:var(--w);border-radius:22px;box-shadow:0 12px 50px rgba(46,204,113,.13);border:1.5px solid var(--pri-ll);overflow:hidden}
+
+        .st{display:none}.st.on{display:block}
+
+        /* == UPLOAD == */
+        .st-up{padding:52px 30px;text-align:center;cursor:pointer;position:relative;transition:.3s}
+        .st-up::after{content:'';position:absolute;inset:14px;border:3px dashed var(--pri-l);border-radius:14px;pointer-events:none;transition:.3s}
+        .st-up.drag::after{border-color:var(--pri);background:rgba(46,204,113,.04)}
+        .up-circ{width:90px;height:90px;background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;animation:breathe 3s ease-in-out infinite}
+        @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(46,204,113,.25)}50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(46,204,113,0)}}
+        .up-circ svg{width:40px;height:40px;color:var(--pri-d)}
+        .st-up h2{font-size:20px;font-weight:700;margin-bottom:7px}
+        .st-up .sub{font-size:14px;color:var(--lt);margin-bottom:20px}
+        .sel-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:14px 36px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 22px rgba(46,204,113,.3);font-family:'Inter',sans-serif;position:relative;z-index:2}
+        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
+        .sel-btn svg{width:19px;height:19px}
+        .fmts{margin-top:16px;font-size:12px;color:var(--lt);display:flex;align-items:center;justify-content:center;gap:6px}
+        .ftg{background:var(--pri-lll);color:var(--pri-dd);padding:3px 10px;border-radius:5px;font-weight:700;font-size:11px}
+        .finp{display:none}
+
+        /* == EDITOR == */
+        .st-edit{padding:0}
+
+        .editor-layout{display:flex;width:100%;min-height:550px}
+
+        /* Sidebar */
+        .sidebar{width:340px;flex-shrink:0;background:var(--w);border-right:2px solid var(--pri-ll);overflow-y:auto;max-height:700px;padding:20px 18px}
+
+        .sb-file{display:flex;align-items:center;gap:10px;background:var(--pri-lll);border:1.5px solid var(--pri-l);border-radius:11px;padding:12px 14px;margin-bottom:16px}
+        .sb-file-ic{width:38px;height:38px;background:linear-gradient(135deg,#C0392B,#E74C3C);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .sb-file-ic svg{width:18px;height:18px;color:#fff}
+        .sb-file-nfo{flex:1;min-width:0}
+        .sb-file-nm{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .sb-file-sz{font-size:10px;color:var(--lt);margin-top:1px}
+        .sb-file-del{width:30px;height:30px;border:none;background:transparent;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--lt);transition:.3s;flex-shrink:0}
+        .sb-file-del:hover{background:#FEE2E2;color:var(--red)}
+        .sb-file-del svg{width:14px;height:14px}
+
+        /* Mode tabs */
+        .mode-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--pri-lll);border-radius:10px;padding:4px}
+        .m-tab{flex:1;padding:10px 8px;border-radius:8px;border:none;background:transparent;font-size:12px;font-weight:700;color:var(--md);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+        .m-tab:hover{color:var(--pri-d)}
+        .m-tab.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px rgba(46,204,113,.3)}
+        .m-tab svg{width:15px;height:15px}
+
+        /* Section label */
+        .s-label{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+        .s-label svg{width:14px;height:14px;color:var(--pri-d)}
+
+        /* Controls */
+        .ctrl{margin-bottom:14px}
+
+        .ctrl-input{width:100%;padding:10px 12px;border:2px solid var(--pri-l);border-radius:9px;font-size:13px;font-weight:600;color:var(--dk);outline:none;font-family:'Inter',sans-serif;background:var(--w);transition:.3s}
+        .ctrl-input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
+        .ctrl-input::placeholder{color:var(--lt)}
+        textarea.ctrl-input{resize:vertical;min-height:60px}
+
+        .ctrl-row{display:flex;gap:8px;align-items:center}
+
+        .ctrl-select{width:100%;padding:10px 12px;border:2px solid var(--pri-l);border-radius:9px;font-size:13px;font-weight:600;color:var(--dk);outline:none;font-family:'Inter',sans-serif;background:var(--w);cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+        .ctrl-select:focus{border-color:var(--pri)}
+
+        /* Color picker */
+        .color-wrap{display:flex;align-items:center;gap:8px}
+        .color-pick{width:40px;height:40px;border:2px solid var(--pri-l);border-radius:9px;cursor:pointer;padding:0;overflow:hidden;-webkit-appearance:none;appearance:none;background:none}
+        .color-pick::-webkit-color-swatch-wrapper{padding:0}
+        .color-pick::-webkit-color-swatch{border:none;border-radius:6px}
+        .color-val{font-size:12px;font-weight:700;color:var(--md);text-transform:uppercase}
+
+        /* Slider */
+        .slider-wrap{display:flex;align-items:center;gap:10px}
+        .slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--pri-ll);outline:none}
+        .slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--pri);cursor:pointer;box-shadow:0 2px 6px rgba(46,204,113,.3)}
+        .slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--pri);cursor:pointer;border:none}
+        .slider-val{min-width:36px;text-align:right;font-size:12px;font-weight:700;color:var(--pri-d)}
+
+        /* Position grid */
+        .pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px}
+        .pos-cell{padding:8px;border-radius:7px;border:2px solid var(--pri-l);background:var(--w);cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--lt)}
+        .pos-cell:hover{border-color:var(--pri);color:var(--pri-d)}
+        .pos-cell.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+
+        /* Image upload */
+        .img-upload-area{border:2px dashed var(--pri-l);border-radius:11px;padding:18px;text-align:center;cursor:pointer;transition:.3s;background:var(--pri-lll);margin-bottom:8px}
+        .img-upload-area:hover{border-color:var(--pri)}
+        .img-upload-area svg{width:28px;height:28px;color:var(--pri-d);margin-bottom:6px}
+        .img-upload-area p{font-size:11px;font-weight:600;color:var(--pri-d)}
+        .img-preview-box{width:100%;border-radius:10px;overflow:hidden;border:2px solid var(--pri-l);margin-bottom:8px;position:relative;background:#f5f5f5;display:none}
+        .img-preview-box img{width:100%;max-height:120px;object-fit:contain;display:block}
+        .img-preview-box .img-rm{position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(0,0,0,.5);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;transition:.3s}
+        .img-preview-box .img-rm:hover{background:var(--red)}
+        .img-preview-box .img-rm svg{width:12px;height:12px}
+
+        /* Pages option */
+        .pages-opt{display:flex;gap:4px;margin-top:4px}
+        .po{flex:1;padding:8px 6px;border-radius:8px;border:2px solid var(--pri-l);background:var(--w);font-size:11px;font-weight:600;color:var(--md);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;text-align:center}
+        .po:hover{border-color:var(--pri);color:var(--pri-d)}
+        .po.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+
+        /* Sidebar button */
+        .sb-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:14px 20px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 22px rgba(46,204,113,.3);font-family:'Inter',sans-serif;margin-top:8px}
+        .sb-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
+        .sb-btn:disabled{opacity:.6;cursor:not-allowed}
+        .sb-btn svg{width:19px;height:19px}
+
+        /* Preview Area */
+        .preview-area{flex:1;background:#e8e8e8;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px 16px;gap:16px;min-height:550px;position:relative}
+
+        .preview-page{position:relative;background:var(--w);box-shadow:0 4px 20px rgba(0,0,0,.12);border-radius:4px;overflow:hidden}
+        .preview-page canvas{display:block;max-width:100%;height:auto}
+
+        /* Watermark overlay */
+        .wm-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;display:flex}
+
+        .wm-text{font-weight:700;white-space:pre-wrap;word-break:break-word;text-align:center;line-height:1.3}
+        .wm-img{object-fit:contain}
+
+        .preview-label{position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,.5);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
+
+        /* Empty preview */
+        .preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--lt);text-align:center;padding:40px}
+        .preview-empty svg{width:50px;height:50px;margin-bottom:14px;opacity:.4}
+        .preview-empty p{font-size:14px;font-weight:600}
+
+        /* == PROGRESS == */
+        .st-prog{padding:55px 28px;text-align:center}
+        .prg-box{width:130px;height:130px;margin:0 auto 22px;position:relative}
+        .prg-box svg.ring{width:130px;height:130px;transform:rotate(-90deg)}
+        .prg-bg{fill:none;stroke:var(--pri-ll);stroke-width:9}
+        .prg-fl{fill:none;stroke:url(#pGrd);stroke-width:9;stroke-linecap:round;stroke-dasharray:352;stroke-dashoffset:352;transition:stroke-dashoffset .4s ease}
+        .prg-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;font-weight:900;color:var(--pri-d)}
+        .prg-lb{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:4px}
+        .prg-sb{font-size:13px;color:var(--lt)}
+        .dots{display:flex;justify-content:center;gap:7px;margin-top:22px}
+        .dot{width:9px;height:9px;border-radius:50%;background:var(--pri-ll);transition:.3s}
+        .dot.on{background:var(--pri);width:28px;border-radius:5px}.dot.dn{background:var(--pri-l)}
+
+        /* == DONE == */
+        .st-done{padding:42px 28px;text-align:center}
+        .ok-ic{width:90px;height:90px;margin:0 auto 20px;background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pop .5s cubic-bezier(.68,-.55,.265,1.55)}
+        @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+        .ok-ic svg{width:44px;height:44px;color:var(--pri-d)}
+        .st-done h2{font-size:22px;font-weight:800;margin-bottom:6px}
+        .st-done .sub{font-size:14px;color:var(--lt);margin-bottom:8px}
+        .stats-row{display:flex;justify-content:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+        .stat-box{background:var(--pri-lll);border:1px solid var(--pri-l);border-radius:12px;padding:12px 18px;text-align:center;min-width:90px}
+        .stat-box .num{font-size:20px;font-weight:800;color:var(--pri-d)}
+        .stat-box .lbl{font-size:11px;color:var(--lt);font-weight:600;margin-top:2px}
+        .btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+        .dl-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:16px 44px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 8px 28px rgba(46,204,113,.3);text-decoration:none;font-family:'Inter',sans-serif}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(46,204,113,.4)}
+        .dl-btn svg{width:20px;height:20px}
+        .sec-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid var(--pri-l);background:var(--w);color:var(--pri-d);transition:.3s;font-family:'Inter',sans-serif}
+        .sec-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
+        .sec-btn svg{width:16px;height:16px}
+
+        /* ===== FEATURES ===== */
+        .feats{width:100%;padding:0 16px 50px}
+        .feats h2{text-align:center;font-size:26px;font-weight:800;margin-bottom:35px}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1000px;margin:0 auto}
+        .ft{background:var(--w);padding:28px 22px;border-radius:16px;text-align:center;border:1px solid var(--pri-ll);box-shadow:0 2px 10px rgba(46,204,113,.06);transition:.3s}
+        .ft:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(46,204,113,.12)}
+        .ft-ic{width:54px;height:54px;background:var(--pri-lll);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--pri-d)}
+        .ft-ic svg{width:25px;height:25px}
+        .ft h3{font-size:15px;font-weight:700;margin-bottom:6px}
+        .ft p{font-size:12px;color:var(--lt);line-height:1.6}
+
+        .foot{width:100%;background:var(--w);border-top:2px solid var(--pri-ll);padding:22px 16px;text-align:center;flex-shrink:0}
+        .foot p{font-size:13px;color:var(--lt)}.foot a{color:var(--pri-d);text-decoration:none;font-weight:700}
+
+        /* Divider */
+        .sb-div{height:1px;background:var(--pri-ll);margin:12px 0}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){
+            .fg{grid-template-columns:repeat(2,1fr)}
+            .editor-layout{flex-direction:column}
+            .sidebar{width:100%;max-height:none;border-right:none;border-bottom:2px solid var(--pri-ll)}
+            .preview-area{min-height:400px}
+        }
+        @media(max-width:600px){
+            .nav{padding:11px 12px}.nav-m{display:none}.logo-t{font-size:17px}.logo-b{width:34px;height:34px;border-radius:9px}.logo-b svg{width:16px;height:16px}
+            .hero{padding:26px 14px 10px}.badge{font-size:11px;padding:6px 13px}.hero h1{font-size:24px}.hero>p{font-size:13px}
+            .tool-w{padding:0 8px;margin:14px auto 28px}.tool-c{border-radius:16px}
+            .st-up{padding:34px 14px}.st-up::after{inset:10px}.up-circ{width:72px;height:72px;margin-bottom:16px}.up-circ svg{width:32px;height:32px}.st-up h2{font-size:17px}.st-up .sub{font-size:13px}
+            .sel-btn{padding:13px 26px;font-size:15px;width:100%;max-width:260px;justify-content:center}
+            .sidebar{padding:16px 12px}
+            .pos-grid{gap:3px}.pos-cell{padding:6px;font-size:9px}
+            .preview-area{min-height:350px;padding:16px 8px;gap:12px}
+            .sb-btn{padding:12px 16px;font-size:14px}
+            .st-prog{padding:35px 14px}.prg-box{width:110px;height:110px}.prg-box svg.ring{width:110px;height:110px}.prg-pct{font-size:26px}.prg-lb{font-size:15px}
+            .st-done{padding:28px 12px}.ok-ic{width:75px;height:75px}.ok-ic svg{width:36px;height:36px}.st-done h2{font-size:19px}
+            .stats-row{gap:10px}.stat-box{padding:10px 14px;min-width:70px}.stat-box .num{font-size:18px}
+            .dl-btn{padding:14px 30px;font-size:15px;width:100%;max-width:300px;justify-content:center}
+            .sec-btn{width:100%;max-width:300px;justify-content:center}
+            .btn-row{flex-direction:column;align-items:center}
+            .fg{grid-template-columns:1fr;gap:14px}.feats h2{font-size:21px;margin-bottom:24px}.ft{padding:22px 18px;border-radius:14px}
+            .foot{padding:18px 12px}.foot p{font-size:12px}
+        }
+        @media(max-width:360px){.hero h1{font-size:20px}.hero>p{font-size:12px}.sel-btn{font-size:14px;padding:12px 20px}}
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="tool-box">
-        <h1>PDF Watermark Remover</h1>
-
-        <input type="file" id="pdfUpload" accept="application/pdf">
-
-        <div>
-            <button class="primary" onclick="processPDF()">Remove Watermark</button>
-            <button class="danger" onclick="darkMode()">Dark Mode Remove</button>
-            <button class="success" onclick="downloadPDF()">Download PDF</button>
-      <script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-       <script>
-  atOptions = {
-    'key' : '4afdbe032cc77af781754d77ab0211fb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-        </div>
-   <script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
+<nav class="nav">
+    <a href="#" class="logo">
+        <div class="logo-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <span class="logo-t">WaterMark<span>PDF</span></span>
+    </a>
+    <div class="nav-m">
+        <a href="#">Merge PDF</a>
+        <a href="#" class="on">Watermark</a>
+        <a href="#">Rotate PDF</a>
+        <a href="#">Compress</a>
     </div>
+</nav>
+
+<div class="main">
+    <div class="hero-bg"></div>
+    <section class="hero">
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>100% Free & Secure — Files never leave your device</div>
+        <h1>Add <span class="gr">Watermark to PDF</span><br>Online Free</h1>
+        <p>Stamp an image or text over your PDF in seconds. Choose the typography, transparency, position and more!</p>
+    </section>
+
+    <div class="tool-w">
+        <div class="tool-c">
+
+            <!-- 1) UPLOAD -->
+            <div class="st on st-up" id="sUp">
+                <div class="up-circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+                <h2>Drop your PDF file here</h2>
+                <p class="sub">or click the button below to browse</p>
+                <button class="sel-btn" onclick="document.getElementById('finp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Select PDF File</button>
+                <div class="fmts">Supported: <span class="ftg">.PDF</span></div>
+                <input type="file" id="finp" class="finp" accept=".pdf,application/pdf">
+            </div>
+
+            <!-- 2) EDITOR -->
+            <div class="st st-edit" id="sEdit">
+                <div class="editor-layout">
+
+                    <!-- SIDEBAR -->
+                    <div class="sidebar" id="sidebar">
+                        <!-- File -->
+                        <div class="sb-file">
+                            <div class="sb-file-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="sb-file-nfo"><div class="sb-file-nm" id="fname">doc.pdf</div><div class="sb-file-sz" id="fsize">1 MB · <span id="fpg">5</span> pages</div></div>
+                            <button class="sb-file-del" onclick="resetAll()" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                        </div>
+
+                        <!-- Mode -->
+                        <div class="mode-tabs">
+                            <button class="m-tab on" data-mode="text" onclick="setMode('text',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Text</button>
+                            <button class="m-tab" data-mode="image" onclick="setMode('image',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Image</button>
+                        </div>
+
+                        <!-- TEXT PANEL -->
+                        <div id="textPanel">
+                            <div class="ctrl">
+                                <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Watermark Text</div>
+                                <textarea class="ctrl-input" id="wmText" placeholder="Enter watermark text..." oninput="updatePreview()">CONFIDENTIAL</textarea>
+                            </div>
+
+                            <div class="ctrl">
+                                <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>Font Family</div>
+                                <select class="ctrl-select" id="wmFont" onchange="updatePreview()">
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Times-Roman">Times Roman</option>
+                                    <option value="Courier">Courier</option>
+                                </select>
+                            </div>
+
+                            <div class="ctrl">
+                                <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Font Size</div>
+                                <div class="slider-wrap">
+                                    <input type="range" class="slider" id="wmSize" min="10" max="150" value="60" oninput="document.getElementById('wmSizeV').textContent=this.value+'px';updatePreview()">
+                                    <span class="slider-val" id="wmSizeV">60px</span>
+                                </div>
+                            </div>
+
+                            <div class="ctrl">
+                                <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17.08 10.37A4 4 0 0 1 12 16H4a4 4 0 0 0 0-8h1"/></svg>Color</div>
+                                <div class="color-wrap">
+                                    <input type="color" class="color-pick" id="wmColor" value="#cc0000" oninput="document.getElementById('wmColorV').textContent=this.value;updatePreview()">
+                                    <span class="color-val" id="wmColorV">#cc0000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMAGE PANEL -->
+                        <div id="imagePanel" style="display:none">
+                            <div class="ctrl">
+                                <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Watermark Image</div>
+                                <div class="img-preview-box" id="imgPrevBox">
+                                    <img id="imgPrev" src="" alt="">
+                                    <button class="img-rm" onclick="removeWmImg()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                                </div>
+                                <div class="img-upload-area" id="imgUpArea" onclick="document.getElementById('imgInp').click()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <p>Click to upload watermark image</p>
+                                </div>
+                                <input type="file" id="imgInp" class="finp" accept="image/*">
+                            </div>
+
+                            <div class="ctrl">
+                                <div class="s-label">Image Size</div>
+                                <div class="slider-wrap">
+                                    <input type="range" class="slider" id="imgSize" min="5" max="100" value="30" oninput="document.getElementById('imgSizeV').textContent=this.value+'%';updatePreview()">
+                                    <span class="slider-val" id="imgSizeV">30%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sb-div"></div>
+
+                        <!-- SHARED CONTROLS -->
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Transparency</div>
+                            <div class="slider-wrap">
+                                <input type="range" class="slider" id="wmOpacity" min="5" max="100" value="35" oninput="document.getElementById('wmOpV').textContent=this.value+'%';updatePreview()">
+                                <span class="slider-val" id="wmOpV">35%</span>
+                            </div>
+                        </div>
+
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Rotation</div>
+                            <div class="slider-wrap">
+                                <input type="range" class="slider" id="wmRotation" min="-180" max="180" value="-45" oninput="document.getElementById('wmRotV').textContent=this.value+'°';updatePreview()">
+                                <span class="slider-val" id="wmRotV">-45°</span>
+                            </div>
+                        </div>
+
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Position</div>
+                            <div class="pos-grid" id="posGrid">
+                                <div class="pos-cell" data-pos="top-left" onclick="setPos(this)">↖ Top Left</div>
+                                <div class="pos-cell" data-pos="top-center" onclick="setPos(this)">↑ Top</div>
+                                <div class="pos-cell" data-pos="top-right" onclick="setPos(this)">↗ Top Right</div>
+                                <div class="pos-cell" data-pos="mid-left" onclick="setPos(this)">← Left</div>
+                                <div class="pos-cell on" data-pos="center" onclick="setPos(this)">⊕ Center</div>
+                                <div class="pos-cell" data-pos="mid-right" onclick="setPos(this)">→ Right</div>
+                                <div class="pos-cell" data-pos="bot-left" onclick="setPos(this)">↙ Bot Left</div>
+                                <div class="pos-cell" data-pos="bot-center" onclick="setPos(this)">↓ Bottom</div>
+                                <div class="pos-cell" data-pos="bot-right" onclick="setPos(this)">↘ Bot Right</div>
+                            </div>
+                        </div>
+
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Apply to Pages</div>
+                            <div class="pages-opt">
+                                <button class="po on" data-pg="all" onclick="setPgOpt(this)">All Pages</button>
+                                <button class="po" data-pg="odd" onclick="setPgOpt(this)">Odd Only</button>
+                                <button class="po" data-pg="even" onclick="setPgOpt(this)">Even Only</button>
+                                <button class="po" data-pg="first" onclick="setPgOpt(this)">First</button>
+                            </div>
+                        </div>
+
+                        <div class="sb-div"></div>
+
+                        <button class="sb-btn" id="convBtn" onclick="applyWatermark()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Apply Watermark
+                        </button>
+                    </div>
+
+                    <!-- PREVIEW -->
+                    <div class="preview-area" id="previewArea"></div>
+                </div>
+            </div>
+
+            <!-- 3) PROGRESS -->
+            <div class="st st-prog" id="sProg">
+                <div class="prg-box">
+                    <svg class="ring" viewBox="0 0 130 130"><defs><linearGradient id="pGrd" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2ECC71"/><stop offset="100%" stop-color="#1E8449"/></linearGradient></defs><circle class="prg-bg" cx="65" cy="65" r="56"/><circle class="prg-fl" id="pCirc" cx="65" cy="65" r="56"/></svg>
+                    <div class="prg-pct" id="pPct">0%</div>
+                </div>
+                <div class="prg-lb" id="pLb">Applying watermark...</div>
+                <div class="prg-sb" id="pSb">Please wait</div>
+                <div class="dots"><div class="dot on" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
+            </div>
+
+            <!-- 4) DONE -->
+            <div class="st st-done" id="sDone">
+                <div class="ok-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                <h2>Watermark Applied! 🎉</h2>
+                <p class="sub">Your watermarked PDF is ready to download</p>
+                <div class="stats-row">
+                    <div class="stat-box"><div class="num" id="stPg">0</div><div class="lbl">Pages</div></div>
+                    <div class="stat-box"><div class="num" id="stType">Text</div><div class="lbl">Type</div></div>
+                    <div class="stat-box"><div class="num" id="stSz">0</div><div class="lbl">Size</div></div>
+                </div>
+                <div class="btn-row">
+                    <a class="dl-btn" id="dlBtn" href="#" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF</a>
+                    <button class="sec-btn" onclick="resetAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Watermark Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
 </div>
 
+<footer class="foot"><p>Made with 💚 by <a href="#">ToolMatrix</a> — Free online PDF watermark tool</p></footer>
+
 <script>
-let editedImage = null;
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const{PDFDocument,rgb,StandardFonts,degrees:pdfDeg}=PDFLib;
 
-document.getElementById('pdfUpload').addEventListener('change', function(e){
-    let file = e.target.files[0];
-    if(file){
-        document.getElementById("status").innerText="PDF Loaded Successfully";
+let chosenFile=null,pdfBuf=null,pdfDoc=null,numPages=0;
+let mode='text',wmImgData=null,wmImgEl=null;
+let position='center',pageOpt='all';
+let previewCanvases=[];
+
+const sUp=document.getElementById('sUp'),sEdit=document.getElementById('sEdit');
+const sProg=document.getElementById('sProg'),sDone=document.getElementById('sDone');
+const finp=document.getElementById('finp'),imgInp=document.getElementById('imgInp');
+
+function show(el){[sUp,sEdit,sProg,sDone].forEach(s=>s.classList.remove('on'));el.classList.add('on')}
+
+sUp.addEventListener('dragover',e=>{e.preventDefault();sUp.classList.add('drag')});
+sUp.addEventListener('dragleave',()=>sUp.classList.remove('drag'));
+sUp.addEventListener('drop',e=>{e.preventDefault();sUp.classList.remove('drag');if(e.dataTransfer.files.length)pickPDF(e.dataTransfer.files[0])});
+sUp.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&!e.target.closest('.sel-btn'))finp.click()});
+finp.addEventListener('change',e=>{if(e.target.files.length)pickPDF(e.target.files[0])});
+imgInp.addEventListener('change',e=>{if(e.target.files.length)pickWmImg(e.target.files[0])});
+
+function fmtSz(b){if(!b)return'0 B';const u=['Bytes','KB','MB','GB'];const i=Math.floor(Math.log(b)/Math.log(1024));return(b/Math.pow(1024,i)).toFixed(1)+' '+u[i]}
+
+async function pickPDF(file){
+    if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){alert('Please select a PDF file');return}
+    chosenFile=file;
+    pdfBuf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:pdfBuf.slice(0)}).promise;
+    pdfDoc=pdf;numPages=pdf.numPages;
+    document.getElementById('fname').textContent=file.name;
+    document.getElementById('fsize').textContent=fmtSz(file.size);
+    document.getElementById('fpg').textContent=numPages;
+    show(sEdit);
+    await renderPreviews();
+    updatePreview();
+}
+
+async function renderPreviews(){
+    const area=document.getElementById('previewArea');
+    area.innerHTML='';previewCanvases=[];
+    const maxPages=Math.min(numPages,20);
+    for(let i=1;i<=maxPages;i++){
+        const page=await pdfDoc.getPage(i);
+        const vp=page.getViewport({scale:.8});
+        const wrap=document.createElement('div');
+        wrap.className='preview-page';
+        wrap.style.width=vp.width+'px';
+        wrap.id='prevPage-'+i;
+        const canvas=document.createElement('canvas');
+        canvas.width=vp.width;canvas.height=vp.height;
+        const ctx=canvas.getContext('2d');
+        await page.render({canvasContext:ctx,viewport:vp}).promise;
+        const overlay=document.createElement('div');
+        overlay.className='wm-overlay';
+        overlay.id='wmOverlay-'+i;
+        const label=document.createElement('div');
+        label.className='preview-label';
+        label.textContent='Page '+i;
+        wrap.appendChild(canvas);
+        wrap.appendChild(overlay);
+        wrap.appendChild(label);
+        area.appendChild(wrap);
+        previewCanvases.push({canvas,wrap,overlay,pageNum:i,width:vp.width,height:vp.height});
     }
-});
-
-function processPDF(){
-    document.getElementById("status").innerText="Removing watermark...";
-    setTimeout(()=>{
-        document.getElementById("status").innerText="Watermark Removed (Basic Mode)";
-    },1000);
 }
 
-function darkMode(){
-    document.getElementById("status").innerText="Dark Watermark Removed";
+function setMode(m,btn){
+    mode=m;
+    document.querySelectorAll('.m-tab').forEach(t=>t.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('textPanel').style.display=m==='text'?'':'none';
+    document.getElementById('imagePanel').style.display=m==='image'?'':'none';
+    updatePreview();
 }
 
-function downloadPDF(){
-    const { jsPDF } = window.jspdf;
-    let pdf = new jsPDF();
-    pdf.text("Watermark Removed PDF",20,20);
-    pdf.save("watermark-removed.pdf");
+async function pickWmImg(file){
+    if(!file.type.startsWith('image/')){alert('Please select an image');return}
+    const reader=new FileReader();
+    reader.onload=e=>{
+        wmImgData=e.target.result;
+        const img=new Image();
+        img.onload=()=>{
+            wmImgEl=img;
+            document.getElementById('imgPrev').src=wmImgData;
+            document.getElementById('imgPrevBox').style.display='block';
+            document.getElementById('imgUpArea').style.display='none';
+            updatePreview();
+        };
+        img.src=wmImgData;
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeWmImg(){
+    wmImgData=null;wmImgEl=null;imgInp.value='';
+    document.getElementById('imgPrevBox').style.display='none';
+    document.getElementById('imgUpArea').style.display='';
+    updatePreview();
+}
+
+function setPos(el){
+    document.querySelectorAll('.pos-cell').forEach(c=>c.classList.remove('on'));
+    el.classList.add('on');
+    position=el.dataset.pos;
+    updatePreview();
+}
+
+function setPgOpt(btn){
+    document.querySelectorAll('.po').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    pageOpt=btn.dataset.pg;
+    updatePreview();
+}
+
+function shouldWatermark(pageNum){
+    if(pageOpt==='all')return true;
+    if(pageOpt==='odd')return pageNum%2===1;
+    if(pageOpt==='even')return pageNum%2===0;
+    if(pageOpt==='first')return pageNum===1;
+    return true;
+}
+
+function getPositionCSS(pos){
+    const map={
+        'top-left':'align-items:flex-start;justify-content:flex-start;padding:8%',
+        'top-center':'align-items:flex-start;justify-content:center;padding:8%',
+        'top-right':'align-items:flex-start;justify-content:flex-end;padding:8%',
+        'mid-left':'align-items:center;justify-content:flex-start;padding:8%',
+        'center':'align-items:center;justify-content:center',
+        'mid-right':'align-items:center;justify-content:flex-end;padding:8%',
+        'bot-left':'align-items:flex-end;justify-content:flex-start;padding:8%',
+        'bot-center':'align-items:flex-end;justify-content:center;padding:8%',
+        'bot-right':'align-items:flex-end;justify-content:flex-end;padding:8%'
+    };
+    return map[pos]||map['center'];
+}
+
+function updatePreview(){
+    const opacity=parseInt(document.getElementById('wmOpacity').value)/100;
+    const rotation=parseInt(document.getElementById('wmRotation').value);
+    const posCSS=getPositionCSS(position);
+
+    previewCanvases.forEach(pc=>{
+        const overlay=pc.overlay;
+        overlay.style.cssText=posCSS;
+        overlay.innerHTML='';
+
+        if(!shouldWatermark(pc.pageNum)){return}
+
+        if(mode==='text'){
+            const text=document.getElementById('wmText').value||'WATERMARK';
+            const fontSize=parseInt(document.getElementById('wmSize').value);
+            const color=document.getElementById('wmColor').value;
+            const fontFamily=document.getElementById('wmFont').value.replace('Times-Roman','Times New Roman');
+            const scale=pc.width/600;
+            const el=document.createElement('div');
+            el.className='wm-text';
+            el.textContent=text;
+            el.style.cssText=`font-size:${fontSize*scale}px;color:${color};opacity:${opacity};transform:rotate(${rotation}deg);font-family:'${fontFamily}',sans-serif;pointer-events:none;max-width:90%`;
+            overlay.appendChild(el);
+        }else if(mode==='image'&&wmImgEl){
+            const sizePct=parseInt(document.getElementById('imgSize').value);
+            const el=document.createElement('img');
+            el.className='wm-img';
+            el.src=wmImgData;
+            el.style.cssText=`width:${sizePct}%;opacity:${opacity};transform:rotate(${rotation}deg);pointer-events:none`;
+            overlay.appendChild(el);
+        }
+    });
+}
+
+function resetAll(){
+    chosenFile=null;pdfBuf=null;pdfDoc=null;numPages=0;
+    wmImgData=null;wmImgEl=null;mode='text';position='center';pageOpt='all';
+    finp.value='';imgInp.value='';previewCanvases=[];
+    document.getElementById('wmText').value='CONFIDENTIAL';
+    document.getElementById('wmSize').value=60;document.getElementById('wmSizeV').textContent='60px';
+    document.getElementById('wmColor').value='#cc0000';document.getElementById('wmColorV').textContent='#cc0000';
+    document.getElementById('wmOpacity').value=35;document.getElementById('wmOpV').textContent='35%';
+    document.getElementById('wmRotation').value=-45;document.getElementById('wmRotV').textContent='-45°';
+    document.getElementById('wmFont').value='Helvetica';
+    document.getElementById('imgSize').value=30;document.getElementById('imgSizeV').textContent='30%';
+    document.getElementById('imgPrevBox').style.display='none';
+    document.getElementById('imgUpArea').style.display='';
+    document.querySelectorAll('.m-tab').forEach(t=>t.classList.toggle('on',t.dataset.mode==='text'));
+    document.getElementById('textPanel').style.display='';
+    document.getElementById('imagePanel').style.display='none';
+    document.querySelectorAll('.pos-cell').forEach(c=>c.classList.toggle('on',c.dataset.pos==='center'));
+    document.querySelectorAll('.po').forEach(b=>b.classList.toggle('on',b.dataset.pg==='all'));
+    show(sUp);setProg(0,'Applying...','Please wait',1);
+}
+
+function setProg(pct,lb,sb,step){
+    const c=2*Math.PI*56,ci=document.getElementById('pCirc');
+    ci.style.strokeDasharray=c;ci.style.strokeDashoffset=c-(pct/100)*c;
+    document.getElementById('pPct').textContent=pct+'%';
+    if(lb)document.getElementById('pLb').textContent=lb;
+    if(sb)document.getElementById('pSb').textContent=sb;
+    for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);d.className='dot';if(i<step)d.classList.add('dn');if(i===step)d.classList.add('on')}
+}
+
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+function hexToRgb(hex){
+    const r=parseInt(hex.slice(1,3),16)/255;
+    const g=parseInt(hex.slice(3,5),16)/255;
+    const b=parseInt(hex.slice(5,7),16)/255;
+    return{r,g,b};
+}
+
+function getPosCoords(pos,pageW,pageH,wmW,wmH){
+    const pad=40;
+    const map={
+        'top-left':{x:pad,y:pageH-pad-wmH},
+        'top-center':{x:(pageW-wmW)/2,y:pageH-pad-wmH},
+        'top-right':{x:pageW-pad-wmW,y:pageH-pad-wmH},
+        'mid-left':{x:pad,y:(pageH-wmH)/2},
+        'center':{x:(pageW-wmW)/2,y:(pageH-wmH)/2},
+        'mid-right':{x:pageW-pad-wmW,y:(pageH-wmH)/2},
+        'bot-left':{x:pad,y:pad},
+        'bot-center':{x:(pageW-wmW)/2,y:pad},
+        'bot-right':{x:pageW-pad-wmW,y:pad}
+    };
+    return map[pos]||map['center'];
+}
+
+async function applyWatermark(){
+    if(!pdfBuf)return;
+    if(mode==='text'&&!document.getElementById('wmText').value.trim()){alert('Please enter watermark text');return}
+    if(mode==='image'&&!wmImgData){alert('Please upload a watermark image');return}
+
+    document.getElementById('convBtn').disabled=true;
+    show(sProg);
+
+    try{
+        setProg(5,'Loading PDF...','Preparing document',1);
+        await wait(300);
+
+        const doc=await PDFDocument.load(pdfBuf);
+        const pages=doc.getPages();
+        const totalPages=pages.length;
+
+        const opacity=parseInt(document.getElementById('wmOpacity').value)/100;
+        const rotation=parseInt(document.getElementById('wmRotation').value);
+
+        setProg(15,'Applying watermark...','Processing pages',2);
+        await wait(200);
+
+        if(mode==='text'){
+            const text=document.getElementById('wmText').value;
+            const fontSize=parseInt(document.getElementById('wmSize').value);
+            const color=hexToRgb(document.getElementById('wmColor').value);
+            const fontName=document.getElementById('wmFont').value;
+
+            let font;
+            if(fontName==='Helvetica')font=await doc.embedFont(StandardFonts.Helvetica);
+            else if(fontName==='Times-Roman')font=await doc.embedFont(StandardFonts.TimesRoman);
+            else font=await doc.embedFont(StandardFonts.Courier);
+
+            for(let i=0;i<totalPages;i++){
+                if(!shouldWatermark(i+1)){continue}
+                const page=pages[i];
+                const{width,height}=page.getSize();
+                const textWidth=font.widthOfTextAtSize(text,fontSize);
+                const textHeight=fontSize;
+                const coords=getPosCoords(position,width,height,textWidth,textHeight);
+
+                page.drawText(text,{
+                    x:coords.x,y:coords.y,
+                    size:fontSize,
+                    font:font,
+                    color:rgb(color.r,color.g,color.b),
+                    opacity:opacity,
+                    rotate:pdfDeg(rotation)
+                });
+
+                const pct=15+Math.round(((i+1)/totalPages)*65);
+                setProg(pct,'Applying watermark...',`Page ${i+1} of ${totalPages}`,2);
+                await wait(15);
+            }
+        }else{
+            // Image watermark
+            const imgBytes=await fetch(wmImgData).then(r=>r.arrayBuffer());
+            let embeddedImg;
+            if(wmImgData.includes('image/png'))embeddedImg=await doc.embedPng(imgBytes);
+            else embeddedImg=await doc.embedJpg(imgBytes);
+
+            const imgSizePct=parseInt(document.getElementById('imgSize').value)/100;
+
+            for(let i=0;i<totalPages;i++){
+                if(!shouldWatermark(i+1)){continue}
+                const page=pages[i];
+                const{width,height}=page.getSize();
+
+                const imgW=width*imgSizePct;
+                const imgH=imgW*(embeddedImg.height/embeddedImg.width);
+                const coords=getPosCoords(position,width,height,imgW,imgH);
+
+                page.drawImage(embeddedImg,{
+                    x:coords.x,y:coords.y,
+                    width:imgW,height:imgH,
+                    opacity:opacity,
+                    rotate:pdfDeg(rotation)
+                });
+
+                const pct=15+Math.round(((i+1)/totalPages)*65);
+                setProg(pct,'Applying watermark...',`Page ${i+1} of ${totalPages}`,2);
+                await wait(15);
+            }
+        }
+
+        setProg(85,'Generating PDF...','Building final file',3);
+        await wait(300);
+
+        const pdfBytes=await doc.save();
+        const blob=new Blob([pdfBytes],{type:'application/pdf'});
+        const url=URL.createObjectURL(blob);
+        const outName=chosenFile.name.replace(/\.pdf$/i,'')+'_watermarked.pdf';
+
+        setProg(100,'Complete!','PDF ready',3);
+        await wait(400);
+
+        document.getElementById('stPg').textContent=totalPages;
+        document.getElementById('stType').textContent=mode==='text'?'Text':'Image';
+        document.getElementById('stSz').textContent=fmtSz(blob.size);
+
+        const dlBtn=document.getElementById('dlBtn');
+        dlBtn.href=url;dlBtn.download=outName;
+
+        show(sDone);
+    }catch(err){
+        console.error(err);
+        alert('Error: '+err.message);
+        show(sEdit);
+    }
+    document.getElementById('convBtn').disabled=false;
 }
 </script>
-
 </body>
 </html>
