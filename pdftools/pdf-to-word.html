@@ -1,113 +1,957 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF to Word Converter</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f8ff;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF to Word Converter — Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <script src="https://unpkg.com/docx@8.2.2/build/index.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;--g400:#81C784;
+            --g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;--g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
+            --w:#fff;--txt:#2c3e2c;--txtL:#6b7e6b;--txtM:#94a894;--bdr:#d4ead4;
+            --red:#EF5350;--blue:#2196F3;--blueDk:#1565C0;--indigo:#3F51B5;
+            --sh:0 8px 30px rgba(46,125,50,.10);--shL:0 20px 60px rgba(46,125,50,.15);
+            --r:16px;--rs:10px;--rx:6px;--t:.25s cubic-bezier(.4,0,.2,1)
+        }
+        html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;
+            background:var(--g100);color:var(--txt);-webkit-font-smoothing:antialiased}
+        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 255, 0.1);
-      text-align: center;
-    }
+        /* ===== NAVBAR ===== */
+        .nav{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));padding:0 20px;
+            height:58px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:200}
+        .nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+        .logo-ic{width:38px;height:38px;background:var(--w);border-radius:10px;display:flex;
+            align-items:center;justify-content:center;font-size:18px;color:var(--blue)}
+        .logo-t{font-size:19px;font-weight:800;color:var(--w)}
+        .logo-t span{color:#FFEB3B}
+        .nsep{width:1px;height:28px;background:rgba(255,255,255,.15);flex-shrink:0}
+        .nfile{display:flex;align-items:center;gap:8px;flex-shrink:0;max-width:200px}
+        .nfname{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .nfpg{font-size:10px;color:rgba(255,255,255,.45);font-weight:600}
 
-    h1 {
-      color: #007bff;
-      margin-bottom: 20px;
-    }
+        /* Steps */
+        .nsteps{display:flex;align-items:center;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
+        .ns{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4)}
+        .ns.active{color:#FFEB3B}.ns.done{color:var(--g300)}
+        .ns .sn{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+        .ns.active .sn{border-color:#FFEB3B;background:rgba(255,235,59,.15);color:#FFEB3B}
+        .ns.done .sn{border-color:var(--g300);background:var(--g600);color:#fff}
+        .sline{width:32px;height:2px;background:rgba(255,255,255,.12);border-radius:2px}
+        .sline.done{background:var(--g400)}
 
-    input[type="file"] {
-      display: block;
-      margin: 20px auto;
-    }
+        .navr{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+        .nb{height:36px;padding:0 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:6px}
+        .nb:hover{background:rgba(255,255,255,.2)}
+        .nb.yel{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
+            border-color:transparent;box-shadow:0 3px 12px rgba(255,193,7,.3)}
+        .nb.yel:hover{transform:translateY(-1px)}.nb.yel:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .mmenu{display:none;width:36px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;align-items:center;justify-content:center}
 
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        /* ===== MAIN ===== */
+        .main{flex:1;display:flex;overflow:hidden;position:relative}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+        /* ===== SIDEBAR ===== */
+        .sb{width:290px;flex-shrink:0;background:var(--w);border-right:1px solid var(--bdr);
+            display:flex;flex-direction:column;overflow:hidden;z-index:50}
+        .sbh{flex-shrink:0;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--g50);
+            display:flex;align-items:center;justify-content:space-between}
+        .sbt{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .sbt i{font-size:15px}
+        .sbx{display:none;width:28px;height:28px;border-radius:7px;border:none;background:var(--g200);
+            color:var(--g800);font-size:13px;cursor:pointer;align-items:center;justify-content:center;transition:var(--t)}
+        .sbx:hover{background:var(--g600);color:#fff}
+        .sbs{flex:1;overflow-y:auto;padding:16px 18px}
+        .sbs::-webkit-scrollbar{width:5px}
+        .sbs::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
 
-    @media (max-width: 600px) {
-      .container {
-        margin: 20px;
-        padding: 15px;
-      }
-      button {
-        width: 100%;
-      }
-    }
-  </style>
+        /* Groups */
+        .sg{margin-bottom:22px}
+        .sgl{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;letter-spacing:.8px;
+            margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .sgl i{color:var(--g600);font-size:13px}
+        .sgd{font-size:11px;color:var(--txtM);margin-bottom:10px;line-height:1.5}
+        .sgsel,.sginp{width:100%;padding:10px 14px;border:2px solid var(--g200);border-radius:var(--rs);
+            font-size:13px;font-family:inherit;color:var(--txt);outline:none;transition:var(--t);
+            background:var(--w);appearance:none;-webkit-appearance:none}
+        .sgsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%234CAF50' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
+        .sgsel:focus,.sginp:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+
+        /* Chips */
+        .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .chip{padding:10px 8px;border:2px solid var(--g200);border-radius:var(--rs);text-align:center;
+            cursor:pointer;transition:var(--t);background:var(--w);font-family:inherit}
+        .chip:hover{border-color:var(--g400);background:var(--g50)}
+        .chip.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .chip i{font-size:18px;display:block;margin-bottom:3px}
+        .chip span{font-size:10px;font-weight:700;display:block}
+
+        /* Page sel */
+        .psel-wrap{margin-top:10px;display:none}
+        .psel-wrap.show{display:block}
+        .psel{display:flex;flex-wrap:wrap;gap:5px}
+        .pc{width:34px;height:34px;border-radius:7px;border:2px solid var(--g200);
+            display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+            cursor:pointer;transition:var(--t);color:var(--txt);background:var(--w)}
+        .pc:hover{border-color:var(--g500)}.pc.sel{background:var(--g600);color:#fff;border-color:var(--g600)}
+
+        /* Toggle Switch */
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+            background:var(--g50);border-radius:var(--rs);margin-bottom:8px}
+        .toggle-row span{font-size:12px;font-weight:600;color:var(--txt)}
+        .toggle{width:44px;height:24px;background:var(--g200);border-radius:50px;cursor:pointer;
+            position:relative;transition:var(--t);flex-shrink:0}
+        .toggle.on{background:var(--g600)}
+        .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
+            background:var(--w);border-radius:50%;transition:var(--t);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+        .toggle.on::after{left:23px}
+
+        .sbf{flex-shrink:0;padding:14px 18px;border-top:1px solid var(--bdr);background:var(--g50)}
+        .cvt-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),var(--blueDk));
+            color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;
+            gap:10px;box-shadow:0 5px 20px rgba(33,150,243,.3);position:relative;overflow:hidden}
+        .cvt-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
+        .cvt-btn:hover::after{left:100%}
+        .cvt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(33,150,243,.4)}
+        .cvt-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+        /* ===== CENTER ===== */
+        .center{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+        /* File Bar */
+        .fbar{flex-shrink:0;display:none;align-items:center;gap:12px;padding:10px 18px;
+            background:var(--w);border-bottom:1px solid var(--bdr)}
+        .fbar.show{display:flex}
+        .fbic{width:44px;height:44px;background:linear-gradient(135deg,var(--red),#D32F2F);border-radius:12px;
+            display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+        .fbinfo{flex:1;min-width:0}
+        .fbname{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fbmeta{font-size:11px;color:var(--txtM);display:flex;gap:12px;margin-top:2px}
+        .fbmeta span{display:flex;align-items:center;gap:4px}
+        .fbrm{width:34px;height:34px;border-radius:50%;border:2px solid var(--red);background:transparent;
+            color:var(--red);font-size:14px;cursor:pointer;transition:var(--t);display:flex;
+            align-items:center;justify-content:center;flex-shrink:0}
+        .fbrm:hover{background:var(--red);color:#fff}
+
+        /* SCREENS */
+        .scr{display:none;flex:1;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+        .scr.active{display:flex}
+
+        /* Upload */
+        .up-card{width:100%;max-width:680px;background:var(--w);border-radius:24px;box-shadow:var(--shL);
+            padding:48px 40px;text-align:center;animation:fadeUp .5s ease}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .upic{width:110px;height:110px;background:linear-gradient(135deg,#BBDEFB,#E3F2FD);border-radius:50%;
+            display:flex;align-items:center;justify-content:center;margin:0 auto 25px;font-size:46px;
+            color:var(--blue);transition:var(--t)}
+        .up-card:hover .upic{transform:scale(1.08);background:linear-gradient(135deg,#64B5F6,#42A5F5);color:#fff}
+        .up-card h2{font-size:28px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .up-card>p{font-size:15px;color:var(--txtM);margin-bottom:28px;max-width:440px;margin-left:auto;margin-right:auto}
+        .dz{border:3px dashed var(--g300);border-radius:18px;padding:45px 28px;cursor:pointer;
+            transition:var(--t);margin-bottom:24px;background:var(--g50)}
+        .dz:hover,.dz.drag{border-color:var(--g600);background:var(--g100);transform:scale(1.01)}
+        .dz i.dzi{font-size:36px;color:var(--g500);margin-bottom:10px}
+        .dz h3{font-size:17px;font-weight:700;color:var(--g800);margin-bottom:4px}
+        .dz span{font-size:13px;color:var(--txtM)}
+        .brbtn{padding:13px 34px;background:linear-gradient(135deg,var(--g600),var(--g800));color:#fff;
+            border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;transition:var(--t);
+            font-family:inherit;display:inline-flex;align-items:center;gap:10px;
+            box-shadow:0 5px 20px rgba(46,125,50,.3)}
+        .brbtn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(46,125,50,.4)}
+        .upfeats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+        .uf{display:flex;align-items:center;gap:8px;padding:12px;background:var(--g50);border-radius:10px;text-align:left}
+        .uf i{font-size:18px;color:var(--g600);flex-shrink:0}
+        .uf strong{font-size:12px;color:var(--txt);display:block}
+        .uf em{font-size:10px;color:var(--txtM);font-style:normal}
+
+        /* ===== PREVIEW LAYOUT ===== */
+        .prev-layout{display:none;flex:1;overflow:hidden}
+        .prev-layout.active{display:flex}
+        .prev-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:2px solid var(--bdr)}
+        .prev-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+        .pnl-hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+            padding:10px 16px;background:var(--g50);border-bottom:1px solid var(--bdr)}
+        .pnl-title{font-size:12px;font-weight:700;color:var(--g800);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .pnl-title i{font-size:15px}
+        .pnl-title .pdf-color{color:var(--red)}
+        .pnl-title .word-color{color:var(--blue)}
+        .pnl-acts{display:flex;gap:6px}
+        .pnl-btn{padding:5px 12px;border:1.5px solid var(--g200);border-radius:var(--rx);background:var(--w);
+            color:var(--g800);font-size:11.5px;font-weight:600;cursor:pointer;transition:var(--t);
+            font-family:inherit;display:flex;align-items:center;gap:5px}
+        .pnl-btn:hover{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .pnl-body{flex:1;overflow:auto;padding:0;position:relative;background:#e8e8e8}
+
+        /* PDF pages preview */
+        .pdf-pages{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px}
+        .pdf-pg{background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.1);border-radius:4px;overflow:hidden;max-width:100%}
+        .pdf-pg canvas{display:block;width:100%;height:auto}
+        .pdf-pg-num{text-align:center;padding:5px;font-size:10px;font-weight:600;color:var(--txtM);background:var(--g50);border-top:1px solid #eee}
+
+        /* Word preview */
+        .word-preview{padding:30px;background:var(--w);min-height:100%}
+        .word-preview .wp-page{background:var(--w);max-width:700px;margin:0 auto;padding:40px;
+            min-height:500px;box-shadow:0 2px 20px rgba(0,0,0,.06);border-radius:8px;border:1px solid #eee}
+        .wp-page-sep{border:none;border-top:2px dashed var(--g300);margin:30px 0}
+        .wp-page-label{text-align:center;font-size:10px;color:var(--txtM);font-weight:700;
+            text-transform:uppercase;letter-spacing:1px;margin-bottom:15px}
+        .wp-line{font-size:14px;line-height:1.9;color:#333;margin-bottom:2px;word-wrap:break-word}
+        .wp-line.heading{font-size:20px;font-weight:800;color:var(--g900);margin:20px 0 10px}
+        .wp-line.bold-line{font-weight:700}
+        .wp-empty{color:var(--txtM);text-align:center;padding:40px;font-size:14px}
+
+        /* Mobile toggle */
+        .mtoggle{display:none;flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--bdr);padding:6px 12px;gap:6px}
+        .mtbtn{flex:1;padding:9px;font-size:12.5px;font-weight:600;text-align:center;border-radius:8px;
+            cursor:pointer;transition:var(--t);font-family:inherit;color:var(--txtL);background:transparent;
+            border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px}
+        .mtbtn.active{background:var(--w);color:var(--g900);border-color:var(--bdr);box-shadow:var(--sh)}
+
+        /* ===== OVERLAYS ===== */
+        .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
+            align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+        .ov.show{display:flex}
+        .ovm{background:var(--w);border-radius:24px;padding:48px 42px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,.2);max-width:440px;width:92%;animation:pop .35s ease}
+        @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .ovspin{width:70px;height:70px;margin:0 auto 20px}
+        .ovring{width:70px;height:70px;border:5px solid var(--g200);border-top-color:var(--blue);
+            border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .ov h3{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:6px}
+        .ov p{font-size:14px;color:var(--txtM)}
+        .pbar-track{width:100%;height:8px;background:var(--g100);border-radius:10px;margin-top:20px;overflow:hidden}
+        .pbar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blueDk));border-radius:10px;width:0%;transition:width .3s}
+        .pbar-label{font-size:12px;color:var(--txtM);margin-top:8px;font-weight:600}
+
+        .sucic{width:85px;height:85px;background:linear-gradient(135deg,var(--blue),var(--blueDk));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+            font-size:38px;color:#fff;animation:bIn .5s ease}
+        @keyframes bIn{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .dlb{padding:15px 45px;background:linear-gradient(135deg,var(--blue),var(--blueDk));color:#fff;
+            border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:var(--t);
+            font-family:inherit;box-shadow:0 6px 25px rgba(33,150,243,.35);display:inline-flex;align-items:center;gap:10px}
+        .dlb:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(33,150,243,.45)}
+        .clb{margin-top:14px;padding:9px 26px;background:transparent;border:2px solid var(--g200);
+            color:var(--g800);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:inline-block}
+        .clb:hover{background:var(--g100);border-color:var(--g400)}
+        .stats-row{display:flex;gap:10px;margin:14px 0 0;justify-content:center;flex-wrap:wrap}
+        .stpill{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--g50);
+            border-radius:50px;font-size:11px;font-weight:600;color:var(--g800);border:1px solid var(--g200)}
+        .stpill i{color:var(--blue)}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:var(--g900);color:#fff;padding:11px 26px;border-radius:50px;font-size:13px;
+            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
+            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+        /* MOB BAR */
+        .mobbar{display:none;flex-shrink:0;background:var(--w);border-top:1px solid var(--bdr);padding:8px 10px;gap:6px;z-index:80}
+        .mobbar .mb{flex:1;padding:10px 6px;background:var(--g50);border:1.5px solid var(--g200);
+            border-radius:10px;font-size:11px;font-weight:600;color:var(--g800);cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px}
+        .mobbar .mb i{font-size:16px}
+        .mobbar .mb.go{background:linear-gradient(135deg,var(--blue),var(--blueDk));color:#fff;
+            border-color:var(--blue);box-shadow:0 3px 12px rgba(33,150,243,.3)}
+        .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+        .sbov.show{display:block}
+
+        /* Format badges */
+        .fmt-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;
+            font-size:10px;font-weight:700;text-transform:uppercase}
+        .fmt-pdf{background:#FFEBEE;color:var(--red)}.fmt-word{background:#E3F2FD;color:var(--blue)}
+
+        /* Extraction info card */
+        .ext-card{background:var(--g50);border:1.5px solid var(--g200);border-radius:var(--rs);
+            padding:14px 16px;margin-top:12px}
+        .ext-card h4{font-size:12px;font-weight:700;color:var(--g800);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .ext-card h4 i{color:var(--g600)}
+        .ext-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:var(--txtL)}
+        .ext-row strong{color:var(--txt)}
+
+        #fileInput{display:none}
+
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .nsteps{display:none}.nsep,.nfile{display:none}
+            .mmenu{display:flex}.mobbar{display:flex}.nb.desk{display:none}
+            .mtoggle{display:flex}
+            .sb{position:fixed;left:-310px;top:0;bottom:0;z-index:100;transition:left var(--t);box-shadow:var(--shL)}
+            .sb.open{left:0}.sbx{display:flex}
+            .nav{height:50px;padding:0 12px}.logo-t{font-size:15px}
+            .logo-ic{width:32px;height:32px;font-size:15px;border-radius:8px}
+            .upfeats{grid-template-columns:1fr}.up-card{padding:28px 20px}.up-card h2{font-size:22px}
+            .prev-layout{flex-direction:column}
+            .prev-left{border-right:none;border-bottom:2px solid var(--bdr);flex:none;height:50%}
+            .prev-right{flex:none;height:50%;display:none}
+            .prev-right.mshow{display:flex}.prev-left.mhide{display:none}
+        }
+        @media(max-width:480px){.dz{padding:30px 16px}.up-card h2{font-size:20px}}
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>PDF to Word Converter</h1>
-    <input type="file" id="pdfUpload" accept="application/pdf" />
-    <button onclick="convertToWord()">Convert to Word</button>
-    <p id="status"></p>
- <script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-  <script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
-  <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-  </div>
 
-  <script>
-    async function convertToWord() {
-      const fileInput = document.getElementById('pdfUpload');
-      const status = document.getElementById('status');
-      if (!fileInput.files.length) {
-        status.textContent = 'Please select a PDF file.';
-        return;
-      }
+<div class="app">
+    <!-- NAVBAR -->
+    <nav class="nav">
+        <div class="nav-logo">
+            <button class="mmenu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
+            <div class="logo-ic"><i class="fas fa-file-word"></i></div>
+            <div class="logo-t">PDF<span>2Word</span></div>
+        </div>
+        <div class="nsep"></div>
+        <div class="nfile" id="nfile">
+            <div><div class="nfname" id="nfname">No file</div><div class="nfpg" id="nfpg"></div></div>
+        </div>
+        <div class="nsteps">
+            <div class="ns active" id="s1"><span class="sn">1</span> Upload</div>
+            <div class="sline" id="sl1"></div>
+            <div class="ns" id="s2"><span class="sn">2</span> Convert</div>
+            <div class="sline" id="sl2"></div>
+            <div class="ns" id="s3"><span class="sn">3</span> Download</div>
+        </div>
+        <div class="navr">
+            <button class="nb desk" onclick="toggleSB()"><i class="fas fa-sliders-h"></i> Settings</button>
+            <button class="nb yel" id="navCvt" onclick="startConvert()" disabled><i class="fas fa-file-word"></i> Convert</button>
+        </div>
+    </nav>
 
-      const file = fileInput.files[0];
+    <!-- MAIN -->
+    <div class="main">
+        <div class="sbov" id="sbov" onclick="closeSB()"></div>
 
-      // Placeholder: Actual conversion requires backend or external API
-      status.textContent = 'Uploading and converting file...';
+        <!-- SIDEBAR -->
+        <div class="sb" id="sidebar">
+            <div class="sbh">
+                <div class="sbt"><i class="fas fa-sliders-h"></i> Settings</div>
+                <button class="sbx" onclick="closeSB()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sbs">
+                <!-- Format -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-file-word"></i> Output Format</div>
+                    <select class="sgsel" id="setFmt">
+                        <option value="docx" selected>.docx (Word 2007+)</option>
+                        <option value="txt">.txt (Plain Text)</option>
+                    </select>
+                </div>
 
-      // Simulate delay
-      setTimeout(() => {
-        status.textContent = 'Conversion successful! Download will start shortly.';
+                <!-- Layout Mode -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-align-left"></i> Conversion Mode</div>
+                    <div class="chips">
+                        <div class="chip active" onclick="setMode('formatted',this)">
+                            <i class="fas fa-paragraph"></i><span>Formatted</span>
+                        </div>
+                        <div class="chip" onclick="setMode('plain',this)">
+                            <i class="fas fa-align-justify"></i><span>Plain Text</span>
+                        </div>
+                    </div>
+                    <div class="sgd" style="margin-top:8px">
+                        <strong>Formatted:</strong> Keeps headings, bold text, paragraphs.<br>
+                        <strong>Plain:</strong> Simple text extraction.
+                    </div>
+                </div>
 
-        // Simulate download
-        const blob = new Blob(["This is a mock Word document content."], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'converted.docx';
-        a.click();
-        URL.revokeObjectURL(url);
-      }, 2000);
+                <!-- Options -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-cog"></i> Options</div>
+                    <div class="toggle-row">
+                        <span><i class="fas fa-file-alt" style="color:var(--g600);margin-right:4px"></i> Page Breaks</span>
+                        <div class="toggle on" id="togBreaks" onclick="this.classList.toggle('on')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span><i class="fas fa-heading" style="color:var(--g600);margin-right:4px"></i> Detect Headings</span>
+                        <div class="toggle on" id="togHeadings" onclick="this.classList.toggle('on')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span><i class="fas fa-list" style="color:var(--g600);margin-right:4px"></i> Detect Lists</span>
+                        <div class="toggle on" id="togLists" onclick="this.classList.toggle('on')"></div>
+                    </div>
+                    <div class="toggle-row">
+                        <span><i class="fas fa-text-height" style="color:var(--g600);margin-right:4px"></i> Keep Font Sizes</span>
+                        <div class="toggle on" id="togFonts" onclick="this.classList.toggle('on')"></div>
+                    </div>
+                </div>
+
+                <!-- Filename -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-tag"></i> File Name</div>
+                    <input type="text" class="sginp" id="setName" value="converted" placeholder="Enter name">
+                </div>
+
+                <!-- Pages -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-file-alt"></i> Pages</div>
+                    <select class="sgsel" id="setPages" onchange="document.getElementById('pselWrap').classList.toggle('show',this.value==='custom')">
+                        <option value="all" selected>All Pages</option>
+                        <option value="custom">Custom Selection</option>
+                    </select>
+                    <div class="psel-wrap" id="pselWrap">
+                        <div class="psel" id="psel"></div>
+                    </div>
+                </div>
+
+                <!-- Font -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-font"></i> Word Font</div>
+                    <select class="sgsel" id="setFont">
+                        <option value="Calibri" selected>Calibri</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Courier New">Courier New</option>
+                    </select>
+                </div>
+
+                <!-- Font Size -->
+                <div class="sg">
+                    <div class="sgl"><i class="fas fa-text-height"></i> Base Font Size</div>
+                    <select class="sgsel" id="setFontSize">
+                        <option value="20">10pt</option>
+                        <option value="22">11pt</option>
+                        <option value="24" selected>12pt</option>
+                        <option value="28">14pt</option>
+                        <option value="32">16pt</option>
+                    </select>
+                </div>
+
+                <!-- Extraction Info -->
+                <div class="ext-card" id="extCard" style="display:none">
+                    <h4><i class="fas fa-chart-bar"></i> Extraction Summary</h4>
+                    <div class="ext-row"><span>Pages processed:</span><strong id="extPages">0</strong></div>
+                    <div class="ext-row"><span>Text blocks:</span><strong id="extBlocks">0</strong></div>
+                    <div class="ext-row"><span>Words found:</span><strong id="extWords">0</strong></div>
+                    <div class="ext-row"><span>Characters:</span><strong id="extChars">0</strong></div>
+                </div>
+            </div>
+            <div class="sbf">
+                <button class="cvt-btn" id="sbCvt" onclick="startConvert()" disabled>
+                    <i class="fas fa-file-word"></i> Convert to Word
+                </button>
+            </div>
+        </div>
+
+        <!-- CENTER -->
+        <div class="center">
+            <div class="fbar" id="fbar">
+                <div class="fbic"><i class="fas fa-file-pdf"></i></div>
+                <div class="fbinfo">
+                    <div class="fbname" id="fbname"></div>
+                    <div class="fbmeta">
+                        <span><i class="fas fa-file"></i> <span id="fbpg">0</span> pages</span>
+                        <span><i class="fas fa-weight-hanging"></i> <span id="fbsz">0</span></span>
+                        <span class="fmt-badge fmt-pdf"><i class="fas fa-file-pdf"></i> PDF</span>
+                        <span class="fmt-badge fmt-word"><i class="fas fa-arrow-right"></i></span>
+                        <span class="fmt-badge fmt-word"><i class="fas fa-file-word"></i> DOCX</span>
+                    </div>
+                </div>
+                <button class="fbrm" onclick="removeFile()" title="Remove"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Upload Screen -->
+            <div class="scr active" id="scrUpload">
+                <div class="up-card">
+                    <div class="upic"><i class="fas fa-file-word"></i></div>
+                    <h2>PDF to Word Converter</h2>
+                    <p>Apni PDF file ko Word document (.docx) mein convert karein — text, headings aur formatting ke sath!</p>
+                    <div class="dz" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt dzi"></i>
+                        <h3>Drop PDF File Here</h3>
+                        <span>or click to browse • .pdf files supported</span>
+                    </div>
+                    <button class="brbtn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Select PDF File
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <div class="upfeats">
+                        <div class="uf"><i class="fas fa-paragraph"></i><div><strong>Smart Formatting</strong><em>Headings, bold, lists</em></div></div>
+                        <div class="uf"><i class="fas fa-file-word"></i><div><strong>.docx Output</strong><em>Open in MS Word</em></div></div>
+                        <div class="uf"><i class="fas fa-lock"></i><div><strong>100% Secure</strong><em>Browser only</em></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Layout -->
+            <div class="mtoggle" id="mtoggle">
+                <button class="mtbtn active" onclick="mobSwitch('pdf',this)"><i class="fas fa-file-pdf" style="color:var(--red)"></i> PDF</button>
+                <button class="mtbtn" onclick="mobSwitch('word',this)"><i class="fas fa-file-word" style="color:var(--blue)"></i> Word</button>
+            </div>
+
+            <div class="prev-layout" id="prevLayout">
+                <!-- PDF Preview -->
+                <div class="prev-left" id="prevLeft">
+                    <div class="pnl-hdr">
+                        <div class="pnl-title"><i class="fas fa-file-pdf pdf-color"></i> PDF Original</div>
+                    </div>
+                    <div class="pnl-body">
+                        <div class="pdf-pages" id="pdfPages"></div>
+                    </div>
+                </div>
+                <!-- Word Preview -->
+                <div class="prev-right" id="prevRight">
+                    <div class="pnl-hdr">
+                        <div class="pnl-title"><i class="fas fa-file-word word-color"></i> Word Preview</div>
+                        <div class="pnl-acts">
+                            <button class="pnl-btn" onclick="downloadWord()"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <div class="pnl-body" style="background:var(--g50)">
+                        <div class="word-preview" id="wordPreview">
+                            <div class="wp-empty"><i class="fas fa-file-word" style="font-size:40px;color:var(--g200);display:block;margin-bottom:10px"></i>Word preview will appear here after conversion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOB BAR -->
+    <div class="mobbar">
+        <button class="mb" onclick="toggleSB()"><i class="fas fa-sliders-h"></i> Settings</button>
+        <button class="mb" onclick="removeFile()"><i class="fas fa-redo"></i> Reset</button>
+        <button class="mb go" onclick="startConvert()"><i class="fas fa-file-word"></i> Convert</button>
+    </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="ov" id="procOv">
+    <div class="ovm">
+        <div class="ovspin"><div class="ovring"></div></div>
+        <h3 id="procT">Processing...</h3>
+        <p id="procD">Extracting text from PDF</p>
+        <div class="pbar-track"><div class="pbar-fill" id="pbarFill"></div></div>
+        <div class="pbar-label" id="pbarLbl">0%</div>
+    </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="ov" id="sucOv">
+    <div class="ovm">
+        <div class="sucic"><i class="fas fa-check"></i></div>
+        <h3>Word File Ready! 🎉</h3>
+        <p>Your PDF has been converted to Word successfully!</p>
+        <div class="stats-row" id="statsRow"></div><br>
+        <button class="dlb" id="dlBtn" onclick="downloadWord()"><i class="fas fa-download"></i> Download Word</button><br>
+        <button class="clb" onclick="document.getElementById('sucOv').classList.remove('show')"><i class="fas fa-times"></i> Close</button>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
+
+    // ========== STATE ==========
+    let pdfDocJS=null,pdfBytes=null,totalPages=0,fileName='';
+    let extractedPages=[];  // [{pageNum, lines:[{text,fontSize,isBold,isHeading,x,y}]}]
+    let wordBlob=null;
+    let convMode='formatted';
+    let selectedPages=new Set();
+
+    // ========== UPLOAD ==========
+    const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+    dz.addEventListener('click',()=>fi.click());
+    fi.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0])});
+
+    async function handleFile(file){
+        if(file.type!=='application/pdf'){toast('Please select a PDF ⚠️');return}
+        showProc('Loading PDF...','Reading file...');
+        pdfBytes=await file.arrayBuffer();
+        pdfDocJS=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;
+        totalPages=pdfDocJS.numPages;
+        fileName=file.name.replace('.pdf','');
+
+        document.getElementById('nfname').textContent=file.name;
+        document.getElementById('nfpg').textContent=totalPages+' pages';
+        document.getElementById('fbname').textContent=file.name;
+        document.getElementById('fbpg').textContent=totalPages;
+        document.getElementById('fbsz').textContent=fmtSz(file.size);
+        document.getElementById('fbar').classList.add('show');
+        document.getElementById('navCvt').disabled=false;
+        document.getElementById('sbCvt').disabled=false;
+        document.getElementById('setName').value=fileName;
+
+        buildPageSel();
+        await renderPDFThumbs();
+
+        document.getElementById('scrUpload').classList.remove('active');
+        document.getElementById('prevLayout').classList.add('active');
+        setStep(1);hideProc();
+        toast('PDF loaded! '+totalPages+' pages ✅');
     }
-  </script>
+
+    function removeFile(){
+        pdfDocJS=null;pdfBytes=null;totalPages=0;extractedPages=[];wordBlob=null;
+        document.getElementById('fbar').classList.remove('show');
+        document.getElementById('navCvt').disabled=true;
+        document.getElementById('sbCvt').disabled=true;
+        document.getElementById('prevLayout').classList.remove('active');
+        document.getElementById('scrUpload').classList.add('active');
+        document.getElementById('pdfPages').innerHTML='';
+        document.getElementById('wordPreview').innerHTML='<div class="wp-empty"><i class="fas fa-file-word" style="font-size:40px;color:var(--g200);display:block;margin-bottom:10px"></i>Word preview here</div>';
+        document.getElementById('extCard').style.display='none';
+        fi.value='';setStep(0);
+    }
+
+    function fmtSz(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+
+    function buildPageSel(){
+        const c=document.getElementById('psel');c.innerHTML='';selectedPages.clear();
+        for(let i=1;i<=totalPages;i++){
+            selectedPages.add(i);
+            const d=document.createElement('div');d.className='pc sel';d.textContent=i;
+            d.onclick=()=>{d.classList.toggle('sel');selectedPages.has(i)?selectedPages.delete(i):selectedPages.add(i)};
+            c.appendChild(d);
+        }
+    }
+
+    async function renderPDFThumbs(){
+        const el=document.getElementById('pdfPages');el.innerHTML='';
+        for(let i=1;i<=totalPages;i++){
+            const page=await pdfDocJS.getPage(i);
+            const vp=page.getViewport({scale:1.2});
+            const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+            await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+            const wrap=document.createElement('div');wrap.className='pdf-pg';wrap.appendChild(c);
+            const num=document.createElement('div');num.className='pdf-pg-num';num.textContent='Page '+i;
+            wrap.appendChild(num);el.appendChild(wrap);
+        }
+    }
+
+    // ========== SETTINGS ==========
+    function setMode(m,el){
+        convMode=m;
+        document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+        el.classList.add('active');
+    }
+    function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbov').classList.toggle('show')}
+    function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbov').classList.remove('show')}
+    function setStep(s){
+        ['s1','s2','s3'].forEach((id,i)=>{const e=document.getElementById(id);e.classList.remove('active','done');
+            if(i<s)e.classList.add('done');else if(i===s)e.classList.add('active')});
+        ['sl1','sl2'].forEach((id,i)=>{document.getElementById(id).classList.toggle('done',i<s)});
+    }
+    function mobSwitch(v,el){
+        document.querySelectorAll('.mtbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+        if(v==='word'){document.getElementById('prevLeft').classList.add('mhide');document.getElementById('prevRight').classList.add('mshow')}
+        else{document.getElementById('prevLeft').classList.remove('mhide');document.getElementById('prevRight').classList.remove('mshow')}
+    }
+
+    // ========== CONVERT ==========
+    async function startConvert(){
+        if(!pdfDocJS){toast('Upload a PDF first ⚠️');return}
+        closeSB();showProc('Converting PDF...','Extracting text content');setStep(1);
+
+        extractedPages=[];
+        const pageMode=document.getElementById('setPages').value;
+        const pagesToProcess=[];
+        for(let i=1;i<=totalPages;i++){if(pageMode==='all'||selectedPages.has(i))pagesToProcess.push(i)}
+
+        let totalBlocks=0,totalWords=0,totalChars=0;
+
+        // PHASE 1: Extract text
+        for(let idx=0;idx<pagesToProcess.length;idx++){
+            const pNum=pagesToProcess[idx];
+            const prog=Math.round(((idx+1)/pagesToProcess.length)*50);
+            document.getElementById('pbarFill').style.width=prog+'%';
+            document.getElementById('pbarLbl').textContent='Extracting page '+pNum+'... ('+prog+'%)';
+
+            const page=await pdfDocJS.getPage(pNum);
+            const tc=await page.getTextContent();
+            const vp=page.getViewport({scale:1});
+            const pageData={pageNum:pNum,lines:[]};
+
+            // Group items by Y position
+            const lineMap=[];
+            const tolerance=4;
+
+            tc.items.forEach(item=>{
+                const text=item.str;
+                if(!text.trim())return;
+                const y=Math.round(vp.height-item.transform[5]);
+                const x=item.transform[4];
+                const fontSize=Math.round(item.transform[0])||12;
+                const fontName=item.fontName||'';
+                const isBold=fontName.toLowerCase().includes('bold')||fontName.toLowerCase().includes('black');
+
+                let found=false;
+                for(const line of lineMap){
+                    if(Math.abs(line.y-y)<tolerance){
+                        line.items.push({text,x,fontSize,isBold,fontName});
+                        found=true;break;
+                    }
+                }
+                if(!found)lineMap.push({y,items:[{text,x,fontSize,isBold,fontName}]});
+            });
+
+            lineMap.sort((a,b)=>a.y-b.y);
+
+            lineMap.forEach(line=>{
+                line.items.sort((a,b)=>a.x-b.x);
+                const fullText=line.items.map(i=>i.text).join(' ').trim();
+                if(!fullText)return;
+
+                const maxFontSize=Math.max(...line.items.map(i=>i.fontSize));
+                const anyBold=line.items.some(i=>i.isBold);
+                const isHeading=maxFontSize>=16||anyBold&&maxFontSize>=14;
+                const isList=/^[\•\-\–\—\*\d+[\.\)]\s]/.test(fullText);
+
+                pageData.lines.push({
+                    text:fullText,
+                    fontSize:maxFontSize,
+                    isBold:anyBold,
+                    isHeading,
+                    isList
+                });
+
+                totalBlocks++;
+                totalWords+=fullText.split(/\s+/).length;
+                totalChars+=fullText.length;
+            });
+
+            extractedPages.push(pageData);
+            await sleep(50);
+        }
+
+        // PHASE 2: Build Word document
+        document.getElementById('procT').textContent='Building Word Document...';
+        document.getElementById('procD').textContent='Creating .docx file';
+        document.getElementById('pbarFill').style.width='70%';
+        document.getElementById('pbarLbl').textContent='Building document... (70%)';
+
+        await sleep(200);
+
+        const fmt=document.getElementById('setFmt').value;
+        if(fmt==='docx'){
+            await buildDocx(pagesToProcess);
+        }else{
+            buildTxt(pagesToProcess);
+        }
+
+        // PHASE 3: Render word preview
+        document.getElementById('pbarFill').style.width='90%';
+        document.getElementById('pbarLbl').textContent='Rendering preview... (90%)';
+        renderWordPreview();
+
+        // Update extraction info
+        document.getElementById('extCard').style.display='block';
+        document.getElementById('extPages').textContent=pagesToProcess.length;
+        document.getElementById('extBlocks').textContent=totalBlocks;
+        document.getElementById('extWords').textContent=totalWords.toLocaleString();
+        document.getElementById('extChars').textContent=totalChars.toLocaleString();
+
+        document.getElementById('pbarFill').style.width='100%';
+        document.getElementById('pbarLbl').textContent='Done! ✅';
+        await sleep(300);
+
+        hideProc();setStep(2);
+
+        // Show success
+        document.getElementById('statsRow').innerHTML=`
+            <div class="stpill"><i class="fas fa-file"></i> ${pagesToProcess.length} pages</div>
+            <div class="stpill"><i class="fas fa-font"></i> ${totalWords.toLocaleString()} words</div>
+            <div class="stpill"><i class="fas fa-file-word"></i> .${fmt}</div>`;
+        document.getElementById('sucOv').classList.add('show');
+    }
+
+    function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+    // ========== BUILD DOCX ==========
+    async function buildDocx(){
+        const{Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,PageBreak,
+              BorderStyle,convertInchesToTwip,TabStopPosition,TabStopType}=docx;
+
+        const font=document.getElementById('setFont').value;
+        const baseFontSize=parseInt(document.getElementById('setFontSize').value);
+        const useBreaks=document.getElementById('togBreaks').classList.contains('on');
+        const detectHeadings=document.getElementById('togHeadings').classList.contains('on');
+        const detectLists=document.getElementById('togLists').classList.contains('on');
+        const keepFonts=document.getElementById('togFonts').classList.contains('on');
+
+        const children=[];
+
+        extractedPages.forEach((pageData,pageIdx)=>{
+            if(pageIdx>0&&useBreaks){
+                children.push(new Paragraph({children:[new PageBreak()]}));
+            }
+
+            if(extractedPages.length>1){
+                children.push(new Paragraph({
+                    children:[new TextRun({text:`— Page ${pageData.pageNum} —`,font,size:18,color:'888888',italics:true})],
+                    spacing:{after:200},alignment:AlignmentType.CENTER,
+                    border:{bottom:{color:'CCCCCC',space:1,style:BorderStyle.SINGLE,size:6}}
+                }));
+            }
+
+            pageData.lines.forEach(line=>{
+                const textContent=line.text;
+                let fontSize=baseFontSize;
+                if(keepFonts&&line.fontSize){
+                    const ratio=line.fontSize/12;
+                    fontSize=Math.round(baseFontSize*ratio);
+                    fontSize=Math.max(16,Math.min(fontSize,72));
+                }
+
+                // Heading detection
+                if(detectHeadings&&line.isHeading&&convMode==='formatted'){
+                    let heading=HeadingLevel.HEADING_2;
+                    if(line.fontSize>=22)heading=HeadingLevel.HEADING_1;
+                    else if(line.fontSize>=18)heading=HeadingLevel.HEADING_2;
+                    else heading=HeadingLevel.HEADING_3;
+
+                    children.push(new Paragraph({
+                        children:[new TextRun({text:textContent,font,bold:true,size:fontSize+4,color:'2E7D32'})],
+                        heading,spacing:{before:240,after:120}
+                    }));
+                    return;
+                }
+
+                // List detection
+                if(detectLists&&line.isList&&convMode==='formatted'){
+                    const cleanText=textContent.replace(/^[\•\-\–\—\*]\s*/,'').replace(/^\d+[\.\)]\s*/,'');
+                    children.push(new Paragraph({
+                        children:[new TextRun({text:cleanText,font,size:fontSize})],
+                        bullet:{level:0},spacing:{after:80}
+                    }));
+                    return;
+                }
+
+                // Normal paragraph
+                children.push(new Paragraph({
+                    children:[new TextRun({
+                        text:textContent,font,
+                        size:fontSize,
+                        bold:line.isBold&&convMode==='formatted'
+                    })],
+                    spacing:{after:100}
+                }));
+            });
+        });
+
+        // Add footer
+        children.push(new Paragraph({children:[]}));
+        children.push(new Paragraph({
+            children:[new TextRun({text:'Converted by PDF2Word — Free Online Converter',font,size:16,color:'AAAAAA',italics:true})],
+            alignment:AlignmentType.CENTER,
+            border:{top:{color:'DDDDDD',space:4,style:BorderStyle.SINGLE,size:6}}
+        }));
+
+        const doc=new Document({
+            sections:[{
+                properties:{
+                    page:{margin:{top:convertInchesToTwip(1),bottom:convertInchesToTwip(1),
+                        left:convertInchesToTwip(1),right:convertInchesToTwip(1)}}
+                },
+                children
+            }],
+            creator:'PDF2Word Online Converter',
+            title:document.getElementById('setName').value||'Converted Document'
+        });
+
+        const blob=await Packer.toBlob(doc);
+        wordBlob=blob;
+    }
+
+    function buildTxt(){
+        let text='';
+        extractedPages.forEach((pageData,i)=>{
+            if(i>0)text+='\n\n'+('='.repeat(40))+'\n';
+            text+='Page '+pageData.pageNum+'\n'+('='.repeat(40))+'\n\n';
+            pageData.lines.forEach(line=>{text+=line.text+'\n'});
+        });
+        wordBlob=new Blob([text],{type:'text/plain'});
+    }
+
+    // ========== WORD PREVIEW ==========
+    function renderWordPreview(){
+        const wp=document.getElementById('wordPreview');
+        const font=document.getElementById('setFont').value;
+        const detectHeadings=document.getElementById('togHeadings').classList.contains('on');
+        const detectLists=document.getElementById('togLists').classList.contains('on');
+
+        let html='';
+
+        extractedPages.forEach((pageData,i)=>{
+            if(i>0)html+='<hr class="wp-page-sep">';
+            html+=`<div class="wp-page">`;
+            html+=`<div class="wp-page-label">📄 Page ${pageData.pageNum}</div>`;
+
+            pageData.lines.forEach(line=>{
+                const esc=escHtml(line.text);
+                let cls='wp-line';
+                let style=`font-family:'${font}',sans-serif;`;
+
+                if(detectHeadings&&line.isHeading&&convMode==='formatted'){
+                    cls+=' heading';
+                    const sz=line.fontSize>=22?'24px':line.fontSize>=18?'20px':'17px';
+                    style+=`font-size:${sz};`;
+                    html+=`<div class="${cls}" style="${style}">${esc}</div>`;
+                    return;
+                }
+
+                if(line.isBold&&convMode==='formatted')cls+=' bold-line';
+
+                if(detectLists&&line.isList&&convMode==='formatted'){
+                    const clean=esc.replace(/^[\•\-\–\—\*]\s*/,'').replace(/^\d+[\.\)]\s*/,'');
+                    html+=`<div class="${cls}" style="${style}padding-left:20px;">• ${clean}</div>`;
+                    return;
+                }
+
+                html+=`<div class="${cls}" style="${style}">${esc}</div>`;
+            });
+
+            if(pageData.lines.length===0)html+='<div class="wp-empty">No text found on this page</div>';
+            html+='</div>';
+        });
+
+        if(!html)html='<div class="wp-empty">No content extracted</div>';
+        wp.innerHTML=html;
+    }
+
+    function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+    // ========== DOWNLOAD ==========
+    function downloadWord(){
+        if(!wordBlob){toast('Convert first ⚠️');return}
+        const name=document.getElementById('setName').value||'converted';
+        const fmt=document.getElementById('setFmt').value;
+        const ext=fmt==='txt'?'txt':'docx';
+        saveAs(wordBlob,`${name}.${ext}`);
+        toast('Downloaded! 🎉');
+        document.getElementById('sucOv').classList.remove('show');
+        document.getElementById('s3').classList.add('done');
+    }
+
+    // ========== HELPERS ==========
+    function showProc(t,d){document.getElementById('procT').textContent=t;document.getElementById('procD').textContent=d;
+        document.getElementById('pbarFill').style.width='0%';document.getElementById('pbarLbl').textContent='0%';
+        document.getElementById('procOv').classList.add('show')}
+    function hideProc(){document.getElementById('procOv').classList.remove('show')}
+    function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+</script>
 </body>
 </html>
-  
