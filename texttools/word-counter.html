@@ -1,244 +1,1017 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Word & Character Counter Tool – Toolmatrix</title>
-<meta name="description" content="Count words, characters, sentences, paragraphs and reading time instantly with our free online word counter tool.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Word Counter — Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;--g400:#81C784;
+            --g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;--g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
+            --w:#fff;--txt:#2c3e2c;--txtL:#6b7e6b;--txtM:#94a894;--bdr:#d4ead4;
+            --red:#EF5350;--blue:#42A5F5;--purple:#AB47BC;--orange:#FF9800;--teal:#26A69A;--pink:#EC407A;
+            --sh:0 8px 30px rgba(46,125,50,.10);--shL:0 20px 60px rgba(46,125,50,.15);
+            --r:16px;--rs:10px;--rx:6px;--t:.25s cubic-bezier(.4,0,.2,1)
+        }
+        html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;
+            background:var(--g100);color:var(--txt);-webkit-font-smoothing:antialiased}
+        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-<link rel="icon" href="favicon-32x32.png">
+        /* ===== NAVBAR ===== */
+        .nav{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
+            padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;
+            box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:200}
+        .nav-left{display:flex;align-items:center;gap:12px}
+        .logo-ic{width:38px;height:38px;background:var(--w);border-radius:10px;display:flex;
+            align-items:center;justify-content:center;font-size:18px;color:var(--g700);
+            box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .logo-t{font-size:19px;font-weight:800;color:var(--w)}
+        .logo-t span{color:#FFEB3B}
+        .nav-center{display:flex;align-items:center;gap:6px;position:absolute;left:50%;transform:translateX(-50%)}
+        .nav-chip{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;
+            color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.1);
+            cursor:pointer;transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:6px}
+        .nav-chip:hover{background:rgba(255,255,255,.15);color:#fff}
+        .nav-chip.active{background:var(--w);color:var(--g900);border-color:var(--w);box-shadow:0 2px 10px rgba(0,0,0,.12)}
+        .nav-chip i{font-size:13px}
+        .nav-right{display:flex;align-items:center;gap:8px}
+        .nb{height:36px;padding:0 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:6px}
+        .nb:hover{background:rgba(255,255,255,.2)}
+        .nb.yel{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
+            border-color:transparent;box-shadow:0 3px 12px rgba(255,193,7,.3)}
+        .nb.yel:hover{transform:translateY(-1px)}
+        .mmenu{display:none;width:36px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
+            background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;
+            align-items:center;justify-content:center}
 
-<style>
+        /* ===== MAIN ===== */
+        .main{flex:1;display:flex;overflow:hidden;position:relative}
 
-/* RESET */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+        /* ===== SIDEBAR ===== */
+        .sb{width:300px;flex-shrink:0;background:var(--w);border-right:1px solid var(--bdr);
+            display:flex;flex-direction:column;overflow:hidden;z-index:50}
+        .sb-hdr{flex-shrink:0;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--g50);
+            display:flex;align-items:center;justify-content:space-between}
+        .sb-title{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .sb-title i{font-size:15px}
+        .sb-close{display:none;width:28px;height:28px;border-radius:7px;border:none;background:var(--g200);
+            color:var(--g800);font-size:13px;cursor:pointer;align-items:center;justify-content:center;transition:var(--t)}
+        .sb-close:hover{background:var(--g600);color:#fff}
+        .sb-scroll{flex:1;overflow-y:auto;padding:0}
+        .sb-scroll::-webkit-scrollbar{width:5px}
+        .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
 
-html,body{
-  width:100%;
-  height:100%;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#eaf4ff,#ffffff);
-}
+        /* STATS CARDS */
+        .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--bdr)}
+        .stat-card{padding:18px 16px;border-right:1px solid var(--bdr);border-bottom:1px solid var(--bdr);
+            text-align:center;transition:var(--t);cursor:default;position:relative;overflow:hidden}
+        .stat-card:nth-child(even){border-right:none}
+        .stat-card:hover{background:var(--g50)}
+        .stat-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;transition:var(--t)}
+        .stat-card:hover::before{background:var(--g400)}
+        .stat-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+            justify-content:center;margin:0 auto 8px;font-size:16px}
+        .stat-ic.green{background:var(--g100);color:var(--g700)}
+        .stat-ic.blue{background:#E3F2FD;color:var(--blue)}
+        .stat-ic.purple{background:#F3E5F5;color:var(--purple)}
+        .stat-ic.orange{background:#FFF3E0;color:var(--orange)}
+        .stat-ic.red{background:#FFEBEE;color:var(--red)}
+        .stat-ic.teal{background:#E0F2F1;color:var(--teal)}
+        .stat-ic.pink{background:#FCE4EC;color:var(--pink)}
+        .stat-num{font-size:24px;font-weight:900;color:var(--g900);line-height:1;margin-bottom:4px;
+            font-variant-numeric:tabular-nums}
+        .stat-label{font-size:10px;font-weight:700;color:var(--txtM);text-transform:uppercase;letter-spacing:.8px}
 
-/* FULL SCREEN WRAPPER */
-.wrapper{
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding:40px 20px;
-}
+        /* BIG STATS */
+        .big-stats{padding:14px 18px;border-bottom:1px solid var(--bdr)}
+        .big-stat-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+            background:var(--g50);border-radius:var(--rs);margin-bottom:6px;transition:var(--t)}
+        .big-stat-row:hover{background:var(--g100)}
+        .big-stat-row:last-child{margin-bottom:0}
+        .bsr-left{display:flex;align-items:center;gap:10px}
+        .bsr-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+            justify-content:center;font-size:14px;flex-shrink:0}
+        .bsr-label{font-size:12px;font-weight:600;color:var(--txt)}
+        .bsr-val{font-size:16px;font-weight:800;color:var(--g900);font-variant-numeric:tabular-nums}
 
-/* TOOL BOX */
-.tool-box{
-  width:100%;
-  max-width:1000px;
-  background:#ffffff;
-  padding:40px;
-  border-radius:20px;
-  box-shadow:0 15px 40px rgba(0,123,255,0.1);
-}
+        /* KEYWORD DENSITY */
+        .kw-section{padding:14px 18px;border-bottom:1px solid var(--bdr)}
+        .kw-title{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+        .kw-title i{color:var(--g600);font-size:13px}
+        .kw-tabs{display:flex;gap:4px;margin-bottom:12px}
+        .kw-tab{flex:1;padding:7px 6px;border:1.5px solid var(--g200);border-radius:7px;font-size:11px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--t);background:var(--w);
+            color:var(--txtL);font-family:inherit}
+        .kw-tab:hover{border-color:var(--g400);background:var(--g50)}
+        .kw-tab.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .kw-list{max-height:240px;overflow-y:auto}
+        .kw-list::-webkit-scrollbar{width:4px}
+        .kw-list::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+        .kw-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--g100)}
+        .kw-item:last-child{border-bottom:none}
+        .kw-rank{width:22px;height:22px;border-radius:6px;background:var(--g100);display:flex;
+            align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--g700);flex-shrink:0}
+        .kw-item:nth-child(1) .kw-rank{background:var(--g600);color:#fff}
+        .kw-item:nth-child(2) .kw-rank{background:var(--g400);color:#fff}
+        .kw-item:nth-child(3) .kw-rank{background:var(--g300);color:var(--g900)}
+        .kw-word{flex:1;font-size:13px;font-weight:600;color:var(--txt)}
+        .kw-count{font-size:11px;font-weight:700;color:var(--g700);background:var(--g100);
+            padding:3px 8px;border-radius:50px}
+        .kw-bar-wrap{width:60px;height:6px;background:var(--g100);border-radius:10px;overflow:hidden;flex-shrink:0}
+        .kw-bar{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:10px;transition:width .3s}
 
-h1{
-  text-align:center;
-  color:#007bff;
-  margin-bottom:25px;
-  font-size:32px;
-}
+        /* READABILITY */
+        .read-section{padding:14px 18px}
+        .read-title{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+        .read-title i{color:var(--g600);font-size:13px}
+        .read-meter{position:relative;height:12px;background:linear-gradient(90deg,var(--red),var(--orange),#FFEB3B,var(--g400),var(--g600));
+            border-radius:10px;margin-bottom:6px;overflow:visible}
+        .read-pointer{position:absolute;top:-4px;width:20px;height:20px;background:var(--w);
+            border:3px solid var(--g800);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.2);
+            transition:left .5s ease;transform:translateX(-50%)}
+        .read-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:700;
+            color:var(--txtM);text-transform:uppercase;margin-bottom:10px}
+        .read-score{text-align:center;padding:12px;background:var(--g50);border-radius:var(--rs)}
+        .read-score .rs-num{font-size:28px;font-weight:900;color:var(--g900)}
+        .read-score .rs-label{font-size:11px;color:var(--txtM);font-weight:600;margin-top:2px}
+        .read-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+        .ri-item{padding:8px 10px;background:var(--g50);border-radius:8px;text-align:center}
+        .ri-item .ri-val{font-size:14px;font-weight:800;color:var(--g800)}
+        .ri-item .ri-lab{font-size:9px;color:var(--txtM);font-weight:600;text-transform:uppercase;margin-top:2px}
 
-textarea{
-  width:100%;
-  height:220px;
-  padding:15px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  font-size:16px;
-  resize:none;
-  margin-bottom:25px;
-}
+        /* ===== CENTER: EDITOR ===== */
+        .center{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-/* STATS GRID */
-.stats{
-  display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;
-  margin-bottom:20px;
-}
+        /* TOP BAR */
+        .topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+            padding:8px 18px;background:var(--w);border-bottom:1px solid var(--bdr);gap:10px}
+        .topbar-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .topbar-chip{display:flex;align-items:center;gap:5px;padding:5px 12px;background:var(--g50);
+            border:1.5px solid var(--g200);border-radius:50px;font-size:11px;font-weight:700;color:var(--g800);
+            white-space:nowrap;transition:var(--t)}
+        .topbar-chip i{font-size:12px;color:var(--g600)}
+        .topbar-chip .tc-num{color:var(--g900);font-size:13px;font-weight:900}
+        .topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+        .tb-btn{height:32px;padding:0 14px;border:1.5px solid var(--g200);border-radius:8px;
+            background:var(--w);color:var(--g800);font-size:11.5px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:5px}
+        .tb-btn:hover{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .tb-btn.active{background:var(--g600);color:#fff;border-color:var(--g600)}
 
-.stat-box{
-  background:#f1f7ff;
-  padding:15px;
-  border-radius:12px;
-  text-align:center;
-}
+        /* EDITOR AREA */
+        .editor-wrap{flex:1;display:flex;overflow:hidden;position:relative}
+        .text-editor{flex:1;padding:30px 40px;font-size:16px;font-family:'Inter',sans-serif;
+            line-height:1.9;color:var(--txt);border:none;outline:none;resize:none;
+            background:var(--w);overflow-y:auto}
+        .text-editor::placeholder{color:var(--g300);font-weight:400}
+        .text-editor::-webkit-scrollbar{width:8px}
+        .text-editor::-webkit-scrollbar-track{background:var(--g50)}
+        .text-editor::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+        .text-editor::-webkit-scrollbar-thumb:hover{background:var(--g400)}
 
-.stat-box h3{
-  font-size:18px;
-  color:#007bff;
-}
+        /* FIND & REPLACE BAR */
+        .fr-bar{display:none;flex-shrink:0;padding:10px 18px;background:var(--g50);
+            border-bottom:1px solid var(--bdr);gap:8px;align-items:center;flex-wrap:wrap;animation:slideDown .3s ease}
+        .fr-bar.show{display:flex}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .fr-input{padding:8px 14px;border:2px solid var(--g200);border-radius:8px;font-size:13px;
+            font-family:inherit;outline:none;transition:var(--t);flex:1;min-width:120px}
+        .fr-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+        .fr-btn{padding:8px 14px;border:1.5px solid var(--g200);border-radius:8px;background:var(--w);
+            color:var(--g800);font-size:12px;font-weight:600;cursor:pointer;transition:var(--t);
+            font-family:inherit;display:flex;align-items:center;gap:5px}
+        .fr-btn:hover{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .fr-btn.replace-btn{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .fr-btn.replace-btn:hover{background:var(--g800)}
+        .fr-count{font-size:12px;font-weight:700;color:var(--g700);white-space:nowrap}
+        .fr-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--g200);
+            color:var(--g800);font-size:12px;cursor:pointer;display:flex;align-items:center;
+            justify-content:center;transition:var(--t);flex-shrink:0}
+        .fr-close:hover{background:var(--red);color:#fff}
 
-.stat-box p{
-  font-size:20px;
-  font-weight:bold;
-}
+        /* BOTTOM STATUS BAR */
+        .status-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+            padding:6px 18px;background:var(--g800);color:rgba(255,255,255,.7);font-size:11px;
+            font-weight:600;gap:16px}
+        .status-bar .sb-item{display:flex;align-items:center;gap:5px;white-space:nowrap}
+        .status-bar .sb-item i{font-size:12px;color:var(--g400)}
+        .sb-left,.sb-right{display:flex;align-items:center;gap:16px}
 
-/* ACTION BUTTONS */
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+        /* ===== OVERLAYS ===== */
+        .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
+            align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+        .ov.show{display:flex}
+        .ov-modal{background:var(--w);border-radius:24px;padding:40px 36px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,.2);max-width:500px;width:92%;animation:pop .35s ease;
+            max-height:90vh;overflow-y:auto}
+        @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .ov-modal h3{font-size:22px;font-weight:800;color:var(--g900);margin-bottom:12px;display:flex;
+            align-items:center;justify-content:center;gap:10px}
+        .ov-modal h3 i{color:var(--g600)}
+        .ov-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+            border:none;background:var(--g100);color:var(--g800);font-size:14px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;transition:var(--t)}
+        .ov-close:hover{background:var(--red);color:#fff}
 
-button{
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-  background:#007bff;
-  color:#fff;
-  transition:0.3s;
-}
+        /* EXPORT REPORT */
+        .report-preview{text-align:left;background:var(--g50);border-radius:var(--rs);
+            padding:20px;margin:16px 0;font-size:12px;line-height:1.8;color:var(--txt);max-height:300px;overflow-y:auto}
+        .report-preview h4{font-size:14px;font-weight:700;color:var(--g800);margin:12px 0 6px;
+            display:flex;align-items:center;gap:6px}
+        .report-preview h4:first-child{margin-top:0}
+        .report-preview h4 i{color:var(--g600)}
+        .rp-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--g200)}
+        .rp-row:last-child{border-bottom:none}
+        .rp-row span:last-child{font-weight:700;color:var(--g900)}
+        .dlb{padding:12px 36px;background:linear-gradient(135deg,var(--g600),var(--g900));color:#fff;
+            border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;transition:var(--t);
+            font-family:inherit;box-shadow:0 6px 25px rgba(46,125,50,.3);display:inline-flex;align-items:center;gap:8px}
+        .dlb:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(46,125,50,.45)}
+        .clb{margin-top:10px;padding:9px 24px;background:transparent;border:2px solid var(--g200);
+            color:var(--g800);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
+            transition:var(--t);font-family:inherit;display:inline-block}
+        .clb:hover{background:var(--g100);border-color:var(--g400)}
 
-button:hover{
-  background:#0056b3;
-}
+        /* GOALS SECTION */
+        .goals-section{padding:14px 18px;border-bottom:1px solid var(--bdr)}
+        .goal-title{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+        .goal-title i{color:var(--g600);font-size:13px}
+        .goal-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100)}
+        .goal-item:last-child{border-bottom:none}
+        .goal-item .gi-label{flex:1;font-size:12px;font-weight:600;color:var(--txt)}
+        .goal-item .gi-bar{width:80px;height:6px;background:var(--g100);border-radius:10px;overflow:hidden}
+        .goal-item .gi-fill{height:100%;border-radius:10px;transition:width .5s}
+        .goal-item .gi-val{font-size:11px;font-weight:700;color:var(--g700);width:50px;text-align:right}
 
-.copy-btn{
-  background:#28a745;
-}
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:var(--g900);color:#fff;padding:11px 26px;border-radius:50px;font-size:13px;
+            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
+            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-.copy-btn:hover{
-  background:#1e7e34;
-}
+        /* MOB BAR */
+        .mobbar{display:none;flex-shrink:0;background:var(--w);border-top:1px solid var(--bdr);
+            padding:6px 8px;gap:4px;z-index:80;overflow-x:auto}
+        .mobbar::-webkit-scrollbar{height:0}
+        .mobbar .mb{padding:8px 10px;background:var(--g50);border:1.5px solid var(--g200);
+            border-radius:8px;font-size:10px;font-weight:600;color:var(--g800);cursor:pointer;
+            transition:var(--t);font-family:inherit;display:flex;flex-direction:column;
+            align-items:center;gap:2px;flex-shrink:0;min-width:52px}
+        .mobbar .mb i{font-size:14px}
 
-.clear-btn{
-  background:#dc3545;
-}
+        .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+        .sbov.show{display:block}
 
-.clear-btn:hover{
-  background:#b02a37;
-}
-
-/* ADS */
-.ads-section{
-  width:100%;
-  max-width:1000px;
-  margin-top:40px;
-  text-align:center;
-}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .tool-box{
-    padding:25px;
-  }
-  h1{
-    font-size:24px;
-  }
-}
-
-</style>
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .nav-center{display:none}
+            .nb.desk{display:none}
+            .mmenu{display:flex}
+            .mobbar{display:flex}
+            .sb{position:fixed;left:-320px;top:0;bottom:0;z-index:100;
+                transition:left var(--t);box-shadow:var(--shL)}
+            .sb.open{left:0}
+            .sb-close{display:flex}
+            .nav{height:50px;padding:0 12px}
+            .logo-t{font-size:15px}
+            .logo-ic{width:32px;height:32px;font-size:15px;border-radius:8px}
+            .text-editor{padding:20px;font-size:15px}
+            .topbar{padding:6px 12px}
+            .topbar-chip{padding:4px 8px;font-size:10px}
+            .topbar-chip .tc-num{font-size:11px}
+        }
+        @media(max-width:480px){
+            .text-editor{padding:16px;font-size:14px;line-height:1.7}
+            .topbar-left{gap:4px}
+            .topbar-right{display:none}
+            .fr-bar{flex-direction:column}
+            .fr-input{width:100%}
+        }
+    </style>
 </head>
 <body>
 
-<div class="wrapper">
+<div class="app">
+    <!-- ===== NAVBAR ===== -->
+    <nav class="nav">
+        <div class="nav-left">
+            <button class="mmenu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
+            <div class="logo-ic"><i class="fas fa-spell-check"></i></div>
+            <div class="logo-t">Word<span>Counter</span></div>
+        </div>
+        <div class="nav-center">
+            <button class="nav-chip active" onclick="setView('write',this)"><i class="fas fa-pen"></i> Write</button>
+            <button class="nav-chip" onclick="setView('stats',this)"><i class="fas fa-chart-bar"></i> Statistics</button>
+        </div>
+        <div class="nav-right">
+            <button class="nb desk" onclick="toggleSB()"><i class="fas fa-chart-pie"></i> Stats</button>
+            <button class="nb desk" onclick="toggleFR()"><i class="fas fa-search"></i> Find</button>
+            <button class="nb yel" onclick="showExport()"><i class="fas fa-download"></i> Export</button>
+        </div>
+    </nav>
 
-  <div class="tool-box">
-    <h1>Word & Character Counter</h1>
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <div class="sbov" id="sbov" onclick="closeSB()"></div>
 
-    <textarea id="textInput" placeholder="Type or paste your text here..." oninput="updateCounts()"></textarea>
+        <!-- ===== SIDEBAR ===== -->
+        <div class="sb" id="sidebar">
+            <div class="sb-hdr">
+                <div class="sb-title"><i class="fas fa-chart-bar"></i> Statistics</div>
+                <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sb-scroll">
 
-    <div class="stats">
-      <div class="stat-box">
-        <h3>Words</h3>
-        <p id="wordCount">0</p>
-      </div>
-      <div class="stat-box">
-        <h3>Characters</h3>
-        <p id="charCount">0</p>
-      </div>
-      <div class="stat-box">
-        <h3>Characters (No Spaces)</h3>
-        <p id="charNoSpace">0</p>
-      </div>
-      <div class="stat-box">
-        <h3>Sentences</h3>
-        <p id="sentenceCount">0</p>
-      </div>
-      <div class="stat-box">
-        <h3>Paragraphs</h3>
-        <p id="paragraphCount">0</p>
-      </div>
-      <div class="stat-box">
-        <h3>Reading Time</h3>
-        <p id="readingTime">0 min</p>
-      </div>
+                <!-- Main Stats -->
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-ic green"><i class="fas fa-font"></i></div>
+                        <div class="stat-num" id="sWords">0</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-ic blue"><i class="fas fa-text-width"></i></div>
+                        <div class="stat-num" id="sChars">0</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-ic purple"><i class="fas fa-text-height"></i></div>
+                        <div class="stat-num" id="sCharsNS">0</div>
+                        <div class="stat-label">No Spaces</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-ic orange"><i class="fas fa-paragraph"></i></div>
+                        <div class="stat-num" id="sSentences">0</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-ic red"><i class="fas fa-align-left"></i></div>
+                        <div class="stat-num" id="sParagraphs">0</div>
+                        <div class="stat-label">Paragraphs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-ic teal"><i class="fas fa-stream"></i></div>
+                        <div class="stat-num" id="sLines">0</div>
+                        <div class="stat-label">Lines</div>
+                    </div>
+                </div>
+
+                <!-- Reading/Speaking Time -->
+                <div class="big-stats">
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#E3F2FD;color:var(--blue)"><i class="fas fa-book-reader"></i></div>
+                            <div class="bsr-label">Reading Time</div>
+                        </div>
+                        <div class="bsr-val" id="sReadTime">0s</div>
+                    </div>
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#F3E5F5;color:var(--purple)"><i class="fas fa-microphone-alt"></i></div>
+                            <div class="bsr-label">Speaking Time</div>
+                        </div>
+                        <div class="bsr-val" id="sSpeakTime">0s</div>
+                    </div>
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#FFF3E0;color:var(--orange)"><i class="fas fa-hand-point-right"></i></div>
+                            <div class="bsr-label">Hand Writing</div>
+                        </div>
+                        <div class="bsr-val" id="sHandTime">0s</div>
+                    </div>
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#FFEBEE;color:var(--red)"><i class="fas fa-ruler-horizontal"></i></div>
+                            <div class="bsr-label">Avg. Word Length</div>
+                        </div>
+                        <div class="bsr-val" id="sAvgWord">0</div>
+                    </div>
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#E0F2F1;color:var(--teal)"><i class="fas fa-ruler"></i></div>
+                            <div class="bsr-label">Avg. Sentence</div>
+                        </div>
+                        <div class="bsr-val" id="sAvgSentence">0 words</div>
+                    </div>
+                    <div class="big-stat-row">
+                        <div class="bsr-left">
+                            <div class="bsr-ic" style="background:#FCE4EC;color:var(--pink)"><i class="fas fa-file-alt"></i></div>
+                            <div class="bsr-label">Pages (A4)</div>
+                        </div>
+                        <div class="bsr-val" id="sPages">0</div>
+                    </div>
+                </div>
+
+                <!-- Writing Goals -->
+                <div class="goals-section">
+                    <div class="goal-title"><i class="fas fa-bullseye"></i> Writing Goals</div>
+                    <div class="goal-item">
+                        <div class="gi-label">📧 Email (200w)</div>
+                        <div class="gi-bar"><div class="gi-fill" id="goalEmail" style="width:0%;background:var(--blue)"></div></div>
+                        <div class="gi-val" id="goalEmailVal">0%</div>
+                    </div>
+                    <div class="goal-item">
+                        <div class="gi-label">📝 Blog (1000w)</div>
+                        <div class="gi-bar"><div class="gi-fill" id="goalBlog" style="width:0%;background:var(--purple)"></div></div>
+                        <div class="gi-val" id="goalBlogVal">0%</div>
+                    </div>
+                    <div class="goal-item">
+                        <div class="gi-label">📄 Essay (2500w)</div>
+                        <div class="gi-bar"><div class="gi-fill" id="goalEssay" style="width:0%;background:var(--orange)"></div></div>
+                        <div class="gi-val" id="goalEssayVal">0%</div>
+                    </div>
+                    <div class="goal-item">
+                        <div class="gi-label">📖 Article (5000w)</div>
+                        <div class="gi-bar"><div class="gi-fill" id="goalArticle" style="width:0%;background:var(--teal)"></div></div>
+                        <div class="gi-val" id="goalArticleVal">0%</div>
+                    </div>
+                </div>
+
+                <!-- Readability -->
+                <div class="read-section">
+                    <div class="read-title"><i class="fas fa-glasses"></i> Readability</div>
+                    <div class="read-meter">
+                        <div class="read-pointer" id="readPointer" style="left:50%"></div>
+                    </div>
+                    <div class="read-labels"><span>Hard</span><span>Medium</span><span>Easy</span></div>
+                    <div class="read-score">
+                        <div class="rs-num" id="readScore">0</div>
+                        <div class="rs-label" id="readLabel">Enter text to analyze</div>
+                    </div>
+                    <div class="read-info">
+                        <div class="ri-item">
+                            <div class="ri-val" id="readGrade">-</div>
+                            <div class="ri-lab">Grade Level</div>
+                        </div>
+                        <div class="ri-item">
+                            <div class="ri-val" id="readAge">-</div>
+                            <div class="ri-lab">Age Group</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keyword Density -->
+                <div class="kw-section">
+                    <div class="kw-title"><i class="fas fa-key"></i> Keyword Density</div>
+                    <div class="kw-tabs">
+                        <button class="kw-tab active" onclick="setKwMode(1,this)">1-word</button>
+                        <button class="kw-tab" onclick="setKwMode(2,this)">2-word</button>
+                        <button class="kw-tab" onclick="setKwMode(3,this)">3-word</button>
+                    </div>
+                    <div class="kw-list" id="kwList">
+                        <div style="text-align:center;padding:20px;color:var(--txtM);font-size:12px">Start typing to see keywords</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== CENTER ===== -->
+        <div class="center">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div class="topbar-chip"><i class="fas fa-font"></i> Words: <span class="tc-num" id="tWords">0</span></div>
+                    <div class="topbar-chip"><i class="fas fa-text-width"></i> Chars: <span class="tc-num" id="tChars">0</span></div>
+                    <div class="topbar-chip"><i class="fas fa-paragraph"></i> Sentences: <span class="tc-num" id="tSentences">0</span></div>
+                    <div class="topbar-chip"><i class="fas fa-align-left"></i> Paragraphs: <span class="tc-num" id="tParas">0</span></div>
+                    <div class="topbar-chip"><i class="fas fa-book-reader"></i> <span class="tc-num" id="tReadTime">0s</span></div>
+                </div>
+                <div class="topbar-right">
+                    <button class="tb-btn" onclick="toggleFR()"><i class="fas fa-search"></i> Find</button>
+                    <button class="tb-btn" onclick="clearText()"><i class="fas fa-eraser"></i> Clear</button>
+                    <button class="tb-btn" onclick="copyText()"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="tb-btn" id="caseBtn" onclick="toggleCaseMenu()"><i class="fas fa-text-height"></i> Case</button>
+                </div>
+            </div>
+
+            <!-- Find & Replace -->
+            <div class="fr-bar" id="frBar">
+                <input class="fr-input" id="frFind" placeholder="Find..." oninput="findInText()">
+                <input class="fr-input" id="frReplace" placeholder="Replace with...">
+                <button class="fr-btn" onclick="replaceOne()"><i class="fas fa-exchange-alt"></i> Replace</button>
+                <button class="fr-btn replace-btn" onclick="replaceAll()"><i class="fas fa-sync"></i> All</button>
+                <span class="fr-count" id="frCount">0 found</span>
+                <button class="fr-close" onclick="toggleFR()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Text Editor -->
+            <div class="editor-wrap">
+                <textarea class="text-editor" id="editor" placeholder="Start typing or paste your text here...
+
+✏️ Type anything and watch the real-time word count, character count, reading time, and more update instantly in the sidebar and top bar.
+
+📊 Features:
+• Word, Character, Sentence, Paragraph count
+• Reading & Speaking time
+• Readability score (Flesch-Kincaid)
+• Keyword density analysis
+• Find & Replace
+• Text case conversion
+• Export statistics report
+• Writing goals tracker
+
+🚀 100% free, secure, and works offline!" spellcheck="true"></textarea>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="sb-left">
+                    <div class="sb-item"><i class="fas fa-font"></i> <span id="bWords">0</span> words</div>
+                    <div class="sb-item"><i class="fas fa-text-width"></i> <span id="bChars">0</span> chars</div>
+                    <div class="sb-item"><i class="fas fa-book-reader"></i> <span id="bRead">0s</span> read</div>
+                </div>
+                <div class="sb-right">
+                    <div class="sb-item"><i class="fas fa-stream"></i> Ln <span id="bLine">1</span></div>
+                    <div class="sb-item"><i class="fas fa-arrows-alt-h"></i> Col <span id="bCol">1</span></div>
+                    <div class="sb-item"><i class="fas fa-mouse-pointer"></i> Sel: <span id="bSel">0</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="actions">
-      <button class="copy-btn" onclick="copyText()">Copy Text</button>
-      <button class="clear-btn" onclick="clearText()">Clear</button>
+    <!-- MOB BAR -->
+    <div class="mobbar">
+        <button class="mb" onclick="toggleSB()"><i class="fas fa-chart-bar"></i>Stats</button>
+        <button class="mb" onclick="toggleFR()"><i class="fas fa-search"></i>Find</button>
+        <button class="mb" onclick="clearText()"><i class="fas fa-eraser"></i>Clear</button>
+        <button class="mb" onclick="copyText()"><i class="fas fa-copy"></i>Copy</button>
+        <button class="mb" onclick="pasteText()"><i class="fas fa-paste"></i>Paste</button>
+        <button class="mb" onclick="toUpper()"><i class="fas fa-arrow-up"></i>UPPER</button>
+        <button class="mb" onclick="toLower()"><i class="fas fa-arrow-down"></i>lower</button>
+        <button class="mb" onclick="toTitle()"><i class="fas fa-heading"></i>Title</button>
+        <button class="mb" onclick="showExport()"><i class="fas fa-download"></i>Export</button>
     </div>
-
-  </div>
-
-  <!-- Adsterra Ads Section -->
-  <div class="ads-section">
-    <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-  </div>
-
 </div>
 
+<!-- EXPORT OVERLAY -->
+<div class="ov" id="exportOv">
+    <div class="ov-modal" style="position:relative">
+        <button class="ov-close" onclick="document.getElementById('exportOv').classList.remove('show')"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-file-alt"></i> Export Report</h3>
+        <div class="report-preview" id="reportPreview"></div>
+        <button class="dlb" onclick="downloadReport()"><i class="fas fa-download"></i> Download .txt Report</button>
+        <br>
+        <button class="clb" onclick="downloadHTML()"><i class="fas fa-code"></i> Download HTML Report</button>
+    </div>
+</div>
+
+<!-- CASE MENU -->
+<div class="ov" id="caseOv">
+    <div class="ov-modal" style="position:relative;max-width:340px">
+        <button class="ov-close" onclick="document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-text-height"></i> Text Case</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+            <button class="dlb" style="width:100%;justify-content:center;padding:12px;font-size:14px" onclick="toUpper();document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-arrow-up"></i> UPPERCASE</button>
+            <button class="dlb" style="width:100%;justify-content:center;padding:12px;font-size:14px;background:linear-gradient(135deg,var(--blue),var(--blue))" onclick="toLower();document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-arrow-down"></i> lowercase</button>
+            <button class="dlb" style="width:100%;justify-content:center;padding:12px;font-size:14px;background:linear-gradient(135deg,var(--purple),var(--purple))" onclick="toTitle();document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-heading"></i> Title Case</button>
+            <button class="dlb" style="width:100%;justify-content:center;padding:12px;font-size:14px;background:linear-gradient(135deg,var(--orange),var(--orange))" onclick="toSentence();document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-paragraph"></i> Sentence case</button>
+            <button class="dlb" style="width:100%;justify-content:center;padding:12px;font-size:14px;background:linear-gradient(135deg,var(--teal),var(--teal))" onclick="toToggle();document.getElementById('caseOv').classList.remove('show')"><i class="fas fa-exchange-alt"></i> tOGGLE cASE</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <script>
+    // ========== STATE ==========
+    const editor=document.getElementById('editor');
+    let kwMode=1;
+    let stats={words:0,chars:0,charsNS:0,sentences:0,paragraphs:0,lines:0};
 
-function updateCounts(){
-  let text = document.getElementById("textInput").value;
+    // ========== REAL-TIME COUNTING ==========
+    editor.addEventListener('input',analyze);
+    editor.addEventListener('keyup',updateCursor);
+    editor.addEventListener('click',updateCursor);
+    editor.addEventListener('select',updateSelection);
 
-  let words = text.trim().match(/\S+/g);
-  document.getElementById("wordCount").innerText = words ? words.length : 0;
+    function analyze(){
+        const text=editor.value;
+        const trimmed=text.trim();
 
-  document.getElementById("charCount").innerText = text.length;
-  document.getElementById("charNoSpace").innerText = text.replace(/\s/g,"").length;
+        // Words
+        const words=trimmed?trimmed.split(/\s+/).filter(w=>w.length>0):[];
+        stats.words=words.length;
 
-  let sentences = text.split(/[.!?]+/).filter(Boolean);
-  document.getElementById("sentenceCount").innerText = sentences.length;
+        // Characters
+        stats.chars=text.length;
+        stats.charsNS=text.replace(/\s/g,'').length;
 
-  let paragraphs = text.split(/\n+/).filter(p => p.trim() !== "");
-  document.getElementById("paragraphCount").innerText = paragraphs.length;
+        // Sentences
+        const sentences=trimmed?trimmed.split(/[.!?।؟]+/).filter(s=>s.trim().length>0):[];
+        stats.sentences=sentences.length;
 
-  let readingMinutes = Math.ceil((words ? words.length : 0) / 200);
-  document.getElementById("readingTime").innerText = readingMinutes + " min";
-}
+        // Paragraphs
+        const paras=trimmed?trimmed.split(/\n\s*\n/).filter(p=>p.trim().length>0):[];
+        stats.paragraphs=paras.length||(trimmed?1:0);
 
-function copyText(){
-  let text = document.getElementById("textInput");
-  text.select();
-  document.execCommand("copy");
-  alert("Text copied!");
-}
+        // Lines
+        stats.lines=text?text.split('\n').length:0;
 
-function clearText(){
-  document.getElementById("textInput").value="";
-  updateCounts();
-}
+        // Reading time (avg 238 wpm)
+        const readMin=stats.words/238;
+        const readTime=formatTime(readMin);
 
+        // Speaking time (avg 150 wpm)
+        const speakMin=stats.words/150;
+        const speakTime=formatTime(speakMin);
+
+        // Handwriting (13 wpm)
+        const handMin=stats.words/13;
+        const handTime=formatTime(handMin);
+
+        // Avg word length
+        const avgWordLen=stats.words>0?(stats.charsNS/stats.words).toFixed(1):'0';
+
+        // Avg sentence length
+        const avgSentLen=stats.sentences>0?Math.round(stats.words/stats.sentences):0;
+
+        // Pages (250 words per page)
+        const pages=stats.words>0?Math.ceil(stats.words/250):0;
+
+        // Update sidebar
+        document.getElementById('sWords').textContent=stats.words.toLocaleString();
+        document.getElementById('sChars').textContent=stats.chars.toLocaleString();
+        document.getElementById('sCharsNS').textContent=stats.charsNS.toLocaleString();
+        document.getElementById('sSentences').textContent=stats.sentences.toLocaleString();
+        document.getElementById('sParagraphs').textContent=stats.paragraphs.toLocaleString();
+        document.getElementById('sLines').textContent=stats.lines.toLocaleString();
+        document.getElementById('sReadTime').textContent=readTime;
+        document.getElementById('sSpeakTime').textContent=speakTime;
+        document.getElementById('sHandTime').textContent=handTime;
+        document.getElementById('sAvgWord').textContent=avgWordLen+' chars';
+        document.getElementById('sAvgSentence').textContent=avgSentLen+' words';
+        document.getElementById('sPages').textContent=pages;
+
+        // Update topbar
+        document.getElementById('tWords').textContent=stats.words.toLocaleString();
+        document.getElementById('tChars').textContent=stats.chars.toLocaleString();
+        document.getElementById('tSentences').textContent=stats.sentences.toLocaleString();
+        document.getElementById('tParas').textContent=stats.paragraphs.toLocaleString();
+        document.getElementById('tReadTime').textContent=readTime;
+
+        // Update bottom bar
+        document.getElementById('bWords').textContent=stats.words.toLocaleString();
+        document.getElementById('bChars').textContent=stats.chars.toLocaleString();
+        document.getElementById('bRead').textContent=readTime;
+
+        // Update goals
+        updateGoal('goalEmail','goalEmailVal',stats.words,200);
+        updateGoal('goalBlog','goalBlogVal',stats.words,1000);
+        updateGoal('goalEssay','goalEssayVal',stats.words,2500);
+        updateGoal('goalArticle','goalArticleVal',stats.words,5000);
+
+        // Readability (Flesch-Kincaid)
+        updateReadability(words,sentences);
+
+        // Keyword density
+        updateKeywords(words);
+    }
+
+    function formatTime(minutes){
+        if(minutes<1)return Math.round(minutes*60)+'s';
+        if(minutes<60){
+            const m=Math.floor(minutes);
+            const s=Math.round((minutes-m)*60);
+            return m+'m'+( s>0?' '+s+'s':'');
+        }
+        const h=Math.floor(minutes/60);
+        const m=Math.round(minutes%60);
+        return h+'h'+(m>0?' '+m+'m':'');
+    }
+
+    function updateGoal(barId,valId,current,target){
+        const pct=Math.min(100,Math.round((current/target)*100));
+        document.getElementById(barId).style.width=pct+'%';
+        document.getElementById(valId).textContent=pct+'%';
+    }
+
+    // ========== READABILITY ==========
+    function updateReadability(words,sentences){
+        if(words.length<10){
+            document.getElementById('readScore').textContent='-';
+            document.getElementById('readLabel').textContent='Need 10+ words';
+            document.getElementById('readPointer').style.left='50%';
+            document.getElementById('readGrade').textContent='-';
+            document.getElementById('readAge').textContent='-';
+            return;
+        }
+
+        // Count syllables
+        let totalSyllables=0;
+        words.forEach(w=>{totalSyllables+=countSyllables(w)});
+
+        const wordCount=words.length;
+        const sentCount=Math.max(sentences.length,1);
+        const syllPerWord=totalSyllables/wordCount;
+        const wordsPerSent=wordCount/sentCount;
+
+        // Flesch Reading Ease
+        const fre=206.835-(1.015*wordsPerSent)-(84.6*syllPerWord);
+        const score=Math.max(0,Math.min(100,Math.round(fre)));
+
+        // Grade level
+        const grade=Math.round(0.39*wordsPerSent+11.8*syllPerWord-15.59);
+        const gradeLevel=Math.max(1,Math.min(grade,16));
+
+        // Age
+        const age=gradeLevel+5;
+
+        let label='';
+        if(score>=90)label='Very Easy';
+        else if(score>=80)label='Easy';
+        else if(score>=70)label='Fairly Easy';
+        else if(score>=60)label='Standard';
+        else if(score>=50)label='Fairly Difficult';
+        else if(score>=30)label='Difficult';
+        else label='Very Difficult';
+
+        document.getElementById('readScore').textContent=score;
+        document.getElementById('readLabel').textContent=label;
+        document.getElementById('readPointer').style.left=score+'%';
+        document.getElementById('readGrade').textContent='Grade '+gradeLevel;
+        document.getElementById('readAge').textContent=age+'+ yrs';
+    }
+
+    function countSyllables(word){
+        word=word.toLowerCase().replace(/[^a-z]/g,'');
+        if(word.length<=3)return 1;
+        word=word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,'');
+        word=word.replace(/^y/,'');
+        const match=word.match(/[aeiouy]{1,2}/g);
+        return match?match.length:1;
+    }
+
+    // ========== KEYWORDS ==========
+    function updateKeywords(words){
+        if(words.length===0){
+            document.getElementById('kwList').innerHTML='<div style="text-align:center;padding:20px;color:var(--txtM);font-size:12px">Start typing to see keywords</div>';
+            return;
+        }
+
+        const stopWords=new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','is','it',
+            'this','that','was','are','be','has','had','have','do','does','did','will','would','could','should',
+            'may','might','shall','can','not','no','so','if','from','as','its','than','then','into','also',
+            'just','about','up','out','been','were','their','there','they','them','we','our','your','you','he',
+            'she','his','her','my','me','i','am','what','which','who','when','where','how','all','each','every',
+            'both','few','more','most','other','some','such','only','own','same','too','very','just']);
+
+        const ngrams={};
+        const cleanWords=words.map(w=>w.toLowerCase().replace(/[^a-z0-9'-]/g,'')).filter(w=>w.length>0);
+
+        for(let i=0;i<=cleanWords.length-kwMode;i++){
+            const gram=cleanWords.slice(i,i+kwMode).join(' ');
+            if(kwMode===1&&stopWords.has(gram))continue;
+            if(gram.length<2)continue;
+            ngrams[gram]=(ngrams[gram]||0)+1;
+        }
+
+        const sorted=Object.entries(ngrams).sort((a,b)=>b[1]-a[1]).slice(0,15);
+        const maxCount=sorted.length?sorted[0][1]:1;
+
+        let html='';
+        sorted.forEach(([word,count],i)=>{
+            const pct=Math.round((count/maxCount)*100);
+            const density=((count/words.length)*100).toFixed(1);
+            html+=`<div class="kw-item">
+                <div class="kw-rank">${i+1}</div>
+                <div class="kw-word">${escHtml(word)}</div>
+                <div class="kw-bar-wrap"><div class="kw-bar" style="width:${pct}%"></div></div>
+                <div class="kw-count">${count}× (${density}%)</div>
+            </div>`;
+        });
+
+        document.getElementById('kwList').innerHTML=html||'<div style="text-align:center;padding:20px;color:var(--txtM);font-size:12px">No keywords found</div>';
+    }
+
+    function setKwMode(n,el){
+        kwMode=n;
+        document.querySelectorAll('.kw-tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        analyze();
+    }
+
+    // ========== CURSOR & SELECTION ==========
+    function updateCursor(){
+        const pos=editor.selectionStart;
+        const text=editor.value.substring(0,pos);
+        const lines=text.split('\n');
+        document.getElementById('bLine').textContent=lines.length;
+        document.getElementById('bCol').textContent=lines[lines.length-1].length+1;
+        updateSelection();
+    }
+
+    function updateSelection(){
+        const start=editor.selectionStart;
+        const end=editor.selectionEnd;
+        const sel=Math.abs(end-start);
+        document.getElementById('bSel').textContent=sel;
+    }
+
+    // ========== TEXT OPERATIONS ==========
+    function clearText(){editor.value='';analyze();toast('Cleared ✅')}
+    function copyText(){navigator.clipboard.writeText(editor.value);toast('Copied 📋')}
+    async function pasteText(){
+        try{const t=await navigator.clipboard.readText();editor.value+=t;analyze();toast('Pasted 📋')}
+        catch(e){toast('Paste failed ⚠️')}
+    }
+
+    // Case conversions
+    function toUpper(){editor.value=editor.value.toUpperCase();analyze();toast('UPPERCASE ✅')}
+    function toLower(){editor.value=editor.value.toLowerCase();analyze();toast('lowercase ✅')}
+    function toTitle(){
+        editor.value=editor.value.replace(/\w\S*/g,t=>t.charAt(0).toUpperCase()+t.substr(1).toLowerCase());
+        analyze();toast('Title Case ✅');
+    }
+    function toSentence(){
+        editor.value=editor.value.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g,c=>c.toUpperCase());
+        analyze();toast('Sentence case ✅');
+    }
+    function toToggle(){
+        editor.value=editor.value.split('').map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('');
+        analyze();toast('tOGGLE cASE ✅');
+    }
+
+    function toggleCaseMenu(){document.getElementById('caseOv').classList.toggle('show')}
+
+    // ========== FIND & REPLACE ==========
+    function toggleFR(){document.getElementById('frBar').classList.toggle('show');
+        if(document.getElementById('frBar').classList.contains('show'))document.getElementById('frFind').focus()}
+
+    function findInText(){
+        const query=document.getElementById('frFind').value;
+        if(!query){document.getElementById('frCount').textContent='0 found';return}
+        const text=editor.value;
+        const regex=new RegExp(escRegex(query),'gi');
+        const matches=text.match(regex);
+        document.getElementById('frCount').textContent=(matches?matches.length:0)+' found';
+    }
+
+    function replaceOne(){
+        const find=document.getElementById('frFind').value;
+        const replace=document.getElementById('frReplace').value;
+        if(!find)return;
+        const idx=editor.value.toLowerCase().indexOf(find.toLowerCase());
+        if(idx===-1){toast('Not found ⚠️');return}
+        editor.value=editor.value.substring(0,idx)+replace+editor.value.substring(idx+find.length);
+        analyze();findInText();toast('Replaced ✅');
+    }
+
+    function replaceAll(){
+        const find=document.getElementById('frFind').value;
+        const replace=document.getElementById('frReplace').value;
+        if(!find)return;
+        const regex=new RegExp(escRegex(find),'gi');
+        const count=(editor.value.match(regex)||[]).length;
+        editor.value=editor.value.replace(regex,replace);
+        analyze();findInText();toast(`Replaced ${count} ✅`);
+    }
+
+    function escRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+
+    // ========== SIDEBAR ==========
+    function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbov').classList.toggle('show')}
+    function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbov').classList.remove('show')}
+
+    function setView(v,el){
+        document.querySelectorAll('.nav-chip').forEach(c=>c.classList.remove('active'));
+        el.classList.add('active');
+        if(v==='stats'){document.getElementById('sidebar').classList.add('open');document.getElementById('sbov').classList.add('show')}
+        else{closeSB()}
+    }
+
+    // ========== EXPORT ==========
+    function showExport(){
+        const rp=document.getElementById('reportPreview');
+        const text=editor.value.trim();
+        const words=text?text.split(/\s+/).filter(w=>w.length>0):[];
+
+        let html=`<h4><i class="fas fa-chart-bar"></i> Text Statistics</h4>`;
+        html+=rp_row('Words',stats.words.toLocaleString());
+        html+=rp_row('Characters',stats.chars.toLocaleString());
+        html+=rp_row('Characters (no spaces)',stats.charsNS.toLocaleString());
+        html+=rp_row('Sentences',stats.sentences.toLocaleString());
+        html+=rp_row('Paragraphs',stats.paragraphs.toLocaleString());
+        html+=rp_row('Lines',stats.lines.toLocaleString());
+
+        html+=`<h4><i class="fas fa-clock"></i> Time Estimates</h4>`;
+        html+=rp_row('Reading Time',document.getElementById('sReadTime').textContent);
+        html+=rp_row('Speaking Time',document.getElementById('sSpeakTime').textContent);
+        html+=rp_row('Handwriting Time',document.getElementById('sHandTime').textContent);
+
+        html+=`<h4><i class="fas fa-ruler"></i> Averages</h4>`;
+        html+=rp_row('Avg Word Length',document.getElementById('sAvgWord').textContent);
+        html+=rp_row('Avg Sentence Length',document.getElementById('sAvgSentence').textContent);
+        html+=rp_row('Pages (A4)',document.getElementById('sPages').textContent);
+
+        html+=`<h4><i class="fas fa-glasses"></i> Readability</h4>`;
+        html+=rp_row('Flesch Score',document.getElementById('readScore').textContent);
+        html+=rp_row('Level',document.getElementById('readLabel').textContent);
+        html+=rp_row('Grade',document.getElementById('readGrade').textContent);
+
+        html+=`<h4><i class="fas fa-key"></i> Top Keywords</h4>`;
+        const kwItems=document.querySelectorAll('.kw-item');
+        kwItems.forEach(item=>{
+            const word=item.querySelector('.kw-word')?.textContent||'';
+            const count=item.querySelector('.kw-count')?.textContent||'';
+            if(word)html+=rp_row(word,count);
+        });
+
+        rp.innerHTML=html;
+        document.getElementById('exportOv').classList.add('show');
+    }
+
+    function rp_row(label,value){
+        return `<div class="rp-row"><span>${label}</span><span>${value}</span></div>`;
+    }
+
+    function downloadReport(){
+        let report='╔══════════════════════════════════════╗\n';
+        report+='║       WORD COUNTER REPORT            ║\n';
+        report+='╚══════════════════════════════════════╝\n\n';
+        report+='📊 TEXT STATISTICS\n';
+        report+='─'.repeat(40)+'\n';
+        report+=`Words:                ${stats.words.toLocaleString()}\n`;
+        report+=`Characters:           ${stats.chars.toLocaleString()}\n`;
+        report+=`Characters (no sp):   ${stats.charsNS.toLocaleString()}\n`;
+        report+=`Sentences:            ${stats.sentences.toLocaleString()}\n`;
+        report+=`Paragraphs:           ${stats.paragraphs.toLocaleString()}\n`;
+        report+=`Lines:                ${stats.lines.toLocaleString()}\n\n`;
+        report+='⏱️ TIME ESTIMATES\n';
+        report+='─'.repeat(40)+'\n';
+        report+=`Reading:              ${document.getElementById('sReadTime').textContent}\n`;
+        report+=`Speaking:             ${document.getElementById('sSpeakTime').textContent}\n`;
+        report+=`Handwriting:          ${document.getElementById('sHandTime').textContent}\n\n`;
+        report+='📏 AVERAGES\n';
+        report+='─'.repeat(40)+'\n';
+        report+=`Avg Word Length:      ${document.getElementById('sAvgWord').textContent}\n`;
+        report+=`Avg Sentence:         ${document.getElementById('sAvgSentence').textContent}\n`;
+        report+=`Pages (A4):           ${document.getElementById('sPages').textContent}\n\n`;
+        report+='📖 READABILITY\n';
+        report+='─'.repeat(40)+'\n';
+        report+=`Flesch Score:         ${document.getElementById('readScore').textContent}\n`;
+        report+=`Level:                ${document.getElementById('readLabel').textContent}\n`;
+        report+=`Grade:                ${document.getElementById('readGrade').textContent}\n\n`;
+        report+='Generated by WordCounter — Free Online Tool\n';
+
+        const blob=new Blob([report],{type:'text/plain'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);a.download='word-counter-report.txt';a.click();
+        URL.revokeObjectURL(a.href);toast('Report downloaded 📄');
+    }
+
+    function downloadHTML(){
+        const text=editor.value;
+        let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Word Counter Report</title>
+        <style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:20px;color:#333;line-height:1.8}
+        h1{color:#2E7D32;border-bottom:3px solid #4CAF50;padding-bottom:10px}
+        h2{color:#388E3C;margin-top:30px}
+        table{width:100%;border-collapse:collapse;margin:15px 0}
+        th{background:#4CAF50;color:white;padding:10px;text-align:left}
+        td{padding:10px;border-bottom:1px solid #E8F5E9}
+        .highlight{background:#E8F5E9;padding:15px;border-left:4px solid #4CAF50;border-radius:0 8px 8px 0;margin:15px 0}
+        </style></head><body>
+        <h1>📊 Word Counter Report</h1>
+        <div class="highlight">Generated by <strong>WordCounter</strong> — Free Online Tool</div>
+        <h2>📈 Statistics</h2>
+        <table><tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Words</td><td><strong>${stats.words.toLocaleString()}</strong></td></tr>
+        <tr><td>Characters</td><td><strong>${stats.chars.toLocaleString()}</strong></td></tr>
+        <tr><td>Characters (no spaces)</td><td><strong>${stats.charsNS.toLocaleString()}</strong></td></tr>
+        <tr><td>Sentences</td><td><strong>${stats.sentences.toLocaleString()}</strong></td></tr>
+        <tr><td>Paragraphs</td><td><strong>${stats.paragraphs.toLocaleString()}</strong></td></tr>
+        <tr><td>Lines</td><td><strong>${stats.lines.toLocaleString()}</strong></td></tr>
+        <tr><td>Reading Time</td><td><strong>${document.getElementById('sReadTime').textContent}</strong></td></tr>
+        <tr><td>Speaking Time</td><td><strong>${document.getElementById('sSpeakTime').textContent}</strong></td></tr>
+        <tr><td>Readability Score</td><td><strong>${document.getElementById('readScore').textContent} (${document.getElementById('readLabel').textContent})</strong></td></tr>
+        </table>
+        <h2>📝 Original Text</h2>
+        <div style="background:#f5f5f5;padding:20px;border-radius:8px;white-space:pre-wrap;font-size:14px">${escHtml(text)}</div>
+        </body></html>`;
+
+        const blob=new Blob([html],{type:'text/html'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);a.download='word-counter-report.html';a.click();
+        URL.revokeObjectURL(a.href);toast('HTML report downloaded 📄');
+    }
+
+    // ========== HELPERS ==========
+    function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+    function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+    // Init
+    analyze();
 </script>
-
 </body>
 </html>
