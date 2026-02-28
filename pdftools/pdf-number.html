@@ -1,209 +1,824 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Page Number Adder – ToolMatrix</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Page Numbers to PDF - Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        :root{
+            --primary:#2ecc71;--primary-dark:#27ae60;--primary-darker:#1e8c4c;
+            --primary-light:#a8f0c8;--primary-ultra-light:#e8faf0;
+            --primary-glow:rgba(46,204,113,0.15);--bg:#f0faf4;--white:#fff;
+            --dark:#1a2e28;--gray:#6b7c75;--gray-light:#c5d5cc;--border:#d4edda;
+            --red:#e74c3c;--red-light:#fce4ec;--orange:#f39c12;--blue:#3498db;
+            --blue-light:#e8f4fd;--purple:#9b59b6;
+            --shadow:0 4px 20px rgba(46,204,113,0.10);
+            --shadow-lg:0 10px 40px rgba(46,204,113,0.13);
+            --shadow-xl:0 20px 60px rgba(46,204,113,0.10);
+            --radius:18px;--radius-sm:12px;--radius-xs:8px;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+        /* ===== NAVBAR ===== */
+        .navbar{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(46,204,113,0.07)}
+        .navbar-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+        .navbar-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(46,204,113,0.3)}
+        .navbar-title{font-size:22px;font-weight:800;color:var(--dark)}
+        .navbar-title span{color:var(--primary)}
+        .navbar-links{display:flex;align-items:center;gap:6px}
+        .nav-link{padding:8px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;color:var(--gray);transition:all 0.3s}
+        .nav-link:hover{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .nav-link.active{background:var(--primary);color:#fff}
+        .mobile-menu-btn{display:none;background:none;border:none;font-size:24px;color:var(--dark);cursor:pointer}
 
-<style>
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#0f172a,#1e3a8a);
-    color:#fff;
-}
-.container{
-    max-width:1000px;
-    margin:auto;
-    padding:40px 20px;
-}
-.card{
-    background:#111827;
-    padding:30px;
-    border-radius:15px;
-    box-shadow:0 0 25px rgba(0,0,0,0.4);
-}
-h1{
-    text-align:center;
-    margin-bottom:25px;
-}
-input,select{
-    width:100%;
-    padding:10px;
-    margin-bottom:15px;
-    border-radius:8px;
-    border:none;
-    background:#1e293b;
-    color:#fff;
-}
-.row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-}
-button{
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    margin-top:10px;
-    cursor:pointer;
-    font-weight:bold;
-}
-.primary{background:#2563eb;color:#fff;}
-.success{background:#16a34a;color:#fff;}
-.status{
-    margin-top:15px;
-    font-weight:bold;
-    text-align:center;
-}
-@media(max-width:768px){
-    .row{grid-template-columns:1fr;}
-}
-</style>
+        /* ===== HERO ===== */
+        .hero{text-align:center;padding:56px 20px 26px;max-width:780px;margin:0 auto}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-ultra-light);border:1.5px solid var(--primary-light);padding:8px 22px;border-radius:50px;font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:22px}
+        .hero h1{font-size:44px;font-weight:900;line-height:1.13;margin-bottom:16px}
+        .hero h1 span{background:linear-gradient(135deg,var(--primary),var(--primary-darker));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:17px;color:var(--gray);line-height:1.7;max-width:620px;margin:0 auto}
+
+        /* ===== TOOL ===== */
+        .tool-container{max-width:1100px;margin:18px auto 60px;padding:0 20px}
+        .tool-card{background:var(--white);border-radius:var(--radius);border:2px solid var(--border);box-shadow:var(--shadow-xl);overflow:hidden}
+
+        /* ===== UPLOAD ===== */
+        .upload-area{padding:48px 40px;text-align:center}
+        .upload-area.hidden{display:none}
+        .upload-zone{border:2.5px dashed var(--primary-light);border-radius:var(--radius);padding:60px 40px;cursor:pointer;transition:all 0.3s;background:var(--primary-ultra-light)}
+        .upload-zone:hover,.upload-zone.drag-over{border-color:var(--primary);background:var(--primary-glow);transform:scale(1.01)}
+        .upload-zone.drag-over{box-shadow:0 0 0 5px rgba(46,204,113,0.13)}
+        .upload-icon-wrap{position:relative;width:100px;height:100px;margin:0 auto 26px}
+        .upload-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:pulseGlow 2.5s infinite}
+        .upload-sub-badge{position:absolute;bottom:-3px;right:-3px;width:38px;height:38px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;border:3px solid var(--white);box-shadow:0 3px 10px rgba(52,152,219,0.3)}
+        @keyframes pulseGlow{0%,100%{box-shadow:0 8px 30px rgba(46,204,113,0.35)}50%{box-shadow:0 8px 50px rgba(46,204,113,0.55)}}
+        .upload-zone h3{font-size:21px;font-weight:700;margin-bottom:8px}
+        .upload-zone p{color:var(--gray);font-size:14px;margin-bottom:22px}
+        .upload-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 18px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .upload-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(46,204,113,0.5)}
+        .upload-note{margin-top:16px;font-size:12px;color:var(--gray-light)}
+        .upload-note i{margin-right:4px}
+        #fileInput{display:none}
+
+        /* ===== FILE INFO BAR ===== */
+        .file-bar{display:none;padding:24px 36px 0}
+        .file-bar.show{display:block}
+        .file-bar-inner{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm)}
+        .fb-icon{width:48px;height:48px;background:linear-gradient(135deg,#e74c3c,#c0392b);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;flex-shrink:0}
+        .fb-info{flex:1;min-width:0}
+        .fb-name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fb-meta{font-size:12px;color:var(--gray);display:flex;gap:12px;margin-top:3px;flex-wrap:wrap}
+        .fb-meta span{display:flex;align-items:center;gap:4px}
+        .fb-badge{padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:var(--primary-ultra-light);color:var(--primary-dark);border:1px solid var(--primary-light);flex-shrink:0}
+        .fb-remove{width:32px;height:32px;background:none;border:1.5px solid #e74c3c44;border-radius:8px;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.3s;flex-shrink:0}
+        .fb-remove:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+        /* ===== MAIN EDITOR LAYOUT ===== */
+        .editor-section{display:none;padding:24px 36px}
+        .editor-section.show{display:block}
+        .editor-layout{display:grid;grid-template-columns:340px 1fr;gap:24px}
+
+        /* ===== LEFT: SETTINGS PANEL ===== */
+        .settings-panel{display:flex;flex-direction:column;gap:16px}
+        .setting-group{background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:20px;transition:all 0.3s}
+        .setting-group:hover{border-color:var(--primary-light)}
+        .sg-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .sg-title i{color:var(--primary);font-size:15px}
+
+        /* Position Picker */
+        .position-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:6px;width:100%;aspect-ratio:1.4/1;background:var(--white);border:2px solid var(--border);border-radius:var(--radius-xs);padding:10px;position:relative}
+        .position-grid::before{content:'PDF Page';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:var(--gray-light);pointer-events:none;letter-spacing:1px;text-transform:uppercase}
+        .pos-btn{border:2px solid transparent;border-radius:6px;background:none;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gray-light)}
+        .pos-btn:hover{background:var(--primary-ultra-light);border-color:var(--primary-light);color:var(--primary-dark)}
+        .pos-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 3px 10px rgba(46,204,113,0.3)}
+        .pos-btn.disabled-pos{opacity:0.2;cursor:default;pointer-events:none}
+
+        /* Inputs */
+        .sg-row{display:flex;gap:10px;margin-bottom:10px}
+        .sg-row:last-child{margin-bottom:0}
+        .sg-field{flex:1}
+        .sg-field label{display:block;font-size:11px;font-weight:600;color:var(--gray);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+        .sg-field select,.sg-field input[type="number"],.sg-field input[type="text"],.sg-field input[type="color"]{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'Inter',sans-serif;background:var(--white);color:var(--dark);transition:all 0.3s;appearance:none}
+        .sg-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7c75' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+        .sg-field input:focus,.sg-field select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+        .sg-field input[type="color"]{padding:4px;height:40px;cursor:pointer}
+
+        /* Number Format Preview */
+        .format-preview{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:10px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--primary-dark);margin-top:8px;letter-spacing:.5px}
+
+        /* Range Toggle */
+        .range-toggle{display:flex;border:1.5px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;margin-bottom:12px}
+        .range-toggle button{flex:1;padding:9px 10px;background:var(--white);border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;color:var(--gray)}
+        .range-toggle button.active{background:var(--primary);color:#fff}
+        .range-toggle button:not(:last-child){border-right:1.5px solid var(--border)}
+        .range-fields{display:none;gap:10px}
+        .range-fields.show{display:flex}
+
+        /* ===== RIGHT: PREVIEW PANEL ===== */
+        .preview-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;display:flex;flex-direction:column}
+        .preview-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--primary-ultra-light);border-bottom:1.5px solid var(--border)}
+        .preview-header h4{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .preview-header h4 i{color:var(--primary)}
+        .preview-nav{display:flex;align-items:center;gap:8px}
+        .pn-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s}
+        .pn-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .pn-btn:disabled{opacity:0.3;cursor:not-allowed}
+        .pn-info{font-size:12px;font-weight:600;color:var(--gray)}
+        .preview-body{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;background:#f3f4f6;min-height:460px;position:relative;overflow:hidden}
+        .preview-page-wrap{position:relative;box-shadow:0 4px 20px rgba(0,0,0,0.1);background:#fff;border-radius:4px;max-height:100%;display:flex;align-items:center;justify-content:center}
+        .preview-page-wrap canvas{display:block;max-width:100%;max-height:410px;border-radius:4px}
+        .page-num-overlay{position:absolute;font-weight:700;z-index:10;pointer-events:none;white-space:nowrap;letter-spacing:.3px}
+
+        /* ===== ACTION ===== */
+        .action-section{display:none;padding:0 36px 34px;text-align:center}
+        .action-section.show{display:block}
+        .action-btn{display:inline-flex;align-items:center;gap:12px;padding:17px 56px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .action-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .action-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .action-btn .spinner{display:none;width:22px;height:22px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+        .action-btn.loading .spinner{display:block}
+        .action-btn.loading .btn-icon{display:none}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* ===== PROGRESS ===== */
+        .progress-section{display:none;padding:0 36px 20px}
+        .progress-section.show{display:block}
+        .progress-container{background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:26px}
+        .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .progress-title{font-size:14px;font-weight:600}
+        .progress-percent{font-size:14px;font-weight:700;color:var(--primary-dark)}
+        .progress-bar-bg{width:100%;height:14px;background:var(--border);border-radius:50px;overflow:hidden}
+        .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:50px;width:0%;transition:width 0.4s;position:relative}
+        .progress-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 1.5s infinite}
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .progress-status{margin-top:12px;font-size:13px;color:var(--gray);display:flex;align-items:center;gap:8px}
+        .progress-status i{color:var(--primary);animation:spin 1s linear infinite}
+
+        /* ===== DOWNLOAD ===== */
+        .download-section{display:none;padding:44px 40px;text-align:center}
+        .download-section.show{display:block}
+        .success-wrap{position:relative;width:90px;height:90px;margin:0 auto 24px}
+        .success-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:bounceIn 0.6s ease}
+        .success-sub{position:absolute;bottom:-2px;right:-2px;width:34px;height:34px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:3px solid var(--white)}
+        @keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .download-section h3{font-size:24px;font-weight:800;margin-bottom:8px}
+        .download-section .sub-text{color:var(--gray);font-size:15px;margin-bottom:8px}
+        .dl-summary{display:inline-flex;align-items:center;gap:14px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 28px;margin-bottom:26px;flex-wrap:wrap;justify-content:center}
+        .sum-item{text-align:center}
+        .sum-item .s-label{font-size:10px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+        .sum-item .s-value{font-size:20px;font-weight:800;color:var(--primary-dark)}
+        .sum-divider{width:1px;height:36px;background:var(--border)}
+        .download-btn{display:inline-flex;align-items:center;gap:10px;padding:17px 48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);text-decoration:none;font-family:'Inter',sans-serif}
+        .download-btn:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .restart-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 30px;background:none;border:2px solid var(--border);border-radius:50px;color:var(--gray);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .restart-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+
+        /* ===== HOW ===== */
+        .how-section{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+        .section-title{text-align:center;font-size:28px;font-weight:800;margin-bottom:40px}
+        .section-title span{color:var(--primary)}
+        .how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+        .how-step{text-align:center}
+        .step-num{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 5px 15px rgba(46,204,113,0.3)}
+        .how-step h4{font-size:15px;font-weight:700;margin-bottom:8px}
+        .how-step p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FEATURES ===== */
+        .features{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:all 0.3s}
+        .feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--primary-light)}
+        .feature-icon{width:58px;height:58px;background:var(--primary-ultra-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--primary-dark)}
+        .feature-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+        .feature-card p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FOOTER ===== */
+        .footer{background:var(--white);border-top:2px solid var(--border);padding:30px 40px;text-align:center}
+        .footer p{font-size:13px;color:var(--gray)}
+        .footer p a{color:var(--primary-dark);text-decoration:none;font-weight:600}
+        .footer-links{display:flex;justify-content:center;gap:24px;margin-top:12px}
+        .footer-links a{font-size:13px;color:var(--gray);text-decoration:none;transition:color 0.3s}
+        .footer-links a:hover{color:var(--primary-dark)}
+
+        /* ===== TOAST ===== */
+        .toast-container{position:fixed;top:80px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:14px 22px;background:var(--white);border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;animation:slideIn 0.3s ease;border-left:4px solid var(--primary);max-width:380px}
+        .toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+        .toast.warning{border-left-color:var(--orange)}.toast.warning i{color:var(--orange)}
+        .toast i{color:var(--primary);font-size:18px}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){
+            .editor-layout{grid-template-columns:1fr}
+            .preview-body{min-height:340px}
+        }
+        @media(max-width:768px){
+            .navbar{padding:0 16px;height:60px}
+            .navbar-title{font-size:18px}
+            .navbar-links{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:16px;border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+            .navbar-links.open{display:flex}
+            .mobile-menu-btn{display:block}
+            .hero{padding:38px 16px 18px}
+            .hero h1{font-size:28px}
+            .hero p{font-size:15px}
+            .upload-area{padding:28px 16px}
+            .upload-zone{padding:40px 18px}
+            .upload-icon-wrap,.upload-icon{width:80px;height:80px}
+            .upload-icon{font-size:34px}
+            .file-bar,.editor-section,.action-section,.progress-section,.download-section{padding-left:16px;padding-right:16px}
+            .editor-layout{grid-template-columns:1fr;gap:16px}
+            .sg-row{flex-direction:column}
+            .features-grid{grid-template-columns:1fr;gap:16px}
+            .how-steps{grid-template-columns:repeat(2,1fr);gap:16px}
+            .action-btn,.download-btn{width:100%;justify-content:center}
+            .file-bar-inner{flex-wrap:wrap}
+            .footer{padding:20px 16px}
+            .toast-container{right:10px;left:10px}
+            .toast{max-width:100%}
+            .dl-summary{flex-direction:column;gap:8px}
+            .sum-divider{width:50px;height:1px}
+            .preview-body{min-height:300px}
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<div class="card">
-<h1>PDF Page Number Adder</h1>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="navbar-brand">
+        <div class="navbar-logo"><i class="fas fa-list-ol"></i></div>
+        <div class="navbar-title">Page<span>Number</span></div>
+    </a>
+    <div class="navbar-links" id="navLinks">
+        <a href="#" class="nav-link active">Add Page Numbers</a>
+        <a href="#" class="nav-link">Merge PDF</a>
+        <a href="#" class="nav-link">Compress PDF</a>
+        <a href="#" class="nav-link">Organize PDF</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
 
-<input type="file" id="pdfUpload" accept="application/pdf">
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-hashtag"></i> Smart Page Numbering</div>
+    <h1>Add <span>Page Numbers</span> to PDF</h1>
+    <p>Add customizable page numbers to your PDF files. Choose position, format, font, color and more. Live preview included.</p>
+</section>
 
-<div class="row">
-<select id="position">
-<option value="bottom-center">Bottom Center</option>
-<option value="bottom-left">Bottom Left</option>
-<option value="bottom-right">Bottom Right</option>
-<option value="top-center">Top Center</option>
-<option value="top-left">Top Left</option>
-<option value="top-right">Top Right</option>
-</select>
+<!-- TOOL -->
+<div class="tool-container">
+    <div class="tool-card">
 
-<select id="mode">
-<option value="all">All Pages</option>
-<option value="odd">Odd Pages</option>
-<option value="even">Even Pages</option>
-</select>
+        <!-- UPLOAD -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon-wrap">
+                    <div class="upload-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                    <div class="upload-sub-badge"><i class="fas fa-list-ol"></i></div>
+                </div>
+                <h3>Drop your PDF file here</h3>
+                <p>or click to browse from your device</p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Select PDF File
+                </button>
+                <div class="upload-note"><i class="fas fa-circle-info"></i> Supported: PDF up to 100MB • Page numbers added with live preview</div>
+                <input type="file" id="fileInput" accept=".pdf">
+            </div>
+        </div>
+
+        <!-- FILE BAR -->
+        <div class="file-bar" id="fileBar">
+            <div class="file-bar-inner">
+                <div class="fb-icon"><i class="fas fa-file-pdf"></i></div>
+                <div class="fb-info">
+                    <div class="fb-name" id="fbName">document.pdf</div>
+                    <div class="fb-meta">
+                        <span><i class="fas fa-weight-scale"></i> <span id="fbSize">0 KB</span></span>
+                        <span><i class="fas fa-file"></i> <span id="fbPages">0 pages</span></span>
+                    </div>
+                </div>
+                <div class="fb-badge" id="fbBadge">Ready</div>
+                <button class="fb-remove" onclick="resetTool()"><i class="fas fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div class="editor-section" id="editorSection">
+            <div class="editor-layout">
+
+                <!-- LEFT: SETTINGS -->
+                <div class="settings-panel">
+
+                    <!-- Position -->
+                    <div class="setting-group">
+                        <div class="sg-title"><i class="fas fa-crosshairs"></i> Page Number Position</div>
+                        <div class="position-grid" id="posGrid">
+                            <button class="pos-btn" data-pos="top-left" onclick="setPos(this)">TL</button>
+                            <button class="pos-btn" data-pos="top-center" onclick="setPos(this)">TC</button>
+                            <button class="pos-btn" data-pos="top-right" onclick="setPos(this)">TR</button>
+                            <button class="pos-btn disabled-pos"></button>
+                            <button class="pos-btn disabled-pos"></button>
+                            <button class="pos-btn disabled-pos"></button>
+                            <button class="pos-btn" data-pos="bottom-left" onclick="setPos(this)">BL</button>
+                            <button class="pos-btn active" data-pos="bottom-center" onclick="setPos(this)">BC</button>
+                            <button class="pos-btn" data-pos="bottom-right" onclick="setPos(this)">BR</button>
+                        </div>
+                    </div>
+
+                    <!-- Format & Font -->
+                    <div class="setting-group">
+                        <div class="sg-title"><i class="fas fa-font"></i> Number Format & Font</div>
+                        <div class="sg-row">
+                            <div class="sg-field">
+                                <label>Format</label>
+                                <select id="numFormat" onchange="updatePreview()">
+                                    <option value="plain">1, 2, 3...</option>
+                                    <option value="dash">- 1 -, - 2 -...</option>
+                                    <option value="bracket">(1), (2), (3)...</option>
+                                    <option value="of">1 of N, 2 of N...</option>
+                                    <option value="page">Page 1, Page 2...</option>
+                                    <option value="pageof">Page 1 of N</option>
+                                    <option value="roman-lower">i, ii, iii...</option>
+                                    <option value="roman-upper">I, II, III...</option>
+                                    <option value="alpha-lower">a, b, c...</option>
+                                    <option value="alpha-upper">A, B, C...</option>
+                                </select>
+                            </div>
+                            <div class="sg-field">
+                                <label>Font</label>
+                                <select id="fontFamily" onchange="updatePreview()">
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Times-Roman">Times Roman</option>
+                                    <option value="Courier">Courier</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sg-row">
+                            <div class="sg-field">
+                                <label>Font Size</label>
+                                <input type="number" id="fontSize" value="12" min="6" max="48" onchange="updatePreview()">
+                            </div>
+                            <div class="sg-field">
+                                <label>Color</label>
+                                <input type="color" id="fontColor" value="#000000" onchange="updatePreview()">
+                            </div>
+                        </div>
+                        <div class="format-preview" id="formatPreview">1</div>
+                    </div>
+
+                    <!-- Margin -->
+                    <div class="setting-group">
+                        <div class="sg-title"><i class="fas fa-expand"></i> Margin (pt)</div>
+                        <div class="sg-row">
+                            <div class="sg-field">
+                                <label>Horizontal</label>
+                                <input type="number" id="marginX" value="40" min="10" max="200" onchange="updatePreview()">
+                            </div>
+                            <div class="sg-field">
+                                <label>Vertical</label>
+                                <input type="number" id="marginY" value="30" min="10" max="200" onchange="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page Range -->
+                    <div class="setting-group">
+                        <div class="sg-title"><i class="fas fa-file-lines"></i> Page Range</div>
+                        <div class="range-toggle">
+                            <button class="active" onclick="setRange('all',this)">All Pages</button>
+                            <button onclick="setRange('custom',this)">Custom Range</button>
+                            <button onclick="setRange('odd',this)">Odd Only</button>
+                            <button onclick="setRange('even',this)">Even Only</button>
+                        </div>
+                        <div class="range-fields" id="rangeFields">
+                            <div class="sg-field">
+                                <label>From Page</label>
+                                <input type="number" id="rangeFrom" value="1" min="1" onchange="updatePreview()">
+                            </div>
+                            <div class="sg-field">
+                                <label>To Page</label>
+                                <input type="number" id="rangeTo" value="1" min="1" onchange="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Start Number -->
+                    <div class="setting-group">
+                        <div class="sg-title"><i class="fas fa-arrow-down-1-9"></i> Start Number</div>
+                        <div class="sg-row">
+                            <div class="sg-field">
+                                <label>First page number starts at</label>
+                                <input type="number" id="startNum" value="1" min="0" max="9999" onchange="updatePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: PREVIEW -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <h4><i class="fas fa-eye"></i> Live Preview</h4>
+                        <div class="preview-nav">
+                            <button class="pn-btn" id="prevPageBtn" onclick="previewPage(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <span class="pn-info" id="previewInfo">Page 1 / 1</span>
+                            <button class="pn-btn" id="nextPageBtn" onclick="previewPage(1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-body" id="previewBody">
+                        <div class="preview-page-wrap" id="previewPageWrap">
+                            <canvas id="previewCanvas"></canvas>
+                            <div class="page-num-overlay" id="pageNumOverlay">1</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ACTION -->
+        <div class="action-section" id="actionSection">
+            <button class="action-btn" id="actionBtn" onclick="addPageNumbers()">
+                <i class="fas fa-list-ol btn-icon"></i>
+                <div class="spinner"></div>
+                Add Page Numbers
+            </button>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-title">Adding page numbers...</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+                <div class="progress-status" id="progressStatus"><i class="fas fa-spinner"></i> Initializing...</div>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD -->
+        <div class="download-section" id="downloadSection">
+            <div class="success-wrap">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <div class="success-sub"><i class="fas fa-list-ol"></i></div>
+            </div>
+            <h3>Page Numbers Added! 🎉</h3>
+            <p class="sub-text">Your PDF now has beautifully formatted page numbers.</p>
+            <div class="dl-summary">
+                <div class="sum-item"><div class="s-label">Pages Numbered</div><div class="s-value" id="sumPages">0</div></div>
+                <div class="sum-divider"></div>
+                <div class="sum-item"><div class="s-label">Position</div><div class="s-value" id="sumPos">-</div></div>
+                <div class="sum-divider"></div>
+                <div class="sum-item"><div class="s-label">File Size</div><div class="s-value" id="sumSize">0</div></div>
+            </div><br>
+            <a class="download-btn" id="downloadBtn" href="#" download><i class="fas fa-download"></i> Download PDF</a><br>
+            <button class="restart-btn" onclick="resetTool()"><i class="fas fa-rotate-left"></i> Number Another PDF</button>
+        </div>
+    </div>
 </div>
 
-<div class="row">
-<input type="number" id="startPage" placeholder="From Page (leave empty = 1)">
-<input type="number" id="endPage" placeholder="To Page (leave empty = last)">
-</div>
+<!-- HOW -->
+<section class="how-section">
+    <h2 class="section-title">How to <span>Add Page Numbers</span>?</h2>
+    <div class="how-steps">
+        <div class="how-step"><div class="step-num">1</div><h4>Upload PDF</h4><p>Select or drag & drop your PDF file into the upload area.</p></div>
+        <div class="how-step"><div class="step-num">2</div><h4>Choose Position</h4><p>Select where to place page numbers — top or bottom, left, center or right.</p></div>
+        <div class="how-step"><div class="step-num">3</div><h4>Customize Style</h4><p>Pick format, font, size, color. Set page range and starting number.</p></div>
+        <div class="how-step"><div class="step-num">4</div><h4>Download</h4><p>Click add and download your PDF with beautiful page numbers.</p></div>
+    </div>
+</section>
 
-<div class="row">
-<input type="number" id="marginX" placeholder="Margin X (default 30)">
-<input type="number" id="marginY" placeholder="Margin Y (default 30)">
-</div>
+<!-- FEATURES -->
+<section class="features">
+    <h2 class="section-title">Why Use <span>PageNumber</span>?</h2>
+    <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-crosshairs"></i></div><h4>6 Positions</h4><p>Place numbers at any corner or center — top-left, top-center, top-right, bottom-left, bottom-center, bottom-right.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-eye"></i></div><h4>Live Preview</h4><p>See exactly how page numbers will look before downloading. Navigate between pages.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-hashtag"></i></div><h4>10+ Formats</h4><p>Plain, dash, bracket, Page X, X of N, Roman numerals, alphabetic and more.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-palette"></i></div><h4>Full Customization</h4><p>Custom font, size, color, margins. Match your document's style perfectly.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-halved"></i></div><h4>100% Private</h4><p>Everything runs in your browser. Your files are never uploaded to any server.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen-button"></i></div><h4>Works Everywhere</h4><p>Fully responsive design. Works perfectly on desktop, tablet & mobile devices.</p></div>
+    </div>
+</section>
 
-<div class="row">
-<input type="number" id="fontSize" placeholder="Font Size (default 12)">
-<input type="text" id="textFormat" placeholder="Text Format (Example: Page {n} of {total})">
-</div>
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">PageNumber</a> — Free Online PDF Page Numbering Tool</p>
+    <div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Contact Us</a></div>
+</footer>
 
-<button class="primary" onclick="addPageNumbers()">Add Page Numbers</button>
-<button class="success" onclick="downloadPDF()">Download PDF</button>
-
-<div class="status" id="status"></div>
-
-</div>
-<script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-  atOptions = {
-    'key' : '4afdbe032cc77af781754d77ab0211fb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
+    // ===== STATE =====
+    let srcFile=null,srcBuffer=null,pdfDoc=null,totalPages=0;
+    let currentPreviewPage=1;
+    let position='bottom-center';
+    let pageRange='all';
 
-</div>
+    // ===== DOM =====
+    const uploadArea=document.getElementById('uploadArea');
+    const uploadZone=document.getElementById('uploadZone');
+    const fileInput=document.getElementById('fileInput');
+    const fileBar=document.getElementById('fileBar');
+    const editorSection=document.getElementById('editorSection');
+    const actionSection=document.getElementById('actionSection');
+    const progressSection=document.getElementById('progressSection');
+    const downloadSection=document.getElementById('downloadSection');
+    const actionBtn=document.getElementById('actionBtn');
+    const downloadBtn=document.getElementById('downloadBtn');
 
-<script>
+    // ===== UPLOAD =====
+    uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over')});
+    uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')handleFile(f);else showToast('Please drop a PDF file.','error')});
+    uploadZone.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')fileInput.click()});
+    fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);fileInput.value=''});
 
-let modifiedPdfBytes = null;
-
-async function addPageNumbers(){
-
-    const fileInput = document.getElementById('pdfUpload');
-    if(!fileInput.files.length){
-        alert("Upload PDF first");
-        return;
+    // ===== HANDLE FILE =====
+    async function handleFile(file){
+        if(file.size>100*1024*1024)return showToast('File exceeds 100MB.','error');
+        srcFile=file;
+        srcBuffer=await file.arrayBuffer();
+        try{
+            pdfDoc=await pdfjsLib.getDocument({data:srcBuffer.slice(0)}).promise;
+            totalPages=pdfDoc.numPages;
+            document.getElementById('fbName').textContent=file.name;
+            document.getElementById('fbSize').textContent=formatSize(file.size);
+            document.getElementById('fbPages').textContent=totalPages+' pages';
+            document.getElementById('rangeTo').value=totalPages;
+            document.getElementById('rangeTo').max=totalPages;
+            document.getElementById('rangeFrom').max=totalPages;
+            currentPreviewPage=1;
+            uploadArea.classList.add('hidden');
+            fileBar.classList.add('show');
+            editorSection.classList.add('show');
+            actionSection.classList.add('show');
+            progressSection.classList.remove('show');
+            downloadSection.classList.remove('show');
+            await renderPreview();
+            showToast(`${totalPages} pages loaded! Customize and preview.`);
+        }catch(err){
+            showToast('Error loading PDF: '+err.message,'error');
+        }
     }
 
-    document.getElementById("status").innerText="Processing...";
-
-    const file = fileInput.files[0];
-    const arrayBuffer = await file.arrayBuffer();
-
-    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
-    const total = pages.length;
-
-    const position = document.getElementById("position").value;
-    const mode = document.getElementById("mode").value;
-
-    let startPage = parseInt(document.getElementById("startPage").value) || 1;
-    let endPage = parseInt(document.getElementById("endPage").value) || total;
-
-    const marginX = parseInt(document.getElementById("marginX").value) || 30;
-    const marginY = parseInt(document.getElementById("marginY").value) || 30;
-    const fontSize = parseInt(document.getElementById("fontSize").value) || 12;
-    const format = document.getElementById("textFormat").value || "Page {n}";
-
-    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-
-    pages.forEach((page, index)=>{
-        const pageNum = index + 1;
-
-        if(pageNum < startPage || pageNum > endPage) return;
-        if(mode==="odd" && pageNum%2===0) return;
-        if(mode==="even" && pageNum%2!==0) return;
-
-        const { width, height } = page.getSize();
-
-        let x=marginX;
-        let y=marginY;
-
-        if(position.includes("top")) y = height - marginY;
-        if(position.includes("center")) x = width/2;
-        if(position.includes("right")) x = width - marginX;
-
-        let text = format.replace("{n}", pageNum).replace("{total}", total);
-
-        page.drawText(text,{
-            x:x,
-            y:y,
-            size:fontSize,
-            font:font
-        });
-    });
-
-    modifiedPdfBytes = await pdfDoc.save();
-    document.getElementById("status").innerText="Page Numbers Added Successfully!";
-}
-
-function downloadPDF(){
-    if(!modifiedPdfBytes){
-        alert("Generate PDF first");
-        return;
+    // ===== POSITION =====
+    function setPos(el){
+        if(el.classList.contains('disabled-pos'))return;
+        document.querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('active'));
+        el.classList.add('active');
+        position=el.dataset.pos;
+        updatePreview();
     }
-    const blob = new Blob([modifiedPdfBytes],{type:"application/pdf"});
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download="page-numbered.pdf";
-    link.click();
-}
 
+    // ===== PAGE RANGE =====
+    function setRange(type,btn){
+        pageRange=type;
+        document.querySelectorAll('.range-toggle button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const fields=document.getElementById('rangeFields');
+        fields.classList.toggle('show',type==='custom');
+        updatePreview();
+    }
+
+    // ===== FORMAT HELPERS =====
+    function toRoman(num){
+        const vals=[1000,900,500,400,100,90,50,40,10,9,5,4,1];
+        const syms=['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I'];
+        let r='';for(let i=0;i<vals.length;i++)while(num>=vals[i]){r+=syms[i];num-=vals[i];}return r;
+    }
+
+    function toAlpha(num){
+        let r='';while(num>0){num--;r=String.fromCharCode(65+(num%26))+r;num=Math.floor(num/26);}return r;
+    }
+
+    function formatPageNumber(pageIdx,total){
+        const startNum=parseInt(document.getElementById('startNum').value)||1;
+        const num=startNum+pageIdx;
+        const fmt=document.getElementById('numFormat').value;
+        switch(fmt){
+            case 'plain':return ''+num;
+            case 'dash':return '- '+num+' -';
+            case 'bracket':return '('+num+')';
+            case 'of':return num+' of '+(total+startNum-1);
+            case 'page':return 'Page '+num;
+            case 'pageof':return 'Page '+num+' of '+(total+startNum-1);
+            case 'roman-lower':return toRoman(num).toLowerCase();
+            case 'roman-upper':return toRoman(num);
+            case 'alpha-lower':return toAlpha(num).toLowerCase();
+            case 'alpha-upper':return toAlpha(num);
+            default:return ''+num;
+        }
+    }
+
+    function shouldNumberPage(pageNum){
+        if(pageRange==='all')return true;
+        if(pageRange==='odd')return pageNum%2===1;
+        if(pageRange==='even')return pageNum%2===0;
+        if(pageRange==='custom'){
+            const from=parseInt(document.getElementById('rangeFrom').value)||1;
+            const to=parseInt(document.getElementById('rangeTo').value)||totalPages;
+            return pageNum>=from&&pageNum<=to;
+        }
+        return true;
+    }
+
+    // ===== PREVIEW =====
+    async function renderPreview(){
+        if(!pdfDoc)return;
+        const page=await pdfDoc.getPage(currentPreviewPage);
+        const vp=page.getViewport({scale:1});
+        const scale=Math.min(400/vp.width,410/vp.height);
+        const viewport=page.getViewport({scale});
+        const canvas=document.getElementById('previewCanvas');
+        canvas.width=viewport.width;canvas.height=viewport.height;
+        const ctx=canvas.getContext('2d');
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        await page.render({canvasContext:ctx,viewport}).promise;
+        document.getElementById('previewInfo').textContent=`Page ${currentPreviewPage} / ${totalPages}`;
+        document.getElementById('prevPageBtn').disabled=currentPreviewPage<=1;
+        document.getElementById('nextPageBtn').disabled=currentPreviewPage>=totalPages;
+        updateOverlay(viewport,scale);
+    }
+
+    function updateOverlay(viewport,scale){
+        const overlay=document.getElementById('pageNumOverlay');
+        const show=shouldNumberPage(currentPreviewPage);
+        overlay.style.display=show?'block':'none';
+        if(!show)return;
+        const pageIdx=currentPreviewPage-1;
+        const text=formatPageNumber(pageIdx,totalPages);
+        overlay.textContent=text;
+        const fontSize=parseInt(document.getElementById('fontSize').value)||12;
+        const color=document.getElementById('fontColor').value;
+        const marginX=parseInt(document.getElementById('marginX').value)||40;
+        const marginY=parseInt(document.getElementById('marginY').value)||30;
+        const scaledFont=Math.max(8,fontSize*scale);
+        const scaledMX=marginX*scale;
+        const scaledMY=marginY*scale;
+        const cW=viewport?.width||400;
+        const cH=viewport?.height||550;
+        overlay.style.fontSize=scaledFont+'px';
+        overlay.style.color=color;
+        overlay.style.fontFamily=document.getElementById('fontFamily').value+', sans-serif';
+        // Position
+        const [vert,horiz]=position.split('-');
+        overlay.style.top=overlay.style.bottom=overlay.style.left=overlay.style.right='auto';
+        overlay.style.transform='none';
+        if(vert==='top')overlay.style.top=scaledMY+'px';
+        else overlay.style.bottom=scaledMY+'px';
+        if(horiz==='left'){overlay.style.left=scaledMX+'px';}
+        else if(horiz==='right'){overlay.style.right=scaledMX+'px';}
+        else{overlay.style.left='50%';overlay.style.transform='translateX(-50%)';}
+        // Format preview
+        document.getElementById('formatPreview').textContent=text;
+        document.getElementById('formatPreview').style.color=color;
+        document.getElementById('formatPreview').style.fontFamily=document.getElementById('fontFamily').value;
+        document.getElementById('formatPreview').style.fontSize=(fontSize)+'px';
+    }
+
+    function updatePreview(){
+        if(!pdfDoc)return;
+        renderPreview();
+    }
+
+    function previewPage(dir){
+        currentPreviewPage=Math.max(1,Math.min(totalPages,currentPreviewPage+dir));
+        renderPreview();
+    }
+
+    // ===== ADD PAGE NUMBERS =====
+    async function addPageNumbers(){
+        actionBtn.classList.add('loading');actionBtn.disabled=true;
+        editorSection.classList.remove('show');
+        actionSection.classList.remove('show');
+        progressSection.classList.add('show');
+
+        try{
+            updateProgress(5,'Loading PDF...');
+            const pdfLibDoc=await PDFLib.PDFDocument.load(srcBuffer,{ignoreEncryption:true});
+            const pages=pdfLibDoc.getPages();
+            const fontName=document.getElementById('fontFamily').value;
+            let font;
+            switch(fontName){
+                case 'Times-Roman':font=await pdfLibDoc.embedFont(PDFLib.StandardFonts.TimesRoman);break;
+                case 'Courier':font=await pdfLibDoc.embedFont(PDFLib.StandardFonts.Courier);break;
+                default:font=await pdfLibDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            }
+            const fontSize=parseInt(document.getElementById('fontSize').value)||12;
+            const hexColor=document.getElementById('fontColor').value;
+            const r=parseInt(hexColor.substr(1,2),16)/255;
+            const g=parseInt(hexColor.substr(3,2),16)/255;
+            const b=parseInt(hexColor.substr(5,2),16)/255;
+            const color=PDFLib.rgb(r,g,b);
+            const marginX=parseInt(document.getElementById('marginX').value)||40;
+            const marginY=parseInt(document.getElementById('marginY').value)||30;
+            let numbered=0;
+
+            for(let i=0;i<pages.length;i++){
+                const pct=5+Math.round((i/pages.length)*85);
+                updateProgress(pct,`Adding number to page ${i+1}...`);
+                const pageNum=i+1;
+                if(!shouldNumberPage(pageNum))continue;
+                const pg=pages[i];
+                const{width,height}=pg.getSize();
+                const text=formatPageNumber(i,pages.length);
+                const textWidth=font.widthOfTextAtSize(text,fontSize);
+                const[vert,horiz]=position.split('-');
+                let x,y;
+                if(horiz==='left')x=marginX;
+                else if(horiz==='right')x=width-marginX-textWidth;
+                else x=(width-textWidth)/2;
+                if(vert==='top')y=height-marginY-fontSize;
+                else y=marginY;
+                pg.drawText(text,{x,y,size:fontSize,font,color});
+                numbered++;
+            }
+
+            updateProgress(95,'Generating PDF...');
+            const pdfBytes=await pdfLibDoc.save();
+            const blob=new Blob([pdfBytes],{type:'application/pdf'});
+            const url=URL.createObjectURL(blob);
+            const name=srcFile.name.replace('.pdf','');
+            downloadBtn.href=url;
+            downloadBtn.download=`${name}_numbered.pdf`;
+            document.getElementById('sumPages').textContent=numbered;
+            document.getElementById('sumPos').textContent=position.replace('-',' ').replace(/\b\w/g,l=>l.toUpperCase());
+            document.getElementById('sumSize').textContent=formatSize(pdfBytes.byteLength);
+            updateProgress(100,'Done!');
+            setTimeout(()=>{
+                progressSection.classList.remove('show');
+                downloadSection.classList.add('show');
+                actionBtn.classList.remove('loading');actionBtn.disabled=false;
+            },500);
+            showToast(`Page numbers added to ${numbered} pages! 🎉`);
+        }catch(err){
+            console.error(err);
+            showToast('Error: '+err.message,'error');
+            actionBtn.classList.remove('loading');actionBtn.disabled=false;
+            editorSection.classList.add('show');
+            actionSection.classList.add('show');
+            progressSection.classList.remove('show');
+        }
+    }
+
+    // ===== PROGRESS =====
+    function updateProgress(pct,txt){
+        document.getElementById('progressFill').style.width=pct+'%';
+        document.getElementById('progressPercent').textContent=pct+'%';
+        if(txt)document.getElementById('progressStatus').innerHTML=`<i class="fas fa-spinner"></i> ${txt}`;
+    }
+
+    // ===== RESET =====
+    function resetTool(){
+        srcFile=null;srcBuffer=null;pdfDoc=null;totalPages=0;currentPreviewPage=1;
+        position='bottom-center';pageRange='all';
+        uploadArea.classList.remove('hidden');
+        fileBar.classList.remove('show');
+        editorSection.classList.remove('show');
+        actionSection.classList.remove('show');
+        progressSection.classList.remove('show');
+        downloadSection.classList.remove('show');
+        document.getElementById('progressFill').style.width='0%';
+        document.getElementById('progressPercent').textContent='0%';
+        actionBtn.classList.remove('loading');actionBtn.disabled=false;
+        // Reset settings
+        document.getElementById('numFormat').value='plain';
+        document.getElementById('fontFamily').value='Helvetica';
+        document.getElementById('fontSize').value='12';
+        document.getElementById('fontColor').value='#000000';
+        document.getElementById('marginX').value='40';
+        document.getElementById('marginY').value='30';
+        document.getElementById('startNum').value='1';
+        document.getElementById('rangeFrom').value='1';
+        document.querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelector('[data-pos="bottom-center"]').classList.add('active');
+        document.querySelectorAll('.range-toggle button').forEach(b=>b.classList.remove('active'));
+        document.querySelector('.range-toggle button').classList.add('active');
+        document.getElementById('rangeFields').classList.remove('show');
+    }
+
+    // ===== HELPERS =====
+    function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB'}
+
+    function showToast(msg,type='success'){
+        const c=document.getElementById('toastContainer');
+        const t=document.createElement('div');t.className=`toast ${type}`;
+        const icons={success:'fa-circle-check',error:'fa-circle-exclamation',warning:'fa-triangle-exclamation'};
+        t.innerHTML=`<i class="fas ${icons[type]||icons.success}"></i><span>${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all 0.3s';setTimeout(()=>t.remove(),300)},4000);
+    }
 </script>
-
 </body>
 </html>
