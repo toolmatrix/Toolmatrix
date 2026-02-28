@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Translate PDF - AI PDF Translator Free Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--pri:#2ECC71;--pri-d:#27AE60;--pri-dd:#1E8449;--pri-l:#A9DFBF;--pri-ll:#D5F5E3;--pri-lll:#EAFAF1;--bg:#F0FFF4;--w:#FFFFFF;--dk:#1a1a2e;--md:#4a4a5a;--lt:#7a7a8a;--red:#e74c3c}
+        html{width:100%;height:100%;overflow-x:hidden}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dk);width:100%;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+
+        /* NAV */
+        .nav{width:100%;background:var(--w);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--pri-ll);box-shadow:0 2px 15px rgba(46,204,113,.08);position:sticky;top:0;z-index:999;flex-shrink:0}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .logo-b{width:40px;height:40px;background:linear-gradient(135deg,var(--pri),var(--pri-dd));border-radius:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(46,204,113,.3)}
+        .logo-b svg{width:20px;height:20px;color:#fff}
+        .logo-t{font-size:21px;font-weight:800;color:var(--dk)}.logo-t span{color:var(--pri)}
+        .nav-m{display:flex;gap:5px}
+        .nav-m a{text-decoration:none;font-size:13px;font-weight:600;color:var(--md);padding:8px 15px;border-radius:8px;transition:.3s}
+        .nav-m a:hover{background:var(--pri-lll);color:var(--pri-d)}
+        .nav-m a.on{background:var(--pri);color:#fff}
+
+        .main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
+        .hero-bg{position:absolute;top:0;left:0;width:100%;height:320px;background:linear-gradient(180deg,var(--pri-ll) 0%,transparent 100%);z-index:0}
+
+        /* HERO */
+        .hero{width:100%;text-align:center;padding:38px 20px 16px;position:relative;z-index:1}
+        .badge{display:inline-flex;align-items:center;gap:7px;background:var(--w);border:1px solid var(--pri-l);padding:7px 18px;border-radius:50px;font-size:12px;font-weight:600;color:var(--pri-dd);margin-bottom:14px;box-shadow:0 2px 8px rgba(46,204,113,.1)}
+        .badge svg{width:14px;height:14px;flex-shrink:0}
+        .hero h1{font-size:36px;font-weight:900;line-height:1.15;margin-bottom:10px}
+        .hero h1 .gr{background:linear-gradient(135deg,var(--pri),var(--pri-dd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero>p{font-size:15px;color:var(--lt);max-width:600px;margin:0 auto;line-height:1.6}
+
+        /* TOOL */
+        .tool-w{width:100%;max-width:1080px;padding:0 16px;margin:20px auto 50px;position:relative;z-index:1}
+        .tool-c{width:100%;background:var(--w);border-radius:22px;box-shadow:0 12px 50px rgba(46,204,113,.13);border:1.5px solid var(--pri-ll);overflow:hidden}
+
+        .st{display:none}.st.on{display:block}
+
+        /* UPLOAD */
+        .st-up{padding:52px 30px;text-align:center;cursor:pointer;position:relative;transition:.3s}
+        .st-up::after{content:'';position:absolute;inset:14px;border:3px dashed var(--pri-l);border-radius:14px;pointer-events:none;transition:.3s}
+        .st-up.drag::after{border-color:var(--pri);background:rgba(46,204,113,.04)}
+        .up-circ{width:90px;height:90px;background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;animation:breathe 3s ease-in-out infinite}
+        @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(46,204,113,.25)}50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(46,204,113,0)}}
+        .up-circ svg{width:40px;height:40px;color:var(--pri-d)}
+        .st-up h2{font-size:20px;font-weight:700;margin-bottom:7px}
+        .st-up .sub{font-size:14px;color:var(--lt);margin-bottom:20px}
+        .sel-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:14px 36px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 22px rgba(46,204,113,.3);font-family:'Inter',sans-serif;position:relative;z-index:2}
+        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
+        .sel-btn svg{width:19px;height:19px}
+        .fmts{margin-top:16px;font-size:12px;color:var(--lt);display:flex;align-items:center;justify-content:center;gap:6px}
+        .ftg{background:var(--pri-lll);color:var(--pri-dd);padding:3px 10px;border-radius:5px;font-weight:700;font-size:11px}
+        .finp{display:none}
+
+        /* EDITOR */
+        .st-edit{padding:0}
+        .ed-layout{display:flex;width:100%;min-height:580px}
+
+        /* Sidebar */
+        .sb{width:320px;flex-shrink:0;background:var(--w);border-right:2px solid var(--pri-ll);overflow-y:auto;max-height:720px;padding:20px 16px}
+        .sb-file{display:flex;align-items:center;gap:10px;background:var(--pri-lll);border:1.5px solid var(--pri-l);border-radius:11px;padding:12px 14px;margin-bottom:14px}
+        .sb-f-ic{width:36px;height:36px;background:linear-gradient(135deg,#C0392B,#E74C3C);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .sb-f-ic svg{width:16px;height:16px;color:#fff}
+        .sb-f-nfo{flex:1;min-width:0}
+        .sb-f-nm{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .sb-f-sz{font-size:10px;color:var(--lt);margin-top:1px}
+        .sb-f-del{width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--lt);transition:.3s;flex-shrink:0}
+        .sb-f-del:hover{background:#FEE2E2;color:var(--red)}
+        .sb-f-del svg{width:13px;height:13px}
+
+        .sb-div{height:1px;background:var(--pri-ll);margin:12px 0}
+        .s-label{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+        .s-label svg{width:14px;height:14px;color:var(--pri-d)}
+        .ctrl{margin-bottom:14px}
+
+        /* Language selectors */
+        .lang-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+        .lang-box{background:var(--pri-lll);border:1.5px solid var(--pri-l);border-radius:11px;padding:12px}
+        .lang-box label{font-size:11px;font-weight:700;color:var(--md);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+        .lang-sel{width:100%;padding:10px 12px;border:2px solid var(--pri-l);border-radius:9px;font-size:13px;font-weight:600;color:var(--dk);outline:none;font-family:'Inter',sans-serif;background:var(--w);cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a8a' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+        .lang-sel:focus{border-color:var(--pri)}
+
+        .swap-btn{align-self:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--pri-l);background:var(--w);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--pri-d);transition:.3s;flex-shrink:0}
+        .swap-btn:hover{background:var(--pri);color:#fff;border-color:var(--pri);transform:rotate(180deg)}
+        .swap-btn svg{width:18px;height:18px}
+
+        .lang-row{display:flex;align-items:center;gap:8px}
+        .lang-row .lang-box{flex:1}
+
+        /* AI badge */
+        .ai-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:14px}
+        .ai-badge svg{width:13px;height:13px}
+
+        /* Options */
+        .opt-checks{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+        .ochk{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9px;border:1.5px solid var(--pri-l);background:var(--w);cursor:pointer;transition:.3s}
+        .ochk:hover{border-color:var(--pri)}
+        .ochk input{display:none}
+        .ochk-box{width:20px;height:20px;border:2px solid var(--pri-l);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.3s;flex-shrink:0;background:var(--w)}
+        .ochk input:checked~.ochk-box{background:var(--pri);border-color:var(--pri)}
+        .ochk input:checked~.ochk-box svg{display:block}
+        .ochk-box svg{width:13px;height:13px;color:#fff;display:none}
+        .ochk-txt{font-size:12px;font-weight:600;color:var(--dk)}
+        .ochk-txt small{display:block;font-size:10px;color:var(--lt);font-weight:500;margin-top:1px}
+
+        /* Translate button */
+        .sb-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:14px 20px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 22px rgba(46,204,113,.3);font-family:'Inter',sans-serif;margin-top:6px}
+        .sb-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
+        .sb-btn:disabled{opacity:.6;cursor:not-allowed}
+        .sb-btn svg{width:19px;height:19px}
+
+        /* Preview Area */
+        .prev-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f0f0f0;min-height:580px}
+
+        /* Preview tabs */
+        .prev-tabs{display:flex;background:var(--w);border-bottom:2px solid var(--pri-ll);padding:0;flex-shrink:0}
+        .prev-tab{flex:1;padding:12px 16px;border:none;background:transparent;font-size:13px;font-weight:700;color:var(--md);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;border-bottom:3px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px}
+        .prev-tab:hover{color:var(--pri-d);background:var(--pri-lll)}
+        .prev-tab.on{color:var(--pri-d);border-bottom-color:var(--pri);background:var(--pri-lll)}
+        .prev-tab svg{width:16px;height:16px}
+
+        .prev-content{flex:1;overflow-y:auto;padding:20px}
+        .prev-panel{display:none}.prev-panel.on{display:block}
+
+        .page-block{background:var(--w);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid #e8e8e8}
+        .page-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--pri-ll)}
+        .page-block-head h3{font-size:13px;font-weight:700;color:var(--pri-d);display:flex;align-items:center;gap:5px}
+        .page-block-head h3 svg{width:14px;height:14px}
+        .page-block-head span{font-size:10px;color:var(--lt);font-weight:600}
+        .page-text{font-size:13px;line-height:1.8;color:var(--dk);white-space:pre-wrap;word-wrap:break-word}
+        .page-text.translated{color:#1a5276;background:var(--pri-lll);padding:14px;border-radius:10px;border-left:4px solid var(--pri)}
+
+        .empty-prev{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--lt);text-align:center;padding:40px;min-height:300px}
+        .empty-prev svg{width:50px;height:50px;margin-bottom:14px;opacity:.3}
+        .empty-prev p{font-size:14px;font-weight:600}
+        .empty-prev small{font-size:12px;margin-top:4px;color:var(--lt)}
+
+        /* Translation loading in preview */
+        .trans-loading{text-align:center;padding:40px;color:var(--pri-d)}
+        .trans-loading .spin{width:40px;height:40px;border:4px solid var(--pri-ll);border-top-color:var(--pri);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .trans-loading p{font-size:14px;font-weight:600}
+
+        /* PROGRESS */
+        .st-prog{padding:55px 28px;text-align:center}
+        .prg-box{width:130px;height:130px;margin:0 auto 22px;position:relative}
+        .prg-box svg.ring{width:130px;height:130px;transform:rotate(-90deg)}
+        .prg-bg{fill:none;stroke:var(--pri-ll);stroke-width:9}
+        .prg-fl{fill:none;stroke:url(#pGrd);stroke-width:9;stroke-linecap:round;stroke-dasharray:352;stroke-dashoffset:352;transition:stroke-dashoffset .4s ease}
+        .prg-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;font-weight:900;color:var(--pri-d)}
+        .prg-lb{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:4px}
+        .prg-sb{font-size:13px;color:var(--lt)}
+        .dots{display:flex;justify-content:center;gap:7px;margin-top:22px}
+        .dot{width:9px;height:9px;border-radius:50%;background:var(--pri-ll);transition:.3s}
+        .dot.on{background:var(--pri);width:28px;border-radius:5px}.dot.dn{background:var(--pri-l)}
+
+        /* DONE */
+        .st-done{padding:36px 24px;text-align:center}
+        .ok-ic{width:85px;height:85px;margin:0 auto 18px;background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pop .5s cubic-bezier(.68,-.55,.265,1.55)}
+        @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+        .ok-ic svg{width:42px;height:42px;color:var(--pri-d)}
+        .st-done h2{font-size:22px;font-weight:800;margin-bottom:6px}
+        .st-done .sub{font-size:14px;color:var(--lt);margin-bottom:6px}
+        .stats-row{display:flex;justify-content:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+        .stat-box{background:var(--pri-lll);border:1px solid var(--pri-l);border-radius:12px;padding:11px 16px;text-align:center;min-width:85px}
+        .stat-box .num{font-size:18px;font-weight:800;color:var(--pri-d)}
+        .stat-box .lbl{font-size:10px;color:var(--lt);font-weight:600;margin-top:2px}
+
+        /* Result text */
+        .res-box{width:100%;max-width:700px;margin:0 auto 20px;background:var(--pri-lll);border:2px solid var(--pri-l);border-radius:14px;overflow:hidden;text-align:left}
+        .res-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--w);border-bottom:1px solid var(--pri-ll)}
+        .res-head span{font-size:12px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:5px}
+        .res-head span svg{width:14px;height:14px;color:var(--pri-d)}
+        .cp-btn{padding:6px 14px;border-radius:7px;border:1.5px solid var(--pri-l);background:var(--w);color:var(--pri-d);font-size:11px;font-weight:700;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px}
+        .cp-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
+        .cp-btn.copied{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .cp-btn svg{width:13px;height:13px}
+        .res-body{max-height:250px;overflow-y:auto;padding:14px;font-size:13px;line-height:1.8;color:var(--dk);white-space:pre-wrap;word-wrap:break-word}
+
+        .btn-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+        .dl-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:15px 40px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 8px 28px rgba(46,204,113,.3);text-decoration:none;font-family:'Inter',sans-serif}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(46,204,113,.4)}
+        .dl-btn svg{width:19px;height:19px}
+        .sec-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:2px solid var(--pri-l);background:var(--w);color:var(--pri-d);transition:.3s;font-family:'Inter',sans-serif}
+        .sec-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
+        .sec-btn svg{width:15px;height:15px}
+
+        /* Hidden render */
+        #renderBox{position:absolute;left:-99999px;top:0;width:794px;padding:50px 60px;background:#fff;font-family:'Inter',Arial,sans-serif;font-size:14px;line-height:1.9;color:#222}
+        #renderBox .pg-title{font-size:10px;color:#999;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eee}
+        #renderBox p{margin:6px 0}
+
+        /* FEATURES */
+        .feats{width:100%;padding:0 16px 50px}
+        .feats h2{text-align:center;font-size:26px;font-weight:800;margin-bottom:35px}
+        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1000px;margin:0 auto}
+        .ft{background:var(--w);padding:28px 22px;border-radius:16px;text-align:center;border:1px solid var(--pri-ll);box-shadow:0 2px 10px rgba(46,204,113,.06);transition:.3s}
+        .ft:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(46,204,113,.12)}
+        .ft-ic{width:54px;height:54px;background:var(--pri-lll);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--pri-d)}
+        .ft-ic svg{width:25px;height:25px}
+        .ft h3{font-size:15px;font-weight:700;margin-bottom:6px}
+        .ft p{font-size:12px;color:var(--lt);line-height:1.6}
+
+        .foot{width:100%;background:var(--w);border-top:2px solid var(--pri-ll);padding:22px 16px;text-align:center;flex-shrink:0}
+        .foot p{font-size:13px;color:var(--lt)}.foot a{color:var(--pri-d);text-decoration:none;font-weight:700}
+
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .fg{grid-template-columns:repeat(2,1fr)}
+            .ed-layout{flex-direction:column}
+            .sb{width:100%;max-height:none;border-right:none;border-bottom:2px solid var(--pri-ll)}
+            .prev-area{min-height:400px}
+            .lang-row{flex-direction:column}.lang-row .swap-btn{align-self:center;transform:rotate(90deg)}
+            .lang-row .swap-btn:hover{transform:rotate(270deg)}
+        }
+        @media(max-width:600px){
+            .nav{padding:11px 12px}.nav-m{display:none}.logo-t{font-size:17px}.logo-b{width:34px;height:34px;border-radius:9px}.logo-b svg{width:16px;height:16px}
+            .hero{padding:26px 14px 10px}.badge{font-size:11px;padding:6px 13px}.hero h1{font-size:24px}.hero>p{font-size:13px}
+            .tool-w{padding:0 8px;margin:14px auto 28px}.tool-c{border-radius:16px}
+            .st-up{padding:34px 14px}.st-up::after{inset:10px}.up-circ{width:72px;height:72px;margin-bottom:16px}.up-circ svg{width:32px;height:32px}.st-up h2{font-size:17px}.st-up .sub{font-size:13px}
+            .sel-btn{padding:13px 26px;font-size:15px;width:100%;max-width:260px;justify-content:center}
+            .sb{padding:16px 12px}
+            .prev-content{padding:14px}
+            .page-block{padding:14px;border-radius:10px}
+            .prev-tab{font-size:12px;padding:10px 12px}
+            .sb-btn{padding:12px 16px;font-size:14px}
+            .st-prog{padding:35px 14px}.prg-box{width:110px;height:110px}.prg-box svg.ring{width:110px;height:110px}.prg-pct{font-size:26px}.prg-lb{font-size:15px}
+            .st-done{padding:24px 10px}.ok-ic{width:72px;height:72px}.ok-ic svg{width:34px;height:34px}.st-done h2{font-size:19px}
+            .stats-row{gap:8px}.stat-box{padding:8px 12px;min-width:70px}.stat-box .num{font-size:16px}
+            .res-body{max-height:200px;font-size:12px;padding:10px}
+            .dl-btn{padding:13px 28px;font-size:15px;width:100%;max-width:300px;justify-content:center}
+            .sec-btn{width:100%;max-width:300px;justify-content:center}
+            .btn-row{flex-direction:column;align-items:center}
+            .fg{grid-template-columns:1fr;gap:14px}.feats h2{font-size:21px;margin-bottom:24px}.ft{padding:22px 18px;border-radius:14px}
+            .foot{padding:18px 12px}.foot p{font-size:12px}
+        }
+        @media(max-width:360px){.hero h1{font-size:20px}.hero>p{font-size:12px}.sel-btn{font-size:14px;padding:12px 20px}}
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="#" class="logo">
+        <div class="logo-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <span class="logo-t">Translate<span>PDF</span></span>
+    </a>
+    <div class="nav-m">
+        <a href="#">Merge PDF</a>
+        <a href="#" class="on">Translate PDF</a>
+        <a href="#">Watermark</a>
+        <a href="#">Compress</a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="hero-bg"></div>
+    <section class="hero">
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>AI-Powered & 100% Free — Files never leave your device</div>
+        <h1><span class="gr">Translate PDF</span><br>Documents Instantly</h1>
+        <p>Convert PDF documents into other languages with AI while preserving content. Fast, accurate, and ideal for business, education, or travel documents.</p>
+    </section>
+
+    <div class="tool-w">
+        <div class="tool-c">
+
+            <!-- 1) UPLOAD -->
+            <div class="st on st-up" id="sUp">
+                <div class="up-circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+                <h2>Drop your PDF file here</h2>
+                <p class="sub">or click the button below to browse</p>
+                <button class="sel-btn" onclick="document.getElementById('finp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Select PDF File</button>
+                <div class="fmts">Supported: <span class="ftg">.PDF</span></div>
+                <input type="file" id="finp" class="finp" accept=".pdf,application/pdf">
+            </div>
+
+            <!-- 2) EDITOR -->
+            <div class="st st-edit" id="sEdit">
+                <div class="ed-layout">
+                    <div class="sb" id="sidebar">
+                        <div class="sb-file">
+                            <div class="sb-f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="sb-f-nfo"><div class="sb-f-nm" id="fname">doc.pdf</div><div class="sb-f-sz"><span id="fsize">1 MB</span> · <span id="fpg">5</span> pages</div></div>
+                            <button class="sb-f-del" onclick="resetAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                        </div>
+
+                        <div class="ai-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>AI-Powered Translation</div>
+
+                        <!-- Languages -->
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Translation Languages</div>
+
+                            <div class="lang-row">
+                                <div class="lang-box">
+                                    <label>From</label>
+                                    <select class="lang-sel" id="srcLang">
+                                        <option value="auto">🔍 Auto Detect</option>
+                                        <option value="en" selected>🇬🇧 English</option>
+                                        <option value="es">🇪🇸 Spanish</option>
+                                        <option value="fr">🇫🇷 French</option>
+                                        <option value="de">🇩🇪 German</option>
+                                        <option value="it">🇮🇹 Italian</option>
+                                        <option value="pt">🇵🇹 Portuguese</option>
+                                        <option value="ru">🇷🇺 Russian</option>
+                                        <option value="zh">🇨🇳 Chinese</option>
+                                        <option value="ja">🇯🇵 Japanese</option>
+                                        <option value="ko">🇰🇷 Korean</option>
+                                        <option value="ar">🇸🇦 Arabic</option>
+                                        <option value="hi">🇮🇳 Hindi</option>
+                                        <option value="ur">🇵🇰 Urdu</option>
+                                        <option value="nl">🇳🇱 Dutch</option>
+                                        <option value="tr">🇹🇷 Turkish</option>
+                                        <option value="pl">🇵🇱 Polish</option>
+                                        <option value="sv">🇸🇪 Swedish</option>
+                                        <option value="th">🇹🇭 Thai</option>
+                                        <option value="vi">🇻🇳 Vietnamese</option>
+                                        <option value="id">🇮🇩 Indonesian</option>
+                                    </select>
+                                </div>
+
+                                <button class="swap-btn" onclick="swapLangs()" title="Swap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+
+                                <div class="lang-box">
+                                    <label>To</label>
+                                    <select class="lang-sel" id="tgtLang">
+                                        <option value="es">🇪🇸 Spanish</option>
+                                        <option value="fr">🇫🇷 French</option>
+                                        <option value="de">🇩🇪 German</option>
+                                        <option value="it">🇮🇹 Italian</option>
+                                        <option value="pt">🇵🇹 Portuguese</option>
+                                        <option value="ru">🇷🇺 Russian</option>
+                                        <option value="zh">🇨🇳 Chinese</option>
+                                        <option value="ja">🇯🇵 Japanese</option>
+                                        <option value="ko">🇰🇷 Korean</option>
+                                        <option value="ar" selected>🇸🇦 Arabic</option>
+                                        <option value="hi">🇮🇳 Hindi</option>
+                                        <option value="ur">🇵🇰 Urdu</option>
+                                        <option value="en">🇬🇧 English</option>
+                                        <option value="nl">🇳🇱 Dutch</option>
+                                        <option value="tr">🇹🇷 Turkish</option>
+                                        <option value="pl">🇵🇱 Polish</option>
+                                        <option value="sv">🇸🇪 Swedish</option>
+                                        <option value="th">🇹🇭 Thai</option>
+                                        <option value="vi">🇻🇳 Vietnamese</option>
+                                        <option value="id">🇮🇩 Indonesian</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sb-div"></div>
+
+                        <!-- Options -->
+                        <div class="ctrl">
+                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09c0 .66.4 1.25 1 1.51a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 0 1 0 4h-.09"/></svg>Options</div>
+                            <div class="opt-checks">
+                                <label class="ochk"><input type="checkbox" id="optPDF" checked><div class="ochk-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ochk-txt">Generate Translated PDF<small>Download as PDF file</small></div></label>
+                                <label class="ochk"><input type="checkbox" id="optTXT" checked><div class="ochk-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ochk-txt">Generate Text File<small>Download as .txt file</small></div></label>
+                            </div>
+                        </div>
+
+                        <div class="sb-div"></div>
+
+                        <button class="sb-btn" id="transBtn" onclick="startTranslation()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            Translate PDF
+                        </button>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="prev-area">
+                        <div class="prev-tabs">
+                            <button class="prev-tab on" onclick="showTab('orig',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Original Text</button>
+                            <button class="prev-tab" onclick="showTab('trans',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Translated</button>
+                            <button class="prev-tab" onclick="showTab('side',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>Side by Side</button>
+                        </div>
+                        <div class="prev-content" id="prevContent">
+                            <div class="prev-panel on" id="panelOrig"></div>
+                            <div class="prev-panel" id="panelTrans">
+                                <div class="empty-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><p>Translation will appear here</p><small>Click "Translate PDF" to start</small></div>
+                            </div>
+                            <div class="prev-panel" id="panelSide">
+                                <div class="empty-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg><p>Side by side comparison</p><small>Available after translation</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3) PROGRESS -->
+            <div class="st st-prog" id="sProg">
+                <div class="prg-box"><svg class="ring" viewBox="0 0 130 130"><defs><linearGradient id="pGrd" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2ECC71"/><stop offset="100%" stop-color="#1E8449"/></linearGradient></defs><circle class="prg-bg" cx="65" cy="65" r="56"/><circle class="prg-fl" id="pCirc" cx="65" cy="65" r="56"/></svg><div class="prg-pct" id="pPct">0%</div></div>
+                <div class="prg-lb" id="pLb">Translating document...</div>
+                <div class="prg-sb" id="pSb">Please wait</div>
+                <div class="dots"><div class="dot on" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
+            </div>
+
+            <!-- 4) DONE -->
+            <div class="st st-done" id="sDone">
+                <div class="ok-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                <h2>Translation Complete! 🎉</h2>
+                <p class="sub">Your PDF has been translated successfully</p>
+                <div class="stats-row">
+                    <div class="stat-box"><div class="num" id="stPg">0</div><div class="lbl">Pages</div></div>
+                    <div class="stat-box"><div class="num" id="stWords">0</div><div class="lbl">Words</div></div>
+                    <div class="stat-box"><div class="num" id="stLang">EN→ES</div><div class="lbl">Language</div></div>
+                </div>
+
+                <div class="res-box">
+                    <div class="res-head">
+                        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>Translated Text Preview</span>
+                        <button class="cp-btn" id="cpBtn" onclick="copyAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy All</button>
+                    </div>
+                    <div class="res-body" id="resBody"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="dl-btn" onclick="downloadPDF()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PDF</button>
+                    <button class="dl-btn" style="background:linear-gradient(135deg,#3498db,#2980b9);box-shadow:0 8px 28px rgba(52,152,219,.3)" onclick="downloadTXT()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Download TXT</button>
+                    <button class="sec-btn" onclick="resetAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Translate Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+</div>
+
+<footer class="foot"><p>Made with 💚 by <a href="#">ToolMatrix</a> — Free AI PDF Translator</p></footer>
+
+<!-- Hidden render -->
+<div id="renderBox"></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let chosenFile=null,pdfDoc=null,numPages=0;
+let originalPages=[];// [{pageNum,text}]
+let translatedPages=[];// [{pageNum,text}]
+let fullTranslatedText='';
+
+const sUp=document.getElementById('sUp'),sEdit=document.getElementById('sEdit');
+const sProg=document.getElementById('sProg'),sDone=document.getElementById('sDone');
+const finp=document.getElementById('finp');
+
+function show(el){[sUp,sEdit,sProg,sDone].forEach(s=>s.classList.remove('on'));el.classList.add('on')}
+
+sUp.addEventListener('dragover',e=>{e.preventDefault();sUp.classList.add('drag')});
+sUp.addEventListener('dragleave',()=>sUp.classList.remove('drag'));
+sUp.addEventListener('drop',e=>{e.preventDefault();sUp.classList.remove('drag');if(e.dataTransfer.files.length)pickPDF(e.dataTransfer.files[0])});
+sUp.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&!e.target.closest('.sel-btn'))finp.click()});
+finp.addEventListener('change',e=>{if(e.target.files.length)pickPDF(e.target.files[0])});
+
+function fmtSz(b){if(!b)return'0 B';const u=['Bytes','KB','MB','GB'];const i=Math.floor(Math.log(b)/Math.log(1024));return(b/Math.pow(1024,i)).toFixed(1)+' '+u[i]}
+
+async function pickPDF(file){
+    if(!file.name.toLowerCase().endsWith('.pdf')&&file.type!=='application/pdf'){alert('Please select a PDF file');return}
+    chosenFile=file;
+    const buf=await file.arrayBuffer();
+    pdfDoc=await pdfjsLib.getDocument({data:buf}).promise;
+    numPages=pdfDoc.numPages;
+
+    document.getElementById('fname').textContent=file.name;
+    document.getElementById('fsize').textContent=fmtSz(file.size);
+    document.getElementById('fpg').textContent=numPages;
+
+    // Extract text
+    originalPages=[];
+    for(let i=1;i<=numPages;i++){
+        const page=await pdfDoc.getPage(i);
+        const content=await page.getTextContent();
+        let text='';let lastY=null;
+        content.items.forEach(item=>{
+            if(lastY!==null&&Math.abs(item.transform[5]-lastY)>5)text+='\n';
+            text+=item.str;
+            if(item.hasEOL)text+='\n';
+            lastY=item.transform[5];
+        });
+        originalPages.push({pageNum:i,text:text.trim()});
+    }
+
+    renderOriginal();
+    show(sEdit);
+}
+
+function renderOriginal(){
+    const panel=document.getElementById('panelOrig');
+    panel.innerHTML='';
+    originalPages.forEach(pg=>{
+        if(!pg.text)return;
+        const block=document.createElement('div');
+        block.className='page-block';
+        const words=pg.text.split(/\s+/).filter(w=>w).length;
+        block.innerHTML=`
+            <div class="page-block-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Page ${pg.pageNum}</h3>
+                <span>${words} words</span>
+            </div>
+            <div class="page-text">${escHtml(pg.text)}</div>
+        `;
+        panel.appendChild(block);
+    });
+    if(!panel.children.length){
+        panel.innerHTML='<div class="empty-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No text found in PDF</p><small>This PDF might contain only images</small></div>';
+    }
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function showTab(tab,btn){
+    document.querySelectorAll('.prev-tab').forEach(t=>t.classList.remove('on'));
+    btn.classList.add('on');
+    document.querySelectorAll('.prev-panel').forEach(p=>p.classList.remove('on'));
+    document.getElementById(tab==='orig'?'panelOrig':tab==='trans'?'panelTrans':'panelSide').classList.add('on');
+}
+
+function swapLangs(){
+    const src=document.getElementById('srcLang');
+    const tgt=document.getElementById('tgtLang');
+    if(src.value==='auto')return;
+    const tmp=src.value;
+    src.value=tgt.value;
+    tgt.value=tmp;
+}
+
+function resetAll(){
+    chosenFile=null;pdfDoc=null;numPages=0;originalPages=[];translatedPages=[];fullTranslatedText='';
+    finp.value='';
+    document.getElementById('panelTrans').innerHTML='<div class="empty-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><p>Translation will appear here</p><small>Click "Translate PDF" to start</small></div>';
+    document.getElementById('panelSide').innerHTML='<div class="empty-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg><p>Side by side comparison</p><small>Available after translation</small></div>';
+    show(sUp);setProg(0,'Translating...','Please wait',1);
+}
+
+function setProg(pct,lb,sb,step){
+    const c=2*Math.PI*56,ci=document.getElementById('pCirc');
+    ci.style.strokeDasharray=c;ci.style.strokeDashoffset=c-(pct/100)*c;
+    document.getElementById('pPct').textContent=pct+'%';
+    if(lb)document.getElementById('pLb').textContent=lb;
+    if(sb)document.getElementById('pSb').textContent=sb;
+    for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);d.className='dot';if(i<step)d.classList.add('dn');if(i===step)d.classList.add('on')}
+}
+
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function translateText(text,src,tgt){
+    // Split into chunks of ~450 chars
+    const chunks=[];
+    const sentences=text.split(/(?<=[.!?।\n])\s*/);
+    let current='';
+    for(const s of sentences){
+        if((current+s).length>450&&current){
+            chunks.push(current.trim());
+            current=s;
+        }else{
+            current+=s+' ';
+        }
+    }
+    if(current.trim())chunks.push(current.trim());
+
+    let result='';
+    for(const chunk of chunks){
+        if(!chunk)continue;
+        try{
+            const pair=src==='auto'?`${src}|${tgt}`:`${src}|${tgt}`;
+            const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${pair}`;
+            const res=await fetch(url);
+            const data=await res.json();
+            if(data.responseData&&data.responseData.translatedText){
+                let translated=data.responseData.translatedText;
+                // Check for matches array for better results
+                if(data.matches&&data.matches.length>0){
+                    const best=data.matches.reduce((a,b)=>a.quality>b.quality?a:b);
+                    if(best.translation)translated=best.translation;
+                }
+                result+=translated+' ';
+            }else{
+                result+=chunk+' ';
+            }
+        }catch(e){
+            result+=chunk+' ';
+        }
+        await wait(300);// Rate limit
+    }
+    return result.trim();
+}
+
+async function startTranslation(){
+    const textPages=originalPages.filter(p=>p.text.trim());
+    if(!textPages.length){alert('No text found in PDF to translate');return}
+
+    const srcLang=document.getElementById('srcLang').value;
+    const tgtLang=document.getElementById('tgtLang').value;
+    if(srcLang===tgtLang){alert('Source and target languages must be different');return}
+
+    document.getElementById('transBtn').disabled=true;
+    show(sProg);
+    translatedPages=[];
+
+    try{
+        setProg(5,'Extracting text...','Preparing document',1);
+        await wait(400);
+
+        const total=textPages.length;
+
+        for(let i=0;i<total;i++){
+            const pg=textPages[i];
+            setProg(5+Math.round(((i)/total)*80),'Translating...', `Page ${pg.pageNum} of ${numPages}`,2);
+
+            const translated=await translateText(pg.text,srcLang,tgtLang);
+            translatedPages.push({pageNum:pg.pageNum,text:translated,original:pg.text});
+
+            const pct=5+Math.round(((i+1)/total)*80);
+            setProg(pct,'Translating...',`Page ${pg.pageNum} done`,2);
+        }
+
+        fullTranslatedText=translatedPages.map(p=>`--- Page ${p.pageNum} ---\n${p.text}`).join('\n\n');
+
+        setProg(90,'Finalizing...','Preparing results',3);
+        await wait(400);
+
+        // Render translated & side-by-side panels
+        renderTranslated();
+        renderSideBySide();
+
+        // Stats
+        const totalWords=fullTranslatedText.split(/\s+/).filter(w=>w).length;
+        const srcLabel=document.getElementById('srcLang').selectedOptions[0].textContent.slice(0,4).trim();
+        const tgtLabel=document.getElementById('tgtLang').selectedOptions[0].textContent.slice(0,4).trim();
+
+        document.getElementById('stPg').textContent=translatedPages.length;
+        document.getElementById('stWords').textContent=totalWords.toLocaleString();
+        document.getElementById('stLang').textContent=`${srcLabel}→${tgtLabel}`;
+        document.getElementById('resBody').textContent=fullTranslatedText;
+
+        setProg(100,'Complete!','Translation ready',3);
+        await wait(400);
+
+        show(sDone);
+    }catch(err){
+        console.error(err);
+        alert('Error: '+err.message);
+        show(sEdit);
+    }
+    document.getElementById('transBtn').disabled=false;
+}
+
+function renderTranslated(){
+    const panel=document.getElementById('panelTrans');
+    panel.innerHTML='';
+    translatedPages.forEach(pg=>{
+        const words=pg.text.split(/\s+/).filter(w=>w).length;
+        const block=document.createElement('div');
+        block.className='page-block';
+        block.innerHTML=`
+            <div class="page-block-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>Page ${pg.pageNum} — Translated</h3>
+                <span>${words} words</span>
+            </div>
+            <div class="page-text translated">${escHtml(pg.text)}</div>
+        `;
+        panel.appendChild(block);
+    });
+}
+
+function renderSideBySide(){
+    const panel=document.getElementById('panelSide');
+    panel.innerHTML='';
+    translatedPages.forEach(pg=>{
+        const block=document.createElement('div');
+        block.className='page-block';
+        block.innerHTML=`
+            <div class="page-block-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>Page ${pg.pageNum}</h3>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:var(--lt);margin-bottom:6px;text-transform:uppercase">Original</div>
+                    <div class="page-text" style="font-size:12px;line-height:1.7">${escHtml(pg.original)}</div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:var(--pri-d);margin-bottom:6px;text-transform:uppercase">Translated</div>
+                    <div class="page-text translated" style="font-size:12px;line-height:1.7">${escHtml(pg.text)}</div>
+                </div>
+            </div>
+        `;
+        panel.appendChild(block);
+    });
+}
+
+function copyAll(){
+    const btn=document.getElementById('cpBtn');
+    if(navigator.clipboard){
+        navigator.clipboard.writeText(fullTranslatedText).then(()=>showCopied(btn));
+    }else{
+        const ta=document.createElement('textarea');
+        ta.value=fullTranslatedText;
+        document.body.appendChild(ta);ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showCopied(btn);
+    }
+}
+
+function showCopied(btn){
+    btn.classList.add('copied');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Copied!';
+    setTimeout(()=>{
+        btn.classList.remove('copied');
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy All';
+    },2000);
+}
+
+async function downloadPDF(){
+    const renderBox=document.getElementById('renderBox');
+    let html='';
+    const tgtLabel=document.getElementById('tgtLang').selectedOptions[0].textContent;
+
+    translatedPages.forEach(pg=>{
+        html+=`<div class="pg-title">Page ${pg.pageNum} — Translated to ${tgtLabel}</div>`;
+        pg.text.split('\n').forEach(line=>{
+            html+=`<p>${escHtml(line)||'&nbsp;'}</p>`;
+        });
+        html+='<div style="page-break-after:always"></div>';
+    });
+
+    renderBox.innerHTML=html;
+
+    const pdfName=chosenFile.name.replace(/\.pdf$/i,'')+'_translated.pdf';
+    const blob=await html2pdf().set({
+        margin:[15,15,15,15],filename:pdfName,
+        image:{type:'jpeg',quality:0.95},
+        html2canvas:{scale:2,useCORS:true,logging:false},
+        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+        pagebreak:{mode:['css','legacy']}
+    }).from(renderBox).outputPdf('blob');
+
+    renderBox.innerHTML='';
+
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=pdfName;
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+
+function downloadTXT(){
+    const name=chosenFile.name.replace(/\.pdf$/i,'')+'_translated.txt';
+    const blob=new Blob([fullTranslatedText],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=name;
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+</script>
+</body>
+</html>
