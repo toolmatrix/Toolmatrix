@@ -55,14 +55,12 @@
     .btn-danger:hover  { background: #fecaca; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
-    /* ── HERO SECTION (below logo) ── */
-    .hero {
+    /* ── HERO (now inside upload-section) ── */
+    .upload-hero {
       text-align: center;
-      padding: 40px 20px;
-      background: var(--primary-xlight);
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 30px;
     }
-    .hero h1 {
+    .upload-hero h1 {
       font-size: 2.2rem;
       color: var(--primary-dark);
       margin-bottom: 12px;
@@ -72,11 +70,11 @@
       gap: 12px;
       font-weight: 800;
     }
-    .hero h1 i {
+    .upload-hero h1 i {
       color: var(--primary);
       font-size: 2rem;
     }
-    .hero p {
+    .upload-hero p {
       font-size: 1.2rem;
       color: var(--text);
       max-width: 750px;
@@ -346,14 +344,12 @@
   </div>
 </header>
 
-<!-- ═══ HERO (below logo) ═══ -->
-<section class="hero">
-  <h1><i class="fas fa-edit"></i> Photo Editor</h1>
-  <p>Add text, stickers, effects and filters to your photos. Edit your photos online!</p>
-</section>
-
-<!-- ═══ UPLOAD ═══ -->
+<!-- ═══ UPLOAD SECTION (with hero inside) ═══ -->
 <div id="upload-section">
+  <div class="upload-hero">
+    <h1><i class="fas fa-edit"></i> Photo Editor</h1>
+    <p>Add text, stickers, effects and filters to your photos. Edit your photos online!</p>
+  </div>
   <div class="upload-box" id="drop-zone"
     onclick="document.getElementById('file-input').click()"
     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
@@ -598,7 +594,7 @@
 
 <script>
 // ════════════════════════════════════════════
-//  GLOBALS
+//  GLOBALS (same as before – history fixed)
 // ════════════════════════════════════════════
 const mainCanvas    = document.getElementById('main-canvas');
 const mainCtx       = mainCanvas.getContext('2d');
@@ -641,13 +637,11 @@ function applyZoom() {
   const displayW = Math.round(mainCanvas.width  * zoom);
   const displayH = Math.round(mainCanvas.height * zoom);
 
-  // Resize display (CSS) of both canvases
   mainCanvas.style.width    = displayW + 'px';
   mainCanvas.style.height   = displayH + 'px';
   overlayCanvas.style.width  = displayW + 'px';
   overlayCanvas.style.height = displayH + 'px';
 
-  // Resize wrapper so scroll area knows the size
   const wrapper = document.getElementById('canvas-wrapper');
   wrapper.style.width  = displayW + 'px';
   wrapper.style.height = displayH + 'px';
@@ -656,7 +650,6 @@ function applyZoom() {
   document.getElementById('zoom-label').textContent = pct;
   document.getElementById('info-zoom').textContent  = pct;
 
-  // Update crop overlay if active
   if (currentTool === 'crop') renderCropOverlay();
 }
 
@@ -670,7 +663,6 @@ function adjustZoom(delta) {
 }
 
 function fitToScreen() {
-  // Wait a tick so layout is ready
   requestAnimationFrame(() => {
     const vp   = document.getElementById('canvas-viewport');
     const padX = 60, padY = 60;
@@ -682,7 +674,6 @@ function fitToScreen() {
     zoom = Math.min(scaleW, scaleH);
     zoom = Math.max(0.05, zoom);
     applyZoom();
-    // Center scroll
     centerScroll();
   });
 }
@@ -734,7 +725,6 @@ function processFile(file) {
       saveHistory('Original');
       showEditor();
 
-      // Auto fit to screen
       fitToScreen();
       showLoading(false);
       showToast('Image load ho gaya!', 'success');
@@ -997,7 +987,6 @@ function updateDrawSettings() {
   brushStyle   = document.getElementById('brush-style').value;
 }
 
-// Convert mouse/touch event to canvas pixel coords (accounting for CSS zoom)
 function getCanvasPos(e) {
   const rect   = mainCanvas.getBoundingClientRect();
   const scaleX = mainCanvas.width  / rect.width;
@@ -1049,7 +1038,6 @@ document.addEventListener('mousemove', e => {
     renderCropOverlay();
   }
   if (isDrawing&&(currentTool==='draw'||currentTool==='erase')) drawStroke(getCanvasPos(e));
-  // cursor info
   const pos=getCanvasPos(e);
   const cx=Math.round(pos.x), cy=Math.round(pos.y);
   if (cx>=0&&cy>=0&&cx<=mainCanvas.width&&cy<=mainCanvas.height)
@@ -1076,7 +1064,6 @@ function clearDrawing() {
 // ════════════════════════════════════════════
 function initTextOverlay() {
   const to=document.getElementById('text-overlay');
-  // Place at 10% from top-left of zoomed canvas
   to.style.left=Math.round(mainCanvas.width*0.1*zoom)+'px';
   to.style.top =Math.round(mainCanvas.height*0.1*zoom)+'px';
   updateTextOverlay();
@@ -1120,11 +1107,10 @@ function applyTextToCanvas() {
   const color =document.getElementById('text-color').value||'#ffffff';
   const shadow=document.getElementById('text-shadow-color').value||'#000000';
 
-  // Convert overlay screen position → canvas pixel position
   const toRect=to.getBoundingClientRect();
   const wRect =document.getElementById('canvas-wrapper').getBoundingClientRect();
   const canvasX=(toRect.left-wRect.left)/zoom;
-  const canvasY=(toRect.top -wRect.top)/zoom + size;  // add size for baseline
+  const canvasY=(toRect.top -wRect.top)/zoom + size;
 
   let fontStr='';
   if (isBold)   fontStr+='bold ';
@@ -1220,11 +1206,10 @@ function applyResize() {
 }
 
 // ════════════════════════════════════════════
-//  HISTORY – FIXED: now stores base image (currentImageData) not filtered canvas
+//  HISTORY – FIXED
 // ════════════════════════════════════════════
 function saveHistory(label) {
   if (historyIndex < history.length-1) history = history.slice(0, historyIndex+1);
-  // Create a dataURL from currentImageData (base image without current filter sliders)
   const tmpCanvas = document.createElement('canvas');
   tmpCanvas.width = mainCanvas.width;
   tmpCanvas.height = mainCanvas.height;
@@ -1260,7 +1245,7 @@ function restoreHistory(idx) {
     document.getElementById('resize-w').value=h.w;
     document.getElementById('resize-h').value=h.h;
     originalAspectRatio=h.w/h.h;
-    applyFilters();  // re‑apply current filter sliders to the restored base
+    applyFilters();
     renderHistoryList();
     updateHistoryBtns();
   };
