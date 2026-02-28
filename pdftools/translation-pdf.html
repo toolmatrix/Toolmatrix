@@ -412,7 +412,7 @@
 
                 <div class="res-box">
                     <div class="res-head">
-                        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>Translated Text Preview</span>
+                        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Translated Text Preview</span>
                         <button class="cp-btn" id="cpBtn" onclick="copyAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy All</button>
                     </div>
                     <div class="res-body" id="resBody"></div>
@@ -545,47 +545,44 @@ function setProg(pct,lb,sb,step){
 
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
-async function translateText(text,src,tgt){
-    // Split into chunks of ~450 chars
-    const chunks=[];
-    const sentences=text.split(/(?<=[.!?।\n])\s*/);
-    let current='';
-    for(const s of sentences){
-        if((current+s).length>450&&current){
-            chunks.push(current.trim());
-            current=s;
-        }else{
-            current+=s+' ';
-        }
-    }
-    if(current.trim())chunks.push(current.trim());
-
-    let result='';
-    for(const chunk of chunks){
-        if(!chunk)continue;
-        try{
-            const pair=src==='auto'?`${src}|${tgt}`:`${src}|${tgt}`;
-            const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${pair}`;
-            const res=await fetch(url);
-            const data=await res.json();
-            if(data.responseData&&data.responseData.translatedText){
-                let translated=data.responseData.translatedText;
-                // Check for matches array for better results
-                if(data.matches&&data.matches.length>0){
-                    const best=data.matches.reduce((a,b)=>a.quality>b.quality?a:b);
-                    if(best.translation)translated=best.translation;
-                }
-                result+=translated+' ';
-            }else{
-                result+=chunk+' ';
+// ==================== FIXED TRANSLATION FUNCTION ====================
+async function translateText(text, src, tgt) {
+    // Use Google Translate public API (no key required)
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${src}&tl=${tgt}&dt=t&q=${encodeURIComponent(text)}`;
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // data[0] is an array of sentence objects: [ ["translated", "original", ...], ... ]
+        let translated = '';
+        if (data && data[0]) {
+            for (let i = 0; i < data[0].length; i++) {
+                if (data[0][i][0]) translated += data[0][i][0];
             }
-        }catch(e){
-            result+=chunk+' ';
         }
-        await wait(300);// Rate limit
+        return translated.trim() || text; // fallback to original if empty
+    } catch (e) {
+        console.error('Translation error:', e);
+        // Retry once after a short delay
+        try {
+            await wait(500);
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`Retry failed`);
+            const data = await res.json();
+            let translated = '';
+            if (data && data[0]) {
+                for (let i = 0; i < data[0].length; i++) {
+                    if (data[0][i][0]) translated += data[0][i][0];
+                }
+            }
+            return translated.trim() || text;
+        } catch (e2) {
+            console.error('Retry also failed:', e2);
+            return text; // fallback to original
+        }
     }
-    return result.trim();
 }
+// ====================================================================
 
 async function startTranslation(){
     const textPages=originalPages.filter(p=>p.text.trim());
@@ -656,7 +653,7 @@ function renderTranslated(){
         block.className='page-block';
         block.innerHTML=`
             <div class="page-block-head">
-                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>Page ${pg.pageNum} — Translated</h3>
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Page ${pg.pageNum} — Translated</h3>
                 <span>${words} words</span>
             </div>
             <div class="page-text translated">${escHtml(pg.text)}</div>
