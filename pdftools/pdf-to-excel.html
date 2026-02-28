@@ -1,100 +1,973 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF to Excel Converter - Tool Matrix</title>
-<meta name="description" content="Convert PDF tables to Excel online for free. Fast, mobile-friendly PDF to Excel converter by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF to Excel Converter — Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+        :root{
+            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;
+            --g400:#81C784;--g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;
+            --g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
+            --white:#ffffff;--dark:#1a2e1a;--text:#2c3e2c;
+            --textLight:#6b7e6b;--textMuted:#94a894;--border:#d4ead4;
+            --red:#EF5350;--redDark:#D32F2F;--blue:#2196F3;
+            --shadow-sm:0 2px 8px rgba(46,125,50,.08);
+            --shadow:0 8px 30px rgba(46,125,50,.10);
+            --shadow-lg:0 20px 60px rgba(46,125,50,.15);
+            --radius:16px;--radius-sm:10px;--radius-xs:6px;
+            --transition:.25s cubic-bezier(.4,0,.2,1);
+        }
+
+        html,body{width:100%;height:100%;overflow:hidden;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:var(--g100);color:var(--text);-webkit-font-smoothing:antialiased}
+
+        /* ===== APP ===== */
+        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== NAVBAR ===== */
+        .navbar{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
+            padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;
+            box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:100;position:relative}
+        .nav-left{display:flex;align-items:center;gap:14px}
+        .logo-box{width:40px;height:40px;background:var(--white);border-radius:11px;
+            display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--g700);
+            box-shadow:0 3px 10px rgba(0,0,0,.15)}
+        .logo-text{font-size:20px;font-weight:800;color:var(--white);letter-spacing:-.5px}
+        .logo-text span{color:#FFEB3B}
+        .nav-center{display:flex;align-items:center;gap:20px;position:absolute;left:50%;transform:translateX(-50%)}
+        .nav-step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);transition:var(--transition)}
+        .nav-step.active{color:#FFEB3B}
+        .nav-step.done{color:var(--g300)}
+        .nav-step .step-num{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:var(--transition)}
+        .nav-step.active .step-num{border-color:#FFEB3B;background:rgba(255,235,59,.15);color:#FFEB3B}
+        .nav-step.done .step-num{border-color:var(--g300);background:var(--g600);color:white}
+        .step-line{width:40px;height:2px;background:rgba(255,255,255,.15);border-radius:2px}
+        .step-line.done{background:var(--g400)}
+        .nav-right{display:flex;align-items:center;gap:10px}
+        .nav-btn{height:38px;padding:0 18px;background:rgba(255,255,255,.12);
+            border:1.5px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:13px;
+            font-weight:600;cursor:pointer;transition:var(--transition);font-family:inherit;
+            display:flex;align-items:center;gap:7px}
+        .nav-btn:hover{background:rgba(255,255,255,.2)}
+        .nav-btn.yellow{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
+            border-color:transparent;box-shadow:0 3px 15px rgba(255,193,7,.3)}
+        .nav-btn.yellow:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(255,193,7,.4)}
+        .mobile-menu{display:none;width:38px;height:38px;border-radius:8px;
+            border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);
+            color:white;font-size:18px;cursor:pointer;align-items:center;justify-content:center}
+
+        /* ===== MAIN ===== */
+        .main{flex:1;display:flex;overflow:hidden;position:relative}
+
+        /* ===== SIDEBAR ===== */
+        .sidebar{width:280px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);
+            display:flex;flex-direction:column;overflow:hidden;z-index:50}
+        .sb-hdr{flex-shrink:0;padding:16px 18px;border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;background:var(--g50)}
+        .sb-title{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .sb-close{display:none;width:30px;height:30px;border-radius:8px;border:none;background:var(--g200);
+            color:var(--g800);font-size:14px;cursor:pointer;align-items:center;justify-content:center;transition:var(--transition)}
+        .sb-close:hover{background:var(--g600);color:white}
+        .sb-scroll{flex:1;overflow-y:auto;padding:16px 18px}
+        .sb-scroll::-webkit-scrollbar{width:5px}
+        .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+        .sg{margin-bottom:20px}
+        .sg-label{font-size:11.5px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .sg-label i{color:var(--g600);font-size:13px}
+        .sg-select,.sg-input{width:100%;padding:10px 14px;border:2px solid var(--g200);border-radius:var(--radius-sm);
+            font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:var(--transition);
+            background:var(--white);appearance:none;-webkit-appearance:none}
+        .sg-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%234CAF50' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
+        .sg-select:focus,.sg-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+        .chip-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .chip{padding:9px 12px;border:2px solid var(--g200);border-radius:var(--radius-sm);font-size:12px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--transition);
+            background:var(--white);color:var(--text);font-family:inherit}
+        .chip:hover{border-color:var(--g400);background:var(--g50)}
+        .chip.active{background:var(--g600);color:white;border-color:var(--g600)}
+        .sb-footer{flex-shrink:0;padding:16px 18px;border-top:1px solid var(--border);background:var(--g50)}
+        .sb-convert-btn{width:100%;padding:14px 20px;
+            background:linear-gradient(135deg,var(--g600),var(--g900));color:white;border:none;
+            border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;align-items:center;
+            justify-content:center;gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);
+            position:relative;overflow:hidden}
+        .sb-convert-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
+        .sb-convert-btn:hover::after{left:100%}
+        .sb-convert-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(46,125,50,.4)}
+        .sb-convert-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+        /* ===== CENTER CONTENT ===== */
+        .center{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== UPLOAD SCREEN ===== */
+        .screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;
+            overflow-y:auto;padding:30px}
+        .screen.active{display:flex}
+
+        .upload-card{width:100%;max-width:680px;background:var(--white);border-radius:24px;
+            box-shadow:var(--shadow-lg);padding:50px 40px;text-align:center;animation:fadeUp .5s ease}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .upload-icon-big{width:110px;height:110px;
+            background:linear-gradient(135deg,var(--g200),var(--g100));border-radius:50%;
+            display:flex;align-items:center;justify-content:center;margin:0 auto 25px;
+            font-size:46px;color:var(--g600);transition:var(--transition)}
+        .upload-card:hover .upload-icon-big{transform:scale(1.08);
+            background:linear-gradient(135deg,var(--g400),var(--g300));color:white}
+        .upload-card h2{font-size:28px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .upload-card p{font-size:15px;color:var(--textMuted);margin-bottom:28px;max-width:420px;margin-left:auto;margin-right:auto}
+        .drop-zone{border:3px dashed var(--g300);border-radius:20px;padding:45px 30px;cursor:pointer;
+            transition:var(--transition);margin-bottom:25px;background:var(--g50)}
+        .drop-zone:hover,.drop-zone.drag-over{border-color:var(--g600);background:var(--g100);transform:scale(1.01)}
+        .drop-zone-inner{display:flex;flex-direction:column;align-items:center;gap:12px}
+        .drop-zone i{font-size:36px;color:var(--g500)}
+        .drop-zone h3{font-size:17px;font-weight:700;color:var(--g800)}
+        .drop-zone span{font-size:13px;color:var(--textMuted)}
+        .browse-btn{padding:13px 35px;background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:white;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:inline-flex;align-items:center;gap:10px;
+            box-shadow:0 5px 20px rgba(46,125,50,.3)}
+        .browse-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(46,125,50,.4)}
+        .upload-features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+        .uf{display:flex;align-items:center;gap:10px;padding:14px;background:var(--g50);border-radius:12px}
+        .uf i{font-size:20px;color:var(--g600);flex-shrink:0}
+        .uf-text{text-align:left}
+        .uf-text strong{font-size:13px;color:var(--text);display:block}
+        .uf-text span{font-size:11px;color:var(--textMuted)}
+
+        /* ===== PROCESSING SCREEN ===== */
+        .process-card{width:100%;max-width:500px;background:var(--white);border-radius:24px;
+            box-shadow:var(--shadow-lg);padding:50px 40px;text-align:center;animation:fadeUp .5s ease}
+        .process-spinner{width:80px;height:80px;margin:0 auto 25px;position:relative}
+        .p-ring{width:80px;height:80px;border:5px solid var(--g200);border-top-color:var(--g600);
+            border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .process-card h3{font-size:22px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .process-card p{font-size:14px;color:var(--textMuted)}
+        .progress-track{width:100%;height:8px;background:var(--g100);border-radius:10px;margin-top:25px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));
+            border-radius:10px;width:0%;transition:width .3s}
+        .progress-label{font-size:12px;color:var(--textMuted);margin-top:10px;font-weight:600}
+
+        /* ===== PREVIEW / RESULT SCREEN ===== */
+        .result-layout{flex:1;display:none;overflow:hidden}
+        .result-layout.active{display:flex}
+        .result-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:2px solid var(--border)}
+        .result-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+        .rpanel-hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+            padding:12px 18px;background:var(--g50);border-bottom:1px solid var(--border)}
+        .rpanel-title{font-size:12.5px;font-weight:700;color:var(--g800);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .rpanel-title i{font-size:15px;color:var(--g600)}
+        .rpanel-actions{display:flex;gap:6px}
+        .rpanel-btn{padding:5px 12px;border:1.5px solid var(--g200);border-radius:var(--radius-xs);
+            background:var(--white);color:var(--g800);font-size:11.5px;font-weight:600;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;align-items:center;gap:5px}
+        .rpanel-btn:hover{background:var(--g600);color:white;border-color:var(--g600)}
+        .rpanel-body{flex:1;overflow:auto;padding:0;position:relative}
+
+        /* PDF Preview */
+        .pdf-pages{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;background:#e8e8e8}
+        .pdf-page-wrap{background:white;box-shadow:0 4px 20px rgba(0,0,0,.12);border-radius:4px;overflow:hidden;max-width:100%}
+        .pdf-page-wrap canvas{display:block;width:100%;height:auto}
+        .pdf-page-label{text-align:center;padding:6px;font-size:11px;font-weight:600;
+            color:var(--textMuted);background:var(--g50);border-top:1px solid #eee}
+
+        /* Excel Preview Table */
+        .excel-preview{padding:16px;overflow:auto;min-height:100%}
+        .excel-table-wrap{overflow:auto;border-radius:var(--radius-sm);border:1px solid var(--g200)}
+        .excel-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+        .excel-table thead th{background:var(--g600);color:white;padding:11px 16px;text-align:left;
+            font-size:12px;font-weight:700;position:sticky;top:0;z-index:2;white-space:nowrap}
+        .excel-table tbody td{padding:10px 16px;border-bottom:1px solid var(--g100);
+            white-space:nowrap;max-width:250px;overflow:hidden;text-overflow:ellipsis}
+        .excel-table tbody tr:hover{background:var(--g50)}
+        .excel-table tbody tr:nth-child(even){background:#fafff9}
+        .row-num{color:var(--textMuted);font-weight:700;font-size:11px;width:40px;text-align:center;background:var(--g50)!important}
+
+        /* Sheet Tabs */
+        .sheet-tabs{flex-shrink:0;display:flex;gap:0;background:var(--g100);border-top:1px solid var(--border);
+            padding:0 10px;overflow-x:auto;align-items:flex-end;height:38px}
+        .sheet-tab{padding:8px 18px;font-size:12px;font-weight:600;color:var(--textLight);
+            background:transparent;border:1.5px solid transparent;border-bottom:none;
+            border-radius:8px 8px 0 0;cursor:pointer;transition:var(--transition);font-family:inherit;
+            white-space:nowrap;position:relative;top:1px}
+        .sheet-tab:hover{color:var(--g800);background:rgba(255,255,255,.5)}
+        .sheet-tab.active{color:var(--g900);background:var(--white);border-color:var(--border);font-weight:700}
+
+        /* ===== FILE INFO BAR ===== */
+        .file-bar{flex-shrink:0;display:none;align-items:center;gap:14px;padding:10px 18px;
+            background:var(--white);border-bottom:1px solid var(--border)}
+        .file-bar.show{display:flex}
+        .fb-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--red),var(--redDark));
+            border-radius:12px;display:flex;align-items:center;justify-content:center;
+            font-size:20px;color:white;flex-shrink:0}
+        .fb-info{flex:1;min-width:0}
+        .fb-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fb-meta{font-size:12px;color:var(--textMuted);display:flex;gap:12px;margin-top:2px}
+        .fb-meta span{display:flex;align-items:center;gap:4px}
+        .fb-remove{width:34px;height:34px;border-radius:50%;border:2px solid var(--red);background:transparent;
+            color:var(--red);font-size:14px;cursor:pointer;transition:var(--transition);
+            display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .fb-remove:hover{background:var(--red);color:white}
+
+        /* ===== OVERLAY ===== */
+        .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
+            align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+        .overlay.show{display:flex}
+        .overlay-modal{background:var(--white);border-radius:24px;padding:50px 45px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,.2);max-width:440px;width:92%;animation:pop .35s ease}
+        @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .suc-icon{width:85px;height:85px;background:linear-gradient(135deg,var(--g500),var(--g800));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+            font-size:38px;color:white;animation:bounceIn .5s ease}
+        @keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .suc-title{font-size:24px;font-weight:800;color:var(--g900);margin-bottom:6px}
+        .suc-desc{font-size:14px;color:var(--textMuted);margin-bottom:28px}
+        .dl-btn{padding:15px 45px;background:linear-gradient(135deg,var(--g600),var(--g900));
+            color:white;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;box-shadow:0 6px 25px rgba(46,125,50,.35);
+            display:inline-flex;align-items:center;gap:10px}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(46,125,50,.45)}
+        .dl-btn.excel-dl{background:linear-gradient(135deg,#1B7D3C,#145A2B)}
+        .close-modal{margin-top:14px;padding:10px 28px;background:transparent;border:2px solid var(--g200);
+            color:var(--g800);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:inline-block}
+        .close-modal:hover{background:var(--g100);border-color:var(--g400)}
+
+        /* ===== TOAST ===== */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:var(--g900);color:white;padding:12px 28px;border-radius:50px;font-size:14px;
+            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
+            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+        /* ===== MOBILE BOTTOM BAR ===== */
+        .mob-bar{display:none;flex-shrink:0;background:var(--white);border-top:1px solid var(--border);
+            padding:8px 10px;gap:6px;z-index:80}
+        .mob-bar .mb{flex:1;padding:10px 6px;background:var(--g50);border:1.5px solid var(--g200);
+            border-radius:10px;font-size:11px;font-weight:600;color:var(--g800);cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;flex-direction:column;
+            align-items:center;gap:3px}
+        .mob-bar .mb i{font-size:16px}
+        .mob-bar .mb.mb-go{background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:white;border-color:var(--g600);box-shadow:0 3px 12px rgba(46,125,50,.3)}
+
+        /* Mobile view toggle */
+        .mob-toggle{display:none;flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--border);padding:6px 12px;gap:6px}
+        .mt-btn{flex:1;padding:9px;font-size:12.5px;font-weight:600;text-align:center;border-radius:8px;
+            cursor:pointer;transition:var(--transition);font-family:inherit;color:var(--textLight);
+            background:transparent;border:1.5px solid transparent;display:flex;align-items:center;
+            justify-content:center;gap:6px}
+        .mt-btn.active{background:var(--white);color:var(--g900);border-color:var(--border);box-shadow:var(--shadow-sm)}
+
+        /* Sidebar overlay */
+        .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+        .sb-overlay.show{display:block}
+
+        /* Empty state */
+        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+            height:100%;color:var(--textMuted);padding:30px;text-align:center}
+        .empty-state i{font-size:50px;color:var(--g200);margin-bottom:14px}
+        .empty-state h3{font-size:16px;color:var(--textLight);font-weight:600}
+        .empty-state p{font-size:13px;margin-top:4px}
+
+        /* Stats Row */
+        .stats-row{display:flex;gap:12px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+        .stat-pill{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--g50);
+            border-radius:50px;font-size:12px;font-weight:600;color:var(--g800);border:1px solid var(--g200)}
+        .stat-pill i{color:var(--g600)}
+
+        /* Page selector */
+        .page-sel{display:flex;flex-wrap:wrap;gap:6px}
+        .page-chip{width:36px;height:36px;border-radius:8px;border:2px solid var(--g200);
+            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+            cursor:pointer;transition:var(--transition);color:var(--text);background:var(--white)}
+        .page-chip:hover{border-color:var(--g500);background:var(--g50)}
+        .page-chip.sel{background:var(--g600);color:white;border-color:var(--g600)}
+
+        #fileInput{display:none}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){
+            .nav-center{display:none}
+            .nav-right .nav-btn.desk{display:none}
+            .mobile-menu{display:flex}
+            .mob-bar{display:flex}
+            .mob-toggle{display:flex}
+            .sidebar{position:fixed;left:-300px;top:0;bottom:0;z-index:100;
+                transition:left var(--transition);box-shadow:var(--shadow-lg)}
+            .sidebar.open{left:0}
+            .sb-close{display:flex}
+            .result-layout{flex-direction:column}
+            .result-left{border-right:none;border-bottom:2px solid var(--border);flex:none;height:50%}
+            .result-right{flex:none;height:50%;display:none}
+            .result-right.mob-show{display:flex}
+            .result-left.mob-hide{display:none}
+            .navbar{height:54px;padding:0 14px}
+            .logo-text{font-size:17px}
+            .logo-box{width:34px;height:34px;font-size:17px;border-radius:9px}
+            .upload-features{grid-template-columns:1fr}
+            .upload-card{padding:30px 24px}
+            .upload-card h2{font-size:22px}
+        }
+        @media(max-width:480px){
+            .drop-zone{padding:30px 16px}
+            .upload-card h2{font-size:20px}
+            .upload-card p{font-size:13px}
+        }
+    </style>
 </head>
+<body>
 
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<div class="app">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="mobile-menu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
+            <div class="logo-box"><i class="fas fa-table"></i></div>
+            <div class="logo-text">PDF<span>2Excel</span></div>
+        </div>
+        <div class="nav-center">
+            <div class="nav-step active" id="ns1"><span class="step-num">1</span> Upload</div>
+            <div class="step-line" id="sl1"></div>
+            <div class="nav-step" id="ns2"><span class="step-num">2</span> Preview</div>
+            <div class="step-line" id="sl2"></div>
+            <div class="nav-step" id="ns3"><span class="step-num">3</span> Download</div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn desk" onclick="toggleSB()"><i class="fas fa-cog"></i> Settings</button>
+            <button class="nav-btn yellow" id="navConvertBtn" onclick="startConvert()" disabled>
+                <i class="fas fa-file-excel"></i> Convert
+            </button>
+        </div>
+    </nav>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">PDF to Excel Converter</h1>
-<p class="text-gray-600 mt-2">Extract tables from PDF and convert to Excel instantly</p>
-</header>
+    <!-- MAIN -->
+    <div class="main">
+        <div class="sb-overlay" id="sbOverlay" onclick="closeSB()"></div>
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sb-hdr">
+                <div class="sb-title"><i class="fas fa-sliders-h"></i> Settings</div>
+                <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sb-scroll">
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-file-excel"></i> Output Format</div>
+                    <select class="sg-select" id="setFormat">
+                        <option value="xlsx" selected>.xlsx (Excel 2007+)</option>
+                        <option value="xls">.xls (Excel 97-2003)</option>
+                        <option value="csv">.csv (Comma Separated)</option>
+                    </select>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-layer-group"></i> Sheet Mode</div>
+                    <div class="chip-row">
+                        <button class="chip active" onclick="setSheetMode('single',this)">Single Sheet</button>
+                        <button class="chip" onclick="setSheetMode('perpage',this)">Per Page</button>
+                    </div>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-text-height"></i> Extract Mode</div>
+                    <select class="sg-select" id="setExtractMode">
+                        <option value="auto" selected>Auto Detect Tables</option>
+                        <option value="all">All Text Content</option>
+                    </select>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-tag"></i> File Name</div>
+                    <input type="text" class="sg-input" id="setFileName" value="converted" placeholder="Enter file name">
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-file-alt"></i> Pages</div>
+                    <select class="sg-select" id="setPages">
+                        <option value="all" selected>All Pages</option>
+                        <option value="custom">Custom Selection</option>
+                    </select>
+                </div>
+                <div class="sg" id="pageSelGroup" style="display:none">
+                    <div class="sg-label"><i class="fas fa-th"></i> Select Pages</div>
+                    <div class="page-sel" id="pageSel"></div>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-columns"></i> Column Separator</div>
+                    <select class="sg-select" id="setColSep">
+                        <option value="auto" selected>Auto (Spaces/Tabs)</option>
+                        <option value="tab">Tab</option>
+                        <option value="spaces">Multiple Spaces (3+)</option>
+                        <option value="fixed">Fixed Width</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sb-footer">
+                <button class="sb-convert-btn" id="sbConvertBtn" onclick="startConvert()" disabled>
+                    <i class="fas fa-file-excel"></i> Convert to Excel
+                </button>
+            </div>
+        </div>
 
-<input type="file" id="pdfInput" accept="application/pdf"
-class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white"/>
+        <!-- CENTER -->
+        <div class="center">
+            <!-- File Info Bar -->
+            <div class="file-bar" id="fileBar">
+                <div class="fb-icon"><i class="fas fa-file-pdf"></i></div>
+                <div class="fb-info">
+                    <div class="fb-name" id="fbName"></div>
+                    <div class="fb-meta">
+                        <span><i class="fas fa-file"></i> <span id="fbPages">0</span> pages</span>
+                        <span><i class="fas fa-weight-hanging"></i> <span id="fbSize">0</span></span>
+                    </div>
+                </div>
+                <button class="fb-remove" onclick="removeFile()" title="Remove"><i class="fas fa-times"></i></button>
+            </div>
 
-<button onclick="pdfToExcel()" 
-class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Convert to Excel
-</button>
+            <!-- Screen 1: Upload -->
+            <div class="screen active" id="screenUpload">
+                <div class="upload-card">
+                    <div class="upload-icon-big"><i class="fas fa-file-pdf"></i></div>
+                    <h2>PDF to Excel Converter</h2>
+                    <p>Apni PDF file upload karein aur hum isko automatically Excel spreadsheet mein convert kar denge!</p>
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-inner">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Drop PDF File Here</h3>
+                            <span>Supports .pdf files up to 100MB</span>
+                        </div>
+                    </div>
+                    <button class="browse-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Select PDF File
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <div class="upload-features">
+                        <div class="uf"><i class="fas fa-table"></i><div class="uf-text"><strong>Smart Table Detection</strong><span>Auto-detect tables</span></div></div>
+                        <div class="uf"><i class="fas fa-lock"></i><div class="uf-text"><strong>100% Secure</strong><span>Browser-only processing</span></div></div>
+                        <div class="uf"><i class="fas fa-bolt"></i><div class="uf-text"><strong>Instant Convert</strong><span>Fast & accurate</span></div></div>
+                    </div>
+                </div>
+            </div>
 
-<div id="loading" class="mt-4 text-gray-600 hidden">Processing PDF, please wait...</div>
+            <!-- Screen 2: Processing -->
+            <div class="screen" id="screenProcess">
+                <div class="process-card">
+                    <div class="process-spinner"><div class="p-ring"></div></div>
+                    <h3 id="processTitle">Reading PDF...</h3>
+                    <p id="processDesc">Extracting data from your PDF file</p>
+                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-label" id="progressLabel">0%</div>
+                </div>
+            </div>
 
-<a id="downloadBtn" class="hidden mt-4 block text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold">Download Excel</a>
-<script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
+            <!-- Screen 3: Result (Split View) -->
+            <div class="mob-toggle" id="mobToggle">
+                <button class="mt-btn active" onclick="mobSwitch('pdf',this)"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="mt-btn" onclick="mobSwitch('excel',this)"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
 
-<script>
-  atOptions = {
-    'key' : '4afdbe032cc77af781754d77ab0211fb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+            <div class="result-layout" id="screenResult">
+                <!-- Left: PDF Preview -->
+                <div class="result-left" id="resLeft">
+                    <div class="rpanel-hdr">
+                        <div class="rpanel-title"><i class="fas fa-file-pdf"></i> PDF Preview</div>
+                    </div>
+                    <div class="rpanel-body">
+                        <div class="pdf-pages" id="pdfPages"></div>
+                    </div>
+                </div>
+                <!-- Right: Excel Preview -->
+                <div class="result-right" id="resRight">
+                    <div class="rpanel-hdr">
+                        <div class="rpanel-title"><i class="fas fa-file-excel"></i> Excel Preview</div>
+                        <div class="rpanel-actions">
+                            <button class="rpanel-btn" onclick="downloadExcel()"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <div class="rpanel-body">
+                        <div class="excel-preview" id="excelPreview">
+                            <div class="empty-state"><i class="fas fa-table"></i><h3>Excel preview will appear here</h3></div>
+                        </div>
+                    </div>
+                    <div class="sheet-tabs" id="sheetTabs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
+    <!-- MOBILE BOTTOM BAR -->
+    <div class="mob-bar">
+        <button class="mb" onclick="toggleSB()"><i class="fas fa-cog"></i> Settings</button>
+        <button class="mb" onclick="removeFile()"><i class="fas fa-redo"></i> Reset</button>
+        <button class="mb mb-go" id="mobConvertBtn" onclick="startConvert()"><i class="fas fa-file-excel"></i> Convert</button>
+    </div>
 </div>
-</main>
 
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+<!-- SUCCESS OVERLAY -->
+<div class="overlay" id="successOverlay">
+    <div class="overlay-modal">
+        <div class="suc-icon"><i class="fas fa-check"></i></div>
+        <div class="suc-title">Excel Ready! 🎉</div>
+        <div class="suc-desc">Your PDF has been converted to Excel successfully!</div>
+        <div class="stats-row" id="statsRow"></div>
+        <br>
+        <button class="dl-btn excel-dl" id="dlBtn" onclick="downloadExcel()"><i class="fas fa-download"></i> Download Excel</button>
+        <br>
+        <button class="close-modal" onclick="closeSuccess()"><i class="fas fa-times"></i> Close</button>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-async function pdfToExcel() {
-const file = document.getElementById("pdfInput").files[0];
-if(!file){ alert("Please select a PDF file!"); return; }
+    // ========== GLOBALS ==========
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
 
-document.getElementById("loading").classList.remove("hidden");
+    let pdfFile = null;
+    let pdfDoc = null;
+    let pdfBytes = null;
+    let totalPages = 0;
+    let extractedData = [];  // [{page, rows: [[cell,cell,...], ...]}]
+    let workbook = null;
+    let sheetMode = 'single';
+    let selectedPages = new Set();
 
-const arrayBuffer = await file.arrayBuffer();
-const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+    // ========== UPLOAD ==========
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
 
-let allData = [];
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault(); dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f && f.type === 'application/pdf') handleFile(f);
+        else toast('Please drop a PDF file ⚠️');
+    });
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
-for(let i=1; i<=pdf.numPages; i++){
-const page = await pdf.getPage(i);
-const textContent = await page.getTextContent();
-let pageData = [];
+    document.getElementById('setPages').addEventListener('change', function() {
+        document.getElementById('pageSelGroup').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
 
-textContent.items.forEach(item => {
-  // simple split based on spaces, may need improvement for complex tables
-  pageData.push(item.str);
-});
+    async function handleFile(file) {
+        pdfFile = file;
+        pdfBytes = await file.arrayBuffer();
+        pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+        totalPages = pdfDoc.numPages;
 
-allData.push(pageData);
-}
+        // Update UI
+        document.getElementById('fbName').textContent = file.name;
+        document.getElementById('fbPages').textContent = totalPages;
+        document.getElementById('fbSize').textContent = fmtSize(file.size);
+        document.getElementById('fileBar').classList.add('show');
+        document.getElementById('navConvertBtn').disabled = false;
+        document.getElementById('sbConvertBtn').disabled = false;
 
-// Convert to Excel
-const wb = XLSX.utils.book_new();
-const ws = XLSX.utils.aoa_to_sheet(allData);
-XLSX.utils.book_append_sheet(wb, ws, "PDF Data");
+        // Build page selector
+        selectedPages.clear();
+        const ps = document.getElementById('pageSel');
+        ps.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            selectedPages.add(i);
+            const c = document.createElement('button');
+            c.className = 'page-chip sel';
+            c.textContent = i;
+            c.onclick = () => { c.classList.toggle('sel'); selectedPages.has(i) ? selectedPages.delete(i) : selectedPages.add(i); };
+            ps.appendChild(c);
+        }
 
-const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
-const blob = new Blob([wbout], {type:'application/octet-stream'});
-const url = URL.createObjectURL(blob);
+        setStep(1);
+        toast('PDF loaded! ' + totalPages + ' pages ✅');
+    }
 
-const downloadBtn = document.getElementById("downloadBtn");
-downloadBtn.href = url;
-downloadBtn.download = "converted.xlsx";
-downloadBtn.classList.remove("hidden");
+    function removeFile() {
+        pdfFile = null; pdfDoc = null; pdfBytes = null; totalPages = 0;
+        extractedData = []; workbook = null;
+        document.getElementById('fileBar').classList.remove('show');
+        document.getElementById('navConvertBtn').disabled = true;
+        document.getElementById('sbConvertBtn').disabled = true;
+        fileInput.value = '';
+        showScreen('screenUpload');
+        document.getElementById('screenResult').classList.remove('active');
+        document.getElementById('pdfPages').innerHTML = '';
+        document.getElementById('excelPreview').innerHTML = '<div class="empty-state"><i class="fas fa-table"></i><h3>Excel preview here</h3></div>';
+        document.getElementById('sheetTabs').innerHTML = '';
+        setStep(0);
+    }
 
-document.getElementById("loading").classList.add("hidden");
-}
+    function fmtSize(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    // ========== STEPS ==========
+    function setStep(s) {
+        ['ns1','ns2','ns3'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            el.classList.remove('active','done');
+            if (i < s) el.classList.add('done');
+            else if (i === s) el.classList.add('active');
+        });
+        ['sl1','sl2'].forEach((id, i) => {
+            document.getElementById(id).classList.toggle('done', i < s);
+        });
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        if (id === 'screenResult') {
+            document.getElementById('screenResult').classList.add('active');
+        } else {
+            document.getElementById(id).classList.add('active');
+        }
+    }
+
+    // ========== SIDEBAR ==========
+    function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sbOverlay').classList.toggle('show'); }
+    function closeSB() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbOverlay').classList.remove('show'); }
+    function setSheetMode(m, el) {
+        sheetMode = m;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // ========== MOBILE TOGGLE ==========
+    function mobSwitch(view, el) {
+        document.querySelectorAll('.mt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if (view === 'excel') {
+            document.getElementById('resLeft').classList.add('mob-hide');
+            document.getElementById('resRight').classList.add('mob-show');
+        } else {
+            document.getElementById('resLeft').classList.remove('mob-hide');
+            document.getElementById('resRight').classList.remove('mob-show');
+        }
+    }
+
+    // ========== CONVERT ==========
+    async function startConvert() {
+        if (!pdfDoc) { toast('Upload a PDF first ⚠️'); return; }
+        showScreen('screenProcess');
+        setStep(1);
+        closeSB();
+
+        extractedData = [];
+        const mode = document.getElementById('setExtractMode').value;
+        const pageMode = document.getElementById('setPages').value;
+        const pagesToProcess = [];
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (pageMode === 'all' || selectedPages.has(i)) pagesToProcess.push(i);
+        }
+
+        // Render PDF pages & extract text
+        const pdfPagesEl = document.getElementById('pdfPages');
+        pdfPagesEl.innerHTML = '';
+
+        for (let idx = 0; idx < pagesToProcess.length; idx++) {
+            const pNum = pagesToProcess[idx];
+            const progress = Math.round(((idx + 1) / pagesToProcess.length) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressLabel').textContent = `Page ${idx + 1} of ${pagesToProcess.length} (${progress}%)`;
+            document.getElementById('processTitle').textContent = 'Extracting Page ' + pNum + '...';
+
+            const page = await pdfDoc.getPage(pNum);
+
+            // Render thumbnail
+            const vp = page.getViewport({ scale: 1.2 });
+            const canvas = document.createElement('canvas');
+            canvas.width = vp.width;
+            canvas.height = vp.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'pdf-page-wrap';
+            wrap.appendChild(canvas);
+            const label = document.createElement('div');
+            label.className = 'pdf-page-label';
+            label.textContent = 'Page ' + pNum;
+            wrap.appendChild(label);
+            pdfPagesEl.appendChild(wrap);
+
+            // Extract text
+            const textContent = await page.getTextContent();
+            const items = textContent.items;
+
+            if (mode === 'auto') {
+                // Smart table extraction: group by Y coordinate then sort by X
+                const rows = extractTableRows(items, vp.height);
+                extractedData.push({ page: pNum, rows });
+            } else {
+                // All text
+                const rows = extractAllText(items, vp.height);
+                extractedData.push({ page: pNum, rows });
+            }
+
+            await sleep(80);
+        }
+
+        // Build workbook
+        buildWorkbook();
+        setStep(2);
+        showScreen('screenResult');
+        document.getElementById('screenResult').classList.add('active');
+        renderExcelPreview();
+
+        // Show success
+        const fmt = document.getElementById('setFormat').value;
+        document.getElementById('statsRow').innerHTML = `
+            <div class="stat-pill"><i class="fas fa-file"></i> ${pagesToProcess.length} pages</div>
+            <div class="stat-pill"><i class="fas fa-table"></i> ${countTotalRows()} rows</div>
+            <div class="stat-pill"><i class="fas fa-file-excel"></i> .${fmt}</div>
+        `;
+        document.getElementById('successOverlay').classList.add('show');
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // ========== TABLE EXTRACTION ==========
+    function extractTableRows(items, pageH) {
+        if (!items.length) return [['(Empty page)']];
+
+        // Group items by their Y position (within tolerance)
+        const tolerance = 5;
+        const lineMap = [];
+
+        items.forEach(item => {
+            const y = Math.round(pageH - item.transform[5]);
+            const x = item.transform[4];
+            const text = item.str.trim();
+            if (!text) return;
+
+            let found = false;
+            for (const line of lineMap) {
+                if (Math.abs(line.y - y) < tolerance) {
+                    line.items.push({ x, text });
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) lineMap.push({ y, items: [{ x, text }] });
+        });
+
+        // Sort lines by Y, items by X
+        lineMap.sort((a, b) => a.y - b.y);
+        lineMap.forEach(l => l.items.sort((a, b) => a.x - b.x));
+
+        // Detect columns by clustering X positions across all rows
+        const allX = [];
+        lineMap.forEach(l => l.items.forEach(it => allX.push(it.x)));
+        allX.sort((a, b) => a - b);
+
+        const colPositions = clusterPositions(allX, 25);
+        const numCols = Math.max(colPositions.length, 1);
+
+        // Build rows
+        const rows = [];
+        lineMap.forEach(line => {
+            const row = new Array(numCols).fill('');
+            line.items.forEach(item => {
+                const colIdx = findClosestCol(item.x, colPositions);
+                if (row[colIdx]) row[colIdx] += ' ' + item.text;
+                else row[colIdx] = item.text;
+            });
+            rows.push(row);
+        });
+
+        return rows.length ? rows : [['(No data found)']];
+    }
+
+    function clusterPositions(positions, threshold) {
+        if (!positions.length) return [0];
+        const clusters = [positions[0]];
+        for (let i = 1; i < positions.length; i++) {
+            const last = clusters[clusters.length - 1];
+            if (positions[i] - last > threshold) {
+                clusters.push(positions[i]);
+            }
+        }
+        return clusters;
+    }
+
+    function findClosestCol(x, cols) {
+        let minDist = Infinity, idx = 0;
+        cols.forEach((c, i) => {
+            const d = Math.abs(x - c);
+            if (d < minDist) { minDist = d; idx = i; }
+        });
+        return idx;
+    }
+
+    function extractAllText(items, pageH) {
+        const tolerance = 5;
+        const lines = [];
+
+        items.forEach(item => {
+            const y = Math.round(pageH - item.transform[5]);
+            const text = item.str;
+            if (!text.trim()) return;
+
+            let found = false;
+            for (const line of lines) {
+                if (Math.abs(line.y - y) < tolerance) {
+                    line.text += ' ' + text;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) lines.push({ y, text });
+        });
+
+        lines.sort((a, b) => a.y - b.y);
+        return lines.map(l => [l.text.trim()]);
+    }
+
+    // ========== BUILD WORKBOOK ==========
+    function buildWorkbook() {
+        workbook = XLSX.utils.book_new();
+
+        if (sheetMode === 'perpage') {
+            extractedData.forEach(data => {
+                const ws = XLSX.utils.aoa_to_sheet(data.rows);
+                autoWidth(ws, data.rows);
+                XLSX.utils.book_append_sheet(workbook, ws, 'Page ' + data.page);
+            });
+        } else {
+            // Single sheet — combine all
+            let allRows = [];
+            extractedData.forEach((data, i) => {
+                if (i > 0 && allRows.length) allRows.push([]); // blank separator
+                if (extractedData.length > 1) allRows.push(['--- Page ' + data.page + ' ---']);
+                allRows = allRows.concat(data.rows);
+            });
+            const ws = XLSX.utils.aoa_to_sheet(allRows);
+            autoWidth(ws, allRows);
+            XLSX.utils.book_append_sheet(workbook, ws, 'Sheet1');
+        }
+    }
+
+    function autoWidth(ws, rows) {
+        if (!rows.length) return;
+        const maxCols = Math.max(...rows.map(r => r.length));
+        const colWidths = [];
+        for (let c = 0; c < maxCols; c++) {
+            let max = 10;
+            rows.forEach(r => {
+                if (r[c]) max = Math.max(max, String(r[c]).length);
+            });
+            colWidths.push({ wch: Math.min(max + 2, 50) });
+        }
+        ws['!cols'] = colWidths;
+    }
+
+    function countTotalRows() {
+        let count = 0;
+        extractedData.forEach(d => count += d.rows.length);
+        return count;
+    }
+
+    // ========== RENDER EXCEL PREVIEW ==========
+    function renderExcelPreview(sheetIdx = 0) {
+        if (!workbook) return;
+        const names = workbook.SheetNames;
+        const ws = workbook.Sheets[names[sheetIdx]];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+        // Build sheet tabs
+        const tabsEl = document.getElementById('sheetTabs');
+        tabsEl.innerHTML = '';
+        names.forEach((name, i) => {
+            const t = document.createElement('button');
+            t.className = 'sheet-tab' + (i === sheetIdx ? ' active' : '');
+            t.textContent = name;
+            t.onclick = () => renderExcelPreview(i);
+            tabsEl.appendChild(t);
+        });
+
+        // Build table
+        const prev = document.getElementById('excelPreview');
+        if (!data.length) {
+            prev.innerHTML = '<div class="empty-state"><i class="fas fa-table"></i><h3>No data</h3></div>';
+            return;
+        }
+
+        const maxCols = Math.max(...data.map(r => (r ? r.length : 0)));
+        const colLetters = [];
+        for (let c = 0; c < maxCols; c++) colLetters.push(colLetter(c));
+
+        let html = '<div class="excel-table-wrap"><table class="excel-table"><thead><tr><th class="row-num">#</th>';
+        colLetters.forEach(l => html += `<th>${l}</th>`);
+        html += '</tr></thead><tbody>';
+
+        data.forEach((row, ri) => {
+            html += `<tr><td class="row-num">${ri + 1}</td>`;
+            for (let c = 0; c < maxCols; c++) {
+                const val = (row && row[c] !== undefined) ? escHtml(String(row[c])) : '';
+                html += `<td title="${val}">${val}</td>`;
+            }
+            html += '</tr>';
+        });
+
+        html += '</tbody></table></div>';
+        prev.innerHTML = html;
+    }
+
+    function colLetter(n) {
+        let s = '';
+        while (n >= 0) { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; }
+        return s;
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ========== DOWNLOAD ==========
+    function downloadExcel() {
+        if (!workbook) { toast('Nothing to download ⚠️'); return; }
+        const fmt = document.getElementById('setFormat').value;
+        const name = document.getElementById('setFileName').value || 'converted';
+        const ext = fmt === 'csv' ? 'csv' : (fmt === 'xls' ? 'xls' : 'xlsx');
+        const bookType = fmt === 'csv' ? 'csv' : (fmt === 'xls' ? 'biff8' : 'xlsx');
+
+        XLSX.writeFile(workbook, `${name}.${ext}`, { bookType });
+        toast('Downloaded! 🎉');
+        closeSuccess();
+        setStep(2);
+
+        // Update step 3
+        document.getElementById('ns3').classList.add('done');
+    }
+
+    function closeSuccess() {
+        document.getElementById('successOverlay').classList.remove('show');
+    }
+
+    // ========== TOAST ==========
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
 </script>
-
 </body>
 </html>
