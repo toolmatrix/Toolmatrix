@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organize PDF - Rearrange, Delete & Rotate PDF Pages Online Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        :root {
+            --primary:#2ecc71;--primary-dark:#27ae60;--primary-darker:#1e8c4c;
+            --primary-light:#a8f0c8;--primary-ultra-light:#e8faf0;
+            --primary-glow:rgba(46,204,113,0.15);--bg:#f0faf4;--white:#fff;
+            --dark:#1a2e28;--gray:#6b7c75;--gray-light:#c5d5cc;--border:#d4edda;
+            --red:#e74c3c;--red-light:#fce4ec;--orange:#f39c12;--blue:#3498db;
+            --shadow:0 4px 20px rgba(46,204,113,0.10);
+            --shadow-lg:0 10px 40px rgba(46,204,113,0.13);
+            --shadow-xl:0 20px 60px rgba(46,204,113,0.10);
+            --radius:18px;--radius-sm:12px;--radius-xs:8px;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden}
+
+        /* ===== NAVBAR ===== */
+        .navbar{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(46,204,113,0.07)}
+        .navbar-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+        .navbar-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(46,204,113,0.3)}
+        .navbar-title{font-size:22px;font-weight:800;color:var(--dark)}
+        .navbar-title span{color:var(--primary)}
+        .navbar-links{display:flex;align-items:center;gap:6px}
+        .nav-link{padding:8px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;color:var(--gray);transition:all 0.3s}
+        .nav-link:hover{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .nav-link.active{background:var(--primary);color:#fff}
+        .mobile-menu-btn{display:none;background:none;border:none;font-size:24px;color:var(--dark);cursor:pointer}
+
+        /* ===== HERO ===== */
+        .hero{text-align:center;padding:56px 20px 26px;max-width:760px;margin:0 auto}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-ultra-light);border:1.5px solid var(--primary-light);padding:8px 22px;border-radius:50px;font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:22px}
+        .hero h1{font-size:44px;font-weight:900;line-height:1.13;margin-bottom:16px}
+        .hero h1 span{background:linear-gradient(135deg,var(--primary),var(--primary-darker));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:17px;color:var(--gray);line-height:1.7;max-width:600px;margin:0 auto}
+
+        /* ===== TOOL ===== */
+        .tool-container{max-width:1060px;margin:18px auto 60px;padding:0 20px}
+        .tool-card{background:var(--white);border-radius:var(--radius);border:2px solid var(--border);box-shadow:var(--shadow-xl);overflow:hidden}
+
+        /* ===== UPLOAD ===== */
+        .upload-area{padding:48px 40px;text-align:center}
+        .upload-area.hidden{display:none}
+        .upload-zone{border:2.5px dashed var(--primary-light);border-radius:var(--radius);padding:60px 40px;cursor:pointer;transition:all 0.3s;background:var(--primary-ultra-light)}
+        .upload-zone:hover,.upload-zone.drag-over{border-color:var(--primary);background:var(--primary-glow);transform:scale(1.01)}
+        .upload-zone.drag-over{box-shadow:0 0 0 5px rgba(46,204,113,0.13)}
+        .upload-icon-wrap{position:relative;width:100px;height:100px;margin:0 auto 26px}
+        .upload-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:pulseGlow 2.5s infinite}
+        .upload-sub-badge{position:absolute;bottom:-3px;right:-3px;width:38px;height:38px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;border:3px solid var(--white);box-shadow:0 3px 10px rgba(52,152,219,0.3)}
+        @keyframes pulseGlow{0%,100%{box-shadow:0 8px 30px rgba(46,204,113,0.35)}50%{box-shadow:0 8px 50px rgba(46,204,113,0.55)}}
+        .upload-zone h3{font-size:21px;font-weight:700;margin-bottom:8px}
+        .upload-zone p{color:var(--gray);font-size:14px;margin-bottom:22px}
+        .upload-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 18px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .upload-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(46,204,113,0.5)}
+        .upload-note{margin-top:16px;font-size:12px;color:var(--gray-light)}
+        .upload-note i{margin-right:4px}
+        #fileInput{display:none}
+
+        /* ===== TOOLBAR ===== */
+        .toolbar-section{display:none;padding:20px 30px 0}
+        .toolbar-section.show{display:block}
+        .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px}
+        .toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .toolbar-info{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-right:6px}
+        .toolbar-info i{color:var(--primary);font-size:16px}
+        .tb-badge{background:var(--primary);color:#fff;font-size:11px;padding:2px 10px;border-radius:50px;font-weight:700}
+        .tb-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--white);color:var(--dark);border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .tb-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .tb-btn.active{border-color:var(--primary);background:var(--primary);color:#fff}
+        .tb-btn.danger{color:var(--red);border-color:#f5c6cb;background:var(--red-light)}
+        .tb-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
+        .tb-btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
+        .tb-divider{width:1px;height:28px;background:var(--border)}
+        .select-info{font-size:12px;color:var(--gray);font-weight:500}
+
+        /* ===== PAGE GRID ===== */
+        .pages-section{display:none;padding:20px 30px}
+        .pages-section.show{display:block}
+        .pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;max-height:600px;overflow-y:auto;padding:6px}
+        .pages-grid::-webkit-scrollbar{width:6px}
+        .pages-grid::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:10px}
+
+        .page-card{position:relative;background:var(--white);border:2px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center;cursor:grab;transition:all 0.25s;user-select:none}
+        .page-card:hover{border-color:var(--primary-light);transform:translateY(-3px);box-shadow:var(--shadow)}
+        .page-card.selected{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow);background:var(--primary-ultra-light)}
+        .page-card.dragging{opacity:0.35;border-style:dashed;border-color:var(--primary)}
+        .page-card.drag-over{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-glow);transform:scale(1.04)}
+
+        /* Checkbox */
+        .page-checkbox{position:absolute;top:8px;left:8px;width:24px;height:24px;background:var(--white);border:2px solid var(--gray-light);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;transition:all 0.2s;font-size:11px;color:transparent}
+        .page-card.selected .page-checkbox{background:var(--primary);border-color:var(--primary);color:#fff}
+
+        /* Order Badge */
+        .page-order{position:absolute;top:8px;right:8px;min-width:26px;height:26px;background:var(--primary);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(46,204,113,0.3);z-index:2;padding:0 5px}
+
+        /* Rotation indicator */
+        .rotation-badge{position:absolute;bottom:48px;right:8px;width:24px;height:24px;background:var(--blue);color:#fff;border-radius:50%;font-size:9px;display:none;align-items:center;justify-content:center;z-index:2;font-weight:700}
+        .rotation-badge.visible{display:flex}
+
+        /* Thumb */
+        .page-thumb{width:100%;height:175px;background:#f8f9fa;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden;border:1px solid var(--border);position:relative}
+        .page-thumb img{max-width:100%;max-height:100%;object-fit:contain;transition:transform 0.3s}
+        .page-thumb .thumb-placeholder{font-size:42px;color:var(--gray-light)}
+
+        /* Page Info */
+        .page-label{font-size:12px;font-weight:600;color:var(--dark)}
+        .page-size-label{font-size:10px;color:var(--gray);margin-top:2px}
+
+        /* Quick Actions on hover */
+        .page-actions{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);display:flex;gap:4px;opacity:0;transition:all 0.25s;z-index:5;background:rgba(255,255,255,0.95);padding:4px 8px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.12);backdrop-filter:blur(4px)}
+        .page-card:hover .page-actions{opacity:1}
+        .pa-btn{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.2s}
+        .pa-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .pa-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-light)}
+
+        /* ===== ACTION ===== */
+        .action-section{display:none;padding:20px 30px 36px;text-align:center}
+        .action-section.show{display:block}
+        .action-info{margin-bottom:18px;font-size:13px;color:var(--gray);display:flex;align-items:center;justify-content:center;gap:8px}
+        .organize-btn{display:inline-flex;align-items:center;gap:12px;padding:17px 56px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);font-family:'Inter',sans-serif}
+        .organize-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .organize-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .organize-btn .spinner{display:none;width:22px;height:22px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+        .organize-btn.loading .spinner{display:block}
+        .organize-btn.loading .btn-icon{display:none}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* ===== PROGRESS ===== */
+        .progress-section{display:none;padding:0 30px 30px}
+        .progress-section.show{display:block}
+        .progress-container{background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:26px}
+        .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .progress-title{font-size:14px;font-weight:600}
+        .progress-percent{font-size:14px;font-weight:700;color:var(--primary-dark)}
+        .progress-bar-bg{width:100%;height:14px;background:var(--border);border-radius:50px;overflow:hidden}
+        .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:50px;width:0%;transition:width 0.4s;position:relative}
+        .progress-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 1.5s infinite}
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .progress-status{margin-top:12px;font-size:13px;color:var(--gray);display:flex;align-items:center;gap:8px}
+        .progress-status i{color:var(--primary);animation:spin 1s linear infinite}
+
+        /* ===== DOWNLOAD ===== */
+        .download-section{display:none;padding:44px 40px;text-align:center}
+        .download-section.show{display:block}
+        .success-wrap{position:relative;width:90px;height:90px;margin:0 auto 24px}
+        .success-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;box-shadow:0 8px 30px rgba(46,204,113,0.35);animation:bounceIn 0.6s ease}
+        .success-sub-badge{position:absolute;bottom:-2px;right:-2px;width:34px;height:34px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:3px solid var(--white)}
+        @keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .download-section h3{font-size:24px;font-weight:800;margin-bottom:8px}
+        .download-section .sub-text{color:var(--gray);font-size:15px;margin-bottom:8px}
+        .merge-summary{display:inline-flex;align-items:center;gap:14px;background:var(--primary-ultra-light);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 28px;margin-bottom:26px;flex-wrap:wrap;justify-content:center}
+        .summary-item{text-align:center}
+        .summary-item .s-label{font-size:10px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px}
+        .summary-item .s-value{font-size:20px;font-weight:800;color:var(--primary-dark)}
+        .summary-divider{width:1px;height:36px;background:var(--border)}
+        .download-btn{display:inline-flex;align-items:center;gap:10px;padding:17px 48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 6px 28px rgba(46,204,113,0.4);text-decoration:none;font-family:'Inter',sans-serif}
+        .download-btn:hover{transform:translateY(-2px);box-shadow:0 8px 38px rgba(46,204,113,0.5)}
+        .restart-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 30px;background:none;border:2px solid var(--border);border-radius:50px;color:var(--gray);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .restart-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+
+        /* ===== HOW ===== */
+        .how-section{max-width:1060px;margin:0 auto 60px;padding:0 20px}
+        .section-title{text-align:center;font-size:28px;font-weight:800;margin-bottom:40px}
+        .section-title span{color:var(--primary)}
+        .how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+        .how-step{text-align:center}
+        .step-num{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 5px 15px rgba(46,204,113,0.3)}
+        .how-step h4{font-size:15px;font-weight:700;margin-bottom:8px}
+        .how-step p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FEATURES ===== */
+        .features{max-width:1060px;margin:0 auto 60px;padding:0 20px}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:all 0.3s}
+        .feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--primary-light)}
+        .feature-icon{width:58px;height:58px;background:var(--primary-ultra-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--primary-dark)}
+        .feature-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+        .feature-card p{font-size:13px;color:var(--gray);line-height:1.6}
+
+        /* ===== FOOTER ===== */
+        .footer{background:var(--white);border-top:2px solid var(--border);padding:30px 40px;text-align:center}
+        .footer p{font-size:13px;color:var(--gray)}
+        .footer p a{color:var(--primary-dark);text-decoration:none;font-weight:600}
+        .footer-links{display:flex;justify-content:center;gap:24px;margin-top:12px}
+        .footer-links a{font-size:13px;color:var(--gray);text-decoration:none;transition:color 0.3s}
+        .footer-links a:hover{color:var(--primary-dark)}
+
+        /* ===== TOAST ===== */
+        .toast-container{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:14px 22px;background:var(--white);border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;animation:slideIn 0.3s ease;border-left:4px solid var(--primary);max-width:380px}
+        .toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+        .toast.warning{border-left-color:var(--orange)}.toast.warning i{color:var(--orange)}
+        .toast i{color:var(--primary);font-size:18px}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:768px){
+            .navbar{padding:0 16px;height:60px}
+            .navbar-title{font-size:18px}
+            .navbar-links{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:16px;border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+            .navbar-links.open{display:flex}
+            .mobile-menu-btn{display:block}
+            .hero{padding:38px 16px 18px}
+            .hero h1{font-size:28px}
+            .hero p{font-size:15px}
+            .upload-area{padding:28px 16px}
+            .upload-zone{padding:40px 18px}
+            .upload-icon-wrap,.upload-icon{width:80px;height:80px}
+            .upload-icon{font-size:34px}
+            .toolbar-section,.pages-section,.action-section,.progress-section,.download-section{padding-left:16px;padding-right:16px}
+            .toolbar{flex-direction:column;align-items:flex-start}
+            .toolbar-left,.toolbar-right{width:100%;flex-wrap:wrap}
+            .pages-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+            .page-thumb{height:140px}
+            .features-grid{grid-template-columns:1fr;gap:16px}
+            .how-steps{grid-template-columns:repeat(2,1fr);gap:16px}
+            .organize-btn,.download-btn{width:100%;justify-content:center}
+            .footer{padding:20px 16px}
+            .toast-container{right:10px;left:10px}
+            .toast{max-width:100%}
+            .merge-summary{flex-direction:column;gap:8px}
+            .summary-divider{width:50px;height:1px}
+            .page-actions{opacity:1;position:relative;bottom:auto;left:auto;transform:none;margin-top:6px;justify-content:center;box-shadow:none;background:transparent;padding:0}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="navbar-brand">
+        <div class="navbar-logo"><i class="fas fa-table-cells-large"></i></div>
+        <div class="navbar-title">Organize<span>PDF</span></div>
+    </a>
+    <div class="navbar-links" id="navLinks">
+        <a href="#" class="nav-link active">Organize PDF</a>
+        <a href="#" class="nav-link">Merge PDF</a>
+        <a href="#" class="nav-link">Split PDF</a>
+        <a href="#" class="nav-link">Compress PDF</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-wand-magic-sparkles"></i> Smart Page Organizer</div>
+    <h1>Organize <span>PDF Pages</span> Online</h1>
+    <p>Sort, rearrange, rotate, delete and duplicate your PDF pages. Drag and drop thumbnails to reorder. Fast, free, and 100% in your browser.</p>
+</section>
+
+<!-- TOOL -->
+<div class="tool-container">
+    <div class="tool-card">
+
+        <!-- UPLOAD -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon-wrap">
+                    <div class="upload-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                    <div class="upload-sub-badge"><i class="fas fa-table-cells-large"></i></div>
+                </div>
+                <h3>Drop your PDF file here</h3>
+                <p>or click to browse from your device</p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Select PDF File
+                </button>
+                <div class="upload-note"><i class="fas fa-circle-info"></i> Supported: PDF • Max 100MB • All pages shown as thumbnails</div>
+                <input type="file" id="fileInput" accept=".pdf">
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar-section" id="toolbarSection">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="toolbar-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <span id="pdfName">document.pdf</span>
+                        <span class="tb-badge" id="pageCountBadge">0 pages</span>
+                    </div>
+                    <div class="tb-divider"></div>
+                    <span class="select-info" id="selectInfo">No pages selected</span>
+                </div>
+                <div class="toolbar-right">
+                    <button class="tb-btn" onclick="selectAllPages()" id="selectAllBtn"><i class="fas fa-check-double"></i> Select All</button>
+                    <button class="tb-btn" onclick="deselectAll()" id="deselectBtn" disabled><i class="fas fa-xmark"></i> Deselect</button>
+                    <div class="tb-divider"></div>
+                    <button class="tb-btn" onclick="rotateSelected('cw')" id="rotateCwBtn" disabled><i class="fas fa-rotate-right"></i> Rotate →</button>
+                    <button class="tb-btn" onclick="rotateSelected('ccw')" id="rotateCcwBtn" disabled><i class="fas fa-rotate-left"></i> Rotate ←</button>
+                    <button class="tb-btn" onclick="duplicateSelected()" id="dupBtn" disabled><i class="fas fa-copy"></i> Duplicate</button>
+                    <button class="tb-btn danger" onclick="deleteSelected()" id="delSelBtn" disabled><i class="fas fa-trash-can"></i> Delete</button>
+                    <div class="tb-divider"></div>
+                    <button class="tb-btn" onclick="reversePages()"><i class="fas fa-arrow-right-arrow-left"></i> Reverse</button>
+                    <button class="tb-btn danger" onclick="resetTool()"><i class="fas fa-arrow-rotate-left"></i> Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGES GRID -->
+        <div class="pages-section" id="pagesSection">
+            <div class="pages-grid" id="pagesGrid"></div>
+        </div>
+
+        <!-- ACTION -->
+        <div class="action-section" id="actionSection">
+            <div class="action-info" id="actionInfo">
+                <i class="fas fa-circle-info"></i>
+                <span id="actionInfoText">12 pages • Drag to reorder • Click to select</span>
+            </div>
+            <button class="organize-btn" id="organizeBtn" onclick="buildPDF()">
+                <i class="fas fa-wand-magic-sparkles btn-icon"></i>
+                <div class="spinner"></div>
+                Organize PDF
+            </button>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-title">Building your organized PDF...</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+                <div class="progress-status" id="progressStatus"><i class="fas fa-spinner"></i> Initializing...</div>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD -->
+        <div class="download-section" id="downloadSection">
+            <div class="success-wrap">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <div class="success-sub-badge"><i class="fas fa-table-cells-large"></i></div>
+            </div>
+            <h3>PDF Organized Successfully! 🎉</h3>
+            <p class="sub-text">Your PDF pages have been rearranged as you wanted.</p>
+            <div class="merge-summary" id="summaryBox">
+                <div class="summary-item"><div class="s-label">Total Pages</div><div class="s-value" id="sumPages">0</div></div>
+                <div class="summary-divider"></div>
+                <div class="summary-item"><div class="s-label">Rotated</div><div class="s-value" id="sumRotated">0</div></div>
+                <div class="summary-divider"></div>
+                <div class="summary-item"><div class="s-label">File Size</div><div class="s-value" id="sumSize">0 MB</div></div>
+            </div><br>
+            <a class="download-btn" id="downloadBtn" href="#" download><i class="fas fa-download"></i> Download Organized PDF</a><br>
+            <button class="restart-btn" onclick="resetTool()"><i class="fas fa-rotate-left"></i> Organize Another PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- HOW -->
+<section class="how-section">
+    <h2 class="section-title">How to <span>Organize PDF</span>?</h2>
+    <div class="how-steps">
+        <div class="how-step"><div class="step-num">1</div><h4>Upload PDF</h4><p>Select or drag & drop your PDF. All pages appear as thumbnails.</p></div>
+        <div class="how-step"><div class="step-num">2</div><h4>Rearrange Pages</h4><p>Drag and drop page thumbnails to change the order as you want.</p></div>
+        <div class="how-step"><div class="step-num">3</div><h4>Edit Pages</h4><p>Rotate, delete, or duplicate pages. Select multiple pages for batch actions.</p></div>
+        <div class="how-step"><div class="step-num">4</div><h4>Download</h4><p>Click organize and download your reorganized PDF instantly.</p></div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+    <h2 class="section-title">Why Use <span>OrganizePDF</span>?</h2>
+    <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-arrows-up-down-left-right"></i></div><h4>Drag & Drop Reorder</h4><p>Easily rearrange page order by dragging thumbnails to any position you want.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-rotate-right"></i></div><h4>Rotate Pages</h4><p>Rotate individual or multiple pages clockwise or counter-clockwise with one click.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-trash-can"></i></div><h4>Delete Pages</h4><p>Remove unwanted pages from your PDF. Select multiple pages and delete at once.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-copy"></i></div><h4>Duplicate Pages</h4><p>Create copies of any page. Perfect for repeating content or creating templates.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-halved"></i></div><h4>100% Private</h4><p>Everything runs in your browser. Your files are never uploaded to any server.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen-button"></i></div><h4>Works Everywhere</h4><p>Fully responsive design. Works perfectly on desktop, tablet & mobile devices.</p></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">OrganizePDF</a> — Free Online PDF Page Organizer</p>
+    <div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Contact Us</a></div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // ===== STATE =====
+    let pages=[];// {idx, origIdx, thumbUrl, rotation, selected, width, height}
+    let srcArrayBuffer=null;
+    let srcFileName='';
+    let dragIdx=null;
+
+    // ===== DOM =====
+    const uploadArea=document.getElementById('uploadArea');
+    const uploadZone=document.getElementById('uploadZone');
+    const fileInput=document.getElementById('fileInput');
+    const toolbarSection=document.getElementById('toolbarSection');
+    const pagesSection=document.getElementById('pagesSection');
+    const pagesGrid=document.getElementById('pagesGrid');
+    const actionSection=document.getElementById('actionSection');
+    const progressSection=document.getElementById('progressSection');
+    const downloadSection=document.getElementById('downloadSection');
+    const organizeBtn=document.getElementById('organizeBtn');
+    const downloadBtn=document.getElementById('downloadBtn');
+
+    // ===== UPLOAD =====
+    uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over')});
+    uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop',e=>{
+        e.preventDefault();uploadZone.classList.remove('drag-over');
+        const f=e.dataTransfer.files[0];
+        if(f&&f.type==='application/pdf')handleFile(f);
+        else showToast('Please drop a PDF file.','error');
+    });
+    uploadZone.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')fileInput.click()});
+    fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);fileInput.value=''});
+
+    // ===== HANDLE FILE =====
+    async function handleFile(file){
+        if(file.size>100*1024*1024)return showToast('File exceeds 100MB.','error');
+        srcFileName=file.name;
+        srcArrayBuffer=await file.arrayBuffer();
+
+        showToast('Loading PDF pages...');
+        document.getElementById('pdfName').textContent=file.name;
+
+        try{
+            const pdf=await pdfjsLib.getDocument({data:srcArrayBuffer.slice(0)}).promise;
+            pages=[];
+            for(let i=1;i<=pdf.numPages;i++){
+                const page=await pdf.getPage(i);
+                const vp=page.getViewport({scale:0.45});
+                const canvas=document.createElement('canvas');
+                canvas.width=vp.width;canvas.height=vp.height;
+                const ctx=canvas.getContext('2d');
+                await page.render({canvasContext:ctx,viewport:vp}).promise;
+                const thumbUrl=canvas.toDataURL('image/jpeg',0.65);
+                const origVp=page.getViewport({scale:1});
+                pages.push({idx:i-1,origIdx:i-1,thumbUrl,rotation:0,selected:false,width:origVp.width,height:origVp.height});
+                canvas.remove();
+            }
+            renderAll();
+            showToast(`${pages.length} pages loaded! ✨`);
+        }catch(err){
+            console.error(err);showToast('Error loading PDF: '+err.message,'error');
+        }
+    }
+
+    // ===== RENDER =====
+    function renderAll(){
+        document.getElementById('pageCountBadge').textContent=pages.length+' pages';
+        document.getElementById('actionInfoText').textContent=`${pages.length} pages • Drag to reorder • Click to select`;
+
+        uploadArea.classList.add('hidden');
+        toolbarSection.classList.add('show');
+        pagesSection.classList.add('show');
+        actionSection.classList.add('show');
+        progressSection.classList.remove('show');
+        downloadSection.classList.remove('show');
+
+        updateSelectionUI();
+        renderGrid();
+    }
+
+    function renderGrid(){
+        pagesGrid.innerHTML=pages.map((p,i)=>`
+            <div class="page-card ${p.selected?'selected':''}" data-idx="${i}" draggable="true"
+                 ondragstart="onDS(event,${i})" ondragover="onDO(event)" ondrop="onDP(event,${i})"
+                 ondragenter="onDE(event)" ondragleave="onDL(event)" ondragend="onDEnd(event)"
+                 onclick="toggleSelect(event,${i})">
+                <div class="page-checkbox"><i class="fas fa-check"></i></div>
+                <div class="page-order">${i+1}</div>
+                <div class="rotation-badge ${p.rotation!==0?'visible':''}">${p.rotation}°</div>
+                <div class="page-thumb">
+                    <img src="${p.thumbUrl}" style="transform:rotate(${p.rotation}deg)" alt="Page ${i+1}">
+                </div>
+                <div class="page-actions">
+                    <button class="pa-btn" title="Rotate Right" onclick="event.stopPropagation();rotatePage(${i},'cw')"><i class="fas fa-rotate-right"></i></button>
+                    <button class="pa-btn" title="Rotate Left" onclick="event.stopPropagation();rotatePage(${i},'ccw')"><i class="fas fa-rotate-left"></i></button>
+                    <button class="pa-btn" title="Duplicate" onclick="event.stopPropagation();duplicatePage(${i})"><i class="fas fa-copy"></i></button>
+                    <button class="pa-btn del" title="Delete" onclick="event.stopPropagation();deletePage(${i})"><i class="fas fa-trash-can"></i></button>
+                </div>
+                <div class="page-label">Page ${i+1}</div>
+                <div class="page-size-label">${Math.round(p.width)}×${Math.round(p.height)}</div>
+            </div>
+        `).join('');
+    }
+
+    // ===== SELECT =====
+    function toggleSelect(e,idx){
+        if(e.target.closest('.pa-btn'))return;
+        pages[idx].selected=!pages[idx].selected;
+        renderGrid();updateSelectionUI();
+    }
+
+    function selectAllPages(){
+        pages.forEach(p=>p.selected=true);
+        renderGrid();updateSelectionUI();
+    }
+
+    function deselectAll(){
+        pages.forEach(p=>p.selected=false);
+        renderGrid();updateSelectionUI();
+    }
+
+    function updateSelectionUI(){
+        const sel=pages.filter(p=>p.selected).length;
+        document.getElementById('selectInfo').textContent=sel?`${sel} page(s) selected`:'No pages selected';
+        const has=sel>0;
+        document.getElementById('deselectBtn').disabled=!has;
+        document.getElementById('rotateCwBtn').disabled=!has;
+        document.getElementById('rotateCcwBtn').disabled=!has;
+        document.getElementById('dupBtn').disabled=!has;
+        document.getElementById('delSelBtn').disabled=!has;
+        document.getElementById('selectAllBtn').textContent=sel===pages.length?' Deselect All':' Select All';
+        document.getElementById('selectAllBtn').innerHTML=sel===pages.length?'<i class="fas fa-xmark"></i> Deselect All':'<i class="fas fa-check-double"></i> Select All';
+        if(sel===pages.length)document.getElementById('selectAllBtn').onclick=()=>deselectAll();
+        else document.getElementById('selectAllBtn').onclick=()=>selectAllPages();
+    }
+
+    // ===== ROTATE =====
+    function rotatePage(idx,dir){
+        pages[idx].rotation=(pages[idx].rotation+(dir==='cw'?90:-90)+360)%360;
+        renderGrid();showToast(`Page ${idx+1} rotated`);
+    }
+
+    function rotateSelected(dir){
+        let count=0;
+        pages.forEach(p=>{if(p.selected){p.rotation=(p.rotation+(dir==='cw'?90:-90)+360)%360;count++}});
+        if(count){renderGrid();showToast(`${count} page(s) rotated`);}
+    }
+
+    // ===== DELETE =====
+    function deletePage(idx){
+        if(pages.length<=1)return showToast('Cannot delete the only page.','warning');
+        pages.splice(idx,1);
+        renderAll();showToast('Page deleted');
+    }
+
+    function deleteSelected(){
+        const sel=pages.filter(p=>p.selected).length;
+        if(sel===pages.length)return showToast('Cannot delete all pages.','warning');
+        pages=pages.filter(p=>!p.selected);
+        renderAll();showToast(`${sel} page(s) deleted`);
+    }
+
+    // ===== DUPLICATE =====
+    function duplicatePage(idx){
+        const clone={...pages[idx],selected:false};
+        pages.splice(idx+1,0,clone);
+        renderAll();showToast(`Page duplicated`);
+    }
+
+    function duplicateSelected(){
+        let count=0;
+        const newPages=[];
+        pages.forEach(p=>{
+            newPages.push({...p,selected:false});
+            if(p.selected){newPages.push({...p,selected:false});count++;}
+        });
+        pages=newPages;
+        renderAll();showToast(`${count} page(s) duplicated`);
+    }
+
+    // ===== REVERSE =====
+    function reversePages(){
+        pages.reverse();
+        renderAll();showToast('Page order reversed');
+    }
+
+    // ===== DRAG REORDER =====
+    function onDS(e,idx){dragIdx=idx;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move'}
+    function onDO(e){e.preventDefault();e.dataTransfer.dropEffect='move'}
+    function onDE(e){e.preventDefault();e.currentTarget.classList.add('drag-over')}
+    function onDL(e){e.currentTarget.classList.remove('drag-over')}
+    function onDP(e,toIdx){
+        e.preventDefault();e.currentTarget.classList.remove('drag-over');
+        if(dragIdx!==null&&dragIdx!==toIdx){
+            const[item]=pages.splice(dragIdx,1);
+            pages.splice(toIdx,0,item);
+            renderAll();
+        }
+        dragIdx=null;
+    }
+    function onDEnd(e){
+        e.currentTarget.classList.remove('dragging');
+        document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+        dragIdx=null;
+    }
+
+    // ===== BUILD PDF =====
+    async function buildPDF(){
+        if(!pages.length)return;
+        organizeBtn.classList.add('loading');organizeBtn.disabled=true;
+        actionSection.classList.remove('show');
+        progressSection.classList.add('show');
+
+        try{
+            updateProgress(5,'Loading source PDF...');
+            const srcPdf=await PDFLib.PDFDocument.load(srcArrayBuffer,{ignoreEncryption:true});
+            const newPdf=await PDFLib.PDFDocument.create();
+            let rotCount=0;
+
+            for(let i=0;i<pages.length;i++){
+                const pct=5+Math.round((i/pages.length)*85);
+                updateProgress(pct,`Processing page ${i+1} of ${pages.length}...`);
+
+                const [copiedPage]=await newPdf.copyPages(srcPdf,[pages[i].origIdx]);
+
+                if(pages[i].rotation!==0){
+                    const currentRot=copiedPage.getRotation().angle;
+                    copiedPage.setRotation(PDFLib.degrees(currentRot+pages[i].rotation));
+                    rotCount++;
+                }
+                newPdf.addPage(copiedPage);
+            }
+
+            updateProgress(95,'Generating organized PDF...');
+            const pdfBytes=await newPdf.save();
+            const blob=new Blob([pdfBytes],{type:'application/pdf'});
+            const url=URL.createObjectURL(blob);
+
+            const name=srcFileName.replace('.pdf','');
+            downloadBtn.href=url;
+            downloadBtn.download=`${name}_organized.pdf`;
+
+            document.getElementById('sumPages').textContent=pages.length;
+            document.getElementById('sumRotated').textContent=rotCount;
+            document.getElementById('sumSize').textContent=formatSize(pdfBytes.byteLength);
+
+            updateProgress(100,'Done!');
+
+            setTimeout(()=>{
+                progressSection.classList.remove('show');
+                downloadSection.classList.add('show');
+                organizeBtn.classList.remove('loading');organizeBtn.disabled=false;
+            },500);
+
+            showToast('PDF organized successfully! 🎉');
+        }catch(err){
+            console.error(err);showToast('Error: '+err.message,'error');
+            organizeBtn.classList.remove('loading');organizeBtn.disabled=false;
+            actionSection.classList.add('show');progressSection.classList.remove('show');
+        }
+    }
+
+    // ===== PROGRESS =====
+    function updateProgress(pct,txt){
+        document.getElementById('progressFill').style.width=pct+'%';
+        document.getElementById('progressPercent').textContent=pct+'%';
+        if(txt)document.getElementById('progressStatus').innerHTML=`<i class="fas fa-spinner"></i> ${txt}`;
+    }
+
+    // ===== RESET =====
+    function resetTool(){
+        pages=[];srcArrayBuffer=null;srcFileName='';dragIdx=null;
+        uploadArea.classList.remove('hidden');
+        toolbarSection.classList.remove('show');
+        pagesSection.classList.remove('show');
+        actionSection.classList.remove('show');
+        progressSection.classList.remove('show');
+        downloadSection.classList.remove('show');
+        pagesGrid.innerHTML='';
+        document.getElementById('progressFill').style.width='0%';
+        document.getElementById('progressPercent').textContent='0%';
+        organizeBtn.classList.remove('loading');organizeBtn.disabled=false;
+    }
+
+    // ===== HELPERS =====
+    function formatSize(b){
+        if(b<1024)return b+' B';
+        if(b<1048576)return(b/1024).toFixed(1)+' KB';
+        return(b/1048576).toFixed(2)+' MB';
+    }
+
+    function showToast(msg,type='success'){
+        const c=document.getElementById('toastContainer');
+        const t=document.createElement('div');
+        t.className=`toast ${type}`;
+        const icons={success:'fa-circle-check',error:'fa-circle-exclamation',warning:'fa-triangle-exclamation'};
+        t.innerHTML=`<i class="fas ${icons[type]||icons.success}"></i><span>${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all 0.3s';setTimeout(()=>t.remove(),300)},4000);
+    }
+</script>
+</body>
+</html>
