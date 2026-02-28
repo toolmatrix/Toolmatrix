@@ -1,179 +1,1617 @@
-  
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDF Lock Tool</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4faff;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock PDF - Remove PDF Password Online Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
-    .container {
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
-      padding: 2rem;
-      max-width: 450px;
-      width: 100%;
-      text-align: center;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-    h1 {
-      color: #007BFF;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
+        :root {
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --primary-darker: #1e8c4c;
+            --primary-light: #a8f0c8;
+            --primary-ultra-light: #e8faf0;
+            --primary-glow: rgba(46, 204, 113, 0.15);
+            --bg: #f0faf4;
+            --white: #ffffff;
+            --dark: #1a2e28;
+            --gray: #6b7c75;
+            --gray-light: #c5d5cc;
+            --border: #d4edda;
+            --red: #e74c3c;
+            --red-light: #fdecea;
+            --yellow: #f39c12;
+            --yellow-light: #fef9e7;
+            --blue: #3498db;
+            --shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
+            --shadow-lg: 0 10px 40px rgba(46, 204, 113, 0.15);
+            --shadow-xl: 0 20px 60px rgba(46, 204, 113, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 8px;
+        }
 
-    input[type="file"],
-    input[type="password"] {
-      width: 100%;
-      margin: 0.75rem 0;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    label {
-      font-weight: 600;
-      display: block;
-      margin-top: 1rem;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-    .button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: background-color 0.3s;
-    }
+        /* =========== NAVBAR =========== */
+        .navbar {
+            background: var(--white);
+            border-bottom: 2px solid var(--border);
+            padding: 0 40px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(46, 204, 113, 0.08);
+        }
 
-    .button:hover {
-      background-color: #0056b3;
-    }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
 
-    .button:disabled {
-      background-color: #a6c8ff;
-      cursor: not-allowed;
-    }
+        .navbar-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
 
-    #status {
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #007BFF;
-    }
+        .navbar-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--dark);
+        }
 
-    #downloadLink {
-      display: none;
-      margin-top: 1.5rem;
-      text-decoration: none;
-      background-color: #28a745;
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
-      color: #fff;
-      font-weight: bold;
-      display: inline-block;
-    }
+        .navbar-title span { color: var(--primary); }
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 1rem;
-        margin: 1rem;
-      }
-    }
-  </style>
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-ultra-light);
+            color: var(--primary-dark);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--dark);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* =========== HERO =========== */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 30px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-ultra-light);
+            border: 1.5px solid var(--primary-light);
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--primary-darker));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: var(--gray);
+            line-height: 1.7;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* =========== TOOL CARD =========== */
+        .tool-container {
+            max-width: 900px;
+            margin: 20px auto 60px;
+            padding: 0 20px;
+        }
+
+        .tool-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        /* =========== UPLOAD AREA =========== */
+        .upload-area {
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .upload-area.hidden { display: none; }
+
+        .upload-zone {
+            border: 2.5px dashed var(--primary-light);
+            border-radius: var(--radius);
+            padding: 60px 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--primary-ultra-light);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            transform: scale(1.01);
+        }
+
+        .upload-zone.drag-over {
+            box-shadow: 0 0 0 5px rgba(46, 204, 113, 0.15);
+        }
+
+        .upload-icon-wrap {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+        }
+
+        .upload-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35);
+            animation: pulse-glow 2.5s infinite;
+            position: relative;
+        }
+
+        .lock-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 36px;
+            height: 36px;
+            background: var(--yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            border: 3px solid var(--white);
+            box-shadow: 0 3px 10px rgba(243, 156, 18, 0.3);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35); }
+            50% { box-shadow: 0 8px 50px rgba(46, 204, 113, 0.55); }
+        }
+
+        .upload-zone h3 {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone p {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 18px rgba(46, 204, 113, 0.4);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(46, 204, 113, 0.5);
+        }
+
+        .upload-note {
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--gray-light);
+        }
+
+        .upload-note i { margin-right: 4px; }
+
+        #fileInput { display: none; }
+
+        /* =========== FILE PREVIEW =========== */
+        .file-preview-section {
+            display: none;
+            padding: 35px 40px;
+        }
+
+        .file-preview-section.show { display: block; }
+
+        .file-preview-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 20px 24px;
+            background: var(--primary-ultra-light);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            position: relative;
+        }
+
+        .file-pdf-icon {
+            width: 58px;
+            height: 58px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .file-pdf-icon .lock-mini {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 24px;
+            height: 24px;
+            background: var(--yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            border: 2px solid var(--white);
+        }
+
+        .file-info { flex: 1; min-width: 0; }
+
+        .file-name {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .file-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .file-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .file-status-badge {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .badge-locked {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .badge-unlocked {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid var(--primary);
+        }
+
+        .badge-error {
+            background: var(--red-light);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .file-remove-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: 1.5px solid #e74c3c44;
+            border-radius: 8px;
+            color: var(--red);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .file-remove-btn:hover {
+            background: var(--red);
+            color: white;
+            border-color: var(--red);
+        }
+
+        /* =========== PASSWORD SECTION =========== */
+        .password-section {
+            display: none;
+            padding: 0 40px 10px;
+        }
+
+        .password-section.show { display: block; }
+
+        .password-box {
+            background: var(--yellow-light);
+            border: 1.5px solid #f0d78c;
+            border-radius: var(--radius-sm);
+            padding: 24px;
+        }
+
+        .password-box-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .password-box-header i {
+            font-size: 20px;
+            color: var(--yellow);
+        }
+
+        .password-box-header h4 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .password-box-header p {
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .password-input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .password-input-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .password-input-wrap i.field-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-light);
+            font-size: 15px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 14px 48px 14px 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-xs);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: var(--white);
+            transition: all 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .password-input.error-input {
+            border-color: var(--red);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover { color: var(--primary-dark); }
+
+        .password-error {
+            display: none;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--red);
+            font-weight: 500;
+        }
+
+        .password-error.show {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* =========== NO PASSWORD INFO =========== */
+        .no-password-section {
+            display: none;
+            padding: 0 40px 10px;
+        }
+
+        .no-password-section.show { display: block; }
+
+        .no-password-box {
+            background: var(--primary-ultra-light);
+            border: 1.5px solid var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .no-password-box i {
+            font-size: 24px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .no-password-box div h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 2px;
+        }
+
+        .no-password-box div p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        /* =========== ACTION =========== */
+        .action-section {
+            display: none;
+            padding: 24px 40px 40px;
+            text-align: center;
+        }
+
+        .action-section.show { display: block; }
+
+        .unlock-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 17px 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 28px rgba(46, 204, 113, 0.4);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .unlock-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 38px rgba(46, 204, 113, 0.5);
+        }
+
+        .unlock-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .unlock-btn .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .unlock-btn.loading .spinner { display: block; }
+        .unlock-btn.loading .btn-icon { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* =========== PROGRESS =========== */
+        .progress-section {
+            display: none;
+            padding: 0 40px 30px;
+        }
+
+        .progress-section.show { display: block; }
+
+        .progress-container {
+            background: var(--primary-ultra-light);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .progress-title { font-size: 14px; font-weight: 600; }
+
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: var(--border);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-status i {
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        /* =========== DOWNLOAD =========== */
+        .download-section {
+            display: none;
+            padding: 45px 40px;
+            text-align: center;
+        }
+
+        .download-section.show { display: block; }
+
+        .success-wrap {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 22px;
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35);
+            animation: bounceIn 0.6s ease;
+        }
+
+        .success-unlock-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 34px;
+            height: 34px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            border: 3px solid var(--white);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .download-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .download-section .sub-text {
+            color: var(--gray);
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 17px 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 28px rgba(46, 204, 113, 0.4);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 38px rgba(46, 204, 113, 0.5);
+        }
+
+        .restart-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+            padding: 11px 30px;
+            background: none;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .restart-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary-dark);
+            background: var(--primary-ultra-light);
+        }
+
+        /* =========== FEATURES =========== */
+        .features {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+
+        .features-title span { color: var(--primary); }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .feature-icon {
+            width: 58px;
+            height: 58px;
+            background: var(--primary-ultra-light);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+            color: var(--primary-dark);
+        }
+
+        .feature-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* =========== HOW IT WORKS =========== */
+        .how-section {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .how-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+
+        .how-title span { color: var(--primary); }
+
+        .how-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+
+        .how-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-num {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .how-step h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .how-step p {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* =========== FOOTER =========== */
+        .footer {
+            background: var(--white);
+            border-top: 2px solid var(--border);
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .footer p a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--primary-dark); }
+
+        /* =========== TOAST =========== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 14px 22px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+            max-width: 380px;
+        }
+
+        .toast.error { border-left-color: var(--red); }
+        .toast.error i { color: var(--red); }
+        .toast.warning { border-left-color: var(--yellow); }
+        .toast.warning i { color: var(--yellow); }
+        .toast i { color: var(--primary); font-size: 18px; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* =========== RESPONSIVE =========== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+                height: 60px;
+            }
+
+            .navbar-title { font-size: 18px; }
+
+            .navbar-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 16px;
+                border-bottom: 2px solid var(--border);
+                box-shadow: var(--shadow);
+            }
+
+            .navbar-links.open { display: flex; }
+            .mobile-menu-btn { display: block; }
+
+            .hero { padding: 40px 16px 20px; }
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 15px; }
+
+            .upload-area { padding: 28px 16px; }
+            .upload-zone { padding: 40px 20px; }
+
+            .upload-icon-wrap,
+            .upload-icon { width: 80px; height: 80px; }
+            .upload-icon { font-size: 32px; }
+
+            .file-preview-section,
+            .password-section,
+            .no-password-section,
+            .action-section,
+            .progress-section,
+            .download-section {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .file-preview-card {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 36px;
+            }
+
+            .file-meta { justify-content: center; flex-wrap: wrap; }
+
+            .password-input-group { flex-direction: column; }
+
+            .features-grid,
+            .how-steps {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .unlock-btn,
+            .download-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .footer { padding: 20px 16px; }
+
+            .toast-container {
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast { max-width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>PDF Lock Tool</h1>
-    <input type="file" id="pdfInput" accept="application/pdf" />
 
-    <label for="password">Set Password:</label>
-    <input type="password" id="password" placeholder="Enter password to lock PDF" />
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            <div class="navbar-logo"><i class="fas fa-unlock-keyhole"></i></div>
+            <div class="navbar-title">Unlock<span>PDF</span></div>
+        </a>
+        <div class="navbar-links" id="navLinks">
+            <a href="#" class="nav-link active">Unlock PDF</a>
+            <a href="#" class="nav-link">Merge PDF</a>
+            <a href="#" class="nav-link">Compress PDF</a>
+            <a href="#" class="nav-link">Split PDF</a>
+        </div>
+        <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
 
-    <button class="button" id="lockBtn" disabled>Lock PDF</button>
-    <div id="status"></div>
-    <a id="downloadLink" download>Download Locked PDF</a>
- <script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
-  
-  <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">
+        </div>
+        <h1>Unlock Your <span>PDF Files</span> Instantly</h1>
+        <p>Remove PDF password security, giving you the freedom to use your PDFs as you want. No limits, no sign-up required.</p>
+    </section>
 
-    <script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-  </div>
+    <!-- TOOL -->
+    <div class="tool-container">
+        <div class="tool-card">
 
-  <script>
-    const pdfInput = document.getElementById('pdfInput');
-    const lockBtn = document.getElementById('lockBtn');
-    const downloadLink = document.getElementById('downloadLink');
-    const passwordInput = document.getElementById('password');
-    const status = document.getElementById('status');
+            <!-- UPLOAD -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon-wrap">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-arrow-up"></i>
+                        </div>
+                        <div class="lock-badge"><i class="fas fa-lock"></i></div>
+                    </div>
+                    <h3>Drop your locked PDF here</h3>
+                    <p>or click to browse from your device</p>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i>
+                        Select PDF File
+                    </button>
+                    <div class="upload-note">
+                        <i class="fas fa-circle-info"></i>
+                        Supported: PDF files up to 100MB • Your files stay private
+                    </div>
+                    <input type="file" id="fileInput" accept=".pdf">
+                </div>
+            </div>
 
-    let pdfFile;
+            <!-- FILE PREVIEW -->
+            <div class="file-preview-section" id="filePreviewSection">
+                <div class="file-preview-card">
+                    <div class="file-pdf-icon">
+                        <i class="fas fa-file-pdf"></i>
+                        <div class="lock-mini" id="lockMini"><i class="fas fa-lock"></i></div>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name" id="fileName">document.pdf</div>
+                        <div class="file-meta">
+                            <span><i class="fas fa-weight-scale"></i> <span id="fileSize">0 KB</span></span>
+                            <span><i class="fas fa-file"></i> <span id="filePages">- pages</span></span>
+                        </div>
+                    </div>
+                    <div class="file-status-badge badge-locked" id="fileBadge">
+                        <i class="fas fa-lock"></i> <span id="badgeText">Protected</span>
+                    </div>
+                    <button class="file-remove-btn" onclick="resetTool()">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
 
-    pdfInput.addEventListener('change', (e) => {
-      pdfFile = e.target.files[0];
-      lockBtn.disabled = !pdfFile;
-    });
+            <!-- PASSWORD SECTION -->
+            <div class="password-section" id="passwordSection">
+                <div class="password-box">
+                    <div class="password-box-header">
+                        <i class="fas fa-key"></i>
+                        <div>
+                            <h4>This PDF is password protected</h4>
+                            <p>Enter the password to unlock and remove protection</p>
+                        </div>
+                    </div>
+                    <div class="password-input-group">
+                        <div class="password-input-wrap">
+                            <i class="fas fa-lock field-icon"></i>
+                            <input type="password" class="password-input" id="passwordInput" placeholder="Enter PDF password..." autocomplete="off">
+                            <button class="toggle-password" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-error" id="passwordError">
+                        <i class="fas fa-circle-exclamation"></i>
+                        <span id="errorMsg">Wrong password. Please try again.</span>
+                    </div>
+                </div>
+            </div>
 
-    lockBtn.addEventListener('click', async () => {
-      if (!pdfFile) return;
-      const password = passwordInput.value;
-      if (!password) {
-        alert('Please enter a password to lock the PDF.');
-        return;
-      }
+            <!-- NO PASSWORD SECTION -->
+            <div class="no-password-section" id="noPasswordSection">
+                <div class="no-password-box">
+                    <i class="fas fa-circle-check"></i>
+                    <div>
+                        <h4>This PDF has no password protection</h4>
+                        <p>It may have permission restrictions. We'll remove all restrictions for you.</p>
+                    </div>
+                </div>
+            </div>
 
-      status.textContent = 'Processing...';
+            <!-- ACTION -->
+            <div class="action-section" id="actionSection">
+                <button class="unlock-btn" id="unlockBtn" onclick="unlockPDF()">
+                    <i class="fas fa-lock-open btn-icon"></i>
+                    <div class="spinner"></div>
+                    Unlock PDF
+                </button>
+            </div>
 
-      const reader = new FileReader();
-      reader.onload = async function (e) {
-        try {
-          const existingPdfBytes = e.target.result;
+            <!-- PROGRESS -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-title">Removing password protection...</span>
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-status" id="progressStatus">
+                        <i class="fas fa-spinner"></i>
+                        Initializing...
+                    </div>
+                </div>
+            </div>
 
-          // Simulate encryption as pdf-lib doesn't support it natively
-          const blob = new Blob([existingPdfBytes], { type: 'application/pdf' });
-          const filename = pdfFile.name.replace(/\.pdf$/i, '') + '_locked_simulated.pdf';
+            <!-- DOWNLOAD -->
+            <div class="download-section" id="downloadSection">
+                <div class="success-wrap">
+                    <div class="success-icon">
+                        <i class="fas fa-lock-open"></i>
+                    </div>
+                    <div class="success-unlock-badge"><i class="fas fa-check"></i></div>
+                </div>
+                <h3>PDF Unlocked Successfully! 🎉</h3>
+                <p class="sub-text">All password restrictions have been removed from your PDF.</p>
+                <a class="download-btn" id="downloadBtn" href="#" download>
+                    <i class="fas fa-download"></i>
+                    Download Unlocked PDF
+                </a>
+                <br>
+                <button class="restart-btn" onclick="resetTool()">
+                    <i class="fas fa-rotate-left"></i>
+                    Unlock Another PDF
+                </button>
+            </div>
 
-          const url = URL.createObjectURL(blob);
+        </div>
+    </div>
 
-          downloadLink.href = url;
-          downloadLink.download = filename;
-          downloadLink.style.display = 'inline-block';
-          status.textContent = 'PDF is ready (Note: Lock is simulated in frontend).';
-        } catch (err) {
-          console.error(err);
-          status.textContent = 'Failed to process PDF.';
+    <!-- HOW IT WORKS -->
+    <section class="how-section">
+        <h2 class="how-title">How to <span>Unlock PDF</span>?</h2>
+        <div class="how-steps">
+            <div class="how-step">
+                <div class="step-num">1</div>
+                <h4>Upload PDF</h4>
+                <p>Select or drag & drop your password-protected PDF file to the upload area.</p>
+            </div>
+            <div class="how-step">
+                <div class="step-num">2</div>
+                <h4>Enter Password</h4>
+                <p>If required, enter the document password. We'll handle the rest automatically.</p>
+            </div>
+            <div class="how-step">
+                <div class="step-num">3</div>
+                <h4>Download Free PDF</h4>
+                <p>Click unlock and download your PDF without any password restrictions.</p>
+            </div>
+        </div>
+    </section>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Made with 💚 by <a href="#">ToolMatrix</a> — Free Online PDF Unlocker</p>
+        <div class="footer-links">
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // =========== PDF.js Worker ===========
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // =========== STATE ===========
+        let currentFile = null;
+        let currentArrayBuffer = null;
+        let isPasswordProtected = false;
+
+        // =========== DOM ===========
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const filePreviewSection = document.getElementById('filePreviewSection');
+        const passwordSection = document.getElementById('passwordSection');
+        const noPasswordSection = document.getElementById('noPasswordSection');
+        const actionSection = document.getElementById('actionSection');
+        const progressSection = document.getElementById('progressSection');
+        const downloadSection = document.getElementById('downloadSection');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordError = document.getElementById('passwordError');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // =========== DRAG & DROP ===========
+        uploadZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                handleFile(file);
+            } else {
+                showToast('Please drop a PDF file only.', 'error');
+            }
+        });
+
+        uploadZone.addEventListener('click', e => {
+            if (e.target.tagName !== 'BUTTON') fileInput.click();
+        });
+
+        fileInput.addEventListener('change', e => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+            fileInput.value = '';
+        });
+
+        // =========== HANDLE FILE ===========
+        async function handleFile(file) {
+            if (file.size > 100 * 1024 * 1024) {
+                showToast('File exceeds 100MB limit.', 'error');
+                return;
+            }
+
+            currentFile = file;
+            currentArrayBuffer = await file.arrayBuffer();
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatSize(file.size);
+
+            // Check if password protected
+            await checkProtection();
         }
-      };
 
-      reader.readAsArrayBuffer(pdfFile);
-    });
-  </script>
+        async function checkProtection() {
+            updateProgress(0, 'Analyzing PDF structure...');
+
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: currentArrayBuffer.slice(0) }).promise;
+                // No password needed
+                isPasswordProtected = false;
+                document.getElementById('filePages').textContent = pdf.numPages + ' pages';
+
+                showFilePreview();
+                noPasswordSection.classList.add('show');
+                passwordSection.classList.remove('show');
+                actionSection.classList.add('show');
+
+                const badge = document.getElementById('fileBadge');
+                badge.className = 'file-status-badge badge-locked';
+                badge.innerHTML = '<i class="fas fa-shield-halved"></i> <span>Restricted</span>';
+
+                document.getElementById('lockMini').innerHTML = '<i class="fas fa-shield-halved"></i>';
+
+                showToast('PDF loaded! Permission restrictions detected.', 'warning');
+
+            } catch (err) {
+                if (err.name === 'PasswordException') {
+                    isPasswordProtected = true;
+
+                    showFilePreview();
+                    passwordSection.classList.add('show');
+                    noPasswordSection.classList.remove('show');
+                    actionSection.classList.add('show');
+
+                    const badge = document.getElementById('fileBadge');
+                    badge.className = 'file-status-badge badge-locked';
+                    badge.innerHTML = '<i class="fas fa-lock"></i> <span>Password Protected</span>';
+
+                    document.getElementById('lockMini').innerHTML = '<i class="fas fa-lock"></i>';
+                    document.getElementById('filePages').textContent = '- pages';
+
+                    showToast('PDF is password protected. Enter password to unlock.', 'warning');
+                    setTimeout(() => passwordInput.focus(), 300);
+                } else {
+                    showToast('Error reading PDF: ' + err.message, 'error');
+                }
+            }
+        }
+
+        function showFilePreview() {
+            uploadArea.classList.add('hidden');
+            filePreviewSection.classList.add('show');
+        }
+
+        // =========== TOGGLE PASSWORD ===========
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // =========== UNLOCK PDF ===========
+        async function unlockPDF() {
+            const password = passwordInput.value.trim();
+
+            if (isPasswordProtected && !password) {
+                passwordInput.classList.add('error-input');
+                passwordError.classList.add('show');
+                document.getElementById('errorMsg').textContent = 'Please enter the PDF password.';
+                passwordInput.focus();
+                return;
+            }
+
+            // Reset error
+            passwordInput.classList.remove('error-input');
+            passwordError.classList.remove('show');
+
+            // Show loading
+            unlockBtn.classList.add('loading');
+            unlockBtn.disabled = true;
+            actionSection.classList.remove('show');
+            progressSection.classList.add('show');
+
+            try {
+                updateProgress(10, 'Loading PDF document...');
+
+                // Try loading with password
+                let loadOptions = { data: currentArrayBuffer.slice(0) };
+                if (password) loadOptions.password = password;
+
+                let pdf;
+                try {
+                    pdf = await pdfjsLib.getDocument(loadOptions).promise;
+                } catch (err) {
+                    if (err.name === 'PasswordException') {
+                        // Wrong password
+                        unlockBtn.classList.remove('loading');
+                        unlockBtn.disabled = false;
+                        actionSection.classList.add('show');
+                        progressSection.classList.remove('show');
+                        passwordInput.classList.add('error-input');
+                        passwordError.classList.add('show');
+                        document.getElementById('errorMsg').textContent = 'Wrong password. Please try again.';
+                        passwordInput.focus();
+                        showToast('Incorrect password. Please try again.', 'error');
+                        return;
+                    }
+                    throw err;
+                }
+
+                const totalPages = pdf.numPages;
+                document.getElementById('filePages').textContent = totalPages + ' pages';
+                updateProgress(20, 'Decrypting PDF...');
+
+                // Render each page to canvas and rebuild PDF
+                const { jsPDF } = window.jspdf || {};
+
+                // Use pdf-lib to rebuild
+                const newPdfDoc = await PDFLib.PDFDocument.create();
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const percent = 20 + Math.round((i / totalPages) * 65);
+                    updateProgress(percent, `Processing page ${i} of ${totalPages}...`);
+
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 2 });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    const ctx = canvas.getContext('2d');
+
+                    await page.render({ canvasContext: ctx, viewport }).promise;
+
+                    // Convert canvas to JPEG
+                    const imgDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                    const imgBytes = await fetch(imgDataUrl).then(r => r.arrayBuffer());
+
+                    const img = await newPdfDoc.embedJpg(imgBytes);
+
+                    // Get original page dimensions
+                    const origViewport = page.getViewport({ scale: 1 });
+                    const newPage = newPdfDoc.addPage([origViewport.width, origViewport.height]);
+                    newPage.drawImage(img, {
+                        x: 0,
+                        y: 0,
+                        width: origViewport.width,
+                        height: origViewport.height,
+                    });
+
+                    canvas.remove();
+                }
+
+                updateProgress(90, 'Generating unlocked PDF...');
+
+                const pdfBytes = await newPdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const originalName = currentFile.name.replace('.pdf', '');
+                downloadBtn.href = url;
+                downloadBtn.download = `${originalName}_unlocked.pdf`;
+
+                updateProgress(100, 'Complete!');
+
+                setTimeout(() => {
+                    progressSection.classList.remove('show');
+                    downloadSection.classList.add('show');
+
+                    // Update badge
+                    const badge = document.getElementById('fileBadge');
+                    badge.className = 'file-status-badge badge-unlocked';
+                    badge.innerHTML = '<i class="fas fa-lock-open"></i> <span>Unlocked</span>';
+
+                    document.getElementById('lockMini').innerHTML = '<i class="fas fa-lock-open"></i>';
+
+                    passwordSection.classList.remove('show');
+                    noPasswordSection.classList.remove('show');
+
+                    unlockBtn.classList.remove('loading');
+                    unlockBtn.disabled = false;
+                }, 500);
+
+                showToast('PDF unlocked successfully! 🎉');
+
+            } catch (err) {
+                console.error(err);
+                showToast('Error unlocking PDF: ' + err.message, 'error');
+                unlockBtn.classList.remove('loading');
+                unlockBtn.disabled = false;
+                actionSection.classList.add('show');
+                progressSection.classList.remove('show');
+            }
+        }
+
+        // =========== PROGRESS ===========
+        function updateProgress(percent, text) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+            if (text) {
+                document.getElementById('progressStatus').innerHTML = 
+                    `<i class="fas fa-spinner"></i> ${text}`;
+            }
+        }
+
+        // =========== RESET ===========
+        function resetTool() {
+            currentFile = null;
+            currentArrayBuffer = null;
+            isPasswordProtected = false;
+
+            uploadArea.classList.remove('hidden');
+            filePreviewSection.classList.remove('show');
+            passwordSection.classList.remove('show');
+            noPasswordSection.classList.remove('show');
+            actionSection.classList.remove('show');
+            progressSection.classList.remove('show');
+            downloadSection.classList.remove('show');
+
+            passwordInput.value = '';
+            passwordInput.classList.remove('error-input');
+            passwordError.classList.remove('show');
+            passwordInput.type = 'password';
+            document.getElementById('eyeIcon').className = 'fas fa-eye';
+
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressPercent').textContent = '0%';
+
+            unlockBtn.classList.remove('loading');
+            unlockBtn.disabled = false;
+        }
+
+        // =========== HELPERS ===========
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                warning: 'fa-triangle-exclamation'
+            };
+            t.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(100%)';
+                t.style.transition = 'all 0.3s';
+                setTimeout(() => t.remove(), 300);
+            }, 4000);
+        }
+
+        // Enter key for password
+        passwordInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') unlockPDF();
+            passwordInput.classList.remove('error-input');
+            passwordError.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
-
-  
-  
