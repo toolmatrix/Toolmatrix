@@ -55,6 +55,36 @@
     .btn-danger:hover  { background: #fecaca; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
+    /* ── HERO SECTION (below logo) ── */
+    .hero {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--primary-xlight);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.2rem;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: 800;
+    }
+    .hero h1 i {
+      color: var(--primary);
+      font-size: 2rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text);
+      max-width: 750px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
     /* ── UPLOAD ── */
     #upload-section {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -315,10 +345,11 @@
     <button class="btn btn-success"   id="download-btn" onclick="downloadImage()" disabled><i class="fas fa-download"></i><span>Save</span></button>
   </div>
 </header>
-  <!-- HERO -->
+
+<!-- ═══ HERO (below logo) ═══ -->
 <section class="hero">
-    <h1><i class="fas fa-eye-slash"></i> Photo Editor </h1>
-    <p>Add text, stickers, effects and filters to your photos. Edit your photos online.!</p>
+  <h1><i class="fas fa-edit"></i> Photo Editor</h1>
+  <p>Add text, stickers, effects and filters to your photos. Edit your photos online!</p>
 </section>
 
 <!-- ═══ UPLOAD ═══ -->
@@ -1189,16 +1220,23 @@ function applyResize() {
 }
 
 // ════════════════════════════════════════════
-//  HISTORY
+//  HISTORY – FIXED: now stores base image (currentImageData) not filtered canvas
 // ════════════════════════════════════════════
 function saveHistory(label) {
-  if (historyIndex<history.length-1) history=history.slice(0,historyIndex+1);
-  history.push({ label, dataURL:mainCanvas.toDataURL(), w:mainCanvas.width, h:mainCanvas.height });
-  if (history.length>30) history.shift();
-  historyIndex=history.length-1;
+  if (historyIndex < history.length-1) history = history.slice(0, historyIndex+1);
+  // Create a dataURL from currentImageData (base image without current filter sliders)
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = mainCanvas.width;
+  tmpCanvas.height = mainCanvas.height;
+  tmpCanvas.getContext('2d').putImageData(currentImageData, 0, 0);
+  const dataURL = tmpCanvas.toDataURL();
+  history.push({ label, dataURL, w: mainCanvas.width, h: mainCanvas.height });
+  if (history.length > 30) history.shift();
+  historyIndex = history.length - 1;
   renderHistoryList();
   updateHistoryBtns();
 }
+
 function renderHistoryList() {
   const list=document.getElementById('history-list');
   list.innerHTML='';
@@ -1222,8 +1260,7 @@ function restoreHistory(idx) {
     document.getElementById('resize-w').value=h.w;
     document.getElementById('resize-h').value=h.h;
     originalAspectRatio=h.w/h.h;
-    applyFilters();
-    applyZoom();
+    applyFilters();  // re‑apply current filter sliders to the restored base
     renderHistoryList();
     updateHistoryBtns();
   };
