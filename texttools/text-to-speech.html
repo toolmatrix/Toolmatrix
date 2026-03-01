@@ -2,1005 +2,892 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Text to Speech — Free Online Tool</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- meSpeak for download -->
-    <script src="https://cdn.jsdelivr.net/npm/mespeak@1.7.2/mespeak.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mespeak@1.7.2/mespeak-voices.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech - Convert Text to Voice Online Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         :root{
-            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;--g400:#81C784;
-            --g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;--g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
-            --w:#fff;--txt:#2c3e2c;--txtL:#6b7e6b;--txtM:#94a894;--bdr:#d4ead4;
-            --red:#EF5350;--blue:#42A5F5;--purple:#AB47BC;--orange:#FF9800;--teal:#26A69A;--pink:#EC407A;--yellow:#FFCA28;
-            --sh:0 8px 30px rgba(46,125,50,.10);--shL:0 20px 60px rgba(46,125,50,.15);
-            --r:16px;--rs:10px;--rx:6px;--t:.25s cubic-bezier(.4,0,.2,1)
+            --primary:#2ecc71;--primary-dark:#27ae60;--primary-darker:#1e8c4c;
+            --primary-light:#a8f0c8;--primary-ultra-light:#e8faf0;
+            --primary-glow:rgba(46,204,113,0.15);--bg:#f0faf4;--white:#fff;
+            --dark:#1a2e28;--gray:#6b7c75;--gray-light:#c5d5cc;--border:#d4edda;
+            --red:#e74c3c;--red-light:#fce4ec;--orange:#f39c12;--blue:#3498db;
+            --blue-light:#e8f4fd;--purple:#9b59b6;
+            --shadow:0 4px 20px rgba(46,204,113,0.10);
+            --shadow-lg:0 10px 40px rgba(46,204,113,0.13);
+            --shadow-xl:0 20px 60px rgba(46,204,113,0.10);
+            --radius:18px;--radius-sm:12px;--radius-xs:8px;
         }
-        html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-system,sans-serif;
-            background:var(--g100);color:var(--txt);-webkit-font-smoothing:antialiased}
-        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden}
 
         /* ===== NAVBAR ===== */
-        .nav{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
-            padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;
-            box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:200}
-        .nav-left{display:flex;align-items:center;gap:12px}
-        .logo-ic{width:38px;height:38px;background:var(--w);border-radius:10px;display:flex;
-            align-items:center;justify-content:center;font-size:18px;color:var(--g700);
-            box-shadow:0 2px 8px rgba(0,0,0,.1)}
-        .logo-t{font-size:19px;font-weight:800;color:var(--w)}
-        .logo-t span{color:#FFEB3B}
-        .nav-right{display:flex;align-items:center;gap:8px}
-        .nb{height:36px;padding:0 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
-            background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:6px}
-        .nb:hover{background:rgba(255,255,255,.2)}
-        .nb.yel{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
-            border-color:transparent;box-shadow:0 3px 12px rgba(255,193,7,.3)}
-        .nb.yel:hover{transform:translateY(-1px)}
-        .mmenu{display:none;width:36px;height:36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
-            background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;
-            align-items:center;justify-content:center}
+        .navbar{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;box-shadow:0 2px 18px rgba(46,204,113,0.07)}
+        .navbar-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+        .navbar-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(46,204,113,0.3)}
+        .navbar-title{font-size:22px;font-weight:800;color:var(--dark)}
+        .navbar-title span{color:var(--primary)}
+        .navbar-links{display:flex;align-items:center;gap:6px}
+        .nav-link{padding:8px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;color:var(--gray);transition:all 0.3s}
+        .nav-link:hover{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .nav-link.active{background:var(--primary);color:#fff}
+        .mobile-menu-btn{display:none;background:none;border:none;font-size:24px;color:var(--dark);cursor:pointer}
 
-        /* ===== MAIN ===== */
-        .main{flex:1;display:flex;overflow:hidden;position:relative}
+        /* ===== HERO ===== */
+        .hero{text-align:center;padding:50px 20px 24px;max-width:780px;margin:0 auto}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-ultra-light);border:1.5px solid var(--primary-light);padding:8px 22px;border-radius:50px;font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:20px}
+        .hero h1{font-size:44px;font-weight:900;line-height:1.13;margin-bottom:14px}
+        .hero h1 span{background:linear-gradient(135deg,var(--primary),var(--primary-darker));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero p{font-size:17px;color:var(--gray);line-height:1.7;max-width:620px;margin:0 auto}
 
-        /* ===== SIDEBAR ===== */
-        .sb{width:310px;flex-shrink:0;background:var(--w);border-right:1px solid var(--bdr);
-            display:flex;flex-direction:column;overflow:hidden;z-index:50}
-        .sb-hdr{flex-shrink:0;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--g50);
-            display:flex;align-items:center;justify-content:space-between}
-        .sb-title{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
-            text-transform:uppercase;letter-spacing:.5px}
-        .sb-title i{font-size:15px}
-        .sb-close{display:none;width:28px;height:28px;border-radius:7px;border:none;background:var(--g200);
-            color:var(--g800);font-size:13px;cursor:pointer;align-items:center;justify-content:center;transition:var(--t)}
-        .sb-close:hover{background:var(--g600);color:#fff}
-        .sb-scroll{flex:1;overflow-y:auto;padding:16px 18px}
-        .sb-scroll::-webkit-scrollbar{width:5px}
-        .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+        /* ===== TOOL ===== */
+        .tool-container{max-width:1100px;margin:16px auto 60px;padding:0 20px}
+        .tool-card{background:var(--white);border-radius:var(--radius);border:2px solid var(--border);box-shadow:var(--shadow-xl);overflow:hidden}
 
-        /* Settings Groups */
-        .sg{margin-bottom:22px}
-        .sgl{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;letter-spacing:.8px;
-            margin-bottom:8px;display:flex;align-items:center;gap:6px}
-        .sgl i{color:var(--g600);font-size:13px}
-        .sgd{font-size:11px;color:var(--txtM);margin-bottom:10px;line-height:1.5}
+        /* ===== MAIN EDITOR LAYOUT ===== */
+        .editor-layout{display:grid;grid-template-columns:1fr 340px;gap:0}
+
+        /* ===== LEFT: TEXT AREA ===== */
+        .text-panel{display:flex;flex-direction:column;border-right:2px solid var(--border)}
+
+        /* Text Toolbar */
+        .text-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--primary-ultra-light);border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:10px}
+        .tt-left{display:flex;align-items:center;gap:10px}
+        .tt-left h4{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .tt-left h4 i{color:var(--primary)}
+        .tt-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .char-counter{font-size:12px;font-weight:600;color:var(--gray);background:var(--white);padding:5px 12px;border-radius:50px;border:1px solid var(--border)}
+        .char-counter span{color:var(--primary-dark);font-weight:700}
+        .tt-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .tt-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .tt-btn.danger{color:var(--red);border-color:#f5c6cb}
+        .tt-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+        /* Text Input */
+        .text-input-wrap{flex:1;position:relative;display:flex;flex-direction:column}
+        #textInput{width:100%;flex:1;min-height:360px;padding:24px;border:none;outline:none;resize:none;font-family:'Inter',sans-serif;font-size:16px;line-height:1.8;color:var(--dark);background:var(--white)}
+        #textInput::placeholder{color:var(--gray-light)}
+        #textInput:focus{box-shadow:inset 0 0 0 2px var(--primary-glow)}
+
+        /* Highlighted Text Display */
+        .text-highlight-display{display:none;width:100%;flex:1;min-height:360px;padding:24px;font-family:'Inter',sans-serif;font-size:16px;line-height:1.8;color:var(--dark);background:var(--white);overflow-y:auto;white-space:pre-wrap;word-wrap:break-word}
+        .text-highlight-display.show{display:block}
+        .text-highlight-display .word-highlight{background:var(--primary-light);color:var(--primary-darker);border-radius:4px;padding:1px 3px;font-weight:600;transition:all 0.15s}
+
+        /* Player Bar */
+        .player-bar{display:flex;align-items:center;gap:12px;padding:16px 24px;background:var(--primary-ultra-light);border-top:1.5px solid var(--border);flex-wrap:wrap}
+        .play-controls{display:flex;align-items:center;gap:8px}
+        .pc-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.3s;font-family:'Inter',sans-serif}
+        .pc-btn.play{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 15px rgba(46,204,113,0.35);font-size:18px}
+        .pc-btn.play:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(46,204,113,0.45)}
+        .pc-btn.play:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+        .pc-btn.secondary{background:var(--white);color:var(--gray);border:1.5px solid var(--border)}
+        .pc-btn.secondary:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .pc-btn.secondary:disabled{opacity:0.35;cursor:not-allowed}
+        .pc-btn.download-main{background:linear-gradient(135deg,var(--blue),#2980b9);color:#fff;box-shadow:0 4px 14px rgba(52,152,219,0.3);font-size:15px}
+        .pc-btn.download-main:hover{transform:scale(1.08)}
+        .pc-btn.download-main:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+        /* Progress Seek */
+        .seek-bar{flex:1;display:flex;flex-direction:column;gap:4px;min-width:120px}
+        .seek-track{width:100%;height:6px;background:var(--border);border-radius:50px;overflow:hidden;cursor:pointer;position:relative}
+        .seek-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:50px;width:0%;transition:width 0.3s}
+        .seek-info{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);font-weight:500}
+
+        /* Status */
+        .player-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:50px;flex-shrink:0}
+        .status-idle{background:var(--border);color:var(--gray)}
+        .status-playing{background:var(--primary-ultra-light);color:var(--primary-dark);border:1px solid var(--primary-light)}
+        .status-playing i{animation:pulse 1s infinite}
+        .status-paused{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+        .status-recording{background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+        .status-recording i{animation:pulse 1s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+        /* ===== RIGHT: SETTINGS PANEL ===== */
+        .settings-panel{display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 68px);background:var(--primary-ultra-light)}
+        .settings-panel::-webkit-scrollbar{width:5px}
+        .settings-panel::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:10px}
+
+        .sp-header{padding:16px 20px;background:var(--white);border-bottom:1.5px solid var(--border);font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:2}
+        .sp-header i{color:var(--primary)}
+
+        .sp-group{padding:18px 20px;border-bottom:1.5px solid var(--border)}
+        .sp-group:last-child{border-bottom:none}
+        .sp-label{font-size:12px;font-weight:700;color:var(--dark);margin-bottom:10px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.3px}
+        .sp-label i{color:var(--primary);font-size:13px}
+
+        .sp-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'Inter',sans-serif;background:var(--white);color:var(--dark);cursor:pointer;transition:all 0.3s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7c75' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+        .sp-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
 
         /* Voice Card */
-        .voice-card{padding:14px;border:2px solid var(--g200);border-radius:var(--rs);background:var(--g50);
-            margin-bottom:12px;cursor:pointer;transition:var(--t);position:relative;overflow:hidden}
-        .voice-card:hover{border-color:var(--g400);background:var(--g100)}
-        .voice-card.active{border-color:var(--g600);background:linear-gradient(135deg,var(--g100),var(--g50));
-            box-shadow:0 2px 12px rgba(76,175,80,.12)}
-        .voice-card.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--g600)}
-        .vc-top{display:flex;align-items:center;gap:10px}
-        .vc-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;
-            justify-content:center;font-size:18px;flex-shrink:0}
-        .vc-avatar.male{background:#E3F2FD;color:var(--blue)}
-        .vc-avatar.female{background:#FCE4EC;color:var(--pink)}
-        .vc-avatar.other{background:#E8F5E9;color:var(--g600)}
-        .vc-info{flex:1;min-width:0}
-        .vc-name{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .vc-lang{font-size:10px;color:var(--txtM);margin-top:2px;display:flex;align-items:center;gap:4px}
-        .vc-badge{padding:2px 8px;border-radius:50px;font-size:9px;font-weight:700;display:inline-block}
-        .vc-badge.local{background:var(--g100);color:var(--g800)}
-        .vc-badge.remote{background:#E3F2FD;color:var(--blue)}
-        .vc-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--g300);
-            display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;
-            transition:var(--t);flex-shrink:0}
-        .voice-card.active .vc-check{background:var(--g600);border-color:var(--g600);color:#fff}
-        .vc-test{margin-top:8px;padding:6px 12px;border:1.5px solid var(--g200);border-radius:7px;
-            background:var(--w);color:var(--g800);font-size:11px;font-weight:600;cursor:pointer;
-            transition:var(--t);font-family:inherit;display:inline-flex;align-items:center;gap:5px}
-        .vc-test:hover{background:var(--g600);color:#fff;border-color:var(--g600)}
+        .voice-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-xs);margin-top:8px}
+        .voice-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+        .vc-male{background:#e8f4fd;color:var(--blue)}
+        .vc-female{background:#fce4ec;color:#e91e63}
+        .vc-default{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .voice-card-info{flex:1;min-width:0}
+        .vc-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .vc-lang{font-size:10px;color:var(--gray)}
 
-        /* Voice filter */
-        .voice-filter{display:flex;gap:6px;margin-bottom:12px}
-        .vf-input{flex:1;padding:9px 14px;border:2px solid var(--g200);border-radius:8px;font-size:12px;
-            font-family:inherit;outline:none;transition:var(--t)}
-        .vf-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
-        .vf-count{font-size:11px;color:var(--txtM);font-weight:600;padding:9px 0;white-space:nowrap}
+        /* Sliders */
+        .slider-wrap{margin-bottom:14px}
+        .slider-wrap:last-child{margin-bottom:0}
+        .slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+        .slider-label{font-size:12px;font-weight:600;color:var(--dark)}
+        .slider-value{font-size:12px;font-weight:700;color:var(--primary-dark);background:var(--white);padding:2px 10px;border-radius:50px;border:1px solid var(--border)}
+        .sp-slider{width:100%;height:8px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:50px;outline:none;cursor:pointer;transition:background 0.3s}
+        .sp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(46,204,113,0.3);border:3px solid var(--white);transition:all 0.2s}
+        .sp-slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+        .sp-slider::-moz-range-thumb{width:22px;height:22px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(46,204,113,0.3);border:3px solid var(--white)}
 
-        /* Slider Group */
-        .slider-group{margin-bottom:16px}
-        .sl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-        .sl-label{font-size:12px;font-weight:600;color:var(--txt);display:flex;align-items:center;gap:6px}
-        .sl-label i{color:var(--g600)}
-        .sl-val{font-size:12px;font-weight:800;color:var(--g900);background:var(--g100);
-            padding:3px 10px;border-radius:50px;min-width:40px;text-align:center}
-        .sl-wrap{position:relative}
-        .sl-track{width:100%;height:8px;background:var(--g200);border-radius:10px;overflow:hidden}
-        .sl-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:10px;transition:width .1s}
-        .sl-range{position:absolute;top:-4px;left:0;width:100%;height:16px;-webkit-appearance:none;appearance:none;
-            background:transparent;outline:none;cursor:pointer}
-        .sl-range::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
-            background:var(--w);border:3px solid var(--g600);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-        .sl-presets{display:flex;gap:5px;margin-top:8px}
-        .sl-preset{padding:5px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:10px;
-            font-weight:600;cursor:pointer;transition:var(--t);background:var(--w);color:var(--txtL);font-family:inherit}
-        .sl-preset:hover{border-color:var(--g500);background:var(--g50);color:var(--g800)}
-        .sl-preset.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+        /* Quick Presets */
+        .presets-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+        .preset-btn{padding:6px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;color:var(--gray)}
+        .preset-btn:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-ultra-light)}
+        .preset-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-        /* Sidebar footer */
-        .sb-foot{flex-shrink:0;padding:14px 18px;border-top:1px solid var(--bdr);background:var(--g50)}
-        .speak-btn-sb{width:100%;padding:14px;background:linear-gradient(135deg,var(--g600),var(--g900));
-            color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;
-            gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);position:relative;overflow:hidden}
-        .speak-btn-sb::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-            background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
-        .speak-btn-sb:hover::after{left:100%}
-        .speak-btn-sb:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(46,125,50,.4)}
-
-        /* ===== CENTER ===== */
-        .center{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-        /* Top Stats Bar */
-        .top-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-            padding:8px 18px;background:var(--w);border-bottom:1px solid var(--bdr);gap:10px}
-        .tb-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-        .tb-chip{display:flex;align-items:center;gap:5px;padding:5px 12px;background:var(--g50);
-            border:1.5px solid var(--g200);border-radius:50px;font-size:11px;font-weight:700;color:var(--g800);
-            white-space:nowrap}
-        .tb-chip i{font-size:12px;color:var(--g600)}
-        .tb-chip .tcn{color:var(--g900);font-size:13px;font-weight:900}
-        .tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-        .tb-btn{height:32px;padding:0 14px;border:1.5px solid var(--g200);border-radius:8px;
-            background:var(--w);color:var(--g800);font-size:11.5px;font-weight:600;cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:5px}
-        .tb-btn:hover{background:var(--g600);color:#fff;border-color:var(--g600)}
-
-        /* TEXT EDITOR */
-        .editor-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
-        .text-editor{flex:1;padding:30px 40px;font-size:17px;font-family:'Inter',sans-serif;line-height:2;
-            color:var(--txt);border:none;outline:none;resize:none;background:var(--w);overflow-y:auto}
-        .text-editor::placeholder{color:var(--g300);font-weight:400}
-        .text-editor::-webkit-scrollbar{width:8px}
-        .text-editor::-webkit-scrollbar-track{background:var(--g50)}
-        .text-editor::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
-
-        /* ===== PLAYER BAR ===== */
-        .player{flex-shrink:0;background:var(--w);border-top:2px solid var(--bdr);padding:0;
-            display:flex;flex-direction:column;overflow:hidden;transition:max-height .4s ease;max-height:0}
-        .player.show{max-height:300px}
-        .player-inner{padding:16px 24px}
-
-        /* Waveform */
-        .wave-wrap{display:flex;align-items:center;justify-content:center;gap:3px;height:50px;margin-bottom:14px}
-        .wave-bar{width:4px;border-radius:4px;background:var(--g300);transition:height .1s,background .2s;height:8px}
-        .wave-bar.active{background:var(--g600)}
-
-        /* Progress Bar */
-        .prog-wrap{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-        .prog-time{font-size:11px;font-weight:700;color:var(--txtM);min-width:40px;text-align:center;font-variant-numeric:tabular-nums}
-        .prog-track{flex:1;height:6px;background:var(--g200);border-radius:10px;overflow:hidden;cursor:pointer;position:relative}
-        .prog-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:10px;width:0%;transition:width .3s}
-
-        /* Controls */
-        .controls{display:flex;align-items:center;justify-content:center;gap:12px}
-        .ctrl-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--g200);background:var(--w);
-            color:var(--g800);font-size:16px;cursor:pointer;transition:var(--t);display:flex;
-            align-items:center;justify-content:center;flex-shrink:0}
-        .ctrl-btn:hover{background:var(--g100);border-color:var(--g400)}
-        .ctrl-play{width:56px;height:56px;background:linear-gradient(135deg,var(--g600),var(--g800));
-            border:none;color:#fff;font-size:20px;box-shadow:0 4px 20px rgba(46,125,50,.3)}
-        .ctrl-play:hover{transform:scale(1.06);box-shadow:0 6px 25px rgba(46,125,50,.4)}
-        .ctrl-play.playing{background:linear-gradient(135deg,var(--orange),#F57C00)}
-
-        /* Currently Speaking Info */
-        .speak-info{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
-        .si-voice{font-size:11px;font-weight:600;color:var(--txtM);display:flex;align-items:center;gap:5px}
-        .si-voice i{color:var(--g600)}
-        .si-dot{width:4px;height:4px;border-radius:50%;background:var(--g400)}
+        /* Download Options */
+        .download-options{display:flex;flex-direction:column;gap:8px}
+        .dl-opt-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;text-align:left}
+        .dl-opt-btn:hover{border-color:var(--primary);background:var(--primary-ultra-light)}
+        .dl-opt-btn.recording{border-color:var(--red);background:var(--red-light)}
+        .dl-opt-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+        .dl-opt-icon.wav{background:var(--primary-ultra-light);color:var(--primary-dark)}
+        .dl-opt-icon.webm{background:var(--blue-light);color:var(--blue)}
+        .dl-opt-info h5{font-size:13px;font-weight:700;color:var(--dark)}
+        .dl-opt-info p{font-size:11px;color:var(--gray);margin-top:2px}
+        .dl-opt-badge{margin-left:auto;padding:3px 10px;border-radius:50px;font-size:10px;font-weight:700;flex-shrink:0}
+        .badge-rec{background:var(--red-light);color:var(--red)}
+        .badge-ready{background:#d4edda;color:#155724}
 
         /* ===== SAMPLE TEXTS ===== */
-        .samples-section{padding:14px 18px;border-bottom:1px solid var(--bdr)}
-        .sample-title{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
-            letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-        .sample-title i{color:var(--g600);font-size:13px}
-        .sample-grid{display:flex;flex-direction:column;gap:6px}
-        .sample-btn{width:100%;padding:10px 14px;border:2px solid var(--g200);border-radius:var(--rs);
-            background:var(--w);font-size:12px;font-weight:600;color:var(--txt);cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;align-items:center;gap:10px;text-align:left}
-        .sample-btn:hover{border-color:var(--g500);background:var(--g50);transform:translateX(3px)}
-        .sample-btn .s-emoji{font-size:20px;flex-shrink:0}
-        .sample-btn .s-info{flex:1;min-width:0}
-        .sample-btn .s-name{font-size:12px;font-weight:700;color:var(--txt)}
-        .sample-btn .s-desc{font-size:10px;color:var(--txtM);margin-top:1px}
+        .samples-section{padding:20px 24px;border-top:2px solid var(--border)}
+        .samples-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+        .samples-title i{color:var(--primary)}
+        .samples-grid{display:flex;gap:8px;flex-wrap:wrap}
+        .sample-chip{padding:8px 16px;background:var(--primary-ultra-light);border:1.5px solid var(--primary-light);border-radius:50px;font-size:12px;font-weight:600;color:var(--primary-dark);cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;white-space:nowrap}
+        .sample-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-        /* ===== HISTORY ===== */
-        .history-section{padding:14px 18px}
-        .hist-title{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;
-            letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-        .hist-title i{color:var(--g600);font-size:13px}
-        .hist-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
-        .hist-list::-webkit-scrollbar{width:4px}
-        .hist-list::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
-        .hist-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--g50);
-            border-radius:8px;cursor:pointer;transition:var(--t)}
-        .hist-item:hover{background:var(--g100)}
-        .hist-item .hi-play{width:28px;height:28px;border-radius:50%;background:var(--g600);color:#fff;
-            display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;cursor:pointer;transition:var(--t)}
-        .hist-item .hi-play:hover{background:var(--g800)}
-        .hist-item .hi-text{flex:1;font-size:11px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .hist-item .hi-time{font-size:10px;color:var(--txtM);flex-shrink:0}
-        .hist-empty{text-align:center;padding:20px;color:var(--txtM);font-size:12px}
+        /* ===== HOW ===== */
+        .how-section{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+        .section-title{text-align:center;font-size:28px;font-weight:800;margin-bottom:40px}
+        .section-title span{color:var(--primary)}
+        .how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+        .how-step{text-align:center}
+        .step-num{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:21px;font-weight:800;color:#fff;box-shadow:0 5px 15px rgba(46,204,113,0.3)}
+        .how-step h4{font-size:15px;font-weight:700;margin-bottom:8px}
+        .how-step p{font-size:13px;color:var(--gray);line-height:1.6}
 
-        /* ===== STATUS BAR ===== */
-        .status-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-            padding:6px 18px;background:var(--g800);color:rgba(255,255,255,.7);font-size:11px;font-weight:600;gap:16px}
-        .status-bar .si{display:flex;align-items:center;gap:5px;white-space:nowrap}
-        .status-bar .si i{font-size:12px;color:var(--g400)}
-        .s-left,.s-right{display:flex;align-items:center;gap:16px}
+        /* ===== FEATURES ===== */
+        .features{max-width:1100px;margin:0 auto 60px;padding:0 20px}
+        .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .feature-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:all 0.3s}
+        .feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--primary-light)}
+        .feature-icon{width:58px;height:58px;background:var(--primary-ultra-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--primary-dark)}
+        .feature-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+        .feature-card p{font-size:13px;color:var(--gray);line-height:1.6}
 
-        /* ===== OVERLAYS ===== */
-        .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
-        .sbov.show{display:block}
+        /* ===== FOOTER ===== */
+        .footer{background:var(--white);border-top:2px solid var(--border);padding:30px 40px;text-align:center}
+        .footer p{font-size:13px;color:var(--gray)}
+        .footer p a{color:var(--primary-dark);text-decoration:none;font-weight:600}
+        .footer-links{display:flex;justify-content:center;gap:24px;margin-top:12px}
+        .footer-links a{font-size:13px;color:var(--gray);text-decoration:none;transition:color 0.3s}
+        .footer-links a:hover{color:var(--primary-dark)}
 
-        /* TOAST */
-        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
-            background:var(--g900);color:#fff;padding:11px 26px;border-radius:50px;font-size:13px;
-            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
-            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap}
-        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+        /* ===== TOAST ===== */
+        .toast-container{position:fixed;top:80px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:14px 22px;background:var(--white);border-radius:var(--radius-sm);box-shadow:0 8px 30px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;animation:slideIn 0.3s ease;border-left:4px solid var(--primary);max-width:380px}
+        .toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+        .toast.warning{border-left-color:var(--orange)}.toast.warning i{color:var(--orange)}
+        .toast i{color:var(--primary);font-size:18px}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
-        /* MOBILE BOTTOM BAR */
-        .mobbar{display:none;flex-shrink:0;background:var(--w);border-top:1px solid var(--bdr);
-            padding:6px 8px;gap:4px;z-index:80;overflow-x:auto}
-        .mobbar::-webkit-scrollbar{height:0}
-        .mobbar .mb{padding:8px 10px;background:var(--g50);border:1.5px solid var(--g200);
-            border-radius:8px;font-size:10px;font-weight:600;color:var(--g800);cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;flex-direction:column;
-            align-items:center;gap:2px;flex-shrink:0;min-width:52px}
-        .mobbar .mb i{font-size:14px}
-        .mobbar .mb.go{background:linear-gradient(135deg,var(--g600),var(--g800));color:#fff;
-            border-color:var(--g600);box-shadow:0 3px 12px rgba(46,125,50,.3)}
-        .mobbar .mb.stop-mb{background:var(--red);color:#fff;border-color:var(--red)}
-
-        /* Voice list wrapper */
-        .voice-list{max-height:300px;overflow-y:auto}
-        .voice-list::-webkit-scrollbar{width:4px}
-        .voice-list::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
-
-        /* Highlight character */
-        .highlight-overlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
-            padding:30px 40px;font-size:17px;font-family:'Inter',sans-serif;line-height:2;
-            white-space:pre-wrap;word-wrap:break-word;overflow:hidden;z-index:1}
-
-        /* RESPONSIVE */
+        /* ===== RESPONSIVE ===== */
         @media(max-width:900px){
-            .nb.desk{display:none}.mmenu{display:flex}.mobbar{display:flex}
-            .sb{position:fixed;left:-330px;top:0;bottom:0;z-index:100;
-                transition:left var(--t);box-shadow:var(--shL)}
-            .sb.open{left:0}.sb-close{display:flex}
-            .nav{height:50px;padding:0 12px}
-            .logo-t{font-size:15px}
-            .logo-ic{width:32px;height:32px;font-size:15px;border-radius:8px}
-            .text-editor{padding:20px;font-size:15px;line-height:1.8}
-            .top-bar{padding:6px 12px}
-            .tb-right{display:none}
-            .player-inner{padding:12px 16px}
+            .editor-layout{grid-template-columns:1fr}
+            .text-panel{border-right:none;border-bottom:2px solid var(--border)}
+            .settings-panel{max-height:none}
+            #textInput,.text-highlight-display{min-height:220px}
         }
-        @media(max-width:480px){
-            .text-editor{padding:16px;font-size:14px;line-height:1.7}
-            .tb-left{gap:4px}
-            .tb-chip{padding:4px 8px;font-size:10px}
-            .tb-chip .tcn{font-size:11px}
-            .controls{gap:8px}
-            .ctrl-btn{width:38px;height:38px;font-size:14px}
-            .ctrl-play{width:48px;height:48px;font-size:18px}
+        @media(max-width:768px){
+            .navbar{padding:0 16px;height:60px}
+            .navbar-title{font-size:18px}
+            .navbar-links{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:16px;border-bottom:2px solid var(--border);box-shadow:var(--shadow)}
+            .navbar-links.open{display:flex}
+            .mobile-menu-btn{display:block}
+            .hero{padding:34px 16px 16px}
+            .hero h1{font-size:28px}
+            .hero p{font-size:15px}
+            .tool-container{padding:0 10px}
+            .text-toolbar{padding:12px 16px}
+            .player-bar{padding:12px 16px}
+            #textInput,.text-highlight-display{padding:16px;font-size:15px;min-height:180px}
+            .features-grid{grid-template-columns:1fr;gap:16px}
+            .how-steps{grid-template-columns:repeat(2,1fr);gap:16px}
+            .footer{padding:20px 16px}
+            .toast-container{right:10px;left:10px}
+            .toast{max-width:100%}
+            .pc-btn.play{width:46px;height:46px;font-size:16px}
+            .samples-section{padding:16px}
+            .samples-grid{gap:6px}
         }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <!-- ===== NAVBAR ===== -->
-    <nav class="nav">
-        <div class="nav-left">
-            <button class="mmenu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
-            <div class="logo-ic"><i class="fas fa-volume-up"></i></div>
-            <div class="logo-t">Text<span>2Speech</span></div>
-        </div>
-        <div class="nav-right">
-            <button class="nb desk" onclick="toggleSB()"><i class="fas fa-microphone-alt"></i> Voices</button>
-            <button class="nb desk" onclick="clearText()"><i class="fas fa-eraser"></i> Clear</button>
-            <button class="nb yel" onclick="speak()"><i class="fas fa-play"></i> Speak</button>
-        </div>
-    </nav>
-
-    <!-- ===== MAIN ===== -->
-    <div class="main">
-        <div class="sbov" id="sbov" onclick="closeSB()"></div>
-
-        <!-- ===== SIDEBAR ===== -->
-        <div class="sb" id="sidebar">
-            <div class="sb-hdr">
-                <div class="sb-title"><i class="fas fa-microphone-alt"></i> Voice Settings</div>
-                <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="sb-scroll">
-
-                <!-- SPEED -->
-                <div class="sg">
-                    <div class="slider-group">
-                        <div class="sl-header">
-                            <div class="sl-label"><i class="fas fa-tachometer-alt"></i> Speed</div>
-                            <div class="sl-val" id="speedVal">1.0x</div>
-                        </div>
-                        <div class="sl-wrap">
-                            <div class="sl-track"><div class="sl-fill" id="speedFill" style="width:50%"></div></div>
-                            <input type="range" class="sl-range" id="speedRange" min="0.25" max="2" step="0.05" value="1"
-                                oninput="updateSlider('speed',this.value)">
-                        </div>
-                        <div class="sl-presets">
-                            <button class="sl-preset" onclick="setSpeed(0.5)">0.5x</button>
-                            <button class="sl-preset" onclick="setSpeed(0.75)">0.75x</button>
-                            <button class="sl-preset active" onclick="setSpeed(1)">1.0x</button>
-                            <button class="sl-preset" onclick="setSpeed(1.25)">1.25x</button>
-                            <button class="sl-preset" onclick="setSpeed(1.5)">1.5x</button>
-                            <button class="sl-preset" onclick="setSpeed(2)">2.0x</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PITCH -->
-                <div class="sg">
-                    <div class="slider-group">
-                        <div class="sl-header">
-                            <div class="sl-label"><i class="fas fa-music"></i> Pitch</div>
-                            <div class="sl-val" id="pitchVal">1.0</div>
-                        </div>
-                        <div class="sl-wrap">
-                            <div class="sl-track"><div class="sl-fill" id="pitchFill" style="width:50%"></div></div>
-                            <input type="range" class="sl-range" id="pitchRange" min="0" max="2" step="0.1" value="1"
-                                oninput="updateSlider('pitch',this.value)">
-                        </div>
-                        <div class="sl-presets">
-                            <button class="sl-preset" onclick="setPitch(0.5)">Low</button>
-                            <button class="sl-preset active" onclick="setPitch(1)">Normal</button>
-                            <button class="sl-preset" onclick="setPitch(1.5)">High</button>
-                            <button class="sl-preset" onclick="setPitch(2)">Very High</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VOLUME -->
-                <div class="sg">
-                    <div class="slider-group">
-                        <div class="sl-header">
-                            <div class="sl-label"><i class="fas fa-volume-up"></i> Volume</div>
-                            <div class="sl-val" id="volVal">100%</div>
-                        </div>
-                        <div class="sl-wrap">
-                            <div class="sl-track"><div class="sl-fill" id="volFill" style="width:100%"></div></div>
-                            <input type="range" class="sl-range" id="volRange" min="0" max="1" step="0.05" value="1"
-                                oninput="updateSlider('vol',this.value)">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VOICE SELECTION -->
-                <div class="sg">
-                    <div class="sgl"><i class="fas fa-user-circle"></i> Select Voice</div>
-                    <div class="voice-filter">
-                        <input type="text" class="vf-input" id="voiceSearch" placeholder="🔍 Search voices..." oninput="filterVoices()">
-                        <div class="vf-count" id="voiceCount">0 voices</div>
-                    </div>
-                    <div class="voice-list" id="voiceList">
-                        <div style="text-align:center;padding:20px;color:var(--txtM)">Loading voices...</div>
-                    </div>
-                </div>
-
-                <!-- SAMPLE TEXTS -->
-                <div class="samples-section">
-                    <div class="sample-title"><i class="fas fa-bookmark"></i> Sample Texts</div>
-                    <div class="sample-grid">
-                        <button class="sample-btn" onclick="loadSample('greeting')">
-                            <span class="s-emoji">👋</span>
-                            <span class="s-info"><span class="s-name">Greeting</span><span class="s-desc">Hello & welcome message</span></span>
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('story')">
-                            <span class="s-emoji">📖</span>
-                            <span class="s-info"><span class="s-name">Short Story</span><span class="s-desc">A little fairy tale</span></span>
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('news')">
-                            <span class="s-emoji">📰</span>
-                            <span class="s-info"><span class="s-name">News Anchor</span><span class="s-desc">Breaking news style</span></span>
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('poem')">
-                            <span class="s-emoji">🎭</span>
-                            <span class="s-info"><span class="s-name">Poetry</span><span class="s-desc">Beautiful English poem</span></span>
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('motivational')">
-                            <span class="s-emoji">🔥</span>
-                            <span class="s-info"><span class="s-name">Motivational</span><span class="s-desc">Inspiring speech</span></span>
-                        </button>
-                        <button class="sample-btn" onclick="loadSample('urdu')">
-                            <span class="s-emoji">🇵🇰</span>
-                            <span class="s-info"><span class="s-name">Urdu Text</span><span class="s-desc">Urdu paragraph sample</span></span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- HISTORY -->
-                <div class="history-section">
-                    <div class="hist-title"><i class="fas fa-history"></i> Recent History</div>
-                    <div class="hist-list" id="histList">
-                        <div class="hist-empty">No history yet</div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="sb-foot">
-                <button class="speak-btn-sb" onclick="speak()"><i class="fas fa-play"></i> Start Speaking</button>
-            </div>
-        </div>
-
-        <!-- ===== CENTER ===== -->
-        <div class="center">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div class="tb-left">
-                    <div class="tb-chip"><i class="fas fa-font"></i> Words: <span class="tcn" id="tWords">0</span></div>
-                    <div class="tb-chip"><i class="fas fa-text-width"></i> Chars: <span class="tcn" id="tChars">0</span></div>
-                    <div class="tb-chip"><i class="fas fa-clock"></i> Est: <span class="tcn" id="tEst">0s</span></div>
-                    <div class="tb-chip"><i class="fas fa-microphone-alt"></i> <span class="tcn" id="tVoice">Default</span></div>
-                </div>
-                <div class="tb-right">
-                    <button class="tb-btn" onclick="clearText()"><i class="fas fa-eraser"></i> Clear</button>
-                    <button class="tb-btn" onclick="copyText()"><i class="fas fa-copy"></i> Copy</button>
-                    <button class="tb-btn" onclick="pasteText()"><i class="fas fa-paste"></i> Paste</button>
-                </div>
-            </div>
-
-            <!-- Text Editor -->
-            <div class="editor-wrap">
-                <textarea class="text-editor" id="editor" placeholder="✏️ Type or paste your text here...
-
-Then click the ▶ Speak button to hear it read aloud!
-
-🎯 Features:
-• Multiple voices & languages
-• Speed, pitch & volume control
-• Real-time word highlighting
-• History of recent speeches
-• Sample texts to try
-• Works 100% offline!
-• Download audio (WAV) using eSpeak
-
-🌍 Supports English, Urdu, Hindi, Arabic, Chinese, Spanish, French, German and many more languages!" spellcheck="true"></textarea>
-            </div>
-
-            <!-- PLAYER BAR -->
-            <div class="player" id="playerBar">
-                <div class="player-inner">
-                    <!-- Waveform -->
-                    <div class="wave-wrap" id="waveWrap"></div>
-
-                    <!-- Progress -->
-                    <div class="prog-wrap">
-                        <span class="prog-time" id="progElapsed">0:00</span>
-                        <div class="prog-track" id="progTrack">
-                            <div class="prog-fill" id="progFill"></div>
-                        </div>
-                        <span class="prog-time" id="progTotal">0:00</span>
-                    </div>
-
-                    <!-- Controls (added download button) -->
-                    <div class="controls">
-                        <button class="ctrl-btn" onclick="skipBack()" title="Restart"><i class="fas fa-backward"></i></button>
-                        <button class="ctrl-btn" onclick="slowDown()" title="Slower"><i class="fas fa-minus"></i></button>
-                        <button class="ctrl-play" id="playBtn" onclick="togglePlayPause()" title="Play/Pause"><i class="fas fa-play" id="playIcon"></i></button>
-                        <button class="ctrl-btn" onclick="speedUp()" title="Faster"><i class="fas fa-plus"></i></button>
-                        <button class="ctrl-btn" onclick="stopSpeech()" title="Stop"><i class="fas fa-stop"></i></button>
-                        <!-- NEW DOWNLOAD BUTTON -->
-                        <button class="ctrl-btn" onclick="downloadAudio()" title="Download as WAV (eSpeak)"><i class="fas fa-download"></i></button>
-                    </div>
-
-                    <!-- Speaking Info -->
-                    <div class="speak-info">
-                        <span class="si-voice"><i class="fas fa-user-circle"></i> <span id="siVoice">-</span></span>
-                        <span class="si-dot"></span>
-                        <span class="si-voice"><i class="fas fa-tachometer-alt"></i> <span id="siSpeed">1.0x</span></span>
-                        <span class="si-dot"></span>
-                        <span class="si-voice"><i class="fas fa-music"></i> Pitch: <span id="siPitch">1.0</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Status Bar -->
-            <div class="status-bar">
-                <div class="s-left">
-                    <div class="si"><i class="fas fa-font"></i> <span id="bWords">0</span> words</div>
-                    <div class="si"><i class="fas fa-text-width"></i> <span id="bChars">0</span> chars</div>
-                    <div class="si"><i class="fas fa-clock"></i> <span id="bEst">~0s</span></div>
-                </div>
-                <div class="s-right">
-                    <div class="si" id="bStatus"><i class="fas fa-circle" style="color:var(--g400);font-size:8px"></i> Ready</div>
-                </div>
-            </div>
-        </div>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="#" class="navbar-brand">
+        <div class="navbar-logo"><i class="fas fa-volume-high"></i></div>
+        <div class="navbar-title">Text<span>2Speech</span></div>
+    </a>
+    <div class="navbar-links" id="navLinks">
+        <a href="#" class="nav-link active">Text to Speech</a>
+        <a href="#" class="nav-link">Speech to Text</a>
+        <a href="#" class="nav-link">Translate</a>
+        <a href="#" class="nav-link">PDF Tools</a>
     </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+</nav>
 
-    <!-- MOBILE BOTTOM BAR -->
-    <div class="mobbar" id="mobbar">
-        <button class="mb" onclick="toggleSB()"><i class="fas fa-microphone-alt"></i>Voices</button>
-        <button class="mb" onclick="clearText()"><i class="fas fa-eraser"></i>Clear</button>
-        <button class="mb" onclick="pasteText()"><i class="fas fa-paste"></i>Paste</button>
-        <button class="mb" onclick="copyText()"><i class="fas fa-copy"></i>Copy</button>
-        <button class="mb go" id="mobPlayBtn" onclick="togglePlayPause()"><i class="fas fa-play" id="mobPlayIcon"></i>Speak</button>
-        <button class="mb stop-mb" onclick="stopSpeech()"><i class="fas fa-stop"></i>Stop</button>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-microphone"></i> Natural Voice Engine</div>
+    <h1>Convert Text to <span>Natural Speech</span></h1>
+    <p>Type or paste your text and convert it to natural sounding speech. Choose from 100+ voices, adjust speed & pitch, and download as audio file.</p>
+</section>
+
+<!-- TOOL -->
+<div class="tool-container">
+    <div class="tool-card">
+        <div class="editor-layout">
+
+            <!-- LEFT: TEXT + PLAYER -->
+            <div class="text-panel">
+                <!-- Toolbar -->
+                <div class="text-toolbar">
+                    <div class="tt-left">
+                        <h4><i class="fas fa-keyboard"></i> Your Text</h4>
+                    </div>
+                    <div class="tt-right">
+                        <div class="char-counter">
+                            <span id="charCount">0</span> / 5000 chars
+                        </div>
+                        <button class="tt-btn" onclick="pasteText()"><i class="fas fa-paste"></i> Paste</button>
+                        <button class="tt-btn danger" onclick="clearText()"><i class="fas fa-trash-can"></i> Clear</button>
+                    </div>
+                </div>
+
+                <!-- Text Input -->
+                <div class="text-input-wrap">
+                    <textarea id="textInput" placeholder="Type or paste your text here...&#10;&#10;For example: Welcome to the text-to-speech converter. This tool lets you convert any text into natural sounding speech. You can choose different voices, adjust the speed and pitch, and even download the audio file!" oninput="onTextInput()"></textarea>
+                    <div class="text-highlight-display" id="highlightDisplay"></div>
+                </div>
+
+                <!-- Sample Texts -->
+                <div class="samples-section">
+                    <div class="samples-title"><i class="fas fa-lightbulb"></i> Quick Sample Texts</div>
+                    <div class="samples-grid">
+                        <div class="sample-chip" onclick="setSample('hello')">👋 Hello World</div>
+                        <div class="sample-chip" onclick="setSample('news')">📰 News Article</div>
+                        <div class="sample-chip" onclick="setSample('story')">📖 Short Story</div>
+                        <div class="sample-chip" onclick="setSample('business')">💼 Business Email</div>
+                        <div class="sample-chip" onclick="setSample('poem')">🎭 Poetry</div>
+                        <div class="sample-chip" onclick="setSample('motivational')">🔥 Motivational</div>
+                    </div>
+                </div>
+
+                <!-- Player Bar -->
+                <div class="player-bar">
+                    <div class="play-controls">
+                        <button class="pc-btn secondary" id="stopBtn" onclick="stopSpeech()" disabled title="Stop"><i class="fas fa-stop"></i></button>
+                        <button class="pc-btn play" id="playBtn" onclick="togglePlay()" disabled title="Play"><i class="fas fa-play" id="playIcon"></i></button>
+                        <button class="pc-btn secondary" id="skipBackBtn" onclick="restartSpeech()" disabled title="Restart"><i class="fas fa-rotate-left"></i></button>
+                    </div>
+                    <div class="seek-bar">
+                        <div class="seek-track" id="seekTrack">
+                            <div class="seek-fill" id="seekFill"></div>
+                        </div>
+                        <div class="seek-info">
+                            <span id="currentWord">Word 0</span>
+                            <span id="totalWords">of 0 words</span>
+                        </div>
+                    </div>
+                    <button class="pc-btn download-main" id="downloadMainBtn" onclick="startDownload()" disabled title="Download Audio"><i class="fas fa-download"></i></button>
+                    <div class="player-status status-idle" id="playerStatus">
+                        <i class="fas fa-circle"></i> <span id="statusText">Idle</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: SETTINGS -->
+            <div class="settings-panel">
+                <div class="sp-header"><i class="fas fa-sliders"></i> Voice Settings</div>
+
+                <!-- Language -->
+                <div class="sp-group">
+                    <div class="sp-label"><i class="fas fa-globe"></i> Language</div>
+                    <select class="sp-select" id="langSelect" onchange="filterVoices()">
+                        <option value="all">All Languages</option>
+                    </select>
+                </div>
+
+                <!-- Voice -->
+                <div class="sp-group">
+                    <div class="sp-label"><i class="fas fa-user-astronaut"></i> Voice</div>
+                    <select class="sp-select" id="voiceSelect" onchange="updateVoiceCard()">
+                    </select>
+                    <div class="voice-card" id="voiceCard">
+                        <div class="voice-card-icon vc-default" id="vcIcon"><i class="fas fa-user"></i></div>
+                        <div class="voice-card-info">
+                            <div class="vc-name" id="vcName">Select a voice</div>
+                            <div class="vc-lang" id="vcLang">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed -->
+                <div class="sp-group">
+                    <div class="sp-label"><i class="fas fa-gauge-high"></i> Speed & Pitch</div>
+                    <div class="slider-wrap">
+                        <div class="slider-header">
+                            <span class="slider-label">Speed</span>
+                            <span class="slider-value" id="speedVal">1.0x</span>
+                        </div>
+                        <input type="range" class="sp-slider" id="speedSlider" min="0.25" max="3" step="0.05" value="1" oninput="updateSliders()">
+                    </div>
+                    <div class="slider-wrap">
+                        <div class="slider-header">
+                            <span class="slider-label">Pitch</span>
+                            <span class="slider-value" id="pitchVal">1.0</span>
+                        </div>
+                        <input type="range" class="sp-slider" id="pitchSlider" min="0" max="2" step="0.05" value="1" oninput="updateSliders()">
+                    </div>
+                    <div class="slider-wrap">
+                        <div class="slider-header">
+                            <span class="slider-label">Volume</span>
+                            <span class="slider-value" id="volVal">100%</span>
+                        </div>
+                        <input type="range" class="sp-slider" id="volSlider" min="0" max="1" step="0.05" value="1" oninput="updateSliders()">
+                    </div>
+                    <div class="presets-row">
+                        <button class="preset-btn" onclick="setPreset(0.5,1,1)">🐢 Slow</button>
+                        <button class="preset-btn active" onclick="setPreset(1,1,1)">⚡ Normal</button>
+                        <button class="preset-btn" onclick="setPreset(1.5,1,1)">🚀 Fast</button>
+                        <button class="preset-btn" onclick="setPreset(2,1.2,1)">⚡ Turbo</button>
+                        <button class="preset-btn" onclick="setPreset(0.8,0.6,1)">🎵 Deep</button>
+                        <button class="preset-btn" onclick="setPreset(1,1.5,1)">🎤 High</button>
+                    </div>
+                </div>
+
+                <!-- Download -->
+                <div class="sp-group">
+                    <div class="sp-label"><i class="fas fa-download"></i> Download Audio</div>
+                    <div class="download-options">
+                        <button class="dl-opt-btn" id="dlWebmBtn" onclick="startDownload()">
+                            <div class="dl-opt-icon webm"><i class="fas fa-file-audio"></i></div>
+                            <div class="dl-opt-info">
+                                <h5>Download Audio</h5>
+                                <p id="dlDesc">Record & download as audio file</p>
+                            </div>
+                            <span class="dl-opt-badge badge-ready" id="dlBadge">Ready</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- HOW -->
+<section class="how-section">
+    <h2 class="section-title">How to <span>Convert Text to Speech</span>?</h2>
+    <div class="how-steps">
+        <div class="how-step"><div class="step-num">1</div><h4>Enter Text</h4><p>Type, paste or select a sample text. Up to 5000 characters supported.</p></div>
+        <div class="how-step"><div class="step-num">2</div><h4>Choose Voice</h4><p>Select from 100+ voices in multiple languages. Filter by language.</p></div>
+        <div class="how-step"><div class="step-num">3</div><h4>Adjust Settings</h4><p>Fine-tune speed, pitch and volume. Use presets for quick setup.</p></div>
+        <div class="how-step"><div class="step-num">4</div><h4>Play & Download</h4><p>Listen to the speech and download the audio file to your device.</p></div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+    <h2 class="section-title">Why Use <span>Text2Speech</span>?</h2>
+    <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-users"></i></div><h4>100+ Voices</h4><p>Choose from over 100 natural sounding voices in dozens of languages worldwide.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-download"></i></div><h4>Download Audio</h4><p>Download your generated speech as an audio file. Save and use anywhere.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-sliders"></i></div><h4>Full Control</h4><p>Adjust speed, pitch, and volume. Quick presets for common configurations.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-highlighter"></i></div><h4>Word Highlighting</h4><p>Follow along with real-time word highlighting as the text is being spoken.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-halved"></i></div><h4>100% Private</h4><p>Everything runs in your browser. Your text is never sent to any server.</p></div>
+        <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen-button"></i></div><h4>Works Everywhere</h4><p>Fully responsive design. Works on desktop, tablet, and mobile devices.</p></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Made with 💚 by <a href="#">Text2Speech</a> — Free Online Text to Speech Tool</p>
+    <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-    // ========== STATE ==========
-    const editor = document.getElementById('editor');
-    const synth = window.speechSynthesis;
+    // ===== STATE =====
     let voices = [];
-    let selectedVoice = null;
-    let currentUtterance = null;
-    let isSpeaking = false;
+    let allVoices = [];
+    let utterance = null;
+    let isPlaying = false;
     let isPaused = false;
-    let history = [];
-    let startTime = 0;
-    let estimatedDuration = 0;
-    let progressInterval = null;
-    let waveInterval = null;
+    let wordIndex = 0;
+    let words = [];
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioStream = null;
 
-    // ========== meSpeak initialization ==========
-    meSpeak.loadConfig(meSpeakDefaultConfig);
-    meSpeak.loadVoice('en/en-us'); // default English voice
+    // ===== SAMPLES =====
+    const SAMPLES = {
+        hello: "Hello! Welcome to our text-to-speech converter. This is a demonstration of how natural the speech sounds. You can customize the voice, speed, and pitch to your liking.",
+        news: "Breaking news: Scientists have discovered a new species of deep-sea fish in the Pacific Ocean. The creature, which lives at depths of over 3,000 meters, has bioluminescent properties that researchers say could revolutionize medical imaging technology.",
+        story: "Once upon a time, in a small village nestled between two mountains, there lived a young girl named Luna. Every night, she would climb to the highest peak and talk to the stars. One evening, the stars talked back, and her life was never the same again.",
+        business: "Dear Mr. Johnson, I hope this email finds you well. I wanted to follow up on our meeting last Thursday regarding the quarterly sales report. The numbers look very promising, and I believe we are on track to exceed our annual targets by fifteen percent.",
+        poem: "The sun sets slowly behind the hills, painting the sky in shades of gold. The evening breeze carries whispers of stories untold. Stars begin to twinkle, one by one, as another beautiful day is done.",
+        motivational: "Believe in yourself. Every champion was once a contender that refused to give up. Your time is now. Your moment is here. Rise up, stand tall, and show the world what you are made of. Success is not final, failure is not fatal. It is the courage to continue that counts."
+    };
 
-    // ========== INIT VOICES ==========
+    // ===== INIT =====
+    window.addEventListener('load', () => {
+        loadVoices();
+        speechSynthesis.addEventListener('voiceschanged', loadVoices);
+        updateSliders();
+        onTextInput();
+    });
+
+    // ===== VOICES =====
     function loadVoices() {
-        voices = synth.getVoices();
-        renderVoiceList();
-    }
-    synth.onvoiceschanged = loadVoices;
-    loadVoices();
-    setTimeout(loadVoices, 500);
-    setTimeout(loadVoices, 1500);
+        allVoices = speechSynthesis.getVoices();
+        if (!allVoices.length) return;
 
-    function renderVoiceList(filter = '') {
-        const list = document.getElementById('voiceList');
-        const filtered = voices.filter(v => {
-            const search = filter.toLowerCase();
-            return v.name.toLowerCase().includes(search) || v.lang.toLowerCase().includes(search);
+        // Get unique languages
+        const langs = new Map();
+        allVoices.forEach(v => {
+            const langCode = v.lang.split('-')[0];
+            const langName = new Intl.DisplayNames(['en'], { type: 'language' });
+            try {
+                const name = langName.of(langCode);
+                if (!langs.has(langCode)) langs.set(langCode, name);
+            } catch { langs.set(langCode, v.lang); }
         });
 
-        document.getElementById('voiceCount').textContent = filtered.length + ' voices';
-        if (!filtered.length) {
-            list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txtM)">No voices found</div>';
-            return;
-        }
-
-        let html = '';
-        filtered.forEach((v, i) => {
-            const isActive = selectedVoice && selectedVoice.name === v.name;
-            const gender = v.name.toLowerCase().match(/female|woman|zira|hazel|susan|samantha|karen|moira|fiona|tessa|victoria/)
-                ? 'female' : v.name.toLowerCase().match(/male|man|david|james|daniel|alex|fred|rishi|jorge|thomas/)
-                ? 'male' : 'other';
-            const genderIcon = gender === 'female' ? 'fa-venus' : gender === 'male' ? 'fa-mars' : 'fa-robot';
-            const isLocal = v.localService;
-
-            html += `<div class="voice-card ${isActive ? 'active' : ''}" onclick="selectVoice(${voices.indexOf(v)})">
-                <div class="vc-top">
-                    <div class="vc-avatar ${gender}"><i class="fas ${genderIcon}"></i></div>
-                    <div class="vc-info">
-                        <div class="vc-name">${escHtml(v.name)}</div>
-                        <div class="vc-lang">
-                            🌐 ${v.lang}
-                            <span class="vc-badge ${isLocal ? 'local' : 'remote'}">${isLocal ? '💻 Local' : '☁️ Online'}</span>
-                        </div>
-                    </div>
-                    <div class="vc-check"><i class="fas fa-check"></i></div>
-                </div>
-                <button class="vc-test" onclick="event.stopPropagation();testVoice(${voices.indexOf(v)})">
-                    <i class="fas fa-play"></i> Test
-                </button>
-            </div>`;
+        const langSelect = document.getElementById('langSelect');
+        langSelect.innerHTML = '<option value="all">All Languages</option>';
+        [...langs.entries()].sort((a, b) => a[1].localeCompare(b[1])).forEach(([code, name]) => {
+            langSelect.innerHTML += `<option value="${code}">${name} (${code})</option>`;
         });
-        list.innerHTML = html;
+
+        filterVoices();
     }
 
     function filterVoices() {
-        renderVoiceList(document.getElementById('voiceSearch').value);
-    }
+        const langFilter = document.getElementById('langSelect').value;
+        voices = langFilter === 'all' ? [...allVoices] :
+            allVoices.filter(v => v.lang.startsWith(langFilter));
 
-    function selectVoice(idx) {
-        selectedVoice = voices[idx];
-        renderVoiceList(document.getElementById('voiceSearch').value);
-        document.getElementById('tVoice').textContent = selectedVoice.name.split(' ').slice(0, 2).join(' ');
-        toast('Voice: ' + selectedVoice.name.split(' ').slice(0, 3).join(' ') + ' ✅');
-    }
-
-    function testVoice(idx) {
-        synth.cancel();
-        const u = new SpeechSynthesisUtterance('Hello! This is a test of this voice. How does it sound?');
-        u.voice = voices[idx];
-        u.rate = parseFloat(document.getElementById('speedRange').value);
-        u.pitch = parseFloat(document.getElementById('pitchRange').value);
-        u.volume = parseFloat(document.getElementById('volRange').value);
-        synth.speak(u);
-    }
-
-    // ========== SLIDERS ==========
-    function updateSlider(type, val) {
-        if (type === 'speed') {
-            document.getElementById('speedVal').textContent = parseFloat(val).toFixed(2) + 'x';
-            document.getElementById('speedFill').style.width = ((val - 0.25) / 1.75 * 100) + '%';
-            updateSpeedPresets(val);
-        } else if (type === 'pitch') {
-            document.getElementById('pitchVal').textContent = parseFloat(val).toFixed(1);
-            document.getElementById('pitchFill').style.width = (val / 2 * 100) + '%';
-            updatePitchPresets(val);
-        } else if (type === 'vol') {
-            document.getElementById('volVal').textContent = Math.round(val * 100) + '%';
-            document.getElementById('volFill').style.width = (val * 100) + '%';
-        }
-        updateEstimate();
-    }
-
-    function setSpeed(v) {
-        document.getElementById('speedRange').value = v;
-        updateSlider('speed', v);
-    }
-    function setPitch(v) {
-        document.getElementById('pitchRange').value = v;
-        updateSlider('pitch', v);
-    }
-    function updateSpeedPresets(v) {
-        const presets = document.getElementById('speedRange').parentElement.parentElement.parentElement.querySelectorAll('.sl-preset');
-        presets.forEach(p => {
-            const pv = parseFloat(p.textContent);
-            p.classList.toggle('active', Math.abs(pv - parseFloat(v)) < 0.05);
+        const voiceSelect = document.getElementById('voiceSelect');
+        voiceSelect.innerHTML = '';
+        voices.forEach((v, i) => {
+            voiceSelect.innerHTML += `<option value="${i}">${v.name} (${v.lang})${v.default ? ' ★' : ''}</option>`;
         });
-    }
-    function updatePitchPresets(v) { /* optional */ }
 
-    // ========== TEXT ANALYSIS ==========
-    editor.addEventListener('input', analyzeText);
-    function analyzeText() {
-        const text = editor.value.trim();
-        const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
-        const chars = editor.value.length;
-        const wordCount = words.length;
-
-        document.getElementById('tWords').textContent = wordCount.toLocaleString();
-        document.getElementById('tChars').textContent = chars.toLocaleString();
-        document.getElementById('bWords').textContent = wordCount.toLocaleString();
-        document.getElementById('bChars').textContent = chars.toLocaleString();
-
-        updateEstimate();
+        updateVoiceCard();
     }
 
-    function updateEstimate() {
-        const text = editor.value.trim();
-        const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
-        const speed = parseFloat(document.getElementById('speedRange').value);
-        // Avg speaking rate ~150 wpm at 1x
-        const minutes = words.length / (150 * speed);
-        const est = formatTime(minutes);
-        document.getElementById('tEst').textContent = est;
-        document.getElementById('bEst').textContent = '~' + est;
-        estimatedDuration = minutes * 60;
-    }
-
-    function formatTime(min) {
-        if (min < 1) return Math.max(0, Math.round(min * 60)) + 's';
-        const m = Math.floor(min);
-        const s = Math.round((min - m) * 60);
-        return m + ':' + String(s).padStart(2, '0');
-    }
-
-    function formatSec(sec) {
-        const m = Math.floor(sec / 60);
-        const s = Math.round(sec % 60);
-        return m + ':' + String(s).padStart(2, '0');
-    }
-
-    // ========== SPEAK ==========
-    function speak() {
-        const text = editor.value.trim();
-        if (!text) { toast('Type some text first ⚠️'); return; }
-
-        synth.cancel();
-        closeSB();
-
-        currentUtterance = new SpeechSynthesisUtterance(text);
-        if (selectedVoice) currentUtterance.voice = selectedVoice;
-        currentUtterance.rate = parseFloat(document.getElementById('speedRange').value);
-        currentUtterance.pitch = parseFloat(document.getElementById('pitchRange').value);
-        currentUtterance.volume = parseFloat(document.getElementById('volRange').value);
-
-        // Show player
-        document.getElementById('playerBar').classList.add('show');
-
-        // Update info
-        document.getElementById('siVoice').textContent = selectedVoice ? selectedVoice.name.split(' ').slice(0, 2).join(' ') : 'Default';
-        document.getElementById('siSpeed').textContent = currentUtterance.rate.toFixed(2) + 'x';
-        document.getElementById('siPitch').textContent = currentUtterance.pitch.toFixed(1);
-        document.getElementById('progTotal').textContent = formatSec(estimatedDuration);
-
-        currentUtterance.onstart = () => {
-            isSpeaking = true; isPaused = false;
-            startTime = Date.now();
-            updatePlayBtn(true);
-            setStatus('Speaking...', 'var(--g600)');
-            startWave();
-            startProgress();
-        };
-
-        currentUtterance.onend = () => {
-            isSpeaking = false; isPaused = false;
-            updatePlayBtn(false);
-            setStatus('Finished ✅', 'var(--g400)');
-            stopWave();
-            stopProgress();
-            document.getElementById('progFill').style.width = '100%';
-            // Add to history
-            addHistory(text);
-        };
-
-        currentUtterance.onerror = () => {
-            isSpeaking = false;
-            updatePlayBtn(false);
-            setStatus('Error ❌', 'var(--red)');
-            stopWave(); stopProgress();
-        };
-
-        currentUtterance.onpause = () => {
-            isPaused = true;
-            updatePlayBtn(false);
-            setStatus('Paused ⏸️', 'var(--orange)');
-            stopWave();
-        };
-
-        currentUtterance.onresume = () => {
-            isPaused = false;
-            updatePlayBtn(true);
-            setStatus('Speaking...', 'var(--g600)');
-            startWave();
-        };
-
-        synth.speak(currentUtterance);
-    }
-
-    function togglePlayPause() {
-        if (!isSpeaking && !isPaused) {
-            speak();
-            return;
-        }
-        if (isPaused) {
-            synth.resume();
+    function updateVoiceCard() {
+        const idx = parseInt(document.getElementById('voiceSelect').value);
+        const v = voices[idx];
+        if (!v) return;
+        document.getElementById('vcName').textContent = v.name;
+        document.getElementById('vcLang').textContent = v.lang + (v.localService ? ' • Local' : ' • Online');
+        const icon = document.getElementById('vcIcon');
+        const name = v.name.toLowerCase();
+        if (name.includes('female') || name.includes('woman') || name.includes('zira') || name.includes('hazel') || name.includes('susan')) {
+            icon.className = 'voice-card-icon vc-female';
+            icon.innerHTML = '<i class="fas fa-venus"></i>';
+        } else if (name.includes('male') || name.includes('man') || name.includes('david') || name.includes('mark') || name.includes('james')) {
+            icon.className = 'voice-card-icon vc-male';
+            icon.innerHTML = '<i class="fas fa-mars"></i>';
         } else {
-            synth.pause();
+            icon.className = 'voice-card-icon vc-default';
+            icon.innerHTML = '<i class="fas fa-user"></i>';
         }
+    }
+
+    // ===== SLIDERS =====
+    function updateSliders() {
+        document.getElementById('speedVal').textContent = parseFloat(document.getElementById('speedSlider').value).toFixed(2) + 'x';
+        document.getElementById('pitchVal').textContent = parseFloat(document.getElementById('pitchSlider').value).toFixed(2);
+        document.getElementById('volVal').textContent = Math.round(parseFloat(document.getElementById('volSlider').value) * 100) + '%';
+    }
+
+    function setPreset(speed, pitch, vol) {
+        document.getElementById('speedSlider').value = speed;
+        document.getElementById('pitchSlider').value = pitch;
+        document.getElementById('volSlider').value = vol;
+        updateSliders();
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        showToast('Preset applied!');
+    }
+
+    // ===== TEXT =====
+    function onTextInput() {
+        const text = document.getElementById('textInput').value;
+        const count = text.length;
+        document.getElementById('charCount').textContent = count;
+        words = text.trim().split(/\s+/).filter(w => w);
+        document.getElementById('totalWords').textContent = `of ${words.length} words`;
+        document.getElementById('playBtn').disabled = !text.trim();
+        document.getElementById('downloadMainBtn').disabled = !text.trim();
+    }
+
+    function clearText() {
+        stopSpeech();
+        document.getElementById('textInput').value = '';
+        onTextInput();
+        showToast('Text cleared');
+    }
+
+    async function pasteText() {
+        try {
+            const text = await navigator.clipboard.readText();
+            document.getElementById('textInput').value = text;
+            onTextInput();
+            showToast('Text pasted!');
+        } catch { showToast('Cannot access clipboard. Paste manually.', 'warning'); }
+    }
+
+    function setSample(key) {
+        document.getElementById('textInput').value = SAMPLES[key] || '';
+        onTextInput();
+        showToast('Sample text loaded!');
+    }
+
+    // ===== SPEECH =====
+    function togglePlay() {
+        if (isPlaying && !isPaused) {
+            pauseSpeech();
+        } else if (isPaused) {
+            resumeSpeech();
+        } else {
+            startSpeech();
+        }
+    }
+
+    function startSpeech() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) return;
+
+        speechSynthesis.cancel();
+        utterance = new SpeechSynthesisUtterance(text);
+        const voiceIdx = parseInt(document.getElementById('voiceSelect').value);
+        if (voices[voiceIdx]) utterance.voice = voices[voiceIdx];
+        utterance.rate = parseFloat(document.getElementById('speedSlider').value);
+        utterance.pitch = parseFloat(document.getElementById('pitchSlider').value);
+        utterance.volume = parseFloat(document.getElementById('volSlider').value);
+
+        wordIndex = 0;
+        words = text.split(/\s+/).filter(w => w);
+
+        // Show highlight display
+        showHighlightView(true);
+
+        utterance.onboundary = (e) => {
+            if (e.name === 'word') {
+                wordIndex++;
+                document.getElementById('currentWord').textContent = `Word ${wordIndex}`;
+                const pct = (wordIndex / words.length) * 100;
+                document.getElementById('seekFill').style.width = pct + '%';
+                highlightWord(e.charIndex, e.charLength);
+            }
+        };
+
+        utterance.onend = () => {
+            isPlaying = false; isPaused = false;
+            document.getElementById('seekFill').style.width = '100%';
+            updatePlayerUI();
+            showHighlightView(false);
+            if (isRecording) stopRecording();
+        };
+
+        utterance.onerror = (e) => {
+            if (e.error !== 'canceled') {
+                showToast('Speech error: ' + e.error, 'error');
+            }
+            isPlaying = false; isPaused = false;
+            updatePlayerUI();
+            showHighlightView(false);
+            if (isRecording) stopRecording();
+        };
+
+        speechSynthesis.speak(utterance);
+        isPlaying = true; isPaused = false;
+        updatePlayerUI();
+    }
+
+    function pauseSpeech() {
+        speechSynthesis.pause();
+        isPaused = true;
+        updatePlayerUI();
+    }
+
+    function resumeSpeech() {
+        speechSynthesis.resume();
+        isPaused = false;
+        updatePlayerUI();
     }
 
     function stopSpeech() {
-        synth.cancel();
-        isSpeaking = false; isPaused = false;
-        updatePlayBtn(false);
-        setStatus('Stopped ⏹️', 'var(--red)');
-        stopWave(); stopProgress();
-        document.getElementById('progFill').style.width = '0%';
-        document.getElementById('progElapsed').textContent = '0:00';
+        speechSynthesis.cancel();
+        isPlaying = false; isPaused = false;
+        wordIndex = 0;
+        document.getElementById('seekFill').style.width = '0%';
+        document.getElementById('currentWord').textContent = 'Word 0';
+        updatePlayerUI();
+        showHighlightView(false);
+        if (isRecording) stopRecording();
     }
 
-    function skipBack() {
+    function restartSpeech() {
         stopSpeech();
-        speak();
+        setTimeout(() => startSpeech(), 100);
     }
 
-    function slowDown() {
-        let s = parseFloat(document.getElementById('speedRange').value);
-        s = Math.max(0.25, s - 0.25);
-        setSpeed(s);
-        if (isSpeaking) { stopSpeech(); speak(); }
-        toast('Speed: ' + s.toFixed(2) + 'x');
-    }
-
-    function speedUp() {
-        let s = parseFloat(document.getElementById('speedRange').value);
-        s = Math.min(2, s + 0.25);
-        setSpeed(s);
-        if (isSpeaking) { stopSpeech(); speak(); }
-        toast('Speed: ' + s.toFixed(2) + 'x');
-    }
-
-    function updatePlayBtn(playing) {
-        const icon = document.getElementById('playIcon');
-        const btn = document.getElementById('playBtn');
-        const mIcon = document.getElementById('mobPlayIcon');
-        icon.className = playing ? 'fas fa-pause' : 'fas fa-play';
-        btn.classList.toggle('playing', playing);
-        mIcon.className = playing ? 'fas fa-pause' : 'fas fa-play';
-    }
-
-    function setStatus(text, color) {
-        document.getElementById('bStatus').innerHTML = `<i class="fas fa-circle" style="color:${color};font-size:8px"></i> ${text}`;
-    }
-
-    // ========== WAVEFORM ==========
-    function initWave() {
-        const wrap = document.getElementById('waveWrap');
-        wrap.innerHTML = '';
-        for (let i = 0; i < 50; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'wave-bar';
-            wrap.appendChild(bar);
+    // ===== HIGHLIGHT =====
+    function showHighlightView(show) {
+        document.getElementById('textInput').style.display = show ? 'none' : 'block';
+        const hd = document.getElementById('highlightDisplay');
+        hd.classList.toggle('show', show);
+        if (show) {
+            hd.textContent = document.getElementById('textInput').value;
         }
     }
-    initWave();
 
-    function startWave() {
-        const bars = document.querySelectorAll('.wave-bar');
-        stopWave();
-        waveInterval = setInterval(() => {
-            bars.forEach(bar => {
-                const h = Math.random() * 40 + 6;
-                bar.style.height = h + 'px';
-                bar.classList.add('active');
+    function highlightWord(charIndex, charLength) {
+        const text = document.getElementById('textInput').value;
+        const hd = document.getElementById('highlightDisplay');
+        if (charIndex === undefined || charLength === undefined) return;
+        const before = text.substring(0, charIndex);
+        const word = text.substring(charIndex, charIndex + charLength);
+        const after = text.substring(charIndex + charLength);
+        hd.innerHTML = escapeHtml(before) +
+            '<span class="word-highlight">' + escapeHtml(word) + '</span>' +
+            escapeHtml(after);
+        // Auto scroll
+        const hl = hd.querySelector('.word-highlight');
+        if (hl) hl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ===== UI UPDATE =====
+    function updatePlayerUI() {
+        const playIcon = document.getElementById('playIcon');
+        const status = document.getElementById('playerStatus');
+        const statusText = document.getElementById('statusText');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const skipBtn = document.getElementById('skipBackBtn');
+
+        stopBtn.disabled = !isPlaying && !isPaused;
+        skipBtn.disabled = !isPlaying && !isPaused;
+
+        if (isPlaying && !isPaused) {
+            playIcon.className = 'fas fa-pause';
+            status.className = 'player-status status-playing';
+            statusText.textContent = 'Playing';
+            status.querySelector('i').className = 'fas fa-volume-high';
+        } else if (isPaused) {
+            playIcon.className = 'fas fa-play';
+            status.className = 'player-status status-paused';
+            statusText.textContent = 'Paused';
+            status.querySelector('i').className = 'fas fa-pause';
+        } else {
+            playIcon.className = 'fas fa-play';
+            status.className = isRecording ? 'player-status status-recording' : 'player-status status-idle';
+            statusText.textContent = isRecording ? 'Recording' : 'Idle';
+            status.querySelector('i').className = isRecording ? 'fas fa-circle' : 'fas fa-circle';
+        }
+    }
+
+    // ===== DOWNLOAD / RECORD =====
+    async function startDownload() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) return showToast('Please enter text first.', 'warning');
+        if (isRecording) return;
+
+        const dlBtn = document.getElementById('dlWebmBtn');
+        const dlBadge = document.getElementById('dlBadge');
+        const dlDesc = document.getElementById('dlDesc');
+
+        try {
+            // Stop any playing speech
+            speechSynthesis.cancel();
+            isPlaying = false; isPaused = false;
+
+            showToast('🎤 Starting audio capture... Please select this tab & share audio.', 'warning');
+
+            // Request display media for audio capture
+            audioStream = await navigator.mediaDevices.getDisplayMedia({
+                video: { width: 1, height: 1, frameRate: 1 },
+                audio: true,
+                preferCurrentTab: true
             });
-        }, 100);
-    }
 
-    function stopWave() {
-        clearInterval(waveInterval);
-        document.querySelectorAll('.wave-bar').forEach(bar => {
-            bar.style.height = '8px';
-            bar.classList.remove('active');
-        });
-    }
+            // Check audio tracks
+            const audioTracks = audioStream.getAudioTracks();
+            if (!audioTracks.length) {
+                audioStream.getTracks().forEach(t => t.stop());
+                showToast('No audio track found. Make sure to check "Share tab audio".', 'error');
+                return;
+            }
 
-    // ========== PROGRESS ==========
-    function startProgress() {
-        stopProgress();
-        progressInterval = setInterval(() => {
-            if (!isSpeaking || isPaused) return;
-            const elapsed = (Date.now() - startTime) / 1000;
-            const pct = estimatedDuration > 0 ? Math.min(100, (elapsed / estimatedDuration) * 100) : 0;
-            document.getElementById('progFill').style.width = pct + '%';
-            document.getElementById('progElapsed').textContent = formatSec(elapsed);
-        }, 200);
-    }
+            // Stop video tracks (we only need audio)
+            audioStream.getVideoTracks().forEach(t => t.stop());
 
-    function stopProgress() {
-        clearInterval(progressInterval);
-    }
+            // Create audio-only stream
+            const audioOnlyStream = new MediaStream(audioTracks);
 
-    // ========== HISTORY ==========
-    function addHistory(text) {
-        const item = {
-            text: text.substring(0, 100),
-            fullText: text,
-            time: new Date().toLocaleTimeString(),
-            voice: selectedVoice ? selectedVoice.name.split(' ').slice(0, 2).join(' ') : 'Default'
-        };
-        history.unshift(item);
-        if (history.length > 20) history.pop();
-        renderHistory();
-    }
+            // Setup MediaRecorder
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ?
+                'audio/webm;codecs=opus' : 'audio/webm';
+            mediaRecorder = new MediaRecorder(audioOnlyStream, { mimeType });
+            audioChunks = [];
 
-    function renderHistory() {
-        const list = document.getElementById('histList');
-        if (!history.length) {
-            list.innerHTML = '<div class="hist-empty">No history yet</div>';
-            return;
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'speech_audio_' + Date.now() + '.webm';
+                a.click();
+                URL.revokeObjectURL(url);
+
+                isRecording = false;
+                dlBtn.classList.remove('recording');
+                dlBadge.textContent = 'Ready';
+                dlBadge.className = 'dl-opt-badge badge-ready';
+                dlDesc.textContent = 'Record & download as audio file';
+                updatePlayerUI();
+                showToast('🎉 Audio downloaded successfully!');
+
+                // Cleanup
+                if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+            };
+
+            // Start recording
+            mediaRecorder.start(100);
+            isRecording = true;
+            dlBtn.classList.add('recording');
+            dlBadge.textContent = 'Recording...';
+            dlBadge.className = 'dl-opt-badge badge-rec';
+            dlDesc.textContent = 'Recording in progress...';
+            updatePlayerUI();
+
+            showToast('🔴 Recording started! Playing speech...');
+
+            // Small delay then start speech
+            await new Promise(r => setTimeout(r, 500));
+
+            // Start speech
+            utterance = new SpeechSynthesisUtterance(text);
+            const voiceIdx = parseInt(document.getElementById('voiceSelect').value);
+            if (voices[voiceIdx]) utterance.voice = voices[voiceIdx];
+            utterance.rate = parseFloat(document.getElementById('speedSlider').value);
+            utterance.pitch = parseFloat(document.getElementById('pitchSlider').value);
+            utterance.volume = parseFloat(document.getElementById('volSlider').value);
+
+            wordIndex = 0;
+            words = text.split(/\s+/).filter(w => w);
+            showHighlightView(true);
+            isPlaying = true;
+            updatePlayerUI();
+
+            utterance.onboundary = (e) => {
+                if (e.name === 'word') {
+                    wordIndex++;
+                    document.getElementById('currentWord').textContent = `Word ${wordIndex}`;
+                    document.getElementById('seekFill').style.width = ((wordIndex / words.length) * 100) + '%';
+                    highlightWord(e.charIndex, e.charLength);
+                }
+            };
+
+            utterance.onend = () => {
+                isPlaying = false; isPaused = false;
+                document.getElementById('seekFill').style.width = '100%';
+                showHighlightView(false);
+                // Stop recording after small delay
+                setTimeout(() => stopRecording(), 600);
+            };
+
+            utterance.onerror = (e) => {
+                if (e.error !== 'canceled') showToast('Speech error: ' + e.error, 'error');
+                isPlaying = false;
+                showHighlightView(false);
+                stopRecording();
+            };
+
+            speechSynthesis.speak(utterance);
+
+        } catch (err) {
+            console.error(err);
+            isRecording = false;
+            dlBtn.classList.remove('recording');
+            dlBadge.textContent = 'Ready';
+            dlBadge.className = 'dl-opt-badge badge-ready';
+            dlDesc.textContent = 'Record & download as audio file';
+            updatePlayerUI();
+
+            if (err.name === 'NotAllowedError') {
+                showToast('Screen share denied. Please allow to download audio.', 'error');
+            } else {
+                showToast('Download error: ' + err.message, 'error');
+            }
         }
-        let html = '';
-        history.forEach((item, i) => {
-            html += `<div class="hist-item">
-                <div class="hi-play" onclick="replayHistory(${i})"><i class="fas fa-play"></i></div>
-                <div class="hi-text" title="${escHtml(item.text)}">${escHtml(item.text)}</div>
-                <div class="hi-time">${item.time}</div>
-            </div>`;
-        });
-        list.innerHTML = html;
     }
 
-    function replayHistory(idx) {
-        editor.value = history[idx].fullText;
-        analyzeText();
-        speak();
-    }
-
-    // ========== SAMPLE TEXTS ==========
-    const samples = {
-        greeting: "Hello and welcome! Thank you for visiting our Text to Speech tool. This is an amazing free online tool that converts your written text into natural sounding speech. You can choose from many different voices, adjust the speed, pitch, and volume. Try it out and enjoy the experience!",
-
-        story: "Once upon a time, in a magical forest far away, there lived a little rabbit named Luna. She had the softest white fur and the brightest blue eyes. Every morning, Luna would hop through the meadow, collecting wildflowers for her grandmother. One special day, she found a golden key hidden beneath an old oak tree. The key led her to a secret garden where butterflies danced and flowers sang melodies. From that day on, Luna visited her magical garden every evening, and she was never lonely again.",
-
-        news: "Good evening, and welcome to the evening news. Breaking tonight: Scientists have made a groundbreaking discovery that could change the way we understand our universe. In a landmark study published today, researchers revealed evidence of water on a distant exoplanet, raising new possibilities in the search for extraterrestrial life. Meanwhile, in technology news, a revolutionary new artificial intelligence system has demonstrated the ability to compose music indistinguishable from human compositions. Stay tuned for more details after the break.",
-
-        poem: "Two roads diverged in a yellow wood, and sorry I could not travel both. I stood and looked down one as far as I could, to where it bent in the undergrowth. Then took the other, just as fair, and having perhaps the better claim. I shall be telling this with a sigh, somewhere ages and ages hence. Two roads diverged in a wood, and I took the one less traveled by, and that has made all the difference.",
-
-        motivational: "Listen to me carefully. You are capable of achieving incredible things. Every great achievement in history started with a single step, a single decision to try. Do not let fear hold you back. Do not let doubt whisper in your ear that you cannot do it. You are stronger than you think. You are smarter than you believe. And you are braver than you feel. Today is your day. Stand up, take action, and make your dreams a reality. The world is waiting for your greatness. Go out there and shine!",
-
-        urdu: "آج کا دن بہت خوبصورت ہے۔ آسمان صاف ہے اور ہوا خوشگوار ہے۔ پرندے درختوں پر چہچہا رہے ہیں اور پھول کھل رہے ہیں۔ یہ ایک نئے دن کی شروعات ہے، نئے عزائم کے ساتھ۔ آئیے مل کر اس دنیا کو ایک بہتر جگہ بنائیں۔ ہمیں ایک دوسرے سے محبت اور احترام کرنا چاہیے۔"
-    };
-
-    function loadSample(key) {
-        editor.value = samples[key] || '';
-        analyzeText();
-        toast('Sample loaded ✅');
-        closeSB();
-    }
-
-    // ========== TEXT OPERATIONS ==========
-    function clearText() { editor.value = ''; analyzeText(); toast('Cleared ✅'); }
-    function copyText() { navigator.clipboard.writeText(editor.value); toast('Copied 📋'); }
-    async function pasteText() {
-        try { const t = await navigator.clipboard.readText(); editor.value += t; analyzeText(); toast('Pasted 📋'); }
-        catch (e) { toast('Paste failed ⚠️'); }
-    }
-
-    // ========== SIDEBAR ==========
-    function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sbov').classList.toggle('show'); }
-    function closeSB() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbov').classList.remove('show'); }
-
-    // ========== DOWNLOAD AUDIO (using meSpeak) ==========
-    function downloadAudio() {
-        const text = editor.value.trim();
-        if (!text) { toast('Type some text first ⚠️'); return; }
-
-        const speed = parseFloat(document.getElementById('speedRange').value);
-        const pitch = parseFloat(document.getElementById('pitchRange').value);
-        const volume = parseFloat(document.getElementById('volRange').value);
-
-        // meSpeak expects speed in relative units (1 = normal)
-        // pitch: 0-99 (espeak range) – we map 0..2 to 0..99 roughly
-        const espeakPitch = Math.round(pitch * 50); // 1.0 -> 50, 2.0 -> 100, clamp
-        const clampedPitch = Math.min(99, Math.max(0, espeakPitch));
-
-        // volume is handled by meSpeak amplitude? We'll ignore for now
-
-        toast('Generating audio... ⏳');
-
-        // Use default voice (en-us) – we could improve by mapping selected voice language
-        meSpeak.speak(text, {
-            pitch: clampedPitch,
-            speed: speed * 160, // meSpeak speed roughly 80-450, default ~175, 1x -> 160 feels close
-            wordgap: 0,
-            amplitude: volume * 100
-        }, () => {
-            // callback when done – data is the WAV as ArrayBuffer
-            const wavBuffer = meSpeak.getSpeakWav();
-            const blob = new Blob([wavBuffer], { type: 'audio/wav' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'speech.wav';
-            a.click();
-            URL.revokeObjectURL(url);
-            toast('Download started 📥');
-        });
-    }
-
-    // ========== HELPERS ==========
-    function escHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-    function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-
-    // Init
-    analyzeText();
-
-    // Fix Chrome speech synthesis pause bug
-    setInterval(() => {
-        if (synth.speaking && !synth.paused) {
-            synth.pause();
-            synth.resume();
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
         }
-    }, 10000);
+        if (audioStream) {
+            audioStream.getTracks().forEach(t => t.stop());
+        }
+    }
+
+    // ===== HELPERS =====
+    function formatSize(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(2) + ' MB';
+    }
+
+    function showToast(msg, type = 'success') {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div'); t.className = `toast ${type}`;
+        const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation' };
+        t.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; t.style.transition = 'all 0.3s'; setTimeout(() => t.remove(), 300); }, 4500);
+    }
 </script>
 </body>
 </html>
