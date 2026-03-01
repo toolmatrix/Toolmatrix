@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Generator Tool — Pro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#fff;--text:#14532d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;width:100%;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);display:flex;flex-direction:column;
+}
+
+/* ══ HEADER ══ */
+.hdr{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  padding:16px 22px 12px;text-align:center;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 4px 20px rgba(22,163,74,.2);flex-shrink:0;
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.hdr .ic{font-size:28px;animation:bob 2.5s ease infinite;vertical-align:middle;margin-right:8px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hdr h1{color:#fff;font-size:20px;font-weight:800;display:inline;vertical-align:middle}
+.hdr p{color:var(--g200);font-size:11.5px;margin-top:2px}
+
+/* ══ CONTAINER ══ */
+.container{max-width:1300px;margin:0 auto;padding:16px;flex:1;display:flex;flex-direction:column;gap:16px}
+
+/* ══ CARD ══ */
+.card{
+  background:var(--card);border-radius:16px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 4px 20px rgba(22,163,74,.08);overflow:hidden;
+}
+.card-h{
+  padding:10px 16px;background:var(--g50);
+  border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-h h2{font-size:14px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:6px}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g700);font-weight:700}
+.card-b{padding:16px}
+
+/* ══ GRID ══ */
+.top-grid{display:grid;grid-template-columns:1fr 340px;gap:16px}
+
+/* ══ TEXTAREA ══ */
+.ta-wrap{position:relative;flex:1;display:flex;flex-direction:column}
+#textInput{
+  width:100%;min-height:200px;padding:16px;border:2px solid var(--border);
+  border-radius:12px;font-size:15px;line-height:1.8;
+  color:var(--text);background:var(--g50);outline:none;
+  resize:vertical;font-family:inherit;transition:.3s;flex:1;
+}
+#textInput:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.18);background:#fff}
+#textInput::placeholder{color:var(--g400)}
+
+/* Highlighted overlay */
+.hl-overlay{
+  position:absolute;inset:0;padding:16px;
+  font-size:15px;line-height:1.8;
+  pointer-events:none;white-space:pre-wrap;
+  word-break:break-word;color:transparent;
+  border-radius:12px;border:2px solid transparent;
+  overflow:hidden;
+}
+.hl-word{
+  background:rgba(74,222,128,.35);color:var(--g800);
+  border-radius:4px;padding:1px 3px;font-weight:700;
+  transition:.15s;
+}
+
+/* Text toolbar */
+.ta-toolbar{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+  padding:8px 0;
+}
+.ta-toolbar .spacer{flex:1}
+.count-info{font-size:11px;color:var(--g500);font-weight:600;display:flex;gap:12px}
+.count-info span{display:flex;align-items:center;gap:3px}
+
+/* ══ CONTROLS PANEL ══ */
+.controls{display:flex;flex-direction:column;gap:12px}
+
+/* Voice Select */
+.voice-sel-wrap{position:relative}
+#voiceSelect{
+  width:100%;padding:10px 14px;border:2px solid var(--border);
+  border-radius:10px;font-size:13px;font-weight:600;
+  color:var(--text);background:var(--g50);outline:none;
+  cursor:pointer;transition:.3s;appearance:none;
+}
+#voiceSelect:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.voice-sel-wrap::after{
+  content:'▾';position:absolute;right:14px;top:50%;
+  transform:translateY(-50%);color:var(--g500);font-size:14px;
+  pointer-events:none;font-weight:800;
+}
+
+/* Voice Filter */
+.voice-filter{
+  display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;
+}
+.vf-btn{
+  padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;
+  font-size:10px;font-weight:700;cursor:pointer;
+  background:var(--g50);color:var(--g600);transition:.2s;
+}
+.vf-btn:hover{background:var(--g100)}
+.vf-btn.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+
+/* Sliders */
+.slider-group{margin-bottom:10px}
+.slider-label{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11.5px;font-weight:700;color:var(--g800);margin-bottom:4px;
+}
+.slider-val{
+  padding:2px 8px;border-radius:6px;
+  background:var(--g100);color:var(--g700);
+  font-family:var(--mono);font-size:11px;font-weight:800;
+}
+.slider{
+  width:100%;height:6px;appearance:none;
+  background:var(--g200);border-radius:10px;outline:none;cursor:pointer;
+}
+.slider::-webkit-slider-thumb{
+  appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--g500);border:3px solid #fff;
+  box-shadow:0 2px 8px rgba(22,163,74,.3);cursor:pointer;
+  transition:.2s;
+}
+.slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+
+/* ══ PRESETS ══ */
+.presets{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.preset-btn{
+  padding:6px 12px;border-radius:8px;font-size:10.5px;
+  font-weight:700;cursor:pointer;
+  border:1.5px solid var(--border);
+  background:var(--g50);color:var(--g700);transition:.2s;
+}
+.preset-btn:hover{background:var(--g100);border-color:var(--g400)}
+.preset-btn.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+
+/* ══ PLAYER BAR ══ */
+.player-bar{
+  background:var(--card);border-radius:16px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 4px 20px rgba(22,163,74,.08);
+  padding:14px 20px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+}
+
+/* Big Play Button */
+.play-main{
+  width:52px;height:52px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  color:#fff;font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(22,163,74,.3);
+  transition:.3s;flex-shrink:0;
+}
+.play-main:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(22,163,74,.4)}
+.play-main:active{transform:scale(1)}
+.play-main.playing{background:linear-gradient(135deg,var(--orange),var(--red))}
+.play-main.paused{background:linear-gradient(135deg,var(--yellow),var(--orange))}
+
+/* Control Buttons */
+.ctrl-btn{
+  width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--g50);color:var(--g700);font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.2s;flex-shrink:0;
+}
+.ctrl-btn:hover{background:var(--g100);transform:translateY(-1px)}
+.ctrl-btn:active{transform:translateY(0)}
+.ctrl-btn.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+
+/* Progress Bar */
+.progress-wrap{flex:1;min-width:100px;display:flex;flex-direction:column;gap:3px}
+.progress-bar{
+  width:100%;height:6px;background:var(--g200);border-radius:10px;
+  overflow:hidden;cursor:pointer;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));
+  border-radius:10px;transition:width .3s;
+  position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;border-radius:50%;
+  background:var(--g500);border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.progress-time{display:flex;justify-content:space-between;font-size:10px;color:var(--g500);font-weight:600;font-family:var(--mono)}
+
+/* Volume */
+.vol-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.vol-slider{width:80px}
+.vol-icon{font-size:16px;cursor:pointer}
+
+/* Status */
+.status-pill{
+  padding:5px 12px;border-radius:20px;font-size:10.5px;font-weight:800;
+  display:flex;align-items:center;gap:4px;flex-shrink:0;
+}
+.status-ready{background:var(--g100);color:var(--g600)}
+.status-playing{background:#dcfce7;color:var(--g700);animation:pulse 1.5s infinite}
+.status-paused{background:#fef3c7;color:var(--yellow)}
+.status-stopped{background:var(--g100);color:var(--g600)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* Waveform */
+.waveform{
+  display:flex;align-items:center;gap:2px;height:30px;flex-shrink:0;
+}
+.wave-bar{
+  width:3px;background:var(--g400);border-radius:3px;
+  transition:height .15s;
+}
+.wave-bar.active{animation:waveAnim .6s ease infinite alternate}
+@keyframes waveAnim{0%{height:6px;background:var(--g300)}100%{height:24px;background:var(--g600)}}
+
+/* ══ BOTTOM SECTION ══ */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* Queue */
+.queue-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto}
+.queue-item{
+  padding:10px 14px;border-radius:10px;
+  background:var(--g50);border:1.5px solid var(--border2);
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;transition:.2s;cursor:pointer;
+}
+.queue-item:hover{background:var(--g100);transform:translateX(3px)}
+.queue-item.active{border-color:var(--g400);background:var(--g100)}
+.qi-num{
+  width:24px;height:24px;border-radius:6px;
+  background:var(--g200);color:var(--g700);
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.qi-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--g700)}
+.qi-dur{font-size:10px;color:var(--g400);font-weight:600;font-family:var(--mono)}
+.qi-del{
+  width:22px;height:22px;border-radius:5px;border:none;
+  background:transparent;color:var(--red);font-size:12px;
+  cursor:pointer;opacity:.4;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.qi-del:hover{opacity:1;background:#fef2f2}
+.qi-play{
+  width:22px;height:22px;border-radius:5px;border:none;
+  background:var(--g100);color:var(--g600);font-size:11px;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.qi-play:hover{background:var(--g500);color:#fff}
+
+/* History */
+.hist-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto}
+.hist-item{
+  padding:10px 14px;border-radius:10px;
+  background:var(--g50);border:1.5px solid var(--border2);
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;transition:.2s;cursor:pointer;
+}
+.hist-item:hover{background:var(--g100);transform:translateX(3px)}
+.hi-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--g700)}
+.hi-voice{font-size:10px;color:var(--g500);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hi-time{font-size:9px;color:var(--g400);font-weight:600}
+
+/* ══ BUTTONS ══ */
+.btn{
+  padding:7px 14px;border:none;border-radius:8px;
+  font-size:11.5px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;
+  transition:all .25s;white-space:nowrap;
+}
+.btn:active{transform:scale(.96)!important}
+.btn-g{background:linear-gradient(135deg,var(--g500),var(--g700));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.4)}
+.btn-o{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-o:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-r{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
+.btn-r:hover{background:#fee2e2;transform:translateY(-1px)}
+.btn-b{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-b:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-p{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
+.btn-p:hover{background:#f3e8ff;transform:translateY(-1px)}
+.btn-y{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
+.btn-y:hover{background:#fef3c7;transform:translateY(-1px)}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:10px 22px;border-radius:12px;font-size:13px;
+  font-weight:700;color:#fff;z-index:200;
+  pointer-events:none;transition:all .4s;opacity:0;
+  backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-ok{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-err{background:rgba(220,38,38,.92)}
+.toast-info{background:rgba(37,99,235,.92)}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══ EMPTY STATE ══ */
+.empty{text-align:center;padding:20px;color:var(--g400)}
+.empty .big{font-size:36px;margin-bottom:6px}
+.empty p{font-size:12px;font-weight:600}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  .top-grid{grid-template-columns:1fr}
+  .bottom-grid{grid-template-columns:1fr}
+  .player-bar{flex-wrap:wrap}
+  .vol-wrap{width:100%;justify-content:center}
+  .vol-slider{width:120px}
+}
+@media(max-width:600px){
+  .container{padding:10px;gap:10px}
+  .hdr{padding:12px 10px 10px}
+  .hdr h1{font-size:16.5px}.hdr .ic{font-size:22px}
+  .card-b{padding:12px}
+  #textInput{font-size:14px;min-height:140px}
+  .play-main{width:46px;height:46px;font-size:18px}
+  .ctrl-btn{width:34px;height:34px;font-size:14px}
+  .slider-label{font-size:10.5px}
+  .preset-btn{padding:5px 9px;font-size:9.5px}
+  .btn{padding:6px 10px;font-size:10.5px}
+  .bottom-grid{grid-template-columns:1fr}
+  .progress-wrap{min-width:80px}
+  .waveform{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div><span class="ic">🔊</span><h1>Voice Generator — Pro</h1></div>
+  <p>Text-to-Speech • Multi-Voice • Queue • Highlight • Presets</p>
+</div>
+
+<div class="container">
+
+<!-- ═══ TOP GRID ═══ -->
+<div class="top-grid">
+
+<!-- LEFT: TEXT INPUT -->
+<div class="card">
+  <div class="card-h">
+    <h2>📝 Text Input</h2>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-y" onclick="loadSample()">📄 Sample</button>
+      <button class="btn btn-b" onclick="pasteText()">📋 Paste</button>
+      <button class="btn btn-r" onclick="clearText()">🗑️</button>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="ta-wrap">
+      <div class="hl-overlay" id="hlOverlay"></div>
+      <textarea id="textInput" placeholder="Enter or paste text here to convert to speech...&#10;&#10;💡 Supports multiple paragraphs&#10;🎯 Words will be highlighted as they are spoken&#10;📋 Add to queue for multiple texts" spellcheck="false"></textarea>
+    </div>
+    <div class="ta-toolbar">
+      <button class="btn btn-g" onclick="speak()">▶️ Speak</button>
+      <button class="btn btn-p" onclick="addToQueue()">📋 Add to Queue</button>
+      <button class="btn btn-o" onclick="splitSentences()">✂️ Split to Queue</button>
+      <div class="spacer"></div>
+      <div class="count-info">
+        <span>📝 <b id="charCount">0</b> chars</span>
+        <span>📖 <b id="wordCount">0</b> words</span>
+        <span>📄 <b id="sentCount">0</b> sentences</span>
+        <span>⏱️ ~<b id="estTime">0s</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: VOICE CONTROLS -->
+<div class="card">
+  <div class="card-h">
+    <h2>🎛️ Voice Controls</h2>
+    <span class="badge" id="voiceCountBadge">0 voices</span>
+  </div>
+  <div class="card-b controls">
+
+    <!-- Presets -->
+    <div style="margin-bottom:4px">
+      <div style="font-size:11px;font-weight:700;color:var(--g700);margin-bottom:5px">⚡ Quick Presets</div>
+      <div class="presets">
+        <button class="preset-btn active" onclick="applyPreset(this,'normal')">🎙️ Normal</button>
+        <button class="preset-btn" onclick="applyPreset(this,'slow')">🐢 Slow</button>
+        <button class="preset-btn" onclick="applyPreset(this,'fast')">🐇 Fast</button>
+        <button class="preset-btn" onclick="applyPreset(this,'deep')">🎵 Deep</button>
+        <button class="preset-btn" onclick="applyPreset(this,'high')">🔔 High</button>
+        <button class="preset-btn" onclick="applyPreset(this,'whisper')">🤫 Whisper</button>
+        <button class="preset-btn" onclick="applyPreset(this,'robot')">🤖 Robot</button>
+        <button class="preset-btn" onclick="applyPreset(this,'news')">📺 News</button>
+      </div>
+    </div>
+
+    <!-- Voice Filter -->
+    <div style="font-size:11px;font-weight:700;color:var(--g700);margin-bottom:5px">🌐 Filter by Language</div>
+    <div class="voice-filter" id="voiceFilter">
+      <button class="vf-btn active" onclick="filterVoices(this,'all')">All</button>
+    </div>
+
+    <!-- Voice Select -->
+    <div class="voice-sel-wrap">
+      <select id="voiceSelect"></select>
+    </div>
+
+    <!-- Rate -->
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>🏃 Speed / Rate</span>
+        <span class="slider-val" id="rateVal">1.0x</span>
+      </div>
+      <input type="range" class="slider" id="rateSlider" min="0.1" max="3" step="0.1" value="1" oninput="updateSlider('rate')">
+    </div>
+
+    <!-- Pitch -->
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>🎵 Pitch</span>
+        <span class="slider-val" id="pitchVal">1.0</span>
+      </div>
+      <input type="range" class="slider" id="pitchSlider" min="0" max="2" step="0.1" value="1" oninput="updateSlider('pitch')">
+    </div>
+
+    <!-- Volume -->
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>🔊 Volume</span>
+        <span class="slider-val" id="volumeVal">100%</span>
+      </div>
+      <input type="range" class="slider" id="volumeSlider" min="0" max="1" step="0.05" value="1" oninput="updateSlider('volume')">
+    </div>
+
+    <!-- Word Gap -->
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>⏸️ Word Gap</span>
+        <span class="slider-val" id="gapVal">0ms</span>
+      </div>
+      <input type="range" class="slider" id="gapSlider" min="0" max="500" step="10" value="0" oninput="document.getElementById('gapVal').textContent=this.value+'ms'">
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- ═══ PLAYER BAR ═══ -->
+<div class="player-bar" id="playerBar">
+  <!-- Play / Pause -->
+  <button class="play-main" id="btnPlayMain" onclick="togglePlayPause()" title="Play / Pause">▶</button>
+
+  <!-- Stop -->
+  <button class="ctrl-btn" onclick="stopSpeech()" title="Stop">⏹</button>
+
+  <!-- Prev/Next Queue -->
+  <button class="ctrl-btn" onclick="playPrevQueue()" title="Previous">⏮</button>
+  <button class="ctrl-btn" onclick="playNextQueue()" title="Next">⏭</button>
+
+  <!-- Waveform -->
+  <div class="waveform" id="waveform"></div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-time">
+      <span id="timeElapsed">0:00</span>
+      <span id="timeTotal">0:00</span>
+    </div>
+  </div>
+
+  <!-- Volume -->
+  <div class="vol-wrap">
+    <span class="vol-icon" onclick="toggleMute()">🔊</span>
+    <input type="range" class="slider vol-slider" id="volBar" min="0" max="1" step="0.05" value="1" oninput="syncVolume(this.value)">
+  </div>
+
+  <!-- Status -->
+  <div class="status-pill status-ready" id="statusPill">
+    <span id="statusDot">⚪</span>
+    <span id="statusText">Ready</span>
+  </div>
+
+  <!-- Loop -->
+  <button class="ctrl-btn" id="btnLoop" onclick="toggleLoop()" title="Loop">🔁</button>
+
+</div>
+
+<!-- ═══ BOTTOM GRID ═══ -->
+<div class="bottom-grid">
+
+<!-- Queue -->
+<div class="card">
+  <div class="card-h">
+    <h2>📋 Speech Queue</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span class="badge" id="queueCountBadge">0 items</span>
+      <button class="btn btn-g" onclick="playQueue()" style="padding:5px 10px;font-size:10.5px">▶ Play All</button>
+      <button class="btn btn-r" onclick="clearQueue()" style="padding:5px 10px;font-size:10.5px">🗑️</button>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="queue-list" id="queueList">
+      <div class="empty"><div class="big">📋</div><p>Add texts to queue for sequential playback</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- History -->
+<div class="card">
+  <div class="card-h">
+    <h2>📜 History</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span class="badge" id="histCountBadge">0</span>
+      <button class="btn btn-r" onclick="clearHistory()" style="padding:5px 10px;font-size:10.5px">🗑️</button>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="hist-list" id="histList">
+      <div class="empty"><div class="big">📜</div><p>Spoken texts will appear here</p></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════
+   STATE
+   ════════════════════════════════════ */
+const synth = window.speechSynthesis;
+let voices = [];
+let currentUtterance = null;
+let isPlaying = false;
+let isPaused = false;
+let isLooping = false;
+let isMuted = false;
+let prevVolume = 1;
+
+/* Queue */
+let queue = [];
+let queueIndex = -1;
+let playingQueue = false;
+
+/* History */
+let history = JSON.parse(localStorage.getItem('voice_history') || '[]');
+
+/* Progress */
+let progressTimer = null;
+let startTime = 0;
+let estimatedDuration = 0;
+
+/* Waveform */
+const WAVE_BARS = 20;
+
+/* ════════════════════════════════════
+   INIT VOICES
+   ════════════════════════════════════ */
+function loadVoices() {
+  voices = synth.getVoices();
+  if (!voices.length) return;
+
+  /* Build language filter */
+  const langs = new Map();
+  voices.forEach(v => {
+    const lang = v.lang.split('-')[0].toUpperCase();
+    if (!langs.has(lang)) langs.set(lang, 0);
+    langs.set(lang, langs.get(lang) + 1);
+  });
+
+  const filterEl = document.getElementById('voiceFilter');
+  filterEl.innerHTML = '<button class="vf-btn active" onclick="filterVoices(this,\'all\')">All (' + voices.length + ')</button>';
+
+  const langNames = { EN: 'English', HI: 'Hindi', ES: 'Spanish', FR: 'French', DE: 'German', ZH: 'Chinese', JA: 'Japanese', KO: 'Korean', AR: 'Arabic', PT: 'Portuguese', IT: 'Italian', RU: 'Russian', NL: 'Dutch' };
+
+  [...langs.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).forEach(([lang, count]) => {
+    const name = langNames[lang] || lang;
+    filterEl.innerHTML += `<button class="vf-btn" onclick="filterVoices(this,'${lang}')">${name} (${count})</button>`;
+  });
+
+  populateVoiceSelect(voices);
+  document.getElementById('voiceCountBadge').textContent = voices.length + ' voices';
+}
+
+function populateVoiceSelect(list) {
+  const sel = document.getElementById('voiceSelect');
+  sel.innerHTML = '';
+  list.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${v.name} (${v.lang})${v.default ? ' ★' : ''}`;
+    sel.appendChild(opt);
+  });
+}
+
+function filterVoices(btn, lang) {
+  document.querySelectorAll('.vf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (lang === 'all') {
+    populateVoiceSelect(voices);
+  } else {
+    const filtered = voices.filter(v => v.lang.split('-')[0].toUpperCase() === lang);
+    populateVoiceSelect(filtered);
+  }
+}
+
+synth.addEventListener('voiceschanged', loadVoices);
+setTimeout(loadVoices, 100);
+
+/* ════════════════════════════════════
+   TEXT INPUT TRACKING
+   ════════════════════════════════════ */
+const $text = document.getElementById('textInput');
+$text.addEventListener('input', updateCounts);
+
+function updateCounts() {
+  const t = $text.value;
+  const chars = t.length;
+  const words = t.trim() ? t.trim().split(/\s+/).length : 0;
+  const sents = t.trim() ? (t.match(/[.!?।]+/g) || []).length || (words > 0 ? 1 : 0) : 0;
+  const rate = parseFloat(document.getElementById('rateSlider').value) || 1;
+  const est = Math.ceil(words / (150 * rate) * 60);
+
+  document.getElementById('charCount').textContent = chars;
+  document.getElementById('wordCount').textContent = words;
+  document.getElementById('sentCount').textContent = sents;
+  document.getElementById('estTime').textContent = formatTime(est);
+}
+
+/* ════════════════════════════════════
+   SLIDER UPDATES
+   ════════════════════════════════════ */
+function updateSlider(type) {
+  if (type === 'rate') {
+    const v = document.getElementById('rateSlider').value;
+    document.getElementById('rateVal').textContent = v + 'x';
+    updateCounts();
+  } else if (type === 'pitch') {
+    document.getElementById('pitchVal').textContent = document.getElementById('pitchSlider').value;
+  } else if (type === 'volume') {
+    const v = document.getElementById('volumeSlider').value;
+    document.getElementById('volumeVal').textContent = Math.round(v * 100) + '%';
+    document.getElementById('volBar').value = v;
+  }
+}
+
+function syncVolume(v) {
+  document.getElementById('volumeSlider').value = v;
+  document.getElementById('volumeVal').textContent = Math.round(v * 100) + '%';
+  if (currentUtterance) currentUtterance.volume = parseFloat(v);
+  isMuted = v == 0;
+}
+
+function toggleMute() {
+  if (isMuted) {
+    syncVolume(prevVolume);
+    isMuted = false;
+  } else {
+    prevVolume = document.getElementById('volumeSlider').value;
+    syncVolume(0);
+    isMuted = true;
+  }
+}
+
+/* ════════════════════════════════════
+   PRESETS
+   ════════════════════════════════════ */
+const PRESETS = {
+  normal: { rate: 1, pitch: 1, volume: 1 },
+  slow: { rate: 0.6, pitch: 0.9, volume: 1 },
+  fast: { rate: 1.8, pitch: 1.1, volume: 1 },
+  deep: { rate: 0.9, pitch: 0.3, volume: 1 },
+  high: { rate: 1.1, pitch: 1.8, volume: 1 },
+  whisper: { rate: 0.7, pitch: 0.8, volume: 0.3 },
+  robot: { rate: 0.8, pitch: 0, volume: 0.9 },
+  news: { rate: 1.15, pitch: 1.05, volume: 1 },
+};
+
+function applyPreset(btn, name) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const p = PRESETS[name];
+  document.getElementById('rateSlider').value = p.rate;
+  document.getElementById('pitchSlider').value = p.pitch;
+  document.getElementById('volumeSlider').value = p.volume;
+  updateSlider('rate'); updateSlider('pitch'); updateSlider('volume');
+  toast('⚡ Preset: ' + name, 'ok');
+}
+
+/* ════════════════════════════════════
+   WAVEFORM
+   ════════════════════════════════════ */
+function initWaveform() {
+  const el = document.getElementById('waveform');
+  el.innerHTML = '';
+  for (let i = 0; i < WAVE_BARS; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'wave-bar';
+    bar.style.height = '6px';
+    bar.style.animationDelay = (i * 0.05) + 's';
+    el.appendChild(bar);
+  }
+}
+initWaveform();
+
+function setWaveActive(active) {
+  document.querySelectorAll('.wave-bar').forEach(b => {
+    b.classList.toggle('active', active);
+    if (!active) b.style.height = '6px';
+  });
+}
+
+/* ════════════════════════════════════
+   SPEAK
+   ════════════════════════════════════ */
+function speak(text) {
+  text = text || $text.value.trim();
+  if (!text) { toast('⚠️ Enter text first!', 'err'); return; }
+
+  synth.cancel();
+
+  const utter = new SpeechSynthesisUtterance(text);
+  const selIdx = parseInt(document.getElementById('voiceSelect').value);
+  const activeFilter = document.querySelector('.vf-btn.active');
+  const filterLang = activeFilter ? activeFilter.textContent.split('(')[0].trim() : 'All';
+
+  let voiceList = voices;
+  if (filterLang !== 'All') {
+    const langCode = [...document.querySelectorAll('.vf-btn')].find(b => b.classList.contains('active'))?.onclick?.toString().match(/'(\w+)'/)?.[1];
+    if (langCode && langCode !== 'all') voiceList = voices.filter(v => v.lang.split('-')[0].toUpperCase() === langCode);
+  }
+
+  if (voiceList[selIdx]) utter.voice = voiceList[selIdx];
+  else if (voices[selIdx]) utter.voice = voices[selIdx];
+
+  utter.rate = parseFloat(document.getElementById('rateSlider').value);
+  utter.pitch = parseFloat(document.getElementById('pitchSlider').value);
+  utter.volume = parseFloat(document.getElementById('volumeSlider').value);
+
+  currentUtterance = utter;
+  isPlaying = true; isPaused = false;
+  estimatedDuration = (text.split(/\s+/).length / (150 * utter.rate)) * 60;
+  startTime = Date.now();
+
+  /* Events */
+  utter.onstart = () => {
+    setPlayerState('playing');
+    startProgress();
+    setWaveActive(true);
+  };
+
+  /* Word boundary highlight */
+  const words = text.split(/\s+/);
+  let wordIdx = 0;
+
+  utter.onboundary = (e) => {
+    if (e.name === 'word') {
+      highlightWord(text, e.charIndex, e.charLength || 0);
+      wordIdx++;
+      updateProgressByWord(wordIdx, words.length);
+    }
+  };
+
+  utter.onend = () => {
+    isPlaying = false; isPaused = false;
+    setPlayerState('stopped');
+    stopProgress();
+    setWaveActive(false);
+    clearHighlight();
+    document.getElementById('progressFill').style.width = '100%';
+
+    /* Save to history */
+    saveHistory(text, utter.voice?.name || 'Default');
+
+    /* Loop */
+    if (isLooping && !playingQueue) {
+      setTimeout(() => speak(text), 500);
+      return;
+    }
+
+    /* Queue next */
+    if (playingQueue && queueIndex < queue.length - 1) {
+      queueIndex++;
+      renderQueue();
+      setTimeout(() => speak(queue[queueIndex].text), 300);
+    } else {
+      playingQueue = false;
+      queueIndex = -1;
+      renderQueue();
+    }
+  };
+
+  utter.onerror = (e) => {
+    if (e.error !== 'canceled') {
+      toast('❌ Speech error: ' + e.error, 'err');
+    }
+    isPlaying = false;
+    setPlayerState('stopped');
+    setWaveActive(false);
+    stopProgress();
+  };
+
+  synth.speak(utter);
+}
+
+/* ════════════════════════════════════
+   PLAY CONTROLS
+   ════════════════════════════════════ */
+function togglePlayPause() {
+  if (!isPlaying && !isPaused) {
+    speak();
+  } else if (isPlaying && !isPaused) {
+    synth.pause();
+    isPaused = true; isPlaying = false;
+    setPlayerState('paused');
+    setWaveActive(false);
+  } else if (isPaused) {
+    synth.resume();
+    isPaused = false; isPlaying = true;
+    setPlayerState('playing');
+    setWaveActive(true);
+  }
+}
+
+function stopSpeech() {
+  synth.cancel();
+  isPlaying = false; isPaused = false;
+  playingQueue = false; queueIndex = -1;
+  setPlayerState('stopped');
+  stopProgress();
+  setWaveActive(false);
+  clearHighlight();
+  document.getElementById('progressFill').style.width = '0%';
+  renderQueue();
+}
+
+function setPlayerState(state) {
+  const btn = document.getElementById('btnPlayMain');
+  const pill = document.getElementById('statusPill');
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+
+  btn.classList.remove('playing', 'paused');
+
+  switch (state) {
+    case 'playing':
+      btn.innerHTML = '⏸'; btn.classList.add('playing');
+      pill.className = 'status-pill status-playing';
+      dot.textContent = '🟢'; txt.textContent = 'Speaking…';
+      break;
+    case 'paused':
+      btn.innerHTML = '▶'; btn.classList.add('paused');
+      pill.className = 'status-pill status-paused';
+      dot.textContent = '🟡'; txt.textContent = 'Paused';
+      break;
+    default:
+      btn.innerHTML = '▶';
+      pill.className = 'status-pill status-ready';
+      dot.textContent = '⚪'; txt.textContent = 'Ready';
+  }
+}
+
+function toggleLoop() {
+  isLooping = !isLooping;
+  document.getElementById('btnLoop').classList.toggle('active', isLooping);
+  toast(isLooping ? '🔁 Loop ON' : '🔁 Loop OFF', 'info');
+}
+
+/* ════════════════════════════════════
+   WORD HIGHLIGHTING
+   ════════════════════════════════════ */
+function highlightWord(text, charIndex, charLength) {
+  const overlay = document.getElementById('hlOverlay');
+  if (!charLength) {
+    /* Estimate word length */
+    const rest = text.slice(charIndex);
+    const match = rest.match(/^\S+/);
+    charLength = match ? match[0].length : 5;
+  }
+  const before = escH(text.slice(0, charIndex));
+  const word = escH(text.slice(charIndex, charIndex + charLength));
+  const after = escH(text.slice(charIndex + charLength));
+  overlay.innerHTML = before + '<span class="hl-word">' + word + '</span>' + after;
+}
+
+function clearHighlight() {
+  document.getElementById('hlOverlay').innerHTML = '';
+}
+
+/* ════════════════════════════════════
+   PROGRESS
+   ════════════════════════════════════ */
+function startProgress() {
+  stopProgress();
+  progressTimer = setInterval(() => {
+    if (!isPlaying) return;
+    const elapsed = (Date.now() - startTime) / 1000;
+    const pct = Math.min(100, (elapsed / estimatedDuration) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('timeElapsed').textContent = formatTime(Math.floor(elapsed));
+    document.getElementById('timeTotal').textContent = '~' + formatTime(Math.ceil(estimatedDuration));
+  }, 200);
+}
+
+function updateProgressByWord(current, total) {
+  if (total <= 0) return;
+  const pct = (current / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function stopProgress() {
+  clearInterval(progressTimer);
+}
+
+function formatTime(s) {
+  if (s < 60) return s + 's';
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+/* ════════════════════════════════════
+   QUEUE
+   ════════════════════════════════════ */
+function addToQueue() {
+  const text = $text.value.trim();
+  if (!text) { toast('⚠️ Enter text!', 'err'); return; }
+  queue.push({ text, id: Date.now() });
+  renderQueue();
+  toast('📋 Added to queue!', 'ok');
+}
+
+function splitSentences() {
+  const text = $text.value.trim();
+  if (!text) { toast('⚠️ Enter text!', 'err'); return; }
+  const sents = text.match(/[^.!?।]+[.!?।]+|[^.!?।]+$/g) || [text];
+  sents.forEach(s => {
+    const trimmed = s.trim();
+    if (trimmed) queue.push({ text: trimmed, id: Date.now() + Math.random() });
+  });
+  renderQueue();
+  toast('✂️ Split into ' + sents.length + ' items!', 'ok');
+}
+
+function playQueue() {
+  if (!queue.length) { toast('⚠️ Queue is empty!', 'err'); return; }
+  synth.cancel();
+  playingQueue = true;
+  queueIndex = 0;
+  renderQueue();
+  speak(queue[0].text);
+}
+
+function playQueueItem(idx) {
+  synth.cancel();
+  playingQueue = true;
+  queueIndex = idx;
+  renderQueue();
+  setTimeout(() => speak(queue[idx].text), 100);
+}
+
+function playNextQueue() {
+  if (!queue.length) return;
+  if (queueIndex < queue.length - 1) {
+    synth.cancel();
+    queueIndex++;
+    renderQueue();
+    setTimeout(() => speak(queue[queueIndex].text), 100);
+  }
+}
+
+function playPrevQueue() {
+  if (!queue.length) return;
+  if (queueIndex > 0) {
+    synth.cancel();
+    queueIndex--;
+    renderQueue();
+    setTimeout(() => speak(queue[queueIndex].text), 100);
+  }
+}
+
+function removeQueueItem(idx) {
+  queue.splice(idx, 1);
+  renderQueue();
+}
+
+function clearQueue() {
+  queue = [];
+  queueIndex = -1;
+  playingQueue = false;
+  renderQueue();
+  toast('🗑️ Queue cleared!', 'info');
+}
+
+function renderQueue() {
+  const el = document.getElementById('queueList');
+  document.getElementById('queueCountBadge').textContent = queue.length + ' items';
+
+  if (!queue.length) {
+    el.innerHTML = '<div class="empty"><div class="big">📋</div><p>Add texts to queue</p></div>';
+    return;
+  }
+
+  el.innerHTML = queue.map((q, i) => {
+    const words = q.text.split(/\s+/).length;
+    const est = Math.ceil(words / 150 * 60);
+    return `<div class="queue-item ${i === queueIndex ? 'active' : ''}">
+      <div class="qi-num">${i + 1}</div>
+      <div class="qi-text">${escH(q.text)}</div>
+      <div class="qi-dur">${formatTime(est)}</div>
+      <button class="qi-play" onclick="playQueueItem(${i})">▶</button>
+      <button class="qi-del" onclick="removeQueueItem(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   HISTORY
+   ════════════════════════════════════ */
+function saveHistory(text, voiceName) {
+  history.unshift({
+    text: text.slice(0, 200),
+    voice: voiceName,
+    time: new Date().toLocaleTimeString()
+  });
+  if (history.length > 30) history.pop();
+  localStorage.setItem('voice_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('histList');
+  document.getElementById('histCountBadge').textContent = history.length;
+
+  if (!history.length) {
+    el.innerHTML = '<div class="empty"><div class="big">📜</div><p>Spoken texts will appear here</p></div>';
+    return;
+  }
+
+  el.innerHTML = history.map((h, i) =>
+    `<div class="hist-item" onclick="replayHistory(${i})">
+      <span>🔊</span>
+      <div class="hi-text">${escH(h.text)}</div>
+      <div class="hi-voice">${h.voice}</div>
+      <div class="hi-time">${h.time}</div>
+    </div>`
+  ).join('');
+}
+
+function replayHistory(i) {
+  const h = history[i];
+  $text.value = h.text;
+  updateCounts();
+  speak(h.text);
+}
+
+function clearHistory() {
+  history = [];
+  localStorage.removeItem('voice_history');
+  renderHistory();
+  toast('🗑️ History cleared!', 'info');
+}
+
+/* ════════════════════════════════════
+   SAMPLE TEXT
+   ════════════════════════════════════ */
+function loadSample() {
+  $text.value = `Welcome to the Pro Voice Generator Tool!
+
+This is a powerful text-to-speech application built with the Web Speech API. You can convert any text into natural sounding speech with full control over voice, speed, pitch, and volume.
+
+Here are some amazing features:
+
+1. Multiple voices in different languages
+2. Adjustable speed from super slow to lightning fast
+3. Pitch control from deep bass to high treble
+4. Real-time word highlighting as you listen
+5. Speech queue for playing multiple texts in sequence
+6. Quick presets like Normal, Slow, Fast, Deep, and Whisper
+7. Complete playback controls with progress tracking
+8. History of all your spoken texts saved locally
+
+Try changing the voice, adjusting the speed and pitch, or adding this to the queue. You can even split text into sentences and play them one by one!
+
+The future of text-to-speech is here. Enjoy the experience!`;
+  updateCounts();
+  toast('📄 Sample loaded!', 'ok');
+}
+
+/* ════════════════════════════════════
+   UTILS
+   ════════════════════════════════════ */
+function pasteText() {
+  navigator.clipboard.readText().then(t => {
+    $text.value = t;
+    updateCounts();
+    toast('📋 Pasted!', 'info');
+  }).catch(() => toast('⚠️ Clipboard denied', 'err'));
+}
+
+function clearText() {
+  $text.value = '';
+  updateCounts();
+  clearHighlight();
+  toast('🗑️ Cleared!', 'info');
+}
+
+function escH(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function toast(m, t = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = m;
+  el.className = 'toast toast-' + t + ' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+/* ════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { togglePlayPause(); e.preventDefault(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === '.') { stopSpeech(); e.preventDefault(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Q') { addToQueue(); e.preventDefault(); }
+});
+
+/* ════════════════════════════════════
+   INIT
+   ════════════════════════════════════ */
+renderHistory();
+renderQueue();
+updateCounts();
+
+/* Fix Chrome pause bug — resume periodically */
+setInterval(() => {
+  if (synth.speaking && !synth.paused) {
+    synth.pause();
+    synth.resume();
+  }
+}, 10000);
+</script>
+</body>
+</html>
