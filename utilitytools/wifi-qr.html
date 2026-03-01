@@ -3,89 +3,541 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WiFi QR Code Generator - Tool Matrix</title>
-<meta name="description" content="Generate WiFi QR codes easily. Mobile-friendly WiFi QR Generator by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<title>WiFi QR Code Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  :root {
+    --green-50: #f0fdf4;
+    --green-100: #dcfce7;
+    --green-200: #bbf7d0;
+    --green-300: #86efac;
+    --green-400: #4ade80;
+    --green-500: #22c55e;
+    --green-600: #16a34a;
+    --green-700: #15803d;
+    --green-800: #166534;
+    --green-900: #14532d;
+    --shadow: 0 10px 40px rgba(22, 163, 74, 0.15);
+    --shadow-sm: 0 4px 15px rgba(22, 163, 74, 0.1);
+  }
+
+  body {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 40%, var(--green-200) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1.5px solid var(--green-200);
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    padding: 30px 30px 25px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .header .icon {
+    font-size: 44px;
+    margin-bottom: 8px;
+    display: inline-block;
+    animation: bounce 2s ease infinite;
+  }
+  @keyframes bounce {
+    0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}
+  }
+  .header h1 {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .header p {
+    color: var(--green-100);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  /* ── Body ── */
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+
+  /* ── Form Side ── */
+  .form-section {
+    flex: 1 1 400px;
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-800);
+    margin-bottom: 8px;
+  }
+  .form-group label .emoji {
+    font-size: 18px;
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--green-200);
+    border-radius: 12px;
+    font-size: 15px;
+    color: var(--green-900);
+    background: var(--green-50);
+    transition: all .3s ease;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+    background: #fff;
+  }
+  .form-group input::placeholder { color: #a3a3a3; }
+
+  /* password toggle */
+  .password-wrapper {
+    position: relative;
+  }
+  .password-wrapper input { padding-right: 48px; }
+  .toggle-pw {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: .7;
+    transition: .2s;
+  }
+  .toggle-pw:hover { opacity: 1; }
+
+  /* hidden checkbox */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--green-500);
+    cursor: pointer;
+  }
+  .checkbox-row span {
+    font-size: 14px;
+    color: var(--green-700);
+    font-weight: 500;
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all .3s ease;
+  }
+  .btn-generate {
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(22,163,74,.3);
+    margin-top: 6px;
+  }
+  .btn-generate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(22,163,74,.4);
+  }
+  .btn-generate:active { transform: translateY(0); }
+
+  /* ── QR Side ── */
+  .qr-section {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: var(--green-50);
+    border-left: 1.5px solid var(--green-100);
+    min-height: 380px;
+  }
+
+  .qr-placeholder {
+    text-align: center;
+    color: var(--green-400);
+  }
+  .qr-placeholder .big-icon { font-size: 70px; opacity: .6; }
+  .qr-placeholder p {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green-500);
+  }
+
+  #qrResult { display: none; text-align: center; }
+  #qrResult.show { display: block; animation: fadeIn .5s ease; }
+
+  @keyframes fadeIn { from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)} }
+
+  .qr-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+    border: 2px solid var(--green-200);
+  }
+  #qrcode { display: flex; justify-content: center; }
+  #qrcode img { border-radius: 8px; }
+  #qrcode canvas { border-radius: 8px; }
+
+  .wifi-info {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--green-700);
+    background: var(--green-100);
+    padding: 10px 18px;
+    border-radius: 10px;
+    display: inline-block;
+    font-weight: 500;
+    word-break: break-all;
+    max-width: 100%;
+  }
+
+  .btn-download {
+    margin-top: 14px;
+    background: var(--green-600);
+    color: #fff;
+    padding: 11px 28px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .3s;
+  }
+  .btn-download:hover {
+    background: var(--green-700);
+    transform: translateY(-2px);
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 14px;
+    background: var(--green-50);
+    border-top: 1px solid var(--green-100);
+    font-size: 12px;
+    color: var(--green-600);
+  }
+
+  /* ── Error ── */
+  .error-msg {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+  .error-msg.show { display: block; animation: shake .4s; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)}
+  }
+  .form-group.error input,
+  .form-group.error select {
+    border-color: #f87171 !important;
+    background: #fef2f2 !important;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    body { padding: 10px; align-items: flex-start; }
+    .container { border-radius: 18px; }
+    .header { padding: 22px 18px 18px; }
+    .header h1 { font-size: 22px; }
+    .header .icon { font-size: 36px; }
+    .form-section { padding: 22px 18px; }
+    .qr-section {
+      border-left: none;
+      border-top: 1.5px solid var(--green-100);
+      padding: 22px 18px;
+      min-height: auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 0; }
+    .container { border-radius: 0; min-height: 100vh; border: none; }
+    .header { padding: 20px 14px 16px; }
+    .header h1 { font-size: 19px; }
+    .form-section { padding: 18px 14px; }
+    .qr-section { padding: 18px 14px; }
+    .form-group input,
+    .form-group select { padding: 12px 13px; font-size: 14px; }
+    .btn { padding: 13px; font-size: 15px; }
+  }
+</style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<body>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">WiFi QR Code Generator</h1>
-<p class="text-gray-600 mt-2">Generate QR code for your WiFi network instantly</p>
-</header>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="icon">📶</div>
+    <h1>WiFi QR Code Generator</h1>
+    <p>Generate &amp; share WiFi instantly via QR Code</p>
+  </div>
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
+  <div class="body">
+    <!-- Form -->
+    <div class="form-section">
 
-<label class="block font-semibold text-gray-700">WiFi SSID (Network Name):</label>
-<input type="text" id="ssid" class="w-full p-3 border rounded-lg" placeholder="Your WiFi SSID">
+      <!-- SSID -->
+      <div class="form-group" id="ssidGroup">
+        <label><span class="emoji">🌐</span> WiFi Name (SSID)</label>
+        <input type="text" id="ssid" placeholder="e.g. MyHomeWiFi" maxlength="60" autocomplete="off">
+        <div class="error-msg" id="ssidError">⚠ Please enter WiFi name</div>
+      </div>
 
-<label class="block font-semibold text-gray-700">Password:</label>
-<input type="text" id="password" class="w-full p-3 border rounded-lg" placeholder="WiFi Password">
+      <!-- Password -->
+      <div class="form-group" id="passGroup">
+        <label><span class="emoji">🔑</span> Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Enter WiFi password" maxlength="63" autocomplete="off">
+          <button type="button" class="toggle-pw" id="togglePw" title="Show / Hide">👁️</button>
+        </div>
+        <div class="error-msg" id="passError">⚠ Please enter password</div>
+      </div>
 
-<label class="block font-semibold text-gray-700">Encryption Type:</label>
-<select id="encryption" class="w-full p-3 border rounded-lg">
-<option value="WPA">WPA/WPA2</option>
-<option value="WEP">WEP</option>
-<option value="nopass">None</option>
-</select>
+      <!-- Security -->
+      <div class="form-group">
+        <label><span class="emoji">🔒</span> Security Type</label>
+        <select id="security">
+          <option value="WPA">WPA / WPA2 / WPA3</option>
+          <option value="WEP">WEP</option>
+          <option value="nopass">No Password (Open)</option>
+        </select>
+      </div>
 
-<button onclick="generateWiFiQR()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Generate QR Code
-</button>
+      <!-- Hidden -->
+      <div class="form-group">
+        <label class="checkbox-row">
+          <input type="checkbox" id="hidden">
+          <span>🙈 Hidden Network</span>
+        </label>
+      </div>
 
-<div id="result" class="mt-4 flex flex-col items-center bg-gray-100 p-4 rounded-lg hidden">
-<canvas id="qrCanvas"></canvas>
-<a id="downloadLink" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold" download="wifi-qr.png">
-Download QR Code
-</a>
+      <!-- Generate -->
+      <button class="btn btn-generate" id="generateBtn" onclick="generateQR()">
+        <span>⚡</span> Generate QR Code
+      </button>
+
+    </div>
+
+    <!-- QR Output -->
+    <div class="qr-section">
+      <div class="qr-placeholder" id="qrPlaceholder">
+        <div class="big-icon">📱</div>
+        <p>Your QR Code will appear here</p>
+      </div>
+
+      <div id="qrResult">
+        <div class="qr-box">
+          <div id="qrcode"></div>
+        </div>
+        <div class="wifi-info" id="wifiInfo"></div>
+        <br>
+        <button class="btn-download" onclick="downloadQR()">⬇️ Download QR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Made with 💚 — WiFi QR Code Generator
+  </div>
 </div>
-<script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
 
 <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+  // Toggle Password Visibility
+  const togglePw = document.getElementById('togglePw');
+  const passInput = document.getElementById('password');
+  togglePw.addEventListener('click', () => {
+    if(passInput.type === 'password') {
+      passInput.type = 'text';
+      togglePw.textContent = '🙈';
+    } else {
+      passInput.type = 'password';
+      togglePw.textContent = '👁️';
+    }
+  });
 
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-</div>
-</main>
+  // Security change — disable password for open
+  const securitySelect = document.getElementById('security');
+  securitySelect.addEventListener('change', () => {
+    const passGroup = document.getElementById('passGroup');
+    if(securitySelect.value === 'nopass') {
+      passGroup.style.opacity = '0.4';
+      passGroup.style.pointerEvents = 'none';
+      passInput.value = '';
+    } else {
+      passGroup.style.opacity = '1';
+      passGroup.style.pointerEvents = 'auto';
+    }
+  });
 
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+  // Generate QR
+  let qrInstance = null;
 
-<script>
-function generateWiFiQR(){
-const ssid = document.getElementById("ssid").value.trim();
-const password = document.getElementById("password").value.trim();
-const encryption = document.getElementById("encryption").value;
+  function generateQR() {
+    // Reset errors
+    clearErrors();
 
-if(!ssid){ alert("Please enter WiFi SSID!"); return; }
+    const ssid = document.getElementById('ssid').value.trim();
+    const password = passInput.value;
+    const security = securitySelect.value;
+    const hidden = document.getElementById('hidden').checked;
 
-let qrText = `WIFI:T:${encryption};S:${ssid};`;
-if(encryption !== "nopass") qrText += `P:${password};`;
-qrText += ";";
+    // Validation
+    let hasError = false;
 
-const qr = new QRious({
-  element: document.getElementById("qrCanvas"),
-  value: qrText,
-  size: 250
-});
+    if(!ssid) {
+      showError('ssidGroup', 'ssidError');
+      hasError = true;
+    }
+    if(security !== 'nopass' && !password) {
+      showError('passGroup', 'passError');
+      hasError = true;
+    }
+    if(hasError) return;
 
-const downloadLink = document.getElementById("downloadLink");
-downloadLink.href = qr.toDataURL("image/png");
+    // WiFi string
+    const escSSID = escapeSpecial(ssid);
+    const escPass = escapeSpecial(password);
+    const wifiString = `WIFI:T:${security};S:${escSSID};P:${escPass};H:${hidden ? 'true' : 'false'};;`;
 
-document.getElementById("result").classList.remove("hidden");
-}
+    // Clear old QR
+    const qrDiv = document.getElementById('qrcode');
+    qrDiv.innerHTML = '';
+
+    // Determine QR size
+    let qrSize = 220;
+    if(window.innerWidth <= 480) qrSize = 180;
+    if(window.innerWidth <= 360) qrSize = 150;
+
+    qrInstance = new QRCode(qrDiv, {
+      text: wifiString,
+      width: qrSize,
+      height: qrSize,
+      colorDark: "#166534",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // Show info
+    document.getElementById('wifiInfo').innerHTML =
+      `📶 <strong>${ssid}</strong> &nbsp;|&nbsp; 🔒 ${security === 'nopass' ? 'Open' : security}`;
+
+    // Toggle visibility
+    document.getElementById('qrPlaceholder').style.display = 'none';
+    const qrResult = document.getElementById('qrResult');
+    qrResult.classList.remove('show');
+    void qrResult.offsetWidth; // reflow
+    qrResult.classList.add('show');
+  }
+
+  function escapeSpecial(str) {
+    return str.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/;/g,'\\;').replace(/:/g,'\\:').replace(/,/g,'\\,');
+  }
+
+  function showError(groupId, errorId) {
+    document.getElementById(groupId).classList.add('error');
+    document.getElementById(errorId).classList.add('show');
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+    document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+  }
+
+  // Download QR
+  function downloadQR() {
+    const canvas = document.querySelector('#qrcode canvas');
+    if(!canvas) {
+      // fallback: use image
+      const img = document.querySelector('#qrcode img');
+      if(img) {
+        const a = document.createElement('a');
+        a.href = img.src;
+        a.download = 'WiFi_QR_Code.png';
+        a.click();
+      }
+      return;
+    }
+    const link = document.createElement('a');
+    link.download = 'WiFi_QR_Code.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') generateQR();
+  });
 </script>
 
 </body>
