@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login System</title>
+  <title>Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     body{
       font-family: Arial;
-      background:#f4f7f6;
+      background:#f0fff4;
       display:flex;
       justify-content:center;
       align-items:center;
@@ -22,8 +21,8 @@
       padding:30px;
       width:100%;
       max-width:400px;
-      border-radius:10px;
-      box-shadow:0 0 10px rgba(0,0,0,0.1);
+      border-radius:12px;
+      box-shadow:0 0 15px rgba(0,0,0,0.1);
       text-align:center;
     }
 
@@ -51,27 +50,28 @@
       background:#27ae60;
     }
 
-    .hidden{
-      display:none;
+    .message{
+      margin-top:10px;
+      font-size:14px;
+    }
+
+    .error{
+      color:red;
     }
   </style>
 </head>
 
 <body>
 
-<div class="box" id="authBox">
-  <h2>Sign Up / Login</h2>
-  <input type="email" id="email" placeholder="Enter Email">
-  <input type="password" id="password" placeholder="Enter Password">
+<div class="box">
+  <h2>User Login</h2>
 
-  <button onclick="signUp()">Sign Up</button>
+  <input type="email" id="email" placeholder="Enter Email" required>
+  <input type="password" id="password" placeholder="Enter Password" required>
+
   <button onclick="login()">Login</button>
-</div>
 
-<div class="box hidden" id="dashboard">
-  <h2>Welcome</h2>
-  <p id="userEmail"></p>
-  <button onclick="logout()">Logout</button>
+  <p id="message" class="message"></p>
 </div>
 
 <script>
@@ -82,43 +82,10 @@
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvcHVoenRrb3hpZGh3bWlsbWxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjM0MjgsImV4cCI6MjA4Njk5OTQyOH0.2Ix2jlleW-f5RYlL2i6d9PiQL9PfgGPfw1RkHYFkHgE"
   );
 
-  const authBox = document.getElementById("authBox");
-  const dashboard = document.getElementById("dashboard");
-  const userEmail = document.getElementById("userEmail");
-
-  async function checkUser(){
-    const { data: { session } } = await supabaseClient.auth.getSession();
-
-    if(session){
-      showDashboard(session.user.email);
-    }
-  }
-
-  function showDashboard(email){
-    authBox.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-    userEmail.innerText = "Logged in as: " + email;
-  }
-
-  async function signUp(){
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    const { error } = await supabaseClient.auth.signUp({
-      email: email,
-      password: password
-    });
-
-    if(error){
-      alert(error.message);
-    } else{
-      alert("Check your email for verification");
-    }
-  }
-
   async function login(){
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: email,
@@ -126,18 +93,18 @@
     });
 
     if(error){
-      alert(error.message);
+      message.innerHTML = error.message;
+      message.className = "message error";
     } else{
-      showDashboard(data.user.email);
+      message.innerHTML = "Login Successful!";
+      message.className = "message";
+      
+      // Redirect after login
+      setTimeout(() => {
+        window.location.href = "/index.html";
+      }, 1000);
     }
   }
-
-  async function logout(){
-    await supabaseClient.auth.signOut();
-    location.reload();
-  }
-
-  checkUser();
 </script>
 
 </body>
