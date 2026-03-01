@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Email Protector</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#fff;--text:#14532d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;width:100%;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);
+}
+
+/* ══ HEADER ══ */
+.hdr{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  padding:18px 22px 14px;text-align:center;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 4px 20px rgba(22,163,74,.2);
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.hdr .ic{font-size:30px;animation:bob 2.5s ease infinite;vertical-align:middle;margin-right:8px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hdr h1{color:#fff;font-size:21px;font-weight:800;display:inline;vertical-align:middle}
+.hdr p{color:var(--g200);font-size:12px;margin-top:3px}
+
+/* ══ CONTAINER ══ */
+.container{max-width:1200px;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:20px}
+
+/* ══ CARD ══ */
+.card{
+  background:var(--card);border-radius:16px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 4px 20px rgba(22,163,74,.08);overflow:hidden;
+}
+.card-h{
+  padding:12px 18px;background:var(--g50);
+  border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+.card-h h2{font-size:15px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:6px}
+.badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700}
+.badge-g{background:var(--g100);color:var(--g700)}
+.badge-r{background:#fef2f2;color:var(--red)}
+.badge-b{background:#dbeafe;color:var(--blue)}
+.badge-p{background:#f3e8ff;color:var(--purple)}
+.badge-y{background:#fef3c7;color:var(--yellow)}
+.card-b{padding:20px}
+
+/* ══ INPUT SECTION ══ */
+.input-section{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:12px;font-weight:700;color:var(--g700);display:flex;align-items:center;gap:5px}
+.email-input{
+  width:100%;padding:14px 18px;border:2.5px solid var(--border);
+  border-radius:12px;font-size:17px;font-weight:700;
+  color:var(--text);background:var(--g50);outline:none;
+  font-family:var(--mono);transition:.3s;
+}
+.email-input:focus{border-color:var(--g500);box-shadow:0 0 0 4px rgba(34,197,94,.18);background:#fff}
+.email-input::placeholder{color:var(--g400);font-weight:500}
+.email-input.error{border-color:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
+.email-input.valid{border-color:var(--g500)}
+.validation-msg{font-size:11px;font-weight:600;margin-top:2px;min-height:16px}
+.val-ok{color:var(--g600)}
+.val-err{color:var(--red)}
+
+/* Options row */
+.opts-row{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  margin-top:10px;
+}
+.opt-chk{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.opt-chk input{width:16px;height:16px;accent-color:var(--g600);cursor:pointer}
+.opt-chk span{font-size:11.5px;font-weight:700;color:var(--g700)}
+.opt-sel{
+  padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:12px;font-weight:700;color:var(--text);background:var(--g50);
+  outline:none;cursor:pointer;
+}
+.opt-sel:focus{border-color:var(--g500)}
+
+/* ══ BUTTONS ══ */
+.btn{
+  padding:8px 16px;border:none;border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:all .25s;white-space:nowrap;
+}
+.btn:active{transform:scale(.96)!important}
+.btn-g{background:linear-gradient(135deg,var(--g500),var(--g700));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.4)}
+.btn-o{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-o:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-r{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
+.btn-r:hover{background:#fee2e2;transform:translateY(-1px)}
+.btn-b{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-b:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-p{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
+.btn-p:hover{background:#f3e8ff;transform:translateY(-1px)}
+.btn-y{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
+.btn-y:hover{background:#fef3c7;transform:translateY(-1px)}
+.btn-big{padding:14px 28px;font-size:15px;border-radius:12px}
+
+/* ══ PROTECTION METHODS GRID ══ */
+.methods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+
+/* Method Card */
+.method-card{
+  background:var(--card);border-radius:14px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 3px 14px rgba(22,163,74,.06);
+  overflow:hidden;transition:.3s;
+  display:flex;flex-direction:column;
+}
+.method-card:hover{border-color:var(--g300);box-shadow:0 6px 24px rgba(22,163,74,.1);transform:translateY(-2px)}
+.method-card.recommended{border-color:var(--g400);box-shadow:0 4px 20px rgba(22,163,74,.12)}
+
+.mc-head{
+  padding:14px 16px;background:var(--g50);
+  border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;
+}
+.mc-head h3{font-size:14px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:6px}
+.mc-badges{display:flex;gap:4px;flex-wrap:wrap}
+
+/* Security meter */
+.sec-meter{display:flex;gap:3px;align-items:center}
+.sec-bar{width:8px;height:14px;border-radius:2px;background:var(--g200)}
+.sec-bar.active{background:var(--g500)}
+.sec-bar.active.warn{background:var(--yellow)}
+.sec-bar.active.danger{background:var(--red)}
+
+.mc-body{padding:16px;flex:1;display:flex;flex-direction:column;gap:10px}
+.mc-desc{font-size:11.5px;color:var(--g600);line-height:1.6}
+
+/* How it works */
+.how-it-works{
+  font-size:10.5px;color:var(--g500);
+  padding:8px 12px;border-radius:8px;
+  background:var(--g50);border:1px solid var(--border2);
+  line-height:1.7;
+}
+.how-it-works strong{color:var(--g700)}
+
+/* Code block */
+.code-block{
+  position:relative;background:#1a2e1a;border-radius:10px;
+  overflow:hidden;
+}
+.code-head{
+  padding:8px 14px;background:rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.code-lang{font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:1px}
+.code-copy{
+  padding:4px 10px;border:1px solid rgba(255,255,255,.15);
+  border-radius:6px;font-size:10px;font-weight:700;
+  color:var(--g300);background:transparent;cursor:pointer;
+  transition:.2s;
+}
+.code-copy:hover{background:rgba(255,255,255,.1);color:#fff}
+.code-copy.copied{background:var(--g600);color:#fff;border-color:var(--g600)}
+.code-pre{
+  padding:14px;font-family:var(--mono);font-size:11.5px;
+  line-height:1.7;color:var(--g300);
+  overflow-x:auto;white-space:pre-wrap;word-break:break-all;
+  max-height:200px;
+}
+/* Syntax */
+.ck{color:#86efac;font-weight:600}
+.cv{color:#fbbf24}
+.ct{color:#93c5fd}
+.cc{color:#6b7280;font-style:italic}
+.cs{color:#f9a8d4}
+.cn{color:#fca5a5}
+
+/* Preview Box */
+.preview-box{
+  padding:12px 16px;border-radius:10px;
+  background:var(--g50);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;min-height:48px;
+}
+.preview-label{font-size:10px;font-weight:800;color:var(--g500);text-transform:uppercase;letter-spacing:.5px}
+.preview-result{font-size:14px;font-weight:700;color:var(--g800);word-break:break-all;font-family:var(--mono)}
+.preview-result a{color:var(--g600);text-decoration:underline}
+
+/* Bot test result */
+.bot-view{
+  padding:8px 12px;border-radius:8px;
+  background:#1e1e1e;color:var(--g400);
+  font-family:var(--mono);font-size:11px;
+  line-height:1.6;
+}
+.bot-view .bot-label{color:var(--orange);font-weight:700}
+
+/* ══ COMPARISON TABLE ══ */
+.cmp-wrap{overflow-x:auto;border-radius:12px;border:1.5px solid var(--border2)}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+.cmp-tbl th{
+  background:var(--g100);color:var(--g800);padding:10px 14px;
+  text-align:left;font-size:11px;font-weight:800;
+  border-bottom:1.5px solid var(--border);
+  position:sticky;top:0;
+}
+.cmp-tbl td{padding:10px 14px;border-bottom:1px solid var(--border2)}
+.cmp-tbl tr:hover td{background:var(--g50)}
+.cmp-tbl .yes{color:var(--g600);font-weight:700}
+.cmp-tbl .no{color:var(--red);font-weight:700}
+.cmp-tbl .mid{color:var(--yellow);font-weight:700}
+.rec-row{background:rgba(74,222,128,.08)}
+.rec-row td:first-child{font-weight:800;color:var(--g700)}
+
+/* ══ BULK SECTION ══ */
+.bulk-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bulk-ta{
+  width:100%;min-height:150px;padding:12px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-family:var(--mono);font-size:12px;line-height:1.7;
+  color:var(--text);background:var(--g50);outline:none;
+  resize:vertical;
+}
+.bulk-ta:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.15);background:#fff}
+.bulk-ta::placeholder{color:var(--g400)}
+.bulk-count{font-size:11px;font-weight:600;color:var(--g500);margin-top:4px}
+
+/* ══ HOW BOTS WORK ══ */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.info-card{
+  padding:16px;border-radius:12px;
+  border:1.5px solid var(--border2);
+  background:var(--card);transition:.2s;
+}
+.info-card:hover{border-color:var(--g300);transform:translateY(-2px)}
+.info-card .if-icon{font-size:28px;margin-bottom:6px}
+.info-card h4{font-size:12.5px;font-weight:800;color:var(--g800);margin-bottom:4px}
+.info-card p{font-size:11px;color:var(--g500);line-height:1.6}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:10px 22px;border-radius:12px;font-size:13px;
+  font-weight:700;color:#fff;z-index:200;
+  pointer-events:none;transition:all .4s;opacity:0;
+  backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-ok{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-err{background:rgba(220,38,38,.92)}
+.toast-info{background:rgba(37,99,235,.92)}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══ FOOTER ══ */
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--g500);font-weight:600}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .hdr{padding:14px 12px 11px}
+  .hdr h1{font-size:17.5px}.hdr .ic{font-size:24px}
+  .container{padding:12px;gap:14px}
+  .card-b{padding:14px}
+  .methods-grid{grid-template-columns:1fr}
+  .input-section{grid-template-columns:1fr}
+  .email-input{font-size:15px;padding:12px 14px}
+  .bulk-grid{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr 1fr}
+  .cmp-tbl{min-width:500px}
+}
+@media(max-width:480px){
+  .hdr{padding:12px 8px 9px}
+  .hdr h1{font-size:15.5px}.hdr .ic{font-size:22px}
+  .hdr p{font-size:10.5px}
+  .container{padding:8px;gap:10px}
+  .card-b{padding:10px}
+  .card-h{padding:10px 12px}
+  .card-h h2{font-size:13px}
+  .email-input{font-size:14px;padding:10px 12px}
+  .mc-head{padding:10px 12px}
+  .mc-body{padding:12px}
+  .code-pre{font-size:10.5px;padding:10px}
+  .btn{padding:6px 12px;font-size:11px}
+  .btn-big{padding:11px 20px;font-size:13px}
+  .info-grid{grid-template-columns:1fr}
+  .opts-row{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div><span class="ic">🛡️</span><h1>Website Email Protector</h1></div>
+  <p>Protect your email from spam bots & web scrapers — 8 Protection Methods</p>
+</div>
+
+<div class="container">
+
+<!-- ═══ EMAIL INPUT ═══ -->
+<div class="card">
+  <div class="card-h">
+    <h2>📧 Enter Email to Protect</h2>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-y" onclick="loadSample()">📄 Sample</button>
+      <button class="btn btn-r" onclick="clearAll()">🗑️ Clear</button>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="input-section">
+      <div class="form-group">
+        <label>📧 Email Address</label>
+        <input type="email" class="email-input" id="emailInput" placeholder="yourname@example.com" oninput="onEmailInput()" autocomplete="off" spellcheck="false">
+        <div class="validation-msg" id="valMsg"></div>
+      </div>
+      <button class="btn btn-g btn-big" onclick="generateAll()">🛡️ Protect</button>
+    </div>
+
+    <!-- Options -->
+    <div class="opts-row">
+      <label class="opt-chk">
+        <input type="checkbox" id="optMailto" checked>
+        <span>📨 Include mailto: link</span>
+      </label>
+      <label class="opt-chk">
+        <input type="checkbox" id="optSubject">
+        <span>📋 Add subject</span>
+      </label>
+      <label class="opt-chk">
+        <input type="checkbox" id="optNoJS">
+        <span>🚫 No-JS fallback</span>
+      </label>
+      <label class="opt-chk">
+        <input type="checkbox" id="optDisplay" checked>
+        <span>👁️ Show email text</span>
+      </label>
+      <div style="display:flex;align-items:center;gap:5px">
+        <label style="font-size:11px;font-weight:700;color:var(--g700)">🔤 Display Text:</label>
+        <input type="text" class="email-input" id="displayText" placeholder="Click to email" style="font-size:12px;padding:7px 10px;width:180px;font-family:inherit" oninput="generateAll()">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROTECTION METHODS ═══ -->
+<div class="card">
+  <div class="card-h">
+    <h2>🛡️ Protection Methods</h2>
+    <span class="badge badge-g">8 Methods Generated</span>
+  </div>
+  <div class="card-b">
+    <div class="methods-grid" id="methodsGrid">
+      <div style="text-align:center;color:var(--g400);padding:40px;grid-column:1/-1">
+        <div style="font-size:60px;margin-bottom:10px">🛡️</div>
+        <p style="font-size:14px;font-weight:700">Enter an email address above and click "Protect" to generate all methods</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMPARISON TABLE ═══ -->
+<div class="card">
+  <div class="card-h"><h2>📊 Method Comparison</h2></div>
+  <div class="card-b">
+    <div class="cmp-wrap">
+      <table class="cmp-tbl">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Security</th>
+            <th>JavaScript</th>
+            <th>Clickable</th>
+            <th>Accessible</th>
+            <th>SEO Safe</th>
+            <th>Difficulty for Bots</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="rec-row"><td>⭐ JS Encrypted</td><td>⭐⭐⭐⭐⭐</td><td class="yes">Required</td><td class="yes">✅ Yes</td><td class="mid">⚠️ Moderate</td><td class="no">❌ No</td><td>Very Hard</td></tr>
+          <tr class="rec-row"><td>⭐ ROT13 + JS</td><td>⭐⭐⭐⭐</td><td class="yes">Required</td><td class="yes">✅ Yes</td><td class="mid">⚠️ Moderate</td><td class="no">❌ No</td><td>Hard</td></tr>
+          <tr><td>HTML Entities</td><td>⭐⭐⭐</td><td class="yes">Not Needed</td><td class="yes">✅ Yes</td><td class="yes">✅ Good</td><td class="yes">✅ Yes</td><td>Medium</td></tr>
+          <tr><td>CSS Reverse</td><td>⭐⭐⭐</td><td class="yes">Not Needed</td><td class="no">❌ No</td><td class="mid">⚠️ Tricky</td><td class="no">❌ No</td><td>Medium</td></tr>
+          <tr><td>Hex Encoding</td><td>⭐⭐⭐</td><td class="yes">Not Needed</td><td class="yes">✅ Yes</td><td class="yes">✅ Good</td><td class="yes">✅ Yes</td><td>Medium</td></tr>
+          <tr><td>Data Attribute + JS</td><td>⭐⭐⭐⭐</td><td class="yes">Required</td><td class="yes">✅ Yes</td><td class="mid">⚠️ Moderate</td><td class="no">❌ No</td><td>Hard</td></tr>
+          <tr><td>SVG/Image Text</td><td>⭐⭐⭐⭐</td><td class="yes">Not Needed</td><td class="no">❌ No</td><td class="no">❌ Poor</td><td class="no">❌ No</td><td>Hard</td></tr>
+          <tr><td>Contact Form</td><td>⭐⭐⭐⭐⭐</td><td class="yes">Optional</td><td class="yes">✅ Yes</td><td class="yes">✅ Good</td><td class="yes">✅ Yes</td><td>Maximum</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BULK PROTECTOR ═══ -->
+<div class="card">
+  <div class="card-h">
+    <h2>📦 Bulk Email Protector</h2>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-g" onclick="bulkProtect()">🛡️ Protect All</button>
+      <button class="btn btn-o" onclick="copyBulk()">📋 Copy All</button>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="bulk-grid">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--g700);margin-bottom:6px;display:block">📧 Input Emails (one per line)</label>
+        <textarea class="bulk-ta" id="bulkInput" placeholder="email1@example.com&#10;email2@company.org&#10;support@business.net" oninput="countBulk()"></textarea>
+        <div class="bulk-count" id="bulkCount">0 emails</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label style="font-size:12px;font-weight:700;color:var(--g700)">🛡️ Protected Output</label>
+          <select class="opt-sel" id="bulkMethod">
+            <option value="entities">HTML Entities</option>
+            <option value="hex">Hex Encoding</option>
+            <option value="js" selected>JS Encrypted</option>
+            <option value="rot13">ROT13 + JS</option>
+            <option value="css">CSS Reverse</option>
+          </select>
+        </div>
+        <textarea class="bulk-ta" id="bulkOutput" readonly placeholder="Protected code will appear here…" style="background:#f0fdf4"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HOW BOTS SCRAPE ═══ -->
+<div class="card">
+  <div class="card-h"><h2>🤖 How Email Scraping Works & Why You Need Protection</h2></div>
+  <div class="card-b">
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="if-icon">🕷️</div>
+        <h4>Web Crawlers</h4>
+        <p>Bots crawl websites and scan HTML source code for email patterns like xxx@xxx.xxx using regex.</p>
+      </div>
+      <div class="info-card">
+        <div class="if-icon">📧</div>
+        <h4>mailto: Links</h4>
+        <p>Plain mailto: links in HTML are the easiest target. Bots directly extract emails from href attributes.</p>
+      </div>
+      <div class="info-card">
+        <div class="if-icon">📊</div>
+        <h4>Pattern Matching</h4>
+        <p>Advanced bots use regex patterns to find anything that looks like an email address in your page text.</p>
+      </div>
+      <div class="info-card">
+        <div class="if-icon">🗃️</div>
+        <h4>Database Collection</h4>
+        <p>Harvested emails are added to spam databases, sold to marketers, or used in phishing attacks.</p>
+      </div>
+      <div class="info-card">
+        <div class="if-icon">🛡️</div>
+        <h4>Obfuscation</h4>
+        <p>Encoding emails as HTML entities, hex codes, or JS makes them invisible to most automated scrapers.</p>
+      </div>
+      <div class="info-card">
+        <div class="if-icon">✅</div>
+        <h4>Best Practice</h4>
+        <p>Use JS-based encoding + noscript fallback for maximum protection while keeping emails user-accessible.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Made with 💚 — Website Email Protector Tool</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════
+   STATE
+   ═══════════════════════════════════ */
+let currentEmail = '';
+
+/* ═══════════════════════════════════
+   VALIDATION
+   ═══════════════════════════════════ */
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function onEmailInput() {
+  const inp = document.getElementById('emailInput');
+  const msg = document.getElementById('valMsg');
+  const val = inp.value.trim();
+
+  if (!val) {
+    inp.classList.remove('error', 'valid');
+    msg.innerHTML = '';
+    return;
+  }
+
+  if (validateEmail(val)) {
+    inp.classList.remove('error');
+    inp.classList.add('valid');
+    msg.innerHTML = '<span class="val-ok">✅ Valid email address</span>';
+  } else {
+    inp.classList.remove('valid');
+    inp.classList.add('error');
+    msg.innerHTML = '<span class="val-err">❌ Invalid email format</span>';
+  }
+}
+
+/* ═══════════════════════════════════
+   GENERATE ALL METHODS
+   ═══════════════════════════════════ */
+function generateAll() {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email) { toast('⚠️ Enter an email address!', 'err'); return; }
+  if (!validateEmail(email)) { toast('❌ Invalid email format!', 'err'); return; }
+
+  currentEmail = email;
+  const mailto = document.getElementById('optMailto').checked;
+  const subject = document.getElementById('optSubject').checked ? '?subject=Hello' : '';
+  const showEmail = document.getElementById('optDisplay').checked;
+  const dispText = document.getElementById('displayText').value || email;
+  const nojs = document.getElementById('optNoJS').checked;
+
+  const [user, domain] = email.split('@');
+  const grid = document.getElementById('methodsGrid');
+
+  const methods = [
+    genMethod1_JSEncrypted(email, user, domain, mailto, subject, dispText, showEmail, nojs),
+    genMethod2_ROT13(email, user, domain, mailto, subject, dispText, showEmail, nojs),
+    genMethod3_HTMLEntities(email, mailto, subject, dispText, showEmail),
+    genMethod4_CSSReverse(email),
+    genMethod5_HexEncoding(email, mailto, subject, dispText, showEmail),
+    genMethod6_DataAttr(email, user, domain, mailto, subject, dispText, showEmail),
+    genMethod7_SVGImage(email),
+    genMethod8_ContactForm(email)
+  ];
+
+  grid.innerHTML = methods.join('');
+  toast('🛡️ 8 protection methods generated!', 'ok');
+}
+
+/* ═══════════════════════════════════
+   METHOD 1: JS ENCRYPTED
+   ═══════════════════════════════════ */
+function genMethod1_JSEncrypted(email, user, domain, mailto, subj, disp, showEmail, nojs) {
+  const encoded = [...email].map(c => c.charCodeAt(0) ^ 42).join(',');
+  const id = 'ep_' + Date.now();
+  const dispHTML = showEmail ? email : disp;
+
+  const code = `<span id="${id}"></span>
+<script>
+(function(){
+  var c=[${encoded}];
+  var e=c.map(function(x){return String.fromCharCode(x^42)}).join('');
+  var el=document.getElementById('${id}');
+  ${mailto ? `el.innerHTML='<a href="mailto:'+e+'${subj}">'+${showEmail ? "''+e+''" : `'${escH(disp)}'`}+'</a>';` : `el.textContent=e;`}
+})();
+<\/script>${nojs ? `\n<noscript><span>[Enable JavaScript to see email]</span></noscript>` : ''}`;
+
+  return methodCard('⭐ JS XOR Encrypted', '🔒 Highest Security', 5,
+    'Email is XOR-encrypted as number array. JavaScript decodes it on the client. Bots scanning HTML see only numbers.',
+    code, 'javascript',
+    `Bots see: <span class="bot-label">[${encoded.substring(0, 40)}...]</span>`,
+    ['badge-g:⭐ Recommended', 'badge-p:JS Required']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 2: ROT13 + JS
+   ═══════════════════════════════════ */
+function genMethod2_ROT13(email, user, domain, mailto, subj, disp, showEmail, nojs) {
+  const rot13 = email.replace(/[a-zA-Z]/g, c => {
+    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c.charCodeAt(0) + 13) ? c.charCodeAt(0) + 13 : c.charCodeAt(0) - 13);
+  });
+
+  const id = 'rot_' + Date.now();
+  const code = `<span id="${id}" data-r="${rot13}"></span>
+<script>
+(function(){
+  var el=document.getElementById('${id}');
+  var d=el.getAttribute('data-r');
+  var e=d.replace(/[a-zA-Z]/g,function(c){
+    return String.fromCharCode((c<='Z'?90:122)>=(c.charCodeAt(0)+13)?c.charCodeAt(0)+13:c.charCodeAt(0)-13);
+  });
+  ${mailto ? `el.innerHTML='<a href="mailto:'+e+'${subj}">${showEmail ? "'+e+'" : escH(disp)}</a>';` : `el.textContent=e;`}
+})();
+<\/script>${nojs ? `\n<noscript><span>[Enable JavaScript to see email]</span></noscript>` : ''}`;
+
+  return methodCard('⭐ ROT13 Cipher', '🔐 Strong Protection', 4,
+    'Email is ROT13 encoded (letters shifted by 13). JS decodes on page load. Simple but very effective against most bots.',
+    code, 'html',
+    `Bots see: <span class="bot-label">${escH(rot13)}</span>`,
+    ['badge-g:⭐ Recommended', 'badge-p:JS Required']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 3: HTML ENTITIES
+   ═══════════════════════════════════ */
+function genMethod3_HTMLEntities(email, mailto, subj, disp, showEmail) {
+  const entities = [...email].map(c => '&#' + c.charCodeAt(0) + ';').join('');
+  const hrefEntities = [...('mailto:' + email + subj)].map(c => '&#' + c.charCodeAt(0) + ';').join('');
+
+  let code;
+  if (mailto) {
+    code = `<a href="${hrefEntities}">${showEmail ? entities : escH(disp)}</a>`;
+  } else {
+    code = `<span>${entities}</span>`;
+  }
+
+  return methodCard('🔡 HTML Character Entities', '📝 No JS Required', 3,
+    'Each character is converted to its HTML decimal entity (&#xxx;). Browsers render it correctly but simple bots cannot parse it.',
+    code, 'html',
+    `Bots see: <span class="bot-label">${escH(entities.substring(0, 50))}...</span>`,
+    ['badge-b:No JS', 'badge-y:Medium Security']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 4: CSS REVERSE
+   ═══════════════════════════════════ */
+function genMethod4_CSSReverse(email) {
+  const reversed = [...email].reverse().join('');
+
+  const code = `<style>
+  .email-protected {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    user-select: all;
+  }
+</style>
+<span class="email-protected">${escH(reversed)}</span>`;
+
+  return methodCard('🔄 CSS Direction Reverse', '🎨 Pure CSS Trick', 3,
+    'Email is written backwards in HTML. CSS direction:rtl reverses it visually for users. Bots reading source see reversed text.',
+    code, 'html',
+    `Bots see: <span class="bot-label">${escH(reversed)}</span>`,
+    ['badge-b:No JS', 'badge-y:Not Clickable']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 5: HEX ENCODING
+   ═══════════════════════════════════ */
+function genMethod5_HexEncoding(email, mailto, subj, disp, showEmail) {
+  const hex = [...email].map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
+  const hrefHex = [...('mailto:' + email + subj)].map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
+
+  let code;
+  if (mailto) {
+    code = `<a href="${hrefHex}">${showEmail ? hex : escH(disp)}</a>`;
+  } else {
+    code = `<span>${hex}</span>`;
+  }
+
+  return methodCard('🔢 Hex Encoding', '🔠 Hexadecimal Entities', 3,
+    'Each character becomes a hexadecimal HTML entity (&#xNN;). Similar to decimal entities but uses hex — adds another layer for bots.',
+    code, 'html',
+    `Bots see: <span class="bot-label">${escH(hex.substring(0, 50))}...</span>`,
+    ['badge-b:No JS', 'badge-y:Medium Security']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 6: DATA ATTR + JS
+   ═══════════════════════════════════ */
+function genMethod6_DataAttr(email, user, domain, mailto, subj, disp, showEmail) {
+  const id = 'da_' + Date.now();
+  const code = `<span id="${id}"
+  data-u="${btoa(user)}"
+  data-d="${btoa(domain)}"
+  data-s="@">
+  [loading...]
+</span>
+<script>
+(function(){
+  var el=document.getElementById('${id}');
+  var u=atob(el.dataset.u);
+  var d=atob(el.dataset.d);
+  var e=u+el.dataset.s+d;
+  ${mailto ? `el.innerHTML='<a href="mailto:'+e+'${subj}">${showEmail ? "'+e+'" : escH(disp)}</a>';` : `el.textContent=e;`}
+})();
+<\/script>`;
+
+  return methodCard('📦 Data Attribute + Base64', '🗄️ Split & Encode', 4,
+    'Username and domain are Base64-encoded in separate data attributes. JS assembles and decodes them. Email never appears as text in source.',
+    code, 'html',
+    `Bots see: <span class="bot-label">data-u="${btoa(user)}" data-d="${btoa(domain)}"</span>`,
+    ['badge-p:JS Required', 'badge-g:Strong']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 7: SVG IMAGE
+   ═══════════════════════════════════ */
+function genMethod7_SVGImage(email) {
+  const code = `<svg xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 ${email.length * 8.5} 24"
+  width="${email.length * 8.5}" height="24"
+  role="img" aria-label="Email address">
+  <text x="0" y="17"
+    font-family="monospace"
+    font-size="14"
+    fill="#166534">${escH(email)}</text>
+</svg>`;
+
+  return methodCard('🖼️ SVG Image Text', '🎨 Image-Based', 4,
+    'Email is rendered as SVG text — it appears as an image. Most bots cannot read text inside SVG elements. Not selectable/clickable.',
+    code, 'html',
+    `Bots see: <span class="bot-label">&lt;svg&gt;...&lt;text&gt;...&lt;/text&gt;...&lt;/svg&gt;</span>`,
+    ['badge-b:No JS', 'badge-r:Not Clickable']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD 8: CONTACT FORM
+   ═══════════════════════════════════ */
+function genMethod8_ContactForm(email) {
+  const code = `<!-- Contact form — email never exposed -->
+<form action="/api/contact" method="POST"
+  style="max-width:400px">
+  <input type="text" name="name"
+    placeholder="Your Name" required
+    style="width:100%;padding:10px;margin:5px 0;
+    border:1px solid #ccc;border-radius:6px">
+  <input type="email" name="email"
+    placeholder="Your Email" required
+    style="width:100%;padding:10px;margin:5px 0;
+    border:1px solid #ccc;border-radius:6px">
+  <textarea name="message"
+    placeholder="Your Message" rows="4" required
+    style="width:100%;padding:10px;margin:5px 0;
+    border:1px solid #ccc;border-radius:6px">
+  </textarea>
+  <button type="submit"
+    style="padding:12px 24px;background:#22c55e;
+    color:#fff;border:none;border-radius:8px;
+    font-weight:700;cursor:pointer">
+    Send Message
+  </button>
+  <!-- Server sends to: ${escH(email)} -->
+</form>`;
+
+  return methodCard('📬 Contact Form (Best)', '🏆 Maximum Protection', 5,
+    'Replace email with a contact form. Email address stays only on the server — never exposed in HTML, JavaScript, or any client-side code.',
+    code, 'html',
+    `Bots see: <span class="bot-label">&lt;form action="/api/contact"&gt;...&lt;/form&gt; — No email anywhere!</span>`,
+    ['badge-g:🏆 Safest', 'badge-b:Server-Side']
+  );
+}
+
+/* ═══════════════════════════════════
+   METHOD CARD TEMPLATE
+   ═══════════════════════════════════ */
+function methodCard(title, subtitle, security, desc, code, lang, botView, badges) {
+  const secBars = Array.from({ length: 5 }, (_, i) => {
+    const active = i < security;
+    const cls = security >= 4 ? 'active' : security >= 3 ? 'active warn' : 'active danger';
+    return `<div class="sec-bar ${active ? cls : ''}"></div>`;
+  }).join('');
+
+  const badgesHTML = badges.map(b => {
+    const [cls, text] = b.split(':');
+    return `<span class="badge ${cls}">${text}</span>`;
+  }).join('');
+
+  const codeId = 'code_' + Math.random().toString(36).substr(2, 8);
+  const escapedCode = escH(code);
+
+  return `<div class="method-card ${security >= 4 ? 'recommended' : ''}">
+    <div class="mc-head">
+      <h3>${title}</h3>
+      <div class="mc-badges">${badgesHTML}</div>
+    </div>
+    <div class="mc-body">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;font-weight:700;color:var(--g600)">${subtitle}</span>
+        <div class="sec-meter">${secBars}</div>
+      </div>
+      <div class="mc-desc">${desc}</div>
+
+      <div class="code-block">
+        <div class="code-head">
+          <span class="code-lang">${lang}</span>
+          <button class="code-copy" onclick="copyCode('${codeId}',this)">📋 Copy</button>
+        </div>
+        <pre class="code-pre" id="${codeId}">${highlightCode(escapedCode, lang)}</pre>
+      </div>
+
+      <div class="bot-view">🤖 <span class="bot-label">Bot's view:</span> ${botView}</div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════
+   SYNTAX HIGHLIGHT
+   ═══════════════════════════════════ */
+function highlightCode(code, lang) {
+  // Tags
+  code = code.replace(/(&lt;\/?[a-zA-Z][a-zA-Z0-9-]*)/g, '<span class="ck">$1</span>');
+  code = code.replace(/(&gt;)/g, '<span class="ck">$1</span>');
+  // Attributes
+  code = code.replace(/\b([a-zA-Z-]+)=/g, '<span class="ct">$1</span>=');
+  // Strings
+  code = code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g, '<span class="cv">$1</span>');
+  // Comments
+  code = code.replace(/(\/\/.*$|&lt;!--[\s\S]*?--&gt;)/gm, '<span class="cc">$1</span>');
+  // JS keywords
+  code = code.replace(/\b(var|let|const|function|return|document|getElementById|innerHTML|textContent|getAttribute|atob|replace|map|join|String|charCodeAt|fromCharCode)\b/g, '<span class="cs">$1</span>');
+  // Numbers
+  code = code.replace(/\b(\d+)\b/g, '<span class="cn">$1</span>');
+
+  return code;
+}
+
+/* ═══════════════════════════════════
+   COPY CODE
+   ═══════════════════════════════════ */
+function copyCode(id, btn) {
+  const el = document.getElementById(id);
+  const text = el.textContent || el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+    toast('📋 Code copied!', 'ok');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✅ Copied!';
+    toast('📋 Copied!', 'ok');
+  });
+}
+
+/* ═══════════════════════════════════
+   BULK PROTECTOR
+   ═══════════════════════════════════ */
+function countBulk() {
+  const lines = document.getElementById('bulkInput').value.trim().split('\n').filter(l => l.trim());
+  document.getElementById('bulkCount').textContent = lines.length + ' emails';
+}
+
+function bulkProtect() {
+  const input = document.getElementById('bulkInput').value.trim();
+  if (!input) { toast('⚠️ Enter emails!', 'err'); return; }
+
+  const method = document.getElementById('bulkMethod').value;
+  const emails = input.split('\n').map(l => l.trim()).filter(l => validateEmail(l));
+
+  if (!emails.length) { toast('❌ No valid emails found!', 'err'); return; }
+
+  const results = emails.map(email => {
+    switch (method) {
+      case 'entities': return [...email].map(c => '&#' + c.charCodeAt(0) + ';').join('');
+      case 'hex': return [...email].map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
+      case 'js': {
+        const enc = [...email].map(c => c.charCodeAt(0) ^ 42).join(',');
+        return `<span id="e_${Math.random().toString(36).substr(2,6)}"></span><script>(function(){var c=[${enc}];var e=c.map(function(x){return String.fromCharCode(x^42)}).join('');document.currentScript.previousElementSibling.innerHTML='<a href="mailto:'+e+'">'+e+'</a>';})()</` + 'script>';
+      }
+      case 'rot13': {
+        const rot = email.replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c.charCodeAt(0) + 13) ? c.charCodeAt(0) + 13 : c.charCodeAt(0) - 13));
+        return `<!-- ROT13: ${rot} -->`;
+      }
+      case 'css': {
+        const rev = [...email].reverse().join('');
+        return `<span style="unicode-bidi:bidi-override;direction:rtl">${rev}</span>`;
+      }
+      default: return email;
+    }
+  });
+
+  document.getElementById('bulkOutput').value = results.join('\n\n');
+  toast('🛡️ ' + emails.length + ' emails protected!', 'ok');
+}
+
+function copyBulk() {
+  const output = document.getElementById('bulkOutput').value;
+  if (!output) { toast('⚠️ Nothing to copy!', 'err'); return; }
+  navigator.clipboard.writeText(output).then(() => toast('📋 Copied!', 'ok'))
+    .catch(() => toast('❌ Copy failed', 'err'));
+}
+
+/* ═══════════════════════════════════
+   SAMPLE
+   ═══════════════════════════════════ */
+function loadSample() {
+  document.getElementById('emailInput').value = 'hello@mywebsite.com';
+  document.getElementById('displayText').value = 'Email Us';
+  onEmailInput();
+  generateAll();
+  toast('📄 Sample loaded!', 'ok');
+}
+
+/* ═══════════════════════════════════
+   CLEAR
+   ═══════════════════════════════════ */
+function clearAll() {
+  document.getElementById('emailInput').value = '';
+  document.getElementById('displayText').value = '';
+  document.getElementById('valMsg').innerHTML = '';
+  document.getElementById('emailInput').classList.remove('error', 'valid');
+  document.getElementById('methodsGrid').innerHTML = `
+    <div style="text-align:center;color:var(--g400);padding:40px;grid-column:1/-1">
+      <div style="font-size:60px;margin-bottom:10px">🛡️</div>
+      <p style="font-size:14px;font-weight:700">Enter an email address above and click "Protect" to generate all methods</p>
+    </div>`;
+  toast('🗑️ Cleared!', 'info');
+}
+
+/* ═══════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════ */
+function escH(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function toast(m, t = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = m; el.className = 'toast toast-' + t + ' show';
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+/* Keyboard */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { generateAll(); e.preventDefault(); }
+});
+
+document.getElementById('emailInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { generateAll(); e.preventDefault(); }
+});
+</script>
+</body>
+</html>
