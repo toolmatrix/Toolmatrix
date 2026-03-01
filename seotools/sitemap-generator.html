@@ -3,87 +3,834 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sitemap Generator - Tool Matrix</title>
-<meta name="description" content="Generate XML sitemap for your website instantly. Mobile-friendly sitemap generator tool by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Sitemap Generator — Free XML Sitemap Creator Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --primary:#43B02A;--primary-dark:#369321;--primary-light:#E8F5E3;
+    --primary-lighter:#F2FAF0;--accent:#2E7D1E;--bg:#F5FBF3;
+    --text:#1A2E14;--text-light:#5A7D50;--white:#fff;
+    --shadow:0 4px 24px rgba(67,176,42,.10);
+    --shadow-lg:0 8px 40px rgba(67,176,42,.13);
+    --radius:16px;--radius-sm:10px;
+    --red:#E53935;--orange:#FF9800;--blue:#1E88E5;--green:#43B02A;
+    --border:#D5EDCF;
+  }
+  body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
+
+  /* ====== SCROLLBAR ====== */
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-track{background:var(--primary-lighter)}
+  ::-webkit-scrollbar-thumb{background:var(--primary);border-radius:8px}
+
+  /* ====== NAVBAR ====== */
+  .navbar{background:var(--primary);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(67,176,42,.18);position:sticky;top:0;z-index:100}
+  .navbar .logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;color:#fff;text-decoration:none}
+  .navbar .logo svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:20px}
+  .nav-links a{color:rgba(255,255,255,.85);font-size:14px;font-weight:500;text-decoration:none;transition:.2s}
+  .nav-links a:hover{color:#fff}
+
+  /* ====== HERO ====== */
+  .hero{text-align:center;padding:46px 20px 10px}
+  .hero h1{font-size:40px;font-weight:900;line-height:1.15;margin-bottom:12px}
+  .hero h1 span{color:var(--primary)}
+  .hero p{color:var(--text-light);font-size:16px;max-width:650px;margin:0 auto}
+
+  /* ====== TABS ====== */
+  .tab-bar{display:flex;justify-content:center;gap:0;margin:28px auto 0;max-width:520px;background:var(--primary-light);border-radius:50px;padding:4px}
+  .tab-btn{flex:1;padding:12px 10px;border:none;background:transparent;border-radius:50px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;color:var(--text-light);cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .tab-btn.active{background:var(--primary);color:#fff;box-shadow:0 2px 10px rgba(67,176,42,.3)}
+  .tab-btn svg{width:16px;height:16px}
+
+  /* ====== MAIN CARD ====== */
+  .main-card{max-width:900px;width:95%;margin:24px auto 0;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1.5px solid var(--border);overflow:hidden}
+
+  /* Card Header */
+  .card-hdr{background:var(--primary-light);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #C8E6C0;flex-wrap:wrap;gap:10px}
+  .card-hdr .hdr-left{display:flex;align-items:center;gap:10px}
+  .card-hdr .hdr-left svg{width:24px;height:24px;color:var(--primary)}
+  .card-hdr h2{font-size:17px;font-weight:700;color:var(--accent)}
+  .url-count{font-size:12px;color:var(--text-light);font-weight:600;background:#fff;padding:4px 14px;border-radius:20px}
+
+  /* ====== TAB PANELS ====== */
+  .tab-panel{display:none;padding:0}
+  .tab-panel.active{display:block}
+
+  /* ====== SINGLE ADD ====== */
+  .single-add{padding:24px 28px;border-bottom:1px solid #E8F5E3}
+  .single-add .form-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end}
+  .form-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px}
+  .form-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-light)}
+  .form-group input,.form-group select{padding:10px 14px;border:1.5px solid #C8E6C0;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;transition:.2s;background:#fff}
+  .form-group input:focus,.form-group select:focus{border-color:var(--primary)}
+  .form-group input::placeholder{color:#A9C9A0}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;border-radius:50px;border:none;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all .25s;letter-spacing:.15px}
+  .btn svg{width:16px;height:16px}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 3px 12px rgba(67,176,42,.3)}
+  .btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
+  .btn-outline{background:#fff;color:var(--text-light);border:1.5px solid var(--border)}
+  .btn-outline:hover{background:var(--primary-light);color:var(--accent)}
+  .btn-danger{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(229,57,53,.25)}
+  .btn-danger:hover{background:#C62828}
+  .btn-blue{background:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(30,136,229,.25)}
+  .btn-blue:hover{background:#1565C0}
+  .btn-orange{background:var(--orange);color:#fff;box-shadow:0 3px 10px rgba(255,152,0,.25)}
+  .btn-orange:hover{background:#F57C00}
+  .btn-download{background:linear-gradient(135deg,#43B02A,#2E7D1E);color:#fff;box-shadow:0 4px 18px rgba(67,176,42,.35);position:relative;overflow:hidden;font-size:15px;padding:14px 34px}
+  .btn-download:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(67,176,42,.45)}
+  .btn-download::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);animation:shine 3s infinite}
+  @keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+  /* ====== BULK ====== */
+  .bulk-area{padding:24px 28px}
+  .bulk-area textarea{width:100%;min-height:200px;padding:16px;border:1.5px solid #C8E6C0;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:13px;line-height:1.8;color:var(--text);outline:none;resize:vertical;transition:.2s}
+  .bulk-area textarea:focus{border-color:var(--primary)}
+  .bulk-area textarea::placeholder{color:#A9C9A0}
+  .bulk-area .bulk-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .bulk-area .bulk-info{font-size:12px;color:var(--text-light);margin-left:auto}
+
+  /* ====== FETCH ====== */
+  .fetch-area{padding:24px 28px}
+  .fetch-row{display:flex;gap:10px;margin-bottom:14px}
+  .fetch-row input{flex:1;padding:12px 16px;border:1.5px solid #C8E6C0;border-radius:50px;font-family:'Inter',sans-serif;font-size:14px;outline:none}
+  .fetch-row input:focus{border-color:var(--primary)}
+  .fetch-info{font-size:13px;color:var(--text-light);line-height:1.6;margin-top:10px;padding:14px;background:var(--primary-lighter);border-radius:var(--radius-sm);border:1px solid var(--border)}
+
+  /* ====== URL TABLE ====== */
+  .url-table-wrap{max-height:420px;overflow-y:auto;border-top:1.5px solid #E0F0DB}
+  .url-table{width:100%;border-collapse:collapse}
+  .url-table thead{position:sticky;top:0;z-index:2}
+  .url-table th{background:var(--primary-lighter);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-light);text-align:left;border-bottom:1.5px solid #C8E6C0}
+  .url-table td{padding:10px 16px;font-size:13px;border-bottom:1px solid #E8F5E3;color:var(--text);vertical-align:middle}
+  .url-table tr:hover td{background:var(--primary-lighter)}
+  .url-table .url-cell{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--primary-dark);font-weight:500}
+  .url-table .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase}
+  .badge-high{background:#E8F5E3;color:var(--green)}
+  .badge-med{background:#FFF8E1;color:#F9A825}
+  .badge-low{background:#FFEBEE;color:var(--red)}
+  .del-btn{width:28px;height:28px;border:none;background:#FFEBEE;color:var(--red);border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .del-btn:hover{background:var(--red);color:#fff}
+  .edit-btn{width:28px;height:28px;border:none;background:#E3F2FD;color:var(--blue);border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:.2s;margin-right:4px}
+  .edit-btn:hover{background:var(--blue);color:#fff}
+
+  /* Empty state */
+  .empty-state{padding:50px 20px;text-align:center}
+  .empty-state .icon{font-size:56px;margin-bottom:14px}
+  .empty-state h3{font-size:18px;color:var(--text);margin-bottom:8px}
+  .empty-state p{font-size:14px;color:var(--text-light);max-width:400px;margin:0 auto}
+
+  /* ====== SETTINGS ====== */
+  .settings-bar{padding:18px 28px;background:var(--primary-lighter);border-top:1.5px solid #E0F0DB;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+  .settings-bar .set-group{display:flex;align-items:center;gap:8px}
+  .settings-bar label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-light);white-space:nowrap}
+  .settings-bar select{padding:7px 12px;border:1.5px solid #C8E6C0;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:pointer}
+  .settings-bar input[type="checkbox"]{accent-color:var(--primary);width:16px;height:16px;cursor:pointer}
+
+  /* ====== ACTION BAR ====== */
+  .action-bar{padding:22px 28px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;border-top:1.5px solid #E0F0DB;background:var(--white)}
+
+  /* ====== PREVIEW ====== */
+  .preview-section{display:none;max-width:900px;width:95%;margin:24px auto 0}
+  .preview-section.active{display:block}
+  .preview-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1.5px solid var(--border);overflow:hidden}
+  .preview-hdr{background:var(--primary-light);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #C8E6C0;flex-wrap:wrap;gap:10px}
+  .preview-hdr h3{font-size:16px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px}
+  .preview-body{max-height:440px;overflow:auto}
+  .preview-body pre{padding:20px;font-size:12.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;font-family:'Courier New',monospace;color:var(--text);background:#FAFFF8}
+  .preview-body pre .tag{color:var(--blue)}
+  .preview-body pre .attr{color:var(--orange)}
+  .preview-body pre .val{color:var(--green)}
+  .preview-body pre .comment{color:#999}
+
+  /* ====== STATS ====== */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;max-width:900px;width:95%;margin:24px auto 0}
+  .stat-card{background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow);border:1.5px solid var(--border);padding:20px;text-align:center;transition:transform .2s}
+  .stat-card:hover{transform:translateY(-3px)}
+  .stat-card .s-icon{font-size:28px;margin-bottom:8px}
+  .stat-card .s-val{font-size:26px;font-weight:900;color:var(--primary)}
+  .stat-card .s-label{font-size:12px;color:var(--text-light);font-weight:600;margin-top:4px}
+
+  /* ====== FEATURES ====== */
+  .features{max-width:900px;width:95%;margin:40px auto 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .feat-card{background:var(--white);border-radius:var(--radius-sm);padding:22px;text-align:center;border:1.5px solid var(--border);transition:transform .2s,box-shadow .2s}
+  .feat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .feat-card .f-icon{font-size:30px;margin-bottom:8px}
+  .feat-card h4{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:5px}
+  .feat-card p{font-size:12px;color:var(--text-light);line-height:1.5}
+
+  /* ====== TOAST ====== */
+  .toast{position:fixed;bottom:30px;right:30px;padding:14px 24px;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#fff;z-index:999;transform:translateY(80px);opacity:0;transition:.4s;box-shadow:0 6px 20px rgba(0,0,0,.15);display:flex;align-items:center;gap:8px}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast-success{background:var(--green)}
+  .toast-error{background:var(--red)}
+  .toast-info{background:var(--blue)}
+
+  /* ====== FOOTER ====== */
+  .footer{text-align:center;padding:24px;color:var(--text-light);font-size:13px;border-top:1px solid var(--border);background:var(--primary-lighter);margin-top:40px}
+
+  /* ====== RESPONSIVE ====== */
+  @media(max-width:650px){
+    .navbar{padding:0 16px}
+    .nav-links{display:none}
+    .hero h1{font-size:26px}
+    .hero p{font-size:13px}
+    .single-add,.bulk-area,.fetch-area{padding:16px}
+    .card-hdr,.settings-bar,.action-bar{padding:14px 16px}
+    .form-group{min-width:100%}
+    .fetch-row{flex-direction:column}
+    .url-table th,.url-table td{padding:8px 10px;font-size:11px}
+    .btn{padding:10px 18px;font-size:12px}
+    .btn-download{padding:12px 24px;font-size:13px}
+    .tab-btn{font-size:11.5px;padding:10px 6px}
+  }
+
+  .fade-in{animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<body>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">Sitemap Generator</h1>
-<p class="text-gray-600 mt-2">Generate XML sitemap for your website URLs instantly</p>
-</header>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    SitemapGen
+  </a>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">Features</a>
+    <a href="#">Guide</a>
+    <a href="#">About</a>
+  </div>
+</nav>
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+<!-- HERO -->
+<section class="hero">
+  <h1>Generate <span>XML Sitemap</span><br>For Your Website</h1>
+  <p>Add URLs manually, paste in bulk, or auto-fetch — create a valid XML sitemap and download it instantly. 100% free!</p>
+</section>
 
-<label class="block font-semibold text-gray-700">Enter website URLs (one per line):</label>
-<textarea id="urlInput" rows="10" class="w-full p-4 border rounded-lg" placeholder="https://example.com/page1&#10;https://example.com/page2"></textarea>
-
-<button onclick="generateSitemap()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Generate Sitemap
-</button>
-
-<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
-<h3 class="font-semibold text-blue-700">Generated XML Sitemap:</h3>
-<pre id="sitemapOutput" class="mt-2 text-gray-700 whitespace-pre-wrap"></pre>
-<button onclick="downloadSitemap()" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold">
-Download Sitemap
-</button>
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('single')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add URL
+  </button>
+  <button class="tab-btn" onclick="switchTab('bulk')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Bulk Add
+  </button>
+  <button class="tab-btn" onclick="switchTab('fetch')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/></svg>
+    Auto Fetch
+  </button>
 </div>
-<script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
+
+<!-- MAIN CARD -->
+<div class="main-card fade-in">
+
+  <!-- CARD HEADER -->
+  <div class="card-hdr">
+    <div class="hdr-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <h2>Sitemap URLs</h2>
+    </div>
+    <span class="url-count" id="urlCount">0 URLs added</span>
+  </div>
+
+  <!-- TAB: SINGLE ADD -->
+  <div class="tab-panel active" id="panelSingle">
+    <div class="single-add">
+      <div class="form-row">
+        <div class="form-group" style="flex:3;min-width:200px">
+          <label>🔗 Page URL</label>
+          <input type="url" id="singleUrl" placeholder="https://example.com/page">
+        </div>
+        <div class="form-group" style="flex:1;min-width:120px">
+          <label>📅 Last Modified</label>
+          <input type="date" id="singleDate">
+        </div>
+        <div class="form-group" style="flex:1;min-width:120px">
+          <label>🔄 Change Freq</label>
+          <select id="singleFreq">
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+            <option value="always">Always</option>
+            <option value="hourly">Hourly</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:.7;min-width:90px">
+          <label>⭐ Priority</label>
+          <select id="singlePriority">
+            <option value="1.0">1.0</option>
+            <option value="0.9">0.9</option>
+            <option value="0.8" selected>0.8</option>
+            <option value="0.7">0.7</option>
+            <option value="0.6">0.6</option>
+            <option value="0.5">0.5</option>
+            <option value="0.4">0.4</option>
+            <option value="0.3">0.3</option>
+            <option value="0.2">0.2</option>
+            <option value="0.1">0.1</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="addSingleUrl()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add URL
+        </button>
+        <button class="btn btn-outline" onclick="addCommonPages()">
+          📄 Add Common Pages
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: BULK ADD -->
+  <div class="tab-panel" id="panelBulk">
+    <div class="bulk-area">
+      <textarea id="bulkUrls" placeholder="Paste URLs here — one per line&#10;&#10;https://example.com/&#10;https://example.com/about&#10;https://example.com/contact&#10;https://example.com/blog&#10;https://example.com/services"></textarea>
+      <div class="bulk-actions">
+        <button class="btn btn-primary" onclick="addBulkUrls()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add All URLs
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('bulkUrls').value=''">🗑️ Clear</button>
+        <span class="bulk-info" id="bulkInfo">Enter one URL per line</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: AUTO FETCH -->
+  <div class="tab-panel" id="panelFetch">
+    <div class="fetch-area">
+      <div class="fetch-row">
+        <input type="url" id="fetchUrl" placeholder="https://example.com">
+        <button class="btn btn-blue" id="fetchBtn" onclick="autoFetch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3"/></svg>
+          Fetch Sitemap
+        </button>
+      </div>
+      <div class="fetch-info">
+        ℹ️ <strong>How it works:</strong> We try to fetch the existing <code>sitemap.xml</code> from the website. Common paths checked: <code>/sitemap.xml</code>, <code>/sitemap_index.xml</code>, <code>/wp-sitemap.xml</code>. Due to browser CORS restrictions, this works via a public proxy — some sites may block it.
+      </div>
+    </div>
+  </div>
+
+  <!-- URL TABLE -->
+  <div class="url-table-wrap" id="tableWrap">
+    <table class="url-table" id="urlTable">
+      <thead>
+        <tr>
+          <th style="width:36px">#</th>
+          <th>URL</th>
+          <th style="width:100px">Last Modified</th>
+          <th style="width:80px">Frequency</th>
+          <th style="width:60px">Priority</th>
+          <th style="width:70px">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="urlTableBody"></tbody>
+    </table>
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState">
+      <div class="icon">🗺️</div>
+      <h3>No URLs Added Yet</h3>
+      <p>Start by adding URLs above — you can add them one by one, paste in bulk, or auto-fetch from your website.</p>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-bar">
+    <div class="set-group">
+      <label>XML Version:</label>
+      <select id="xmlVersion">
+        <option value="1.0">XML Sitemap 1.0</option>
+        <option value="0.9">Sitemap 0.9</option>
+      </select>
+    </div>
+    <div class="set-group">
+      <label>Include Lastmod:</label>
+      <input type="checkbox" id="incLastmod" checked>
+    </div>
+    <div class="set-group">
+      <label>Include Frequency:</label>
+      <input type="checkbox" id="incFreq" checked>
+    </div>
+    <div class="set-group">
+      <label>Include Priority:</label>
+      <input type="checkbox" id="incPriority" checked>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn btn-download" onclick="generateAndDownload()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download sitemap.xml
+    </button>
+    <button class="btn btn-blue" onclick="previewSitemap()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview XML
+    </button>
+    <button class="btn btn-orange" onclick="copySitemap()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy XML
+    </button>
+    <button class="btn btn-danger" onclick="clearAllUrls()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Clear All
+    </button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row" id="statsRow" style="display:none">
+  <div class="stat-card fade-in">
+    <div class="s-icon">🔗</div>
+    <div class="s-val" id="statTotal">0</div>
+    <div class="s-label">Total URLs</div>
+  </div>
+  <div class="stat-card fade-in">
+    <div class="s-icon">⭐</div>
+    <div class="s-val" id="statHigh">0</div>
+    <div class="s-label">High Priority</div>
+  </div>
+  <div class="stat-card fade-in">
+    <div class="s-icon">📄</div>
+    <div class="s-val" id="statSize">0 KB</div>
+    <div class="s-label">File Size</div>
+  </div>
+  <div class="stat-card fade-in">
+    <div class="s-icon">✅</div>
+    <div class="s-val" id="statValid">Valid</div>
+    <div class="s-label">XML Status</div>
+  </div>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview-section" id="previewSection">
+  <div class="preview-card fade-in">
+    <div class="preview-hdr">
+      <h3>📝 XML Sitemap Preview</h3>
+      <button class="btn btn-outline" onclick="document.getElementById('previewSection').classList.remove('active')">✕ Close</button>
+    </div>
+    <div class="preview-body">
+      <pre id="previewCode"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="feat-card">
+    <div class="f-icon">🗺️</div>
+    <h4>Valid XML Sitemap</h4>
+    <p>Generates W3C valid XML sitemap compatible with all search engines.</p>
+  </div>
+  <div class="feat-card">
+    <div class="f-icon">📦</div>
+    <h4>Bulk URL Import</h4>
+    <p>Paste hundreds of URLs at once — instant import with one click.</p>
+  </div>
+  <div class="feat-card">
+    <div class="f-icon">🌐</div>
+    <h4>Auto Fetch</h4>
+    <p>Automatically fetch existing sitemap URLs from any website.</p>
+  </div>
+  <div class="feat-card">
+    <div class="f-icon">⬇️</div>
+    <h4>Instant Download</h4>
+    <p>Download your sitemap.xml file instantly — ready to upload.</p>
+  </div>
+  <div class="feat-card">
+    <div class="f-icon">⚙️</div>
+    <h4>Full Customization</h4>
+    <p>Set priority, frequency, last modified date for each URL.</p>
+  </div>
+  <div class="feat-card">
+    <div class="f-icon">🆓</div>
+    <h4>100% Free</h4>
+    <p>No limits, no signup, no ads. Completely free forever.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  © 2025 SitemapGen — Free XML Sitemap Generator Tool | Create & Download Sitemaps Instantly
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+// ============ DATA ============
+let urls = [];
+let editingIndex = -1;
 
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-</div>
-</main>
+// ============ ELEMENTS ============
+const urlTableBody = document.getElementById('urlTableBody');
+const emptyState = document.getElementById('emptyState');
+const urlCountEl = document.getElementById('urlCount');
+const statsRow = document.getElementById('statsRow');
 
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+// ============ TAB SWITCHING ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['single','bulk','fetch'][i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
 
-<script>
-function generateSitemap(){
-const urls = document.getElementById("urlInput").value.trim().split(/\n+/).filter(u=>u.length>0);
+// ============ TOAST ============
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.className = 'toast toast-' + type + ' show';
+  t.innerHTML = msg;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-if(urls.length === 0){ alert("Please enter at least one URL!"); return; }
+// ============ URL VALIDATION ============
+function isValidUrl(str) {
+  try { new URL(str); return true; } catch { return false; }
+}
 
-let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+// ============ ADD SINGLE URL ============
+function addSingleUrl() {
+  const urlVal = document.getElementById('singleUrl').value.trim();
+  if (!urlVal) { showToast('⚠️ Please enter a URL!', 'error'); return; }
+  let fullUrl = urlVal;
+  if (!/^https?:\/\//i.test(fullUrl)) fullUrl = 'https://' + fullUrl;
+  if (!isValidUrl(fullUrl)) { showToast('❌ Invalid URL format!', 'error'); return; }
+  if (urls.some(u => u.url === fullUrl)) { showToast('⚠️ URL already exists!', 'error'); return; }
 
-urls.forEach(url=>{
-  sitemap += `  <url>\n    <loc>${url}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+  const dateVal = document.getElementById('singleDate').value || new Date().toISOString().split('T')[0];
+  const freqVal = document.getElementById('singleFreq').value;
+  const priVal = document.getElementById('singlePriority').value;
+
+  if (editingIndex >= 0) {
+    urls[editingIndex] = { url: fullUrl, lastmod: dateVal, freq: freqVal, priority: priVal };
+    editingIndex = -1;
+    showToast('✅ URL updated successfully!');
+  } else {
+    urls.push({ url: fullUrl, lastmod: dateVal, freq: freqVal, priority: priVal });
+    showToast('✅ URL added successfully!');
+  }
+
+  document.getElementById('singleUrl').value = '';
+  renderTable();
+}
+
+// ============ ADD COMMON PAGES ============
+function addCommonPages() {
+  const base = document.getElementById('singleUrl').value.trim() || 'https://example.com';
+  let domain = base;
+  if (!/^https?:\/\//i.test(domain)) domain = 'https://' + domain;
+  try { domain = new URL(domain).origin; } catch { domain = 'https://example.com'; }
+
+  const pages = [
+    { path: '/', pri: '1.0', freq: 'daily' },
+    { path: '/about', pri: '0.8', freq: 'monthly' },
+    { path: '/contact', pri: '0.8', freq: 'monthly' },
+    { path: '/blog', pri: '0.9', freq: 'daily' },
+    { path: '/services', pri: '0.8', freq: 'weekly' },
+    { path: '/faq', pri: '0.6', freq: 'monthly' },
+    { path: '/privacy-policy', pri: '0.3', freq: 'yearly' },
+    { path: '/terms', pri: '0.3', freq: 'yearly' },
+    { path: '/sitemap', pri: '0.5', freq: 'weekly' },
+  ];
+
+  let added = 0;
+  const today = new Date().toISOString().split('T')[0];
+  pages.forEach(p => {
+    const full = domain + p.path;
+    if (!urls.some(u => u.url === full)) {
+      urls.push({ url: full, lastmod: today, freq: p.freq, priority: p.pri });
+      added++;
+    }
+  });
+
+  showToast(`✅ ${added} common pages added!`);
+  renderTable();
+}
+
+// ============ BULK ADD ============
+function addBulkUrls() {
+  const raw = document.getElementById('bulkUrls').value.trim();
+  if (!raw) { showToast('⚠️ Paste some URLs first!', 'error'); return; }
+
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+  const today = new Date().toISOString().split('T')[0];
+  let added = 0, dupes = 0, invalid = 0;
+
+  lines.forEach(line => {
+    let u = line;
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    if (!isValidUrl(u)) { invalid++; return; }
+    if (urls.some(x => x.url === u)) { dupes++; return; }
+    urls.push({ url: u, lastmod: today, freq: 'weekly', priority: '0.8' });
+    added++;
+  });
+
+  showToast(`✅ ${added} added, ${dupes} duplicates, ${invalid} invalid`);
+  document.getElementById('bulkUrls').value = '';
+  renderTable();
+}
+
+// Bulk lines counter
+document.getElementById('bulkUrls').addEventListener('input', function() {
+  const count = this.value.trim() ? this.value.trim().split('\n').filter(l => l.trim()).length : 0;
+  document.getElementById('bulkInfo').textContent = count + ' URL(s) detected';
 });
 
-sitemap += `</urlset>`;
+// ============ AUTO FETCH ============
+async function autoFetch() {
+  let base = document.getElementById('fetchUrl').value.trim();
+  if (!base) { showToast('⚠️ Enter a website URL!', 'error'); return; }
+  if (!/^https?:\/\//i.test(base)) base = 'https://' + base;
 
-document.getElementById("sitemapOutput").innerText = sitemap;
-document.getElementById("result").classList.remove("hidden");
+  const fetchBtn = document.getElementById('fetchBtn');
+  fetchBtn.disabled = true;
+  fetchBtn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></div> Fetching...';
+
+  let domain;
+  try { domain = new URL(base).origin; } catch { showToast('❌ Invalid URL!', 'error'); fetchBtn.disabled = false; fetchBtn.textContent = 'Fetch Sitemap'; return; }
+
+  const paths = ['/sitemap.xml', '/sitemap_index.xml', '/wp-sitemap.xml', '/sitemap/sitemap-index.xml', '/post-sitemap.xml'];
+  const proxy = 'https://api.allorigins.win/raw?url=';
+  let found = false;
+
+  for (const path of paths) {
+    if (found) break;
+    try {
+      const res = await fetch(proxy + encodeURIComponent(domain + path), { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (!text.includes('<urlset') && !text.includes('<sitemapindex')) continue;
+
+      // Parse XML
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, 'text/xml');
+
+      // Check for sitemap index
+      const sitemaps = xml.querySelectorAll('sitemap loc');
+      if (sitemaps.length > 0) {
+        // It's an index — try to fetch first sub-sitemap
+        showToast('📂 Found sitemap index with ' + sitemaps.length + ' sitemaps', 'info');
+        for (let i = 0; i < Math.min(sitemaps.length, 3); i++) {
+          try {
+            const subRes = await fetch(proxy + encodeURIComponent(sitemaps[i].textContent.trim()), { signal: AbortSignal.timeout(8000) });
+            const subText = await subRes.text();
+            const subXml = parser.parseFromString(subText, 'text/xml');
+            parseUrlsFromXml(subXml);
+          } catch {}
+        }
+        found = true;
+        break;
+      }
+
+      // Regular sitemap
+      const count = parseUrlsFromXml(xml);
+      if (count > 0) { found = true; break; }
+    } catch {}
+  }
+
+  if (found) {
+    showToast(`✅ Fetched ${urls.length} URLs from sitemap!`);
+  } else {
+    showToast('❌ Could not find sitemap. Try adding URLs manually.', 'error');
+  }
+
+  fetchBtn.disabled = false;
+  fetchBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3"/></svg> Fetch Sitemap';
+  renderTable();
 }
 
-// Download Sitemap
-function downloadSitemap(){
-const sitemap = document.getElementById("sitemapOutput").innerText;
-const blob = new Blob([sitemap], {type: "text/xml"});
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = "sitemap.xml";
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+function parseUrlsFromXml(xml) {
+  const urlEls = xml.querySelectorAll('url');
+  const today = new Date().toISOString().split('T')[0];
+  let count = 0;
+  urlEls.forEach(el => {
+    const loc = el.querySelector('loc');
+    if (!loc) return;
+    const u = loc.textContent.trim();
+    if (urls.some(x => x.url === u)) return;
+    const lastmod = el.querySelector('lastmod')?.textContent?.trim()?.split('T')[0] || today;
+    const freq = el.querySelector('changefreq')?.textContent?.trim() || 'weekly';
+    const pri = el.querySelector('priority')?.textContent?.trim() || '0.8';
+    urls.push({ url: u, lastmod, freq, priority: pri });
+    count++;
+  });
+  return count;
 }
+
+// ============ RENDER TABLE ============
+function renderTable() {
+  if (urls.length === 0) {
+    emptyState.style.display = 'block';
+    urlTableBody.innerHTML = '';
+    urlCountEl.textContent = '0 URLs added';
+    statsRow.style.display = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  statsRow.style.display = 'grid';
+  urlCountEl.textContent = urls.length + ' URLs added';
+
+  urlTableBody.innerHTML = urls.map((u, i) => {
+    const priNum = parseFloat(u.priority);
+    const badgeClass = priNum >= 0.7 ? 'badge-high' : priNum >= 0.4 ? 'badge-med' : 'badge-low';
+    return `<tr>
+      <td style="color:var(--text-light);font-weight:600">${i + 1}</td>
+      <td class="url-cell" title="${u.url}">${u.url}</td>
+      <td style="font-size:12px;color:var(--text-light)">${u.lastmod}</td>
+      <td><span class="badge badge-med">${u.freq}</span></td>
+      <td><span class="badge ${badgeClass}">${u.priority}</span></td>
+      <td style="display:flex;gap:4px">
+        <button class="edit-btn" onclick="editUrl(${i})" title="Edit">✏️</button>
+        <button class="del-btn" onclick="deleteUrl(${i})" title="Delete">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  updateStats();
+}
+
+// ============ DELETE URL ============
+function deleteUrl(i) {
+  urls.splice(i, 1);
+  showToast('🗑️ URL removed');
+  renderTable();
+}
+
+// ============ EDIT URL ============
+function editUrl(i) {
+  const u = urls[i];
+  document.getElementById('singleUrl').value = u.url;
+  document.getElementById('singleDate').value = u.lastmod;
+  document.getElementById('singleFreq').value = u.freq;
+  document.getElementById('singlePriority').value = u.priority;
+  editingIndex = i;
+  switchTab('single');
+  document.getElementById('singleUrl').focus();
+  showToast('✏️ Editing URL #' + (i + 1) + ' — Click "Add URL" to save', 'info');
+}
+
+// ============ CLEAR ALL ============
+function clearAllUrls() {
+  if (urls.length === 0) return;
+  if (!confirm('Are you sure you want to remove all ' + urls.length + ' URLs?')) return;
+  urls = [];
+  renderTable();
+  showToast('🗑️ All URLs cleared');
+  document.getElementById('previewSection').classList.remove('active');
+}
+
+// ============ UPDATE STATS ============
+function updateStats() {
+  document.getElementById('statTotal').textContent = urls.length;
+  document.getElementById('statHigh').textContent = urls.filter(u => parseFloat(u.priority) >= 0.7).length;
+  const xml = generateXml();
+  const size = new Blob([xml]).size;
+  document.getElementById('statSize').textContent = size > 1024 ? (size / 1024).toFixed(1) + ' KB' : size + ' B';
+  document.getElementById('statValid').textContent = urls.length > 0 ? 'Valid ✅' : '—';
+}
+
+// ============ GENERATE XML ============
+function generateXml() {
+  const incLastmod = document.getElementById('incLastmod').checked;
+  const incFreq = document.getElementById('incFreq').checked;
+  const incPriority = document.getElementById('incPriority').checked;
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+  xml += `        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`;
+  xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9\n`;
+  xml += `        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n`;
+  xml += `  <!-- Generated by SitemapGen — Free XML Sitemap Generator -->\n`;
+  xml += `  <!-- Total URLs: ${urls.length} | Generated: ${new Date().toISOString()} -->\n\n`;
+
+  urls.forEach(u => {
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(u.url)}</loc>\n`;
+    if (incLastmod && u.lastmod) xml += `    <lastmod>${u.lastmod}</lastmod>\n`;
+    if (incFreq && u.freq) xml += `    <changefreq>${u.freq}</changefreq>\n`;
+    if (incPriority && u.priority) xml += `    <priority>${u.priority}</priority>\n`;
+    xml += `  </url>\n`;
+  });
+
+  xml += `</urlset>`;
+  return xml;
+}
+
+function escapeXml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+// ============ PREVIEW ============
+function previewSitemap() {
+  if (urls.length === 0) { showToast('⚠️ Add some URLs first!', 'error'); return; }
+  const xml = generateXml();
+  const highlighted = xml
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/(&lt;\/?)([\w:-]+)/g, '$1<span class="tag">$2</span>')
+    .replace(/(xmlns[:\w]*|xsi:\w+|schemaLocation)=/g, '<span class="attr">$1</span>=')
+    .replace(/&lt;!--(.+?)--&gt;/g, '<span class="comment">&lt;!--$1--&gt;</span>')
+    .replace(/(https?:\/\/[^\s<&]+)/g, '<span class="val">$1</span>');
+
+  document.getElementById('previewCode').innerHTML = highlighted;
+  const ps = document.getElementById('previewSection');
+  ps.classList.add('active');
+  ps.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ============ COPY ============
+function copySitemap() {
+  if (urls.length === 0) { showToast('⚠️ Add some URLs first!', 'error'); return; }
+  const xml = generateXml();
+  navigator.clipboard.writeText(xml).then(() => {
+    showToast('📋 XML copied to clipboard!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = xml; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 XML copied to clipboard!');
+  });
+}
+
+// ============ DOWNLOAD ============
+function generateAndDownload() {
+  if (urls.length === 0) { showToast('⚠️ Add some URLs first!', 'error'); return; }
+  const xml = generateXml();
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sitemap.xml';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  showToast('⬇️ sitemap.xml downloaded successfully!');
+}
+
+// ============ ENTER KEY SUPPORT ============
+document.getElementById('singleUrl').addEventListener('keydown', e => { if (e.key === 'Enter') addSingleUrl(); });
+document.getElementById('fetchUrl').addEventListener('keydown', e => { if (e.key === 'Enter') autoFetch(); });
+
+// ============ SET TODAY DATE DEFAULT ============
+document.getElementById('singleDate').value = new Date().toISOString().split('T')[0];
 </script>
 
 </body>
