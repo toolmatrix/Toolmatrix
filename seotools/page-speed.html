@@ -291,6 +291,8 @@
   // ===== CONFIG =====
   const API_BASE = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
   let strategy = 'mobile';
+  let retryAttempt = 0;
+  const MAX_RETRY = 1; // only retry once for rate limit
 
   // ===== ELEMENTS =====
   const urlInput = document.getElementById('urlInput');
@@ -337,6 +339,9 @@
     if (!url) { alert('⚠️ Please enter a website URL!'); return; }
     urlInput.value = url;
 
+    // Reset retry counter
+    retryAttempt = 0;
+
     // UI states
     searchCard.style.display = 'block';
     loadingSection.classList.add('active');
@@ -347,13 +352,35 @@
     document.getElementById('loadingUrl').textContent = url;
     animateLoadingSteps();
 
+    // Actually perform the fetch with retry logic
+    await performAnalysis(url);
+  }
+
+  async function performAnalysis(url) {
     try {
       const categories = ['performance','accessibility','best-practices','seo'];
       const catParam = categories.map(c => `category=${c}`).join('&');
       const apiUrl = `${API_BASE}?url=${encodeURIComponent(url)}&strategy=${strategy}&${catParam}`;
 
       const response = await fetch(apiUrl);
+
+      // Handle 429 specifically
+      if (response.status === 429) {
+        if (retryAttempt < MAX_RETRY) {
+          retryAttempt++;
+          // Update loading message
+          document.getElementById('loadingTitle').innerText = 'Rate limit reached, waiting...';
+          document.getElementById('loadingUrl').innerText = '⏳ Retrying in 5 seconds';
+          // Wait 5 seconds then retry
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          return performAnalysis(url); // retry
+        } else {
+          throw new Error('Rate limit exceeded. Please wait a few minutes before trying again.');
+        }
+      }
+
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
       const data = await response.json();
 
       if (data.error) throw new Error(data.error.message || 'API returned an error');
@@ -368,10 +395,10 @@
       loadingSection.classList.remove('active');
       errorCard.style.display = 'block';
       document.getElementById('errMsg').textContent = err.message || 'Could not analyze. Check URL and try again.';
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Analyze';
     }
-
-    analyzeBtn.disabled = false;
-    analyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Analyze';
   }
 
   // ===== RENDER RESULTS =====
