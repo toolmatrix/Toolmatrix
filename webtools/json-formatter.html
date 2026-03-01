@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#ffffff;--text:#14532d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --shadow:0 8px 40px rgba(22,163,74,.12);
+  --mono:'Cascadia Code','Fira Code','Consolas','Monaco',monospace;
+}
+html,body{height:100%;width:100%;overflow:hidden}
+body{
+  min-height:100vh;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);display:flex;flex-direction:column;
+}
+
+/* ══════ HEADER ══════ */
+.header{
+  background:linear-gradient(135deg,var(--g500) 0%,var(--g700) 100%);
+  padding:18px 24px 14px;text-align:center;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,.12) 0%,transparent 60%);
+  pointer-events:none;
+}
+.header .logo{display:inline-flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap}
+.header .icon{font-size:34px;animation:bounce 2.5s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.header h1{color:#fff;font-size:22px;font-weight:800;letter-spacing:.5px}
+.header p{color:var(--g200);font-size:12.5px;margin-top:3px}
+
+/* ══════ TOOLBAR ══════ */
+.toolbar{
+  background:var(--card);border-bottom:1.5px solid var(--border2);
+  padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  flex-shrink:0;
+}
+.t-grp{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.t-grp label{font-size:11.5px;font-weight:700;color:var(--g800);white-space:nowrap}
+.t-sel{
+  padding:6px 9px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:12px;color:var(--text);background:var(--g50);
+  outline:none;cursor:pointer;transition:.3s;
+}
+.t-sel:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.t-chk{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none}
+.t-chk input[type=checkbox]{width:15px;height:15px;accent-color:var(--g600);cursor:pointer}
+.t-chk span{font-size:11.5px;font-weight:700;color:var(--g800)}
+.spacer{flex:1}
+
+/* ══════ TABS ══════ */
+.tabs{display:flex;gap:0;margin-left:4px}
+.tab-btn{
+  padding:6px 14px;border:1.5px solid var(--border);
+  font-size:11.5px;font-weight:700;cursor:pointer;
+  background:var(--g50);color:var(--g700);transition:.2s;
+}
+.tab-btn:first-child{border-radius:8px 0 0 8px}
+.tab-btn:last-child{border-radius:0 8px 8px 0}
+.tab-btn.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+.tab-btn:hover:not(.active){background:var(--g100)}
+
+/* ══════ BUTTONS ══════ */
+.btn{
+  padding:7px 14px;border:none;border-radius:8px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;
+  transition:all .25s ease;white-space:nowrap;
+}
+.btn:active{transform:scale(.97)!important}
+.btn-format{background:linear-gradient(135deg,var(--g500),var(--g700));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+.btn-format:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(22,163,74,.4)}
+.btn-copy{background:#ecfdf5;color:var(--g700);border:1.5px solid var(--g300)}
+.btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
+.btn-clear{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
+.btn-clear:hover{background:#fee2e2;transform:translateY(-1px)}
+.btn-paste{background:var(--g50);color:var(--g700);border:1.5px solid var(--border)}
+.btn-paste:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-minify{background:#fefce8;color:var(--yellow);border:1.5px solid #fde68a}
+.btn-minify:hover{background:#fef9c3;transform:translateY(-1px)}
+.btn-sample{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-sample:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-dl{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-dl:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-validate{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
+.btn-validate:hover{background:#f3e8ff;transform:translateY(-1px)}
+
+/* ══════ MAIN ══════ */
+.main{display:flex;flex-wrap:wrap;flex:1;overflow:hidden;background:var(--card)}
+.panel{flex:1 1 380px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.panel+.panel{border-left:1.5px solid var(--border2)}
+.p-head{
+  padding:9px 14px;background:var(--g50);border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.p-head h3{font-size:13px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:5px}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g700);font-weight:700}
+
+/* ── Input ── */
+#jsonInput{
+  flex:1;width:100%;padding:14px;border:none;outline:none;
+  font-family:var(--mono);font-size:13px;line-height:1.7;
+  color:var(--text);background:transparent;resize:none;tab-size:2;
+}
+#jsonInput::placeholder{color:var(--g400)}
+
+/* ── Output ── */
+.out-wrap{flex:1;overflow:auto;position:relative;background:#fafffe}
+#jsonOutput{
+  width:100%;min-height:100%;padding:14px;margin:0;
+  font-family:var(--mono);font-size:13px;line-height:1.7;
+  white-space:pre;overflow:auto;background:transparent;color:var(--text);border:none;
+}
+.ln-nums{
+  position:absolute;left:0;top:0;
+  padding:14px 6px 14px 8px;
+  font-family:var(--mono);font-size:13px;line-height:1.7;
+  color:var(--g400);text-align:right;
+  user-select:none;pointer-events:none;
+  border-right:1px solid var(--border2);
+  background:var(--g50);min-height:100%;
+}
+
+/* ── Tree View ── */
+#treeView{
+  flex:1;overflow:auto;padding:14px;display:none;
+  font-family:var(--mono);font-size:13px;line-height:1.8;
+}
+#treeView.active{display:block}
+#jsonOutput.hidden{display:none}
+.out-wrap.hidden-scroll{overflow:hidden}
+
+.tree-key{color:var(--g800);font-weight:700}
+.tree-str{color:var(--g600)}
+.tree-num{color:var(--red)}
+.tree-bool{color:var(--purple);font-weight:700}
+.tree-null{color:#94a3b8;font-style:italic}
+.tree-bracket{color:var(--orange);font-weight:700}
+.tree-toggle{
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:4px;
+  background:var(--g100);color:var(--g700);font-size:11px;font-weight:800;
+  border:none;margin-right:4px;transition:.2s;vertical-align:middle;
+  line-height:1;
+}
+.tree-toggle:hover{background:var(--g300);color:#fff}
+.tree-children{margin-left:20px}
+.tree-children.collapsed{display:none}
+.tree-item{padding:1px 0}
+
+/* ── Error Box ── */
+.err-box{
+  display:none;padding:12px 16px;margin:10px 14px;
+  background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;
+  font-size:12.5px;color:var(--red);font-weight:600;
+  line-height:1.6;flex-shrink:0;
+  animation:shake .4s ease;
+}
+.err-box.show{display:block}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.err-box .err-title{font-size:14px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.err-box code{
+  display:block;margin-top:6px;padding:8px 10px;
+  background:#fff;border-radius:6px;border:1px solid #fecaca;
+  font-family:var(--mono);font-size:12px;color:#991b1b;
+  white-space:pre-wrap;word-break:break-all;
+}
+
+/* ══════ STATUSBAR ══════ */
+.statusbar{
+  background:var(--card);padding:9px 16px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  border-top:1.5px solid var(--border2);flex-shrink:0;
+}
+.stat{font-size:11px;color:var(--g700);font-weight:600;display:flex;align-items:center;gap:4px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-g{background:var(--g500)}.dot-b{background:var(--blue)}.dot-r{background:var(--red)}.dot-p{background:var(--purple)}
+.stat-sep{width:1px;height:12px;background:var(--border);margin:0 1px}
+.shortcut-hint{font-size:10.5px;color:var(--g400);font-weight:500;margin-left:auto}
+.shortcut-hint kbd{
+  background:var(--g100);padding:1px 5px;border-radius:4px;
+  font-size:10px;border:1px solid var(--border);color:var(--g700);
+  font-family:var(--mono);
+}
+
+/* ══════ TOAST ══════ */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:10px 22px;border-radius:12px;
+  font-size:13px;font-weight:700;color:#fff;
+  z-index:9999;pointer-events:none;
+  transition:all .4s ease;opacity:0;backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-success{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-error{background:rgba(220,38,38,.92);box-shadow:0 6px 24px rgba(220,38,38,.3)}
+.toast-info{background:rgba(37,99,235,.92);box-shadow:0 6px 24px rgba(37,99,235,.3)}
+
+/* ══════ SCROLLBAR ══════ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:768px){
+  html,body{overflow:auto}
+  .header{padding:14px 12px 12px}
+  .header h1{font-size:19px}
+  .header .icon{font-size:28px}
+  .toolbar{padding:8px 10px;gap:6px}
+  .main{flex-direction:column;overflow:auto}
+  .panel+.panel{border-left:none;border-top:1.5px solid var(--border2)}
+  .panel{flex:1 1 auto;min-height:220px}
+  .statusbar{padding:7px 10px;gap:8px}
+  .btn{padding:6px 10px;font-size:11px}
+  .shortcut-hint{display:none}
+}
+@media(max-width:480px){
+  .header{padding:12px 8px 10px}
+  .header h1{font-size:16.5px}
+  .header .icon{font-size:24px}
+  .header p{font-size:11px}
+  .toolbar{padding:7px 7px;gap:4px}
+  .t-grp label,.t-chk span{font-size:10.5px}
+  .t-sel{padding:5px 6px;font-size:11px}
+  .p-head{padding:7px 10px}
+  .p-head h3{font-size:12px}
+  #jsonInput,#jsonOutput{padding:10px;font-size:11.5px}
+  .statusbar{padding:6px 7px}
+  .stat{font-size:10px}
+  .btn{padding:5px 8px;font-size:10.5px;gap:3px}
+  .tab-btn{padding:5px 10px;font-size:10.5px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div class="logo">
+    <span class="icon">📋</span>
+    <h1>JSON Formatter & Validator</h1>
+  </div>
+  <p>Paste your JSON → Format, Validate, Tree View, Minify & Download</p>
+</div>
+
+<!-- ═══ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="t-grp">
+    <label>📏 Indent:</label>
+    <select class="t-sel" id="indentSize">
+      <option value="2" selected>2 Spaces</option>
+      <option value="4">4 Spaces</option>
+      <option value="tab">Tab</option>
+    </select>
+  </div>
+  <div class="t-grp">
+    <label class="t-chk">
+      <input type="checkbox" id="syntaxHL" checked>
+      <span>🎨 Highlight</span>
+    </label>
+  </div>
+  <div class="t-grp">
+    <label class="t-chk">
+      <input type="checkbox" id="lineNums" checked>
+      <span>🔢 Lines</span>
+    </label>
+  </div>
+  <div class="t-grp">
+    <label class="t-chk">
+      <input type="checkbox" id="sortKeys">
+      <span>🔤 Sort Keys</span>
+    </label>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn btn-sample" onclick="loadSample()">📄 Sample</button>
+  <button class="btn btn-paste" onclick="pasteJSON()">📋 Paste</button>
+  <button class="btn btn-format" onclick="formatJSON()">⚡ Format</button>
+  <button class="btn btn-minify" onclick="minifyJSON()">🗜️ Minify</button>
+  <button class="btn btn-validate" onclick="validateJSON()">✅ Validate</button>
+  <button class="btn btn-copy" onclick="copyJSON()">📑 Copy</button>
+  <button class="btn btn-dl" onclick="downloadJSON()">⬇️ Save</button>
+  <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear</button>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <!-- Input Panel -->
+  <div class="panel">
+    <div class="p-head">
+      <h3>📝 Input JSON</h3>
+      <span class="badge" id="inLen">0 chars</span>
+    </div>
+    <textarea id="jsonInput" spellcheck="false" placeholder='Paste or type your JSON here...&#10;&#10;💡 Click "📄 Sample" to load example JSON&#10;⌨️ Press Ctrl + Enter to Format'></textarea>
+  </div>
+
+  <!-- Output Panel -->
+  <div class="panel">
+    <div class="p-head">
+      <h3>✨ Output</h3>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="tabs">
+          <button class="tab-btn active" id="tabFormatted" onclick="switchTab('formatted')">{ } Formatted</button>
+          <button class="tab-btn" id="tabTree" onclick="switchTab('tree')">🌳 Tree</button>
+        </div>
+        <span class="badge" id="outLen">0 chars</span>
+      </div>
+    </div>
+    <div class="err-box" id="errBox">
+      <div class="err-title">❌ JSON Parse Error</div>
+      <div id="errMsg"></div>
+      <code id="errDetail"></code>
+    </div>
+    <div class="out-wrap" id="outWrap">
+      <div class="ln-nums" id="lineNumsEl" style="display:none"></div>
+      <pre id="jsonOutput"><span style="color:var(--g400)">Formatted JSON will appear here…</span></pre>
+      <div id="treeView"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STATUSBAR ═══ -->
+<div class="statusbar">
+  <div class="stat" id="sStatus"><span class="dot dot-g"></span> Ready</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sKeys"><span class="dot dot-b"></span> Keys: 0</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sDepth"><span class="dot dot-p"></span> Depth: 0</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sLines"><span class="dot dot-b"></span> Lines: 0</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sSize"><span class="dot dot-b"></span> Size: 0 B</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sTime"><span class="dot dot-b"></span> 0 ms</div>
+  <div class="shortcut-hint">
+    <kbd>Ctrl</kbd>+<kbd>Enter</kbd> Format &nbsp;|&nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Copy
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   ELEMENTS
+   ══════════════════════════════════════════ */
+const $in     = document.getElementById('jsonInput');
+const $out    = document.getElementById('jsonOutput');
+const $tree   = document.getElementById('treeView');
+const $ln     = document.getElementById('lineNumsEl');
+const $wrap   = document.getElementById('outWrap');
+const $err    = document.getElementById('errBox');
+const $errMsg = document.getElementById('errMsg');
+const $errDet = document.getElementById('errDetail');
+
+let currentParsed = null;
+let currentFormatted = '';
+
+$in.addEventListener('input', () => {
+  document.getElementById('inLen').textContent = $in.value.length + ' chars';
+});
+
+/* ══════════════════════════════════════════
+   FORMAT JSON
+   ══════════════════════════════════════════ */
+function formatJSON() {
+  const t0 = performance.now();
+  const raw = $in.value.trim();
+  if (!raw) { toast('⚠️ Please enter JSON first!', 'error'); return; }
+
+  hideError();
+  try {
+    let parsed = JSON.parse(raw);
+    currentParsed = parsed;
+
+    if (document.getElementById('sortKeys').checked) {
+      parsed = sortObject(parsed);
+    }
+
+    const indent = getIndent();
+    const formatted = JSON.stringify(parsed, null, indent);
+    currentFormatted = formatted;
+
+    renderFormatted(formatted);
+    buildTree(parsed);
+    updateStats(formatted, parsed, performance.now() - t0);
+    setStatus('✅ Valid JSON', 'dot-g');
+    toast('✅ JSON Formatted!', 'success');
+  } catch (e) {
+    showError(e, raw);
+    setStatus('❌ Invalid JSON', 'dot-r');
+    toast('❌ JSON Parse Error!', 'error');
+  }
+}
+
+/* ══════════════════════════════════════════
+   VALIDATE JSON
+   ══════════════════════════════════════════ */
+function validateJSON() {
+  const raw = $in.value.trim();
+  if (!raw) { toast('⚠️ Please enter JSON first!', 'error'); return; }
+  hideError();
+  try {
+    JSON.parse(raw);
+    setStatus('✅ Valid JSON', 'dot-g');
+    toast('✅ JSON is Valid!', 'success');
+  } catch (e) {
+    showError(e, raw);
+    setStatus('❌ Invalid JSON', 'dot-r');
+    toast('❌ Invalid JSON!', 'error');
+  }
+}
+
+/* ══════════════════════════════════════════
+   MINIFY JSON
+   ══════════════════════════════════════════ */
+function minifyJSON() {
+  const raw = $in.value.trim();
+  if (!raw) { toast('⚠️ Please enter JSON first!', 'error'); return; }
+  hideError();
+  try {
+    const parsed = JSON.parse(raw);
+    const minified = JSON.stringify(parsed);
+    currentFormatted = minified;
+    renderFormatted(minified);
+    updateStats(minified, parsed, 0);
+    setStatus('✅ Minified', 'dot-g');
+    toast('🗜️ JSON Minified!', 'info');
+  } catch (e) {
+    showError(e, raw);
+    toast('❌ JSON Parse Error!', 'error');
+  }
+}
+
+/* ══════════════════════════════════════════
+   RENDER FORMATTED OUTPUT
+   ══════════════════════════════════════════ */
+function renderFormatted(text) {
+  const doHL = document.getElementById('syntaxHL').checked;
+  const doLN = document.getElementById('lineNums').checked;
+
+  $out.innerHTML = doHL ? syntaxHighlight(text) : escHtml(text);
+  $out.classList.remove('hidden');
+  document.getElementById('outLen').textContent = text.length + ' chars';
+
+  if (doLN) {
+    const n = text.split('\n').length;
+    let nums = '';
+    for (let i = 1; i <= n; i++) nums += i + '\n';
+    $ln.textContent = nums;
+    $ln.style.display = 'block';
+    $out.style.paddingLeft = (String(n).length * 9 + 24) + 'px';
+  } else {
+    $ln.style.display = 'none';
+    $out.style.paddingLeft = '14px';
+  }
+}
+
+/* ══════════════════════════════════════════
+   SYNTAX HIGHLIGHTING
+   ══════════════════════════════════════════ */
+function syntaxHighlight(json) {
+  let h = escHtml(json);
+
+  // Strings that are keys → "key":
+  h = h.replace(/(&quot;([^&]|&[^q]|&q[^u]|&qu[^o]|&quo[^t])*?&quot;)\s*:/g,
+    '<span style="color:var(--g800);font-weight:700">$1</span>:');
+
+  // String values
+  h = h.replace(/(&quot;([^&]|&[^q]|&q[^u]|&qu[^o]|&quo[^t])*?&quot;)/g,
+    '<span style="color:var(--g600)">$1</span>');
+
+  // Numbers
+  h = h.replace(/\b(-?\d+\.?\d*([eE][+-]?\d+)?)\b/g,
+    '<span style="color:var(--red)">$1</span>');
+
+  // Booleans
+  h = h.replace(/\b(true|false)\b/g,
+    '<span style="color:var(--purple);font-weight:700">$1</span>');
+
+  // Null
+  h = h.replace(/\bnull\b/g,
+    '<span style="color:#94a3b8;font-style:italic">null</span>');
+
+  // Brackets
+  h = h.replace(/([{}\[\]])/g,
+    '<span style="color:var(--orange);font-weight:700">$1</span>');
+
+  return h;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ══════════════════════════════════════════
+   TREE VIEW
+   ══════════════════════════════════════════ */
+function buildTree(data) {
+  $tree.innerHTML = '';
+  $tree.appendChild(createTreeNode(data, null, true));
+}
+
+function createTreeNode(value, key, isRoot) {
+  const item = document.createElement('div');
+  item.className = 'tree-item';
+
+  const keyHtml = key !== null ? `<span class="tree-key">"${escHtmlSimple(String(key))}"</span>: ` : '';
+
+  if (value === null) {
+    item.innerHTML = keyHtml + '<span class="tree-null">null</span>';
+  }
+  else if (typeof value === 'boolean') {
+    item.innerHTML = keyHtml + `<span class="tree-bool">${value}</span>`;
+  }
+  else if (typeof value === 'number') {
+    item.innerHTML = keyHtml + `<span class="tree-num">${value}</span>`;
+  }
+  else if (typeof value === 'string') {
+    item.innerHTML = keyHtml + `<span class="tree-str">"${escHtmlSimple(value)}"</span>`;
+  }
+  else if (Array.isArray(value)) {
+    const toggle = document.createElement('button');
+    toggle.className = 'tree-toggle';
+    toggle.textContent = '−';
+
+    const header = document.createElement('span');
+    header.appendChild(toggle);
+    header.innerHTML += keyHtml + `<span class="tree-bracket">[</span> <span style="color:var(--g400);font-size:11px">${value.length} items</span>`;
+
+    const children = document.createElement('div');
+    children.className = 'tree-children';
+    value.forEach((v, i) => children.appendChild(createTreeNode(v, i, false)));
+
+    const closing = document.createElement('div');
+    closing.innerHTML = '<span class="tree-bracket">]</span>';
+    closing.style.marginLeft = '22px';
+
+    toggle.onclick = () => {
+      children.classList.toggle('collapsed');
+      closing.style.display = children.classList.contains('collapsed') ? 'none' : '';
+      toggle.textContent = children.classList.contains('collapsed') ? '+' : '−';
+    };
+
+    item.appendChild(header);
+    item.appendChild(children);
+    item.appendChild(closing);
+  }
+  else if (typeof value === 'object') {
+    const keys = Object.keys(value);
+    const toggle = document.createElement('button');
+    toggle.className = 'tree-toggle';
+    toggle.textContent = '−';
+
+    const header = document.createElement('span');
+    header.appendChild(toggle);
+    header.innerHTML += keyHtml + `<span class="tree-bracket">{</span> <span style="color:var(--g400);font-size:11px">${keys.length} keys</span>`;
+
+    const children = document.createElement('div');
+    children.className = 'tree-children';
+    keys.forEach(k => children.appendChild(createTreeNode(value[k], k, false)));
+
+    const closing = document.createElement('div');
+    closing.innerHTML = '<span class="tree-bracket">}</span>';
+    closing.style.marginLeft = '22px';
+
+    toggle.onclick = () => {
+      children.classList.toggle('collapsed');
+      closing.style.display = children.classList.contains('collapsed') ? 'none' : '';
+      toggle.textContent = children.classList.contains('collapsed') ? '+' : '−';
+    };
+
+    item.appendChild(header);
+    item.appendChild(children);
+    item.appendChild(closing);
+  }
+
+  return item;
+}
+
+function escHtmlSimple(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ══════════════════════════════════════════
+   TAB SWITCH
+   ══════════════════════════════════════════ */
+function switchTab(tab) {
+  document.getElementById('tabFormatted').classList.toggle('active', tab === 'formatted');
+  document.getElementById('tabTree').classList.toggle('active', tab === 'tree');
+
+  if (tab === 'formatted') {
+    $out.classList.remove('hidden');
+    $tree.classList.remove('active');
+    $ln.style.display = document.getElementById('lineNums').checked ? 'block' : 'none';
+  } else {
+    $out.classList.add('hidden');
+    $tree.classList.add('active');
+    $ln.style.display = 'none';
+  }
+}
+
+/* ══════════════════════════════════════════
+   ERROR HANDLING
+   ══════════════════════════════════════════ */
+function showError(err, raw) {
+  const msg = err.message;
+  $errMsg.textContent = msg;
+
+  // Try to extract position
+  const posMatch = msg.match(/position\s+(\d+)/i) || msg.match(/column\s+(\d+)/i);
+  if (posMatch) {
+    const pos = parseInt(posMatch[1]);
+    const start = Math.max(0, pos - 30);
+    const end = Math.min(raw.length, pos + 30);
+    const snippet = raw.substring(start, end);
+    const pointer = ' '.repeat(Math.min(30, pos - start)) + '^^^';
+    $errDet.textContent = snippet + '\n' + pointer;
+  } else {
+    $errDet.textContent = msg;
+  }
+  $err.classList.add('show');
+}
+
+function hideError() { $err.classList.remove('show'); }
+
+/* ══════════════════════════════════════════
+   SORT KEYS RECURSIVELY
+   ══════════════════════════════════════════ */
+function sortObject(obj) {
+  if (Array.isArray(obj)) return obj.map(sortObject);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).sort().reduce((acc, key) => {
+      acc[key] = sortObject(obj[key]);
+      return acc;
+    }, {});
+  }
+  return obj;
+}
+
+/* ══════════════════════════════════════════
+   STATS
+   ══════════════════════════════════════════ */
+function updateStats(text, parsed, ms) {
+  const keys = countKeys(parsed);
+  const depth = getDepth(parsed);
+  const lines = text.split('\n').length;
+  const size = formatSize(new Blob([text]).size);
+
+  document.getElementById('sKeys').innerHTML  = `<span class="dot dot-b"></span> Keys: ${keys}`;
+  document.getElementById('sDepth').innerHTML = `<span class="dot dot-p"></span> Depth: ${depth}`;
+  document.getElementById('sLines').innerHTML = `<span class="dot dot-b"></span> Lines: ${lines}`;
+  document.getElementById('sSize').innerHTML  = `<span class="dot dot-b"></span> Size: ${size}`;
+  document.getElementById('sTime').innerHTML  = `<span class="dot dot-b"></span> ${ms.toFixed(1)} ms`;
+}
+
+function countKeys(obj) {
+  if (obj === null || typeof obj !== 'object') return 0;
+  if (Array.isArray(obj)) return obj.reduce((s, v) => s + countKeys(v), 0);
+  return Object.keys(obj).reduce((s, k) => s + 1 + countKeys(obj[k]), 0);
+}
+
+function getDepth(obj) {
+  if (obj === null || typeof obj !== 'object') return 0;
+  if (Array.isArray(obj)) {
+    return obj.length === 0 ? 1 : 1 + Math.max(...obj.map(getDepth));
+  }
+  const vals = Object.values(obj);
+  return vals.length === 0 ? 1 : 1 + Math.max(...vals.map(getDepth));
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function setStatus(text, dotClass) {
+  document.getElementById('sStatus').innerHTML = `<span class="dot ${dotClass}"></span> ${text}`;
+}
+
+/* ══════════════════════════════════════════
+   COPY / PASTE / CLEAR / DOWNLOAD / SAMPLE
+   ══════════════════════════════════════════ */
+function copyJSON() {
+  const t = $out.textContent || $out.innerText;
+  if (!t || t.includes('will appear')) { toast('⚠️ Nothing to copy!', 'error'); return; }
+  navigator.clipboard.writeText(t).then(() => toast('📋 Copied!', 'success'))
+    .catch(() => { fallbackCopy(t); toast('📋 Copied!', 'success'); });
+}
+function fallbackCopy(t) {
+  const a = document.createElement('textarea'); a.value = t;
+  document.body.appendChild(a); a.select(); document.execCommand('copy');
+  document.body.removeChild(a);
+}
+
+function pasteJSON() {
+  navigator.clipboard.readText().then(t => {
+    $in.value = t;
+    document.getElementById('inLen').textContent = t.length + ' chars';
+    toast('📋 Pasted!', 'info');
+  }).catch(() => toast('⚠️ Clipboard access denied', 'error'));
+}
+
+function clearAll() {
+  $in.value = '';
+  $out.innerHTML = '<span style="color:var(--g400)">Formatted JSON will appear here…</span>';
+  $out.style.paddingLeft = '14px';
+  $tree.innerHTML = '';
+  $ln.textContent = ''; $ln.style.display = 'none';
+  hideError();
+  switchTab('formatted');
+  document.getElementById('inLen').textContent = '0 chars';
+  document.getElementById('outLen').textContent = '0 chars';
+  document.getElementById('sKeys').innerHTML  = '<span class="dot dot-b"></span> Keys: 0';
+  document.getElementById('sDepth').innerHTML = '<span class="dot dot-p"></span> Depth: 0';
+  document.getElementById('sLines').innerHTML = '<span class="dot dot-b"></span> Lines: 0';
+  document.getElementById('sSize').innerHTML  = '<span class="dot dot-b"></span> Size: 0 B';
+  document.getElementById('sTime').innerHTML  = '<span class="dot dot-b"></span> 0 ms';
+  setStatus('Ready', 'dot-g');
+  currentParsed = null; currentFormatted = '';
+  toast('🗑️ Cleared!', 'info');
+}
+
+function downloadJSON() {
+  const t = $out.textContent || $out.innerText;
+  if (!t || t.includes('will appear')) { toast('⚠️ Nothing to download!', 'error'); return; }
+  const blob = new Blob([t], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'formatted.json'; a.click();
+  URL.revokeObjectURL(a.href);
+  toast('⬇️ Downloaded!', 'success');
+}
+
+function loadSample() {
+  const sample = JSON.stringify({
+    "app": "JSON Formatter Tool",
+    "version": "2.0.0",
+    "author": {
+      "name": "Developer",
+      "email": "dev@example.com",
+      "social": {
+        "github": "https://github.com/dev",
+        "twitter": "@dev_coder"
+      }
+    },
+    "features": [
+      "Format & Beautify",
+      "Minify JSON",
+      "Syntax Highlighting",
+      "Tree View",
+      "Validate JSON",
+      "Sort Keys",
+      "Download .json"
+    ],
+    "settings": {
+      "theme": "light-green",
+      "responsive": true,
+      "indent": 2,
+      "maxDepth": null
+    },
+    "stats": {
+      "users": 15420,
+      "rating": 4.9,
+      "isPremium": false
+    },
+    "database": {
+      "tables": [
+        {
+          "name": "users",
+          "columns": ["id", "name", "email", "created_at"],
+          "rows": 58320,
+          "indexed": true
+        },
+        {
+          "name": "orders",
+          "columns": ["id", "user_id", "amount", "status", "date"],
+          "rows": 234100,
+          "indexed": true
+        }
+      ],
+      "connectionPool": {
+        "min": 5,
+        "max": 50,
+        "timeout": 30000
+      }
+    },
+    "tags": ["json", "formatter", "tool", "web", "responsive"],
+    "isActive": true,
+    "lastUpdated": "2026-03-01T12:00:00Z"
+  }, null, 2);
+
+  $in.value = sample;
+  document.getElementById('inLen').textContent = sample.length + ' chars';
+  toast('📄 Sample JSON Loaded!', 'success');
+}
+
+/* ══════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════ */
+function getIndent() {
+  const v = document.getElementById('indentSize').value;
+  return v === 'tab' ? '\t' : parseInt(v);
+}
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast toast-' + type + ' show';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ══════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ══════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { formatJSON(); e.preventDefault(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) { copyJSON(); e.preventDefault(); }
+});
+
+/* Tab support */
+$in.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = $in.selectionStart, en = $in.selectionEnd;
+    $in.value = $in.value.substring(0, s) + '  ' + $in.value.substring(en);
+    $in.selectionStart = $in.selectionEnd = s + 2;
+  }
+});
+
+/* Scroll sync for line numbers */
+$wrap.addEventListener('scroll', () => {
+  $ln.style.top = -$wrap.scrollTop + 'px';
+});
+</script>
+</body>
+</html>
