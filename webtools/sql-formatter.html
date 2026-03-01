@@ -5,662 +5,716 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQL Formatter Tool</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  :root{
-    --bg:#f0f4ff;--bg2:#e8eeff;--card:#fff;
-    --p:#4f46e5;--p-light:#818cf8;--p-dark:#3730a3;
-    --p50:#eef2ff;--p100:#e0e7ff;--p200:#c7d2fe;--p300:#a5b4fc;
-    --text:#1e1b4b;--text2:#4338ca;--text3:#6366f1;
-    --border:#c7d2fe;--border2:#e0e7ff;
-    --green:#059669;--green-bg:#ecfdf5;
-    --red:#dc2626;--red-bg:#fef2f2;
-    --orange:#ea580c;--yellow:#ca8a04;--cyan:#0891b2;
-    --shadow:0 8px 32px rgba(79,70,229,.12);
-    --shadow-sm:0 4px 16px rgba(79,70,229,.08);
-    --radius:14px;--radius-sm:10px;
-  }
-  body{
-    min-height:100vh;width:100%;
-    background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 50%,var(--p50) 100%);
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-    color:var(--text);padding:20px;
-    display:flex;align-items:flex-start;justify-content:center;
-  }
-  .app{width:100%;max-width:1100px;}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#ffffff;--text:#14532d;--text2:#166534;--text3:#15803d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --shadow:0 8px 40px rgba(22,163,74,.13);
+  --shadow-sm:0 4px 18px rgba(22,163,74,.08);
+  --radius:16px;--radius-sm:10px;
+  --mono:'Cascadia Code','Fira Code','Consolas','Monaco',monospace;
+}
+html,body{height:100%;width:100%}
+body{
+  min-height:100vh;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);
+  display:flex;flex-direction:column;
+}
 
-  /* ── Header ── */
-  .header{
-    background:linear-gradient(135deg,var(--p),var(--p-dark));
-    border-radius:20px 20px 0 0;
-    padding:28px 30px 22px;text-align:center;
-    position:relative;overflow:hidden;
-  }
-  .header::before{
-    content:'';position:absolute;top:-60%;left:-40%;
-    width:180%;height:220%;
-    background:radial-gradient(circle,rgba(255,255,255,.07) 0%,transparent 60%);
-    pointer-events:none;
-  }
-  .header .icon{font-size:42px;margin-bottom:6px;display:inline-block;animation:float 3s ease-in-out infinite}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .header h1{color:#fff;font-size:26px;font-weight:800;letter-spacing:.5px}
-  .header p{color:var(--p200);font-size:13.5px;margin-top:4px}
+/* ══════ HEADER ══════ */
+.header{
+  background:linear-gradient(135deg,var(--g500) 0%,var(--g700) 100%);
+  padding:22px 28px 18px;text-align:center;
+  position:relative;overflow:hidden;
+  flex-shrink:0;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 0%,rgba(255,255,255,.12) 0%,transparent 60%);
+  pointer-events:none;
+}
+.header .logo{
+  display:inline-flex;align-items:center;gap:10px;
+  justify-content:center;flex-wrap:wrap;
+}
+.header .icon{font-size:38px;animation:bounce 2.5s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.header h1{color:#fff;font-size:24px;font-weight:800;letter-spacing:.5px}
+.header p{color:var(--g200);font-size:13px;margin-top:4px}
 
-  /* ── Toolbar ── */
-  .toolbar{
-    background:var(--card);border-bottom:1.5px solid var(--border2);
-    padding:14px 20px;
-    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
-  }
-  .tool-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .tool-group label{font-size:12.5px;font-weight:600;color:var(--p-dark);white-space:nowrap}
-  .tool-select{
-    padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;
-    font-size:13px;color:var(--text);background:var(--p50);
-    outline:none;cursor:pointer;transition:.3s;
-  }
-  .tool-select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
-  .tool-check{display:flex;align-items:center;gap:5px;cursor:pointer}
-  .tool-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--p);cursor:pointer}
-  .tool-check span{font-size:12.5px;font-weight:600;color:var(--p-dark)}
-  .spacer{flex:1}
+/* ══════ TOOLBAR ══════ */
+.toolbar{
+  background:var(--card);
+  border-bottom:1.5px solid var(--border2);
+  padding:12px 18px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.tool-grp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tool-grp label{font-size:12px;font-weight:700;color:var(--g800);white-space:nowrap}
+.tool-sel{
+  padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:12.5px;color:var(--text);background:var(--g50);
+  outline:none;cursor:pointer;transition:.3s;
+}
+.tool-sel:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.tool-chk{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.tool-chk input[type=checkbox]{width:16px;height:16px;accent-color:var(--g600);cursor:pointer}
+.tool-chk span{font-size:12px;font-weight:700;color:var(--g800)}
+.spacer{flex:1}
 
-  /* ── Buttons ── */
-  .btn{
-    padding:9px 18px;border:none;border-radius:var(--radius-sm);
-    font-size:13.5px;font-weight:700;cursor:pointer;
-    display:inline-flex;align-items:center;gap:6px;
-    transition:all .3s ease;white-space:nowrap;
-  }
-  .btn-format{
-    background:linear-gradient(135deg,var(--p),var(--p-dark));
-    color:#fff;box-shadow:0 4px 14px rgba(79,70,229,.3);
-  }
-  .btn-format:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,70,229,.4)}
-  .btn-copy{background:var(--green-bg);color:var(--green);border:1.5px solid #a7f3d0}
-  .btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
-  .btn-clear{background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca}
-  .btn-clear:hover{background:#fee2e2;transform:translateY(-1px)}
-  .btn-paste{background:var(--p50);color:var(--p);border:1.5px solid var(--border)}
-  .btn-paste:hover{background:var(--p100);transform:translateY(-1px)}
-  .btn-minify{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
-  .btn-minify:hover{background:#fef3c7;transform:translateY(-1px)}
-  .btn:active{transform:translateY(0)!important}
+/* ══════ BUTTONS ══════ */
+.btn{
+  padding:8px 16px;border:none;border-radius:var(--radius-sm);
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:all .25s ease;white-space:nowrap;
+}
+.btn:active{transform:scale(.97)!important}
+.btn-format{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);
+}
+.btn-format:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(22,163,74,.4)}
+.btn-copy{background:#ecfdf5;color:var(--g700);border:1.5px solid var(--g300)}
+.btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
+.btn-clear{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
+.btn-clear:hover{background:#fee2e2;transform:translateY(-1px)}
+.btn-paste{background:var(--g50);color:var(--g700);border:1.5px solid var(--border)}
+.btn-paste:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-minify{background:#fefce8;color:var(--yellow);border:1.5px solid #fde68a}
+.btn-minify:hover{background:#fef9c3;transform:translateY(-1px)}
+.btn-sample{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-sample:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-download{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-download:hover{background:var(--g100);transform:translateY(-1px)}
 
-  /* ── Main Area ── */
-  .main{
-    display:flex;flex-wrap:wrap;
-    background:var(--card);
-    border-bottom:1.5px solid var(--border2);
-    min-height:420px;
-  }
-  .panel{
-    flex:1 1 400px;display:flex;flex-direction:column;
-    min-height:400px;position:relative;
-  }
-  .panel + .panel{border-left:1.5px solid var(--border2)}
-  .panel-head{
-    padding:12px 18px;
-    background:var(--p50);border-bottom:1.5px solid var(--border2);
-    display:flex;align-items:center;justify-content:space-between;
-  }
-  .panel-head h3{font-size:14px;font-weight:700;color:var(--p-dark);display:flex;align-items:center;gap:6px}
-  .panel-head .badge{
-    font-size:11px;padding:3px 9px;border-radius:20px;
-    background:var(--p100);color:var(--p);font-weight:600;
-  }
+/* ══════ MAIN PANELS ══════ */
+.main{
+  display:flex;flex-wrap:wrap;
+  flex:1;overflow:hidden;
+  background:var(--card);
+}
+.panel{
+  flex:1 1 380px;display:flex;flex-direction:column;
+  min-height:0;overflow:hidden;
+}
+.panel+.panel{border-left:1.5px solid var(--border2)}
+.panel-head{
+  padding:10px 16px;
+  background:var(--g50);border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.panel-head h3{
+  font-size:13.5px;font-weight:800;color:var(--g800);
+  display:flex;align-items:center;gap:6px;
+}
+.badge{
+  font-size:10.5px;padding:2px 9px;border-radius:20px;
+  background:var(--g100);color:var(--g700);font-weight:700;
+}
 
-  /* Input */
-  #sqlInput{
-    flex:1;width:100%;padding:18px;border:none;outline:none;
-    font-family:'Cascadia Code','Fira Code','Consolas',monospace;
-    font-size:14px;line-height:1.7;color:var(--text);
-    background:transparent;resize:none;
-    tab-size:2;
-  }
-  #sqlInput::placeholder{color:#a5b4fc}
+/* Input Textarea */
+#sqlInput{
+  flex:1;width:100%;padding:16px;border:none;outline:none;
+  font-family:var(--mono);font-size:13.5px;line-height:1.75;
+  color:var(--text);background:transparent;resize:none;tab-size:2;
+}
+#sqlInput::placeholder{color:var(--g400)}
 
-  /* Output */
-  .output-wrap{flex:1;overflow:auto;position:relative}
-  #sqlOutput{
-    width:100%;height:100%;padding:18px;margin:0;
-    font-family:'Cascadia Code','Fira Code','Consolas',monospace;
-    font-size:14px;line-height:1.7;
-    white-space:pre;overflow:auto;
-    background:transparent;color:var(--text);
-    border:none;
-  }
+/* Output Pre */
+.output-wrap{flex:1;overflow:auto;position:relative;background:#fafffe}
+#sqlOutput{
+  width:100%;min-height:100%;padding:16px;margin:0;
+  font-family:var(--mono);font-size:13.5px;line-height:1.75;
+  white-space:pre;overflow:auto;
+  background:transparent;color:var(--text);border:none;
+}
 
-  /* Syntax Colors */
-  .sql-keyword{color:var(--p);font-weight:700}
-  .sql-function{color:var(--orange);font-weight:600}
-  .sql-string{color:var(--green)}
-  .sql-number{color:var(--red)}
-  .sql-comment{color:#94a3b8;font-style:italic}
-  .sql-operator{color:var(--cyan);font-weight:600}
-  .sql-paren{color:#a855f7;font-weight:700}
-  .sql-comma{color:#64748b}
+/* Line Numbers */
+.line-nums{
+  position:absolute;left:0;top:0;
+  padding:16px 8px 16px 10px;
+  font-family:var(--mono);font-size:13.5px;line-height:1.75;
+  color:var(--g400);text-align:right;
+  user-select:none;pointer-events:none;
+  border-right:1px solid var(--border2);
+  background:var(--g50);min-height:100%;
+}
 
-  /* ── Status Bar ── */
-  .statusbar{
-    background:var(--card);border-radius:0 0 20px 20px;
-    padding:12px 20px;
-    display:flex;flex-wrap:wrap;align-items:center;gap:14px;
-    border-top:1.5px solid var(--border2);
-    box-shadow:var(--shadow-sm);
-  }
-  .stat{font-size:12px;color:var(--p-dark);font-weight:500;display:flex;align-items:center;gap:4px}
-  .stat .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-  .dot-green{background:var(--green)}
-  .dot-blue{background:var(--p)}
+/* ══════ SYNTAX HIGHLIGHTING ══════ */
+.sk{color:var(--g700);font-weight:700}
+.sf{color:var(--orange);font-weight:600}
+.ss{color:#16a34a}
+.sn{color:var(--red)}
+.sc{color:#94a3b8;font-style:italic}
+.so{color:var(--cyan);font-weight:700}
+.sp{color:var(--purple);font-weight:700}
+.scm{color:#64748b}
+.sa{color:var(--pink);font-weight:600}
 
-  /* ── Toast ── */
-  .toast{
-    position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);
-    padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;
-    color:#fff;z-index:9999;pointer-events:none;
-    transition:all .4s ease;opacity:0;
-  }
-  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-  .toast-success{background:var(--green);box-shadow:0 6px 20px rgba(5,150,105,.3)}
-  .toast-error{background:var(--red);box-shadow:0 6px 20px rgba(220,38,38,.3)}
-  .toast-info{background:var(--p);box-shadow:0 6px 20px rgba(79,70,229,.3)}
+/* ══════ STATUSBAR ══════ */
+.statusbar{
+  background:var(--card);
+  padding:10px 18px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  border-top:1.5px solid var(--border2);
+  flex-shrink:0;
+}
+.stat{
+  font-size:11.5px;color:var(--g700);font-weight:600;
+  display:flex;align-items:center;gap:4px;
+}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot-g{background:var(--g500)}
+.dot-b{background:var(--blue)}
+.stat-sep{width:1px;height:14px;background:var(--border);margin:0 2px}
+.shortcut-hint{
+  font-size:11px;color:var(--g400);font-weight:500;margin-left:auto;
+}
+.shortcut-hint kbd{
+  background:var(--g100);padding:1px 6px;border-radius:4px;
+  font-size:10.5px;border:1px solid var(--border);color:var(--g700);
+  font-family:var(--mono);
+}
 
-  /* ── Responsive ── */
-  @media(max-width:768px){
-    body{padding:10px}
-    .header{border-radius:16px 16px 0 0;padding:22px 16px 18px}
-    .header h1{font-size:21px}
-    .header .icon{font-size:34px}
-    .toolbar{padding:10px 14px;gap:8px}
-    .panel + .panel{border-left:none;border-top:1.5px solid var(--border2)}
-    .panel{min-height:260px}
-    .main{min-height:auto}
-    .statusbar{border-radius:0 0 16px 16px;padding:10px 14px}
-    .btn{padding:8px 13px;font-size:12.5px}
-  }
-  @media(max-width:480px){
-    body{padding:0}
-    .app{border-radius:0}
-    .header{border-radius:0;padding:18px 12px 15px}
-    .header h1{font-size:18px}
-    .toolbar{padding:10px 10px;gap:6px}
-    .panel-head{padding:10px 12px}
-    #sqlInput,#sqlOutput{padding:12px;font-size:12.5px}
-    .statusbar{border-radius:0;padding:10px 12px}
-    .btn{padding:7px 11px;font-size:12px;gap:4px}
-  }
+/* ══════ TOAST ══════ */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:11px 24px;border-radius:12px;
+  font-size:13.5px;font-weight:700;color:#fff;
+  z-index:9999;pointer-events:none;
+  transition:all .4s ease;opacity:0;
+  backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-success{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-error{background:rgba(220,38,38,.92);box-shadow:0 6px 24px rgba(220,38,38,.3)}
+.toast-info{background:rgba(37,99,235,.92);box-shadow:0 6px 24px rgba(37,99,235,.3)}
+
+/* ══════ SCROLLBAR ══════ */
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:768px){
+  .header{padding:16px 14px 14px}
+  .header h1{font-size:20px}
+  .header .icon{font-size:30px}
+  .toolbar{padding:10px 12px;gap:7px}
+  .panel+.panel{border-left:none;border-top:1.5px solid var(--border2)}
+  .main{flex-direction:column}
+  .panel{flex:1 1 auto;min-height:200px}
+  .statusbar{padding:8px 12px;gap:8px}
+  .btn{padding:7px 12px;font-size:11.5px}
+  .shortcut-hint{display:none}
+}
+@media(max-width:480px){
+  .header{padding:14px 10px 12px}
+  .header h1{font-size:17px}
+  .header .icon{font-size:26px}
+  .header p{font-size:11.5px}
+  .toolbar{padding:8px 8px;gap:5px}
+  .tool-grp label,.tool-chk span{font-size:11px}
+  .tool-sel{padding:5px 7px;font-size:11.5px}
+  .panel-head{padding:8px 10px}
+  .panel-head h3{font-size:12.5px}
+  #sqlInput,#sqlOutput{padding:10px;font-size:12px;line-height:1.65}
+  .statusbar{padding:7px 8px}
+  .stat{font-size:10.5px}
+  .btn{padding:6px 10px;font-size:11px;gap:3px}
+}
 </style>
 </head>
 <body>
 
-<div class="app">
-  <!-- Header -->
-  <div class="header">
-    <div class="icon">🗃️</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <span class="icon">🗃️</span>
     <h1>SQL Formatter & Beautifier</h1>
-    <p>Paste your SQL — Format, Beautify, Highlight & Copy</p>
   </div>
+  <p>Paste your SQL → Format, Highlight, Minify & Download</p>
+</div>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="tool-group">
-      <label>📏 Indent:</label>
-      <select class="tool-select" id="indentSize">
-        <option value="2">2 Spaces</option>
-        <option value="4" selected>4 Spaces</option>
-        <option value="tab">Tab</option>
-      </select>
-    </div>
-    <div class="tool-group">
-      <label class="tool-check">
-        <input type="checkbox" id="uppercaseKeywords" checked>
-        <span>🔠 Uppercase Keywords</span>
-      </label>
-    </div>
-    <div class="tool-group">
-      <label class="tool-check">
-        <input type="checkbox" id="highlightSyntax" checked>
-        <span>🎨 Syntax Highlight</span>
-      </label>
-    </div>
-    <div class="spacer"></div>
-    <button class="btn btn-paste" onclick="pasteSQL()">📋 Paste</button>
-    <button class="btn btn-format" onclick="formatSQL()">⚡ Format</button>
-    <button class="btn btn-minify" onclick="minifySQL()">🗜️ Minify</button>
-    <button class="btn btn-copy" onclick="copySQL()">📑 Copy</button>
-    <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear</button>
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="tool-grp">
+    <label>📏 Indent:</label>
+    <select class="tool-sel" id="indentSize">
+      <option value="2">2 Spaces</option>
+      <option value="4" selected>4 Spaces</option>
+      <option value="tab">Tab</option>
+    </select>
   </div>
-
-  <!-- Main Panels -->
-  <div class="main">
-    <!-- Input Panel -->
-    <div class="panel">
-      <div class="panel-head">
-        <h3>📝 Input SQL</h3>
-        <span class="badge" id="inputLen">0 chars</span>
-      </div>
-      <textarea id="sqlInput" placeholder="Paste or type your SQL query here...&#10;&#10;Example:&#10;SELECT u.id, u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id WHERE o.total > 100 ORDER BY o.total DESC;" spellcheck="false"></textarea>
-    </div>
-
-    <!-- Output Panel -->
-    <div class="panel">
-      <div class="panel-head">
-        <h3>✨ Formatted Output</h3>
-        <span class="badge" id="outputLen">0 chars</span>
-      </div>
-      <div class="output-wrap">
-        <pre id="sqlOutput"><span style="color:#a5b4fc">Formatted SQL will appear here...</span></pre>
-      </div>
-    </div>
+  <div class="tool-grp">
+    <label>🔤 Case:</label>
+    <select class="tool-sel" id="keywordCase">
+      <option value="upper" selected>UPPER</option>
+      <option value="lower">lower</option>
+      <option value="none">As-is</option>
+    </select>
   </div>
+  <div class="tool-grp">
+    <label class="tool-chk">
+      <input type="checkbox" id="syntaxHL" checked>
+      <span>🎨 Highlight</span>
+    </label>
+  </div>
+  <div class="tool-grp">
+    <label class="tool-chk">
+      <input type="checkbox" id="lineNums" checked>
+      <span>🔢 Line #</span>
+    </label>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn btn-sample" onclick="loadSample()">📄 Sample</button>
+  <button class="btn btn-paste" onclick="pasteSQL()">📋 Paste</button>
+  <button class="btn btn-format" onclick="formatSQL()">⚡ Format</button>
+  <button class="btn btn-minify" onclick="minifySQL()">🗜️ Minify</button>
+  <button class="btn btn-copy" onclick="copySQL()">📑 Copy</button>
+  <button class="btn btn-download" onclick="downloadSQL()">⬇️ Save</button>
+  <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear</button>
+</div>
 
-  <!-- Status Bar -->
-  <div class="statusbar">
-    <div class="stat"><span class="dot dot-green"></span> Ready</div>
-    <div class="stat" id="statKeywords"><span class="dot dot-blue"></span> Keywords: 0</div>
-    <div class="stat" id="statLines"><span class="dot dot-blue"></span> Lines: 0</div>
-    <div class="stat" id="statTime"><span class="dot dot-blue"></span> Time: 0ms</div>
+<!-- MAIN PANELS -->
+<div class="main">
+  <!-- Input -->
+  <div class="panel">
+    <div class="panel-head">
+      <h3>📝 Input SQL</h3>
+      <span class="badge" id="inLen">0 chars</span>
+    </div>
+    <textarea id="sqlInput" spellcheck="false" placeholder="Paste or type your SQL query here...&#10;&#10;💡 Tip: Click '📄 Sample' to load example SQL&#10;⌨️ Press Ctrl + Enter to Format"></textarea>
+  </div>
+  <!-- Output -->
+  <div class="panel">
+    <div class="panel-head">
+      <h3>✨ Formatted Output</h3>
+      <span class="badge" id="outLen">0 chars</span>
+    </div>
+    <div class="output-wrap" id="outputWrap">
+      <div class="line-nums" id="lineNums" style="display:none"></div>
+      <pre id="sqlOutput"><span style="color:var(--g400)">Formatted SQL will appear here…</span></pre>
+    </div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- STATUSBAR -->
+<div class="statusbar">
+  <div class="stat"><span class="dot dot-g"></span> Ready</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sKw"><span class="dot dot-b"></span> Keywords: 0</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sLn"><span class="dot dot-b"></span> Lines: 0</div>
+  <div class="stat-sep"></div>
+  <div class="stat" id="sTm"><span class="dot dot-b"></span> Time: 0 ms</div>
+  <div class="shortcut-hint">
+    <kbd>Ctrl</kbd>+<kbd>Enter</kbd> Format &nbsp;|&nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Copy
+  </div>
+</div>
+
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── SQL Keywords & Functions ───
-const SQL_KEYWORDS = [
+/* ================================================================
+   SQL KEYWORDS / FUNCTIONS
+   ================================================================ */
+const KEYWORDS = new Set([
   'SELECT','FROM','WHERE','AND','OR','NOT','IN','ON','AS','JOIN',
   'LEFT','RIGHT','INNER','OUTER','FULL','CROSS','NATURAL',
   'INSERT','INTO','VALUES','UPDATE','SET','DELETE','DROP','CREATE',
   'TABLE','DATABASE','INDEX','VIEW','ALTER','ADD','COLUMN',
   'PRIMARY','KEY','FOREIGN','REFERENCES','CONSTRAINT','DEFAULT',
-  'NULL','NOT NULL','UNIQUE','CHECK','AUTO_INCREMENT',
-  'ORDER BY','GROUP BY','HAVING','LIMIT','OFFSET','DISTINCT',
-  'UNION','UNION ALL','INTERSECT','EXCEPT','EXISTS',
-  'BETWEEN','LIKE','IS','IS NOT','IS NULL','IS NOT NULL',
-  'CASE','WHEN','THEN','ELSE','END',
-  'ASC','DESC','ALL','ANY','SOME',
+  'NULL','UNIQUE','CHECK','AUTO_INCREMENT',
+  'ORDER','BY','GROUP','HAVING','LIMIT','OFFSET','DISTINCT',
+  'UNION','ALL','INTERSECT','EXCEPT','EXISTS',
+  'BETWEEN','LIKE','ILIKE','IS','CASE','WHEN','THEN','ELSE','END',
+  'ASC','DESC','ANY','SOME','TOP','PERCENT','TRUNCATE',
   'GRANT','REVOKE','COMMIT','ROLLBACK','SAVEPOINT','TRANSACTION',
   'BEGIN','DECLARE','FETCH','CURSOR','OPEN','CLOSE',
-  'IF','ELSE','WHILE','FOR','LOOP','RETURN','EXEC','EXECUTE',
-  'PROCEDURE','FUNCTION','TRIGGER','WITH','RECURSIVE','OVER','PARTITION BY',
-  'ROWS','RANGE','UNBOUNDED','PRECEDING','FOLLOWING','CURRENT ROW',
-  'TOP','PERCENT','INTO','TRUNCATE','REPLACE','MERGE','USING',
-  'MATCHED','EXPLAIN','ANALYZE','CASCADE','RESTRICT','TEMP','TEMPORARY',
-  'ENABLE','DISABLE','RENAME','TO','SCHEMA','TABLESPACE','SEQUENCE',
-  'NEXTVAL','CURRVAL','LATERAL','PIVOT','UNPIVOT','APPLY',
-  'GROUPING','SETS','CUBE','ROLLUP','FILTER','WITHIN GROUP',
-  'ARRAY','JSON','CAST','CONVERT','COALESCE','NULLIF',
-  'ROW_NUMBER','RANK','DENSE_RANK','NTILE','LAG','LEAD',
-  'FIRST_VALUE','LAST_VALUE','NTH_VALUE'
-];
+  'IF','WHILE','FOR','LOOP','RETURN','EXEC','EXECUTE',
+  'PROCEDURE','FUNCTION','TRIGGER','WITH','RECURSIVE','OVER',
+  'PARTITION','ROWS','RANGE','UNBOUNDED','PRECEDING','FOLLOWING',
+  'CURRENT','ROW','REPLACE','MERGE','USING','MATCHED',
+  'EXPLAIN','ANALYZE','CASCADE','RESTRICT','TEMP','TEMPORARY',
+  'ENABLE','DISABLE','RENAME','TO','SCHEMA','SEQUENCE',
+  'LATERAL','PIVOT','UNPIVOT','APPLY','ROLLUP','CUBE',
+  'FILTER','WITHIN','ARRAY','JSON','CAST','CONVERT',
+  'COALESCE','NULLIF','RETURNING','WINDOW','TYPE','ENUM',
+  'BOOLEAN','INT','INTEGER','BIGINT','SMALLINT','TINYINT',
+  'FLOAT','DOUBLE','DECIMAL','NUMERIC','VARCHAR','CHAR',
+  'TEXT','BLOB','DATE','TIME','DATETIME','TIMESTAMP','SERIAL',
+  'TRUE','FALSE','INTERVAL','ZONE','NO','ACTION','OF','ONLY'
+]);
 
-const SQL_FUNCTIONS = [
-  'COUNT','SUM','AVG','MIN','MAX','ABS','CEIL','CEILING','FLOOR','ROUND',
-  'POWER','SQRT','MOD','SIGN','RAND','RANDOM',
+const FUNCTIONS = new Set([
+  'COUNT','SUM','AVG','MIN','MAX','ABS','CEIL','CEILING','FLOOR',
+  'ROUND','POWER','SQRT','MOD','SIGN','RAND','RANDOM',
   'CONCAT','LENGTH','LEN','UPPER','LOWER','TRIM','LTRIM','RTRIM',
-  'SUBSTRING','SUBSTR','LEFT','RIGHT','REPLACE','REVERSE','REPEAT',
+  'SUBSTRING','SUBSTR','REPLACE','REVERSE','REPEAT',
   'LPAD','RPAD','CHARINDEX','POSITION','INSTR','CHAR_LENGTH',
   'NOW','GETDATE','CURDATE','CURTIME','CURRENT_DATE','CURRENT_TIME',
-  'CURRENT_TIMESTAMP','DATE','TIME','YEAR','MONTH','DAY','HOUR','MINUTE','SECOND',
+  'CURRENT_TIMESTAMP','YEAR','MONTH','DAY','HOUR','MINUTE','SECOND',
   'DATEADD','DATEDIFF','DATE_FORMAT','TO_CHAR','TO_DATE','TO_NUMBER',
-  'EXTRACT','INTERVAL','EPOCH',
-  'IFNULL','ISNULL','NVL','NVL2','IIF','DECODE',
-  'CAST','CONVERT','COALESCE','NULLIF','GREATEST','LEAST',
-  'ROW_NUMBER','RANK','DENSE_RANK','NTILE','LAG','LEAD',
-  'FIRST_VALUE','LAST_VALUE','NTH_VALUE',
-  'STRING_AGG','GROUP_CONCAT','ARRAY_AGG','JSON_AGG',
-  'EXISTS','NOT EXISTS'
-];
+  'EXTRACT','EPOCH','IFNULL','ISNULL','NVL','NVL2','IIF','DECODE',
+  'GREATEST','LEAST','ROW_NUMBER','RANK','DENSE_RANK','NTILE',
+  'LAG','LEAD','FIRST_VALUE','LAST_VALUE','NTH_VALUE',
+  'STRING_AGG','GROUP_CONCAT','ARRAY_AGG','JSON_AGG','JSON_OBJECT',
+  'JSON_ARRAY','COALESCE','NULLIF','CAST','CONVERT'
+]);
 
-// Major clause keywords that should start on a new line
-const MAJOR_KEYWORDS = [
-  'SELECT','FROM','WHERE','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN',
-  'OUTER JOIN','FULL JOIN','FULL OUTER JOIN','CROSS JOIN','NATURAL JOIN',
-  'LEFT OUTER JOIN','RIGHT OUTER JOIN',
-  'ON','AND','OR','ORDER BY','GROUP BY','HAVING','LIMIT','OFFSET',
-  'UNION','UNION ALL','INTERSECT','EXCEPT','INSERT INTO','VALUES',
-  'UPDATE','SET','DELETE FROM','CREATE TABLE','ALTER TABLE','DROP TABLE',
+/* Major clause keywords – each should start a new line at indent 0 */
+const CLAUSES = [
+  'LEFT OUTER JOIN','RIGHT OUTER JOIN','FULL OUTER JOIN',
+  'LEFT JOIN','RIGHT JOIN','INNER JOIN','OUTER JOIN','FULL JOIN',
+  'CROSS JOIN','NATURAL JOIN',
+  'INSERT INTO','DELETE FROM','CREATE TABLE','ALTER TABLE','DROP TABLE',
+  'CREATE INDEX','DROP INDEX','CREATE VIEW','DROP VIEW',
+  'ORDER BY','GROUP BY','PARTITION BY',
+  'UNION ALL','UNION','INTERSECT','EXCEPT',
+  'SELECT','FROM','WHERE','JOIN','SET','VALUES',
+  'ON','AND','OR','HAVING','LIMIT','OFFSET',
   'CASE','WHEN','THEN','ELSE','END',
-  'WITH','RETURNING','PARTITION BY','WINDOW'
-];
+  'WITH','RETURNING','WINDOW','UPDATE'
+].sort((a,b)=>b.length-a.length);
 
-// ─── Input char count ───
-const sqlInput = document.getElementById('sqlInput');
-sqlInput.addEventListener('input', () => {
-  document.getElementById('inputLen').textContent = sqlInput.value.length + ' chars';
+/* ================================================================
+   ELEMENTS
+   ================================================================ */
+const $in   = document.getElementById('sqlInput');
+const $out  = document.getElementById('sqlOutput');
+const $lnN  = document.getElementById('lineNums');
+const $wrap = document.getElementById('outputWrap');
+
+$in.addEventListener('input',()=>{
+  document.getElementById('inLen').textContent=$in.value.length+' chars';
 });
 
-// ─── Format SQL ───
-function formatSQL() {
-  const start = performance.now();
-  const raw = sqlInput.value.trim();
-  if (!raw) { showToast('⚠️ Please enter SQL first!', 'error'); return; }
+/* ================================================================
+   CORE FORMATTER
+   ================================================================ */
+function formatSQL(){
+  const t0   = performance.now();
+  const raw  = $in.value.trim();
+  if(!raw){toast('⚠️ Please enter SQL first!','error');return}
 
   const indent = getIndent();
-  const upper = document.getElementById('uppercaseKeywords').checked;
-  const highlight = document.getElementById('highlightSyntax').checked;
+  const kcase  = document.getElementById('keywordCase').value;
 
-  let formatted = beautifySQL(raw, indent, upper);
+  let formatted = beautify(raw,indent,kcase);
 
-  // Stats
-  const kwCount = countKeywords(formatted);
-  const lineCount = formatted.split('\n').length;
-  const elapsed = (performance.now() - start).toFixed(1);
+  /* Stats */
+  const kwC  = countKW(formatted);
+  const lnC  = formatted.split('\n').length;
+  const ms   = (performance.now()-t0).toFixed(1);
 
-  document.getElementById('statKeywords').innerHTML = `<span class="dot dot-blue"></span> Keywords: ${kwCount}`;
-  document.getElementById('statLines').innerHTML = `<span class="dot dot-blue"></span> Lines: ${lineCount}`;
-  document.getElementById('statTime').innerHTML = `<span class="dot dot-blue"></span> Time: ${elapsed}ms`;
-  document.getElementById('outputLen').textContent = formatted.length + ' chars';
-
-  const output = document.getElementById('sqlOutput');
-  if (highlight) {
-    output.innerHTML = syntaxHighlight(formatted);
-  } else {
-    output.textContent = formatted;
-  }
-
-  showToast('✅ SQL Formatted Successfully!', 'success');
+  setStat(kwC,lnC,ms,formatted.length);
+  renderOutput(formatted);
+  toast('✅ SQL Formatted!','success');
 }
 
-// ─── Core Beautifier ───
-function beautifySQL(sql, indent, upper) {
-  // Preserve strings and comments
-  const preserved = [];
-  let idx = 0;
+function beautify(sql,indent,kcase){
+  /* 1. Preserve strings & comments */
+  const store=[];let si=0;
+  sql=sql.replace(/'([^'\\]|\\.)*'/g,m=>{store.push(m);return`§§${si++}§§`});
+  sql=sql.replace(/"([^"\\]|\\.)*"/g,m=>{store.push(m);return`§§${si++}§§`});
+  sql=sql.replace(/`([^`]*)`/g,m=>{store.push(m);return`§§${si++}§§`});
+  sql=sql.replace(/--.*$/gm,m=>{store.push(m);return`§§${si++}§§`});
+  sql=sql.replace(/\/\*[\s\S]*?\*\//g,m=>{store.push(m);return`§§${si++}§§`});
 
-  // Extract string literals
-  sql = sql.replace(/'([^'\\]|\\.)*'/g, (m) => {
-    preserved.push(m);
-    return `__STR${idx++}__`;
-  });
-  sql = sql.replace(/"([^"\\]|\\.)*"/g, (m) => {
-    preserved.push(m);
-    return `__STR${idx++}__`;
-  });
+  /* 2. Normalise whitespace */
+  sql=sql.replace(/\s+/g,' ').trim();
 
-  // Extract comments
-  sql = sql.replace(/--.*$/gm, (m) => {
-    preserved.push(m);
-    return `__STR${idx++}__`;
-  });
-  sql = sql.replace(/\/\*[\s\S]*?\*\//g, (m) => {
-    preserved.push(m);
-    return `__STR${idx++}__`;
-  });
-
-  // Normalize whitespace
-  sql = sql.replace(/\s+/g, ' ').trim();
-
-  // Sort major keywords by length desc for greedy matching
-  const sortedMajor = [...MAJOR_KEYWORDS].sort((a, b) => b.length - a.length);
-
-  // Insert newlines before major keywords
-  for (const kw of sortedMajor) {
-    const regex = new RegExp(`\\b(${kw.replace(/ /g, '\\s+')})\\b`, 'gi');
-    sql = sql.replace(regex, '\n$1');
+  /* 3. Insert newlines before clauses */
+  for(const cl of CLAUSES){
+    const re=new RegExp(`\\b(${cl.replace(/ /g,'\\s+')})\\b`,'gi');
+    sql=sql.replace(re,'\n$1');
   }
 
-  // Handle commas — put new line after comma in SELECT
-  let lines = sql.split('\n').map(l => l.trim()).filter(l => l);
+  /* 4. Semicolons → newline after */
+  sql=sql.replace(/;/g,';\n');
 
-  let result = [];
-  let indentLevel = 0;
-  let inSelect = false;
+  /* 5. Process lines */
+  let lines=sql.split('\n').map(l=>l.trim()).filter(Boolean);
+  let result=[], level=0, inSelect=false;
 
-  for (let line of lines) {
-    const upperLine = line.toUpperCase().trim();
+  for(let line of lines){
+    const up=line.toUpperCase().replace(/\s+/g,' ').trim();
 
-    // Determine indent level
-    if (/^(END)\b/i.test(upperLine)) { indentLevel = Math.max(0, indentLevel - 1); }
+    /* Decrease indent for END */
+    if(/^END\b/i.test(up)) level=Math.max(0,level-1);
 
-    // Check if entering SELECT
-    if (/^SELECT\b/i.test(upperLine)) { inSelect = true; }
-    if (/^FROM\b/i.test(upperLine)) { inSelect = false; }
+    /* Track SELECT…FROM */
+    if(/^SELECT\b/i.test(up)) inSelect=true;
+    if(/^FROM\b/i.test(up))   inSelect=false;
 
-    // Handle commas within SELECT — split by comma
-    if (inSelect && line.includes(',') && !/^SELECT\b/i.test(upperLine)) {
-      const parts = splitByComma(line);
-      for (const part of parts) {
-        let processed = upper ? applyUppercase(part.trim()) : part.trim();
-        result.push(indent.repeat(indentLevel + 1) + processed);
-      }
-    } else {
-      // Adjust indent for sub-keywords
-      let currentIndent = indentLevel;
-      if (/^(AND|OR)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
-      if (/^(ON)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
-      if (/^(WHEN|THEN|ELSE)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
+    /* Determine current indent */
+    let cur=level;
+    if(/^(AND|OR)\b/i.test(up))              cur=level+1;
+    if(/^(ON)\b/i.test(up))                  cur=level+1;
+    if(/^(WHEN|THEN|ELSE)\b/i.test(up))      cur=level+1;
 
-      // For primary clauses like FROM, WHERE, JOIN etc — same level as SELECT
-      if (/^(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|NATURAL|ORDER BY|GROUP BY|HAVING|LIMIT|OFFSET|UNION|INSERT|UPDATE|DELETE|SET|VALUES|CREATE|ALTER|DROP|WITH|RETURNING)\b/i.test(upperLine)) {
-        currentIndent = indentLevel;
-      }
+    /* Primary clauses stay at base level */
+    if(/^(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|NATURAL|ORDER\s+BY|GROUP\s+BY|HAVING|LIMIT|OFFSET|UNION|INSERT|UPDATE|DELETE|SET|VALUES|CREATE|ALTER|DROP|WITH|RETURNING|WINDOW)\b/i.test(up)){
+      cur=level;
+    }
 
-      // Handle SELECT items on same line
-      if (/^SELECT\b/i.test(upperLine)) {
-        // Split SELECT fields
-        const selectMatch = line.match(/^(SELECT\s+(?:DISTINCT\s+)?)(.*)/i);
-        if (selectMatch && selectMatch[2].includes(',')) {
-          let keyword = selectMatch[1].trim();
-          let fields = selectMatch[2];
-          if (upper) keyword = keyword.toUpperCase();
-
-          const parts = splitByComma(fields);
-          let processed = upper ? applyUppercase(parts[0].trim()) : parts[0].trim();
-          result.push(indent.repeat(currentIndent) + keyword + ' ' + processed);
-
-          for (let i = 1; i < parts.length; i++) {
-            processed = upper ? applyUppercase(parts[i].trim()) : parts[i].trim();
-            result.push(indent.repeat(currentIndent + 1) + processed);
-          }
-        } else {
-          let processed = upper ? applyUppercase(line) : line;
-          result.push(indent.repeat(currentIndent) + processed);
-        }
+    /* Handle SELECT comma-split */
+    if(/^SELECT\b/i.test(up)){
+      const m=line.match(/^(SELECT\s+(?:DISTINCT\s+|TOP\s+\d+\s+)?)(.*)/i);
+      if(m&&m[2].includes(',')){
+        let kw=applyCase(m[1].trim(),kcase);
+        const parts=splitComma(m[2]);
+        result.push(indent.repeat(cur)+kw+' '+applyCase(parts[0].trim(),kcase));
+        for(let i=1;i<parts.length;i++)
+          result.push(indent.repeat(cur+1)+applyCase(parts[i].trim(),kcase));
       } else {
-        let processed = upper ? applyUppercase(line) : line;
-        result.push(indent.repeat(currentIndent) + processed);
+        result.push(indent.repeat(cur)+applyCase(line,kcase));
       }
     }
-
-    if (/^(CASE)\b/i.test(upperLine)) { indentLevel++; }
-  }
-
-  let output = result.join('\n');
-
-  // Restore preserved strings
-  for (let i = preserved.length - 1; i >= 0; i--) {
-    output = output.replace(`__STR${i}__`, preserved[i]);
-  }
-
-  // Clean up extra blank lines
-  output = output.replace(/\n{3,}/g, '\n\n');
-
-  return output;
-}
-
-function splitByComma(str) {
-  const parts = [];
-  let depth = 0, current = '';
-  for (let i = 0; i < str.length; i++) {
-    const ch = str[i];
-    if (ch === '(') depth++;
-    else if (ch === ')') depth--;
-    if (ch === ',' && depth === 0) {
-      parts.push(current.trim());
-      current = '';
-    } else {
-      current += ch;
+    else if(inSelect&&line.includes(',')){
+      const parts=splitComma(line);
+      for(const p of parts)
+        result.push(indent.repeat(cur+1)+applyCase(p.trim(),kcase));
     }
+    else{
+      result.push(indent.repeat(cur)+applyCase(line,kcase));
+    }
+
+    /* Increase indent after CASE */
+    if(/^CASE\b/i.test(up)) level++;
   }
-  if (current.trim()) parts.push(current.trim());
-  return parts;
+
+  let out=result.join('\n');
+
+  /* Restore preserved tokens */
+  for(let i=store.length-1;i>=0;i--)
+    out=out.replace(`§§${i}§§`,store[i]);
+
+  return out.replace(/\n{3,}/g,'\n\n');
 }
 
-function applyUppercase(str) {
-  // Uppercase SQL keywords but not strings/identifiers
-  const allKw = [...SQL_KEYWORDS, ...SQL_FUNCTIONS].sort((a, b) => b.length - a.length);
-  for (const kw of allKw) {
-    const regex = new RegExp(`\\b(${kw.replace(/ /g,'\\s+')})\\b`, 'gi');
-    str = str.replace(regex, (m) => m.toUpperCase());
+function splitComma(s){
+  const r=[];let d=0,c='';
+  for(const ch of s){
+    if(ch==='(')d++;else if(ch===')')d--;
+    if(ch===','&&d===0){r.push(c);c=''}else c+=ch;
+  }
+  if(c.trim())r.push(c);return r;
+}
+
+function applyCase(str,mode){
+  if(mode==='none')return str;
+  const all=[...KEYWORDS,...FUNCTIONS];
+  all.sort((a,b)=>b.length-a.length);
+  for(const kw of all){
+    const re=new RegExp(`\\b(${kw.replace(/ /g,'\\s+')})\\b`,'gi');
+    str=str.replace(re,m=>mode==='upper'?m.toUpperCase():m.toLowerCase());
   }
   return str;
 }
 
-// ─── Syntax Highlighting ───
-function syntaxHighlight(sql) {
-  // Escape HTML
-  let html = sql.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* ================================================================
+   SYNTAX HIGHLIGHTING
+   ================================================================ */
+function highlight(sql){
+  let h=sql.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-  // Comments
-  html = html.replace(/(--.*$)/gm, '<span class="sql-comment">$1</span>');
-  html = html.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="sql-comment">$1</span>');
-
-  // Strings
-  html = html.replace(/('([^'\\]|\\.)*')/g, '<span class="sql-string">$1</span>');
-
-  // Numbers
-  html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="sql-number">$1</span>');
-
-  // Functions (before keywords)
-  const funcRegex = new RegExp(`\\b(${SQL_FUNCTIONS.join('|')})\\s*(?=\\()`, 'gi');
-  html = html.replace(funcRegex, '<span class="sql-function">$1</span>');
-
-  // Keywords
-  const kwSorted = [...SQL_KEYWORDS].sort((a,b) => b.length - a.length);
-  for (const kw of kwSorted) {
-    const r = new RegExp(`\\b(${kw.replace(/ /g,'\\s+')})\\b`, 'g');
-    html = html.replace(r, (match) => {
-      // Avoid double-wrapping
-      if (match.includes('<span')) return match;
-      return `<span class="sql-keyword">${match}</span>`;
+  /* Comments */
+  h=h.replace(/(--.*$)/gm,'<span class="sc">$1</span>');
+  h=h.replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="sc">$1</span>');
+  /* Strings */
+  h=h.replace(/('([^'\\]|\\.)*')/g,'<span class="ss">$1</span>');
+  /* Back-tick identifiers */
+  h=h.replace(/(`[^`]*`)/g,'<span class="sa">$1</span>');
+  /* Numbers */
+  h=h.replace(/\b(\d+\.?\d*)\b/g,'<span class="sn">$1</span>');
+  /* Functions */
+  const fnRe=new RegExp(`\\b(${[...FUNCTIONS].join('|')})\\s*(?=\\()`,'gi');
+  h=h.replace(fnRe,'<span class="sf">$1</span>');
+  /* Keywords */
+  const kwArr=[...KEYWORDS].sort((a,b)=>b.length-a.length);
+  for(const kw of kwArr){
+    const re=new RegExp(`\\b(${kw})\\b`,'gi');
+    h=h.replace(re,(m)=>{
+      if(/<span/.test(m))return m;
+      return `<span class="sk">${m}</span>`;
     });
   }
-
-  // Parentheses
-  html = html.replace(/([()])/g, '<span class="sql-paren">$1</span>');
-
-  // Operators
-  html = html.replace(/([=&lt;&gt;!]+|&lt;&gt;|&gt;=|&lt;=)/g, '<span class="sql-operator">$1</span>');
-
-  // Commas
-  html = html.replace(/(,)/g, '<span class="sql-comma">$1</span>');
-
-  return html;
+  /* Parentheses */
+  h=h.replace(/([()])/g,'<span class="sp">$1</span>');
+  /* Operators */
+  h=h.replace(/(!=|&lt;&gt;|&gt;=|&lt;=|[=&lt;&gt;])/g,'<span class="so">$1</span>');
+  /* Commas / semicolons */
+  h=h.replace(/([,;])/g,'<span class="scm">$1</span>');
+  return h;
 }
 
-// ─── Minify SQL ───
-function minifySQL() {
-  const raw = sqlInput.value.trim();
-  if (!raw) { showToast('⚠️ Please enter SQL first!', 'error'); return; }
+/* ================================================================
+   RENDER OUTPUT + LINE NUMBERS
+   ================================================================ */
+function renderOutput(text){
+  const doHL=document.getElementById('syntaxHL').checked;
+  const doLN=document.getElementById('lineNums').checked;
 
-  let minified = raw
-    .replace(/--.*$/gm, '')           // Remove single-line comments
-    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-    .replace(/\s+/g, ' ')            // Collapse whitespace
-    .replace(/\s*([,()=<>!;])\s*/g, '$1') // Remove space around operators
+  $out.innerHTML=doHL?highlight(text):escHtml(text);
+
+  if(doLN){
+    const n=text.split('\n').length;
+    let nums='';for(let i=1;i<=n;i++)nums+=i+'\n';
+    $lnN.textContent=nums;
+    $lnN.style.display='block';
+    $out.style.paddingLeft=(String(n).length*9+26)+'px';
+  }else{
+    $lnN.style.display='none';
+    $out.style.paddingLeft='16px';
+  }
+  document.getElementById('outLen').textContent=text.length+' chars';
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ================================================================
+   MINIFY
+   ================================================================ */
+function minifySQL(){
+  const raw=$in.value.trim();
+  if(!raw){toast('⚠️ Please enter SQL first!','error');return}
+  let m=raw
+    .replace(/--.*$/gm,'')
+    .replace(/\/\*[\s\S]*?\*\//g,'')
+    .replace(/\s+/g,' ')
+    .replace(/\s*([,()=<>!;])\s*/g,'$1')
     .trim();
-
-  const output = document.getElementById('sqlOutput');
-  const highlight = document.getElementById('highlightSyntax').checked;
-
-  if (highlight) {
-    output.innerHTML = syntaxHighlight(minified);
-  } else {
-    output.textContent = minified;
-  }
-
-  document.getElementById('outputLen').textContent = minified.length + ' chars';
-  document.getElementById('statLines').innerHTML = `<span class="dot dot-blue"></span> Lines: 1`;
-  showToast('🗜️ SQL Minified!', 'info');
+  renderOutput(m);
+  setStat(countKW(m),1,'0',m.length);
+  toast('🗜️ SQL Minified!','info');
 }
 
-// ─── Copy ───
-function copySQL() {
-  const output = document.getElementById('sqlOutput');
-  const text = output.textContent || output.innerText;
-  if (!text || text.includes('will appear here')) {
-    showToast('⚠️ Nothing to copy!', 'error'); return;
-  }
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('📋 Copied to clipboard!', 'success');
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('📋 Copied to clipboard!', 'success');
-  });
+/* ================================================================
+   COPY / PASTE / CLEAR / DOWNLOAD / SAMPLE
+   ================================================================ */
+function copySQL(){
+  const t=$out.textContent||$out.innerText;
+  if(!t||t.includes('will appear')){toast('⚠️ Nothing to copy!','error');return}
+  navigator.clipboard.writeText(t).then(()=>toast('📋 Copied!','success'))
+  .catch(()=>{fallbackCopy(t);toast('📋 Copied!','success')});
+}
+function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a)}
+
+function pasteSQL(){
+  navigator.clipboard.readText().then(t=>{
+    $in.value=t;
+    document.getElementById('inLen').textContent=t.length+' chars';
+    toast('📋 Pasted!','info');
+  }).catch(()=>toast('⚠️ Clipboard access denied','error'));
 }
 
-// ─── Paste ───
-function pasteSQL() {
-  navigator.clipboard.readText().then(text => {
-    sqlInput.value = text;
-    document.getElementById('inputLen').textContent = text.length + ' chars';
-    showToast('📋 Pasted from clipboard!', 'info');
-  }).catch(() => {
-    showToast('⚠️ Clipboard access denied!', 'error');
-  });
+function clearAll(){
+  $in.value='';
+  $out.innerHTML='<span style="color:var(--g400)">Formatted SQL will appear here…</span>';
+  $lnN.textContent='';$lnN.style.display='none';$out.style.paddingLeft='16px';
+  document.getElementById('inLen').textContent='0 chars';
+  document.getElementById('outLen').textContent='0 chars';
+  setStat(0,0,0,0);
+  toast('🗑️ Cleared!','info');
 }
 
-// ─── Clear ───
-function clearAll() {
-  sqlInput.value = '';
-  document.getElementById('sqlOutput').innerHTML = '<span style="color:#a5b4fc">Formatted SQL will appear here...</span>';
-  document.getElementById('inputLen').textContent = '0 chars';
-  document.getElementById('outputLen').textContent = '0 chars';
-  document.getElementById('statKeywords').innerHTML = '<span class="dot dot-blue"></span> Keywords: 0';
-  document.getElementById('statLines').innerHTML = '<span class="dot dot-blue"></span> Lines: 0';
-  document.getElementById('statTime').innerHTML = '<span class="dot dot-blue"></span> Time: 0ms';
-  showToast('🗑️ Cleared!', 'info');
+function downloadSQL(){
+  const t=$out.textContent||$out.innerText;
+  if(!t||t.includes('will appear')){toast('⚠️ Nothing to download!','error');return}
+  const blob=new Blob([t],{type:'text/sql'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='formatted_query.sql';a.click();
+  URL.revokeObjectURL(a.href);
+  toast('⬇️ Downloaded!','success');
 }
 
-// ─── Helpers ───
-function getIndent() {
-  const val = document.getElementById('indentSize').value;
-  return val === 'tab' ? '\t' : ' '.repeat(parseInt(val));
+function loadSample(){
+  const s=`-- Get top customers with their order stats
+SELECT
+  c.customer_id, c.first_name, c.last_name, c.email,
+  COUNT(o.order_id) AS total_orders,
+  SUM(o.amount) AS total_spent,
+  AVG(o.amount) AS avg_order_value,
+  MAX(o.order_date) AS last_order_date
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id
+LEFT JOIN order_items oi ON o.order_id = oi.order_id
+WHERE c.status = 'active'
+  AND o.order_date >= '2024-01-01'
+  AND o.amount > 50
+GROUP BY c.customer_id, c.first_name, c.last_name, c.email
+HAVING COUNT(o.order_id) >= 3
+ORDER BY total_spent DESC
+LIMIT 25 OFFSET 0;
+
+-- Update customer tier based on spending
+UPDATE customers
+SET tier = CASE
+  WHEN total_spent > 10000 THEN 'platinum'
+  WHEN total_spent > 5000 THEN 'gold'
+  WHEN total_spent > 1000 THEN 'silver'
+  ELSE 'bronze'
+END
+WHERE status = 'active';`;
+  $in.value=s;
+  document.getElementById('inLen').textContent=s.length+' chars';
+  toast('📄 Sample SQL Loaded!','success');
 }
 
-function countKeywords(sql) {
-  let count = 0;
-  const upper = sql.toUpperCase();
-  for (const kw of SQL_KEYWORDS) {
-    const regex = new RegExp(`\\b${kw}\\b`, 'g');
-    const matches = upper.match(regex);
-    if (matches) count += matches.length;
-  }
-  return count;
+/* ================================================================
+   HELPERS
+   ================================================================ */
+function getIndent(){const v=document.getElementById('indentSize').value;return v==='tab'?'\t':' '.repeat(+v)}
+function countKW(s){let c=0;const u=s.toUpperCase();for(const k of KEYWORDS){const r=new RegExp(`\\b${k}\\b`,'g');const m=u.match(r);if(m)c+=m.length}return c}
+function setStat(kw,ln,ms,len){
+  document.getElementById('sKw').innerHTML=`<span class="dot dot-b"></span> Keywords: ${kw}`;
+  document.getElementById('sLn').innerHTML=`<span class="dot dot-b"></span> Lines: ${ln}`;
+  document.getElementById('sTm').innerHTML=`<span class="dot dot-b"></span> Time: ${ms} ms`;
 }
 
-function showToast(msg, type = 'success') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast toast-' + type + ' show';
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast toast-'+type+' show';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ─── Keyboard Shortcut ───
-document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { formatSQL(); e.preventDefault(); }
-  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') { copySQL(); e.preventDefault(); }
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){formatSQL();e.preventDefault()}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='C'||e.key==='c')){copySQL();e.preventDefault()}
 });
 
-// Tab support in textarea
-sqlInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Tab') {
+/* Tab in textarea */
+$in.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){
     e.preventDefault();
-    const start = sqlInput.selectionStart;
-    const end = sqlInput.selectionEnd;
-    sqlInput.value = sqlInput.value.substring(0, start) + '  ' + sqlInput.value.substring(end);
-    sqlInput.selectionStart = sqlInput.selectionEnd = start + 2;
+    const s=$in.selectionStart,en=$in.selectionEnd;
+    $in.value=$in.value.substring(0,s)+'  '+$in.value.substring(en);
+    $in.selectionStart=$in.selectionEnd=s+2;
   }
+});
+
+/* Sync scroll for line numbers */
+$wrap.addEventListener('scroll',()=>{
+  $lnN.style.top=-$wrap.scrollTop+'px';
 });
 </script>
-
 </body>
 </html>
