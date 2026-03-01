@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Generator Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#fff;--text:#14532d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;width:100%;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);
+}
+
+/* ══ HEADER ══ */
+.hdr{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  padding:16px 22px 12px;text-align:center;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 4px 20px rgba(22,163,74,.2);
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.hdr .ic{font-size:28px;animation:bob 2.5s ease infinite;vertical-align:middle;margin-right:8px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hdr h1{color:#fff;font-size:20px;font-weight:800;display:inline;vertical-align:middle}
+.hdr p{color:var(--g200);font-size:11.5px;margin-top:2px}
+
+/* ══ TOOLBAR ══ */
+.toolbar{
+  background:var(--card);border-bottom:1.5px solid var(--border2);
+  padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  position:sticky;top:52px;z-index:40;
+  box-shadow:0 2px 10px rgba(22,163,74,.06);
+}
+.spacer{flex:1}
+.btn{
+  padding:7px 14px;border:none;border-radius:8px;
+  font-size:11.5px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;
+  transition:all .25s;white-space:nowrap;
+}
+.btn:active{transform:scale(.96)!important}
+.btn-g{background:linear-gradient(135deg,var(--g500),var(--g700));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.4)}
+.btn-o{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-o:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-r{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
+.btn-r:hover{background:#fee2e2;transform:translateY(-1px)}
+.btn-b{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-b:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-p{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
+.btn-p:hover{background:#f3e8ff;transform:translateY(-1px)}
+.btn-y{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
+.btn-y:hover{background:#fef3c7;transform:translateY(-1px)}
+
+/* Template pills */
+.tpl-pills{display:flex;gap:4px;flex-wrap:wrap}
+.tpl-pill{
+  padding:5px 12px;border-radius:20px;font-size:10.5px;font-weight:700;
+  cursor:pointer;border:1.5px solid var(--border);
+  background:var(--g50);color:var(--g600);transition:.2s;
+}
+.tpl-pill:hover{background:var(--g100)}
+.tpl-pill.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+
+/* Currency Select */
+.curr-sel{
+  padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:12px;font-weight:700;color:var(--text);background:var(--g50);
+  outline:none;cursor:pointer;
+}
+
+/* ══ MAIN LAYOUT ══ */
+.main-grid{
+  max-width:1400px;margin:0 auto;padding:16px;
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+
+/* ══ CARD ══ */
+.card{
+  background:var(--card);border-radius:16px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 4px 20px rgba(22,163,74,.08);overflow:hidden;
+}
+.card-h{
+  padding:10px 16px;background:var(--g50);
+  border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-h h2{font-size:13.5px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:6px}
+.badge{font-size:9.5px;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g700);font-weight:700}
+.card-b{padding:16px}
+
+/* ══ FORM ══ */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:700;color:var(--g700);display:flex;align-items:center;gap:4px}
+.inp{
+  padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:13px;color:var(--text);background:var(--g50);
+  outline:none;transition:.3s;font-family:inherit;
+}
+.inp:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.15);background:#fff}
+.inp::placeholder{color:var(--g400)}
+textarea.inp{resize:vertical;min-height:50px;font-family:inherit}
+
+/* Logo upload */
+.logo-area{
+  width:80px;height:80px;border-radius:12px;
+  border:2px dashed var(--g300);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;transition:.3s;
+  position:relative;background:var(--g50);flex-shrink:0;
+}
+.logo-area:hover{border-color:var(--g500);background:var(--g100)}
+.logo-area img{width:100%;height:100%;object-fit:contain}
+.logo-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.logo-area .logo-placeholder{font-size:28px;color:var(--g400)}
+
+/* ══ ITEMS TABLE ══ */
+.items-wrap{overflow-x:auto}
+.items-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:600px}
+.items-tbl th{
+  background:var(--g100);color:var(--g800);padding:8px 10px;
+  text-align:left;font-size:10.5px;font-weight:800;
+  border-bottom:1.5px solid var(--border);
+  position:sticky;top:0;
+}
+.items-tbl th.right{text-align:right}
+.items-tbl td{padding:6px 8px;border-bottom:1px solid var(--border2);vertical-align:middle}
+.items-tbl tr:hover td{background:var(--g50)}
+.items-tbl .row-inp{
+  width:100%;padding:7px 8px;border:1.5px solid var(--border);
+  border-radius:6px;font-size:12px;color:var(--text);
+  background:#fff;outline:none;transition:.2s;
+}
+.items-tbl .row-inp:focus{border-color:var(--g500);box-shadow:0 0 0 2px rgba(34,197,94,.12)}
+.items-tbl .row-inp.num{text-align:right;font-family:var(--mono);font-weight:600;width:90px}
+.items-tbl .row-inp.sm{width:60px}
+.items-tbl .row-total{
+  text-align:right;font-weight:800;font-family:var(--mono);
+  color:var(--g700);font-size:12.5px;white-space:nowrap;padding-right:12px;
+}
+.row-del{
+  width:26px;height:26px;border-radius:6px;border:none;
+  background:transparent;color:var(--red);font-size:14px;
+  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;
+}
+.row-del:hover{background:#fef2f2}
+.row-drag{cursor:grab;font-size:14px;color:var(--g400);padding:0 4px}
+
+.btn-add-row{
+  margin-top:10px;padding:8px;border:1.5px dashed var(--g400);
+  border-radius:8px;font-size:11.5px;font-weight:700;
+  cursor:pointer;background:transparent;color:var(--g600);
+  width:100%;text-align:center;transition:.2s;
+}
+.btn-add-row:hover{background:var(--g50);border-color:var(--g500)}
+
+/* ══ TOTALS SECTION ══ */
+.totals-section{
+  margin-top:14px;display:flex;justify-content:flex-end;
+}
+.totals-box{
+  width:100%;max-width:340px;
+  border:1.5px solid var(--border);border-radius:12px;
+  overflow:hidden;
+}
+.total-row{
+  display:flex;justify-content:space-between;
+  padding:9px 14px;font-size:12px;
+  border-bottom:1px solid var(--border2);
+}
+.total-row:last-child{border-bottom:none}
+.total-label{color:var(--g600);font-weight:600;display:flex;align-items:center;gap:4px}
+.total-value{font-weight:700;font-family:var(--mono);color:var(--g800)}
+.total-row.grand{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  color:#fff;padding:12px 14px;
+}
+.total-row.grand .total-label{color:var(--g100);font-weight:700}
+.total-row.grand .total-value{font-size:16px;font-weight:900;color:#fff}
+
+/* Adjustable tax/discount */
+.adj-inp{
+  width:60px;padding:4px 6px;border:1px solid var(--border);
+  border-radius:4px;text-align:right;font-size:11px;
+  font-family:var(--mono);color:var(--text);background:var(--g50);
+  outline:none;font-weight:700;
+}
+.adj-inp:focus{border-color:var(--g500)}
+
+/* ══ NOTES & TERMS ══ */
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+
+/* ══ INVOICE PREVIEW ══ */
+.preview-frame{
+  border:1.5px solid var(--border2);border-radius:12px;
+  overflow:hidden;background:#fff;
+  box-shadow:0 4px 30px rgba(22,163,74,.08);
+}
+
+/* ── Invoice Paper ── */
+.inv-paper{
+  padding:40px;font-family:'Segoe UI',Arial,sans-serif;
+  color:#1a1a1a;font-size:13px;line-height:1.6;
+  min-height:600px;position:relative;
+}
+.inv-paper.tpl-modern{border-top:4px solid var(--g500)}
+.inv-paper.tpl-classic{border-top:none;background:linear-gradient(180deg,var(--g50) 0%,#fff 120px)}
+.inv-paper.tpl-minimal{border-top:2px solid #333}
+.inv-paper.tpl-bold{border-top:6px solid var(--g600);background:linear-gradient(135deg,#f8fffe,#fff)}
+
+/* Invoice header */
+.inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;gap:20px;flex-wrap:wrap}
+.inv-brand{flex:1}
+.inv-brand img{max-width:100px;max-height:60px;margin-bottom:8px;border-radius:6px}
+.inv-brand .brand-name{font-size:20px;font-weight:900;color:var(--g700);margin-bottom:2px}
+.inv-brand .brand-detail{font-size:11px;color:#666;line-height:1.7}
+
+.inv-title-block{text-align:right}
+.inv-title{font-size:28px;font-weight:900;color:var(--g600);letter-spacing:1px;text-transform:uppercase}
+.inv-meta{margin-top:8px;font-size:11.5px;color:#555}
+.inv-meta div{margin-bottom:3px}
+.inv-meta strong{color:#333;font-weight:700}
+
+/* Status badge */
+.inv-status{
+  display:inline-block;padding:4px 14px;border-radius:20px;
+  font-size:11px;font-weight:800;margin-top:6px;
+}
+.st-draft{background:#fef3c7;color:var(--yellow)}
+.st-sent{background:#dbeafe;color:var(--blue)}
+.st-paid{background:#dcfce7;color:var(--g600)}
+.st-overdue{background:#fef2f2;color:var(--red)}
+
+/* Bill To / Ship To */
+.inv-parties{display:flex;gap:30px;margin-bottom:28px;flex-wrap:wrap}
+.inv-party{flex:1;min-width:180px}
+.inv-party-label{
+  font-size:10px;font-weight:800;color:var(--g500);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;
+}
+.inv-party-name{font-size:15px;font-weight:800;color:#222;margin-bottom:4px}
+.inv-party-detail{font-size:11.5px;color:#555;line-height:1.7}
+
+/* Items table in preview */
+.inv-items{width:100%;border-collapse:collapse;margin-bottom:20px}
+.inv-items th{
+  background:var(--g500);color:#fff;padding:10px 12px;
+  text-align:left;font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.inv-items th.r{text-align:right}
+.inv-items td{
+  padding:10px 12px;border-bottom:1px solid #eee;
+  font-size:12px;
+}
+.inv-items td.r{text-align:right;font-family:var(--mono);font-weight:600}
+.inv-items tr:nth-child(even) td{background:#fafffe}
+.inv-items .item-name{font-weight:700;color:#222}
+.inv-items .item-desc{font-size:10.5px;color:#888;margin-top:2px}
+
+/* Totals in preview */
+.inv-totals{display:flex;justify-content:flex-end;margin-bottom:24px}
+.inv-totals-box{width:280px}
+.inv-t-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid #f0f0f0}
+.inv-t-row:last-child{border-bottom:none}
+.inv-t-label{color:#666}
+.inv-t-val{font-family:var(--mono);font-weight:700;color:#222}
+.inv-t-grand{
+  background:var(--g500);color:#fff;
+  padding:10px 14px;border-radius:8px;margin-top:6px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.inv-t-grand .inv-t-label{color:var(--g100);font-weight:700;font-size:13px}
+.inv-t-grand .inv-t-val{color:#fff;font-size:18px;font-weight:900}
+
+/* Payment info */
+.inv-payment{
+  margin-top:20px;padding:14px;border-radius:10px;
+  background:var(--g50);border:1px solid var(--g200);
+  font-size:11.5px;line-height:1.7;
+}
+.inv-payment h4{font-size:12px;font-weight:800;color:var(--g700);margin-bottom:6px}
+
+/* Notes / Terms in preview */
+.inv-notes{margin-top:16px;font-size:11px;color:#666;line-height:1.7}
+.inv-notes h4{font-size:11px;font-weight:800;color:#444;margin-bottom:4px}
+
+/* Footer watermark */
+.inv-footer{
+  margin-top:30px;padding-top:16px;
+  border-top:1px solid #eee;text-align:center;
+  font-size:10px;color:#aaa;
+}
+
+/* Signature */
+.inv-signature{
+  margin-top:30px;display:flex;justify-content:flex-end;
+}
+.inv-sig-box{text-align:center;min-width:180px}
+.inv-sig-line{border-top:1.5px solid #333;padding-top:6px;font-size:11px;font-weight:700;color:#333}
+.inv-sig-name{font-size:10px;color:#888;margin-top:2px}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:10px 22px;border-radius:12px;font-size:13px;
+  font-weight:700;color:#fff;z-index:200;
+  pointer-events:none;transition:all .4s;opacity:0;
+  backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-ok{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-err{background:rgba(220,38,38,.92)}
+.toast-info{background:rgba(37,99,235,.92)}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1024px){
+  .main-grid{grid-template-columns:1fr}
+  .inv-paper{padding:24px}
+}
+@media(max-width:600px){
+  .hdr{padding:12px 10px 9px}
+  .hdr h1{font-size:16px}.hdr .ic{font-size:22px}
+  .toolbar{padding:8px 10px;gap:5px;top:46px}
+  .main-grid{padding:10px;gap:10px}
+  .card-b{padding:12px}
+  .form-grid{grid-template-columns:1fr}
+  .items-tbl{min-width:500px}
+  .inv-paper{padding:16px}
+  .inv-title{font-size:22px}
+  .inv-top{flex-direction:column}
+  .inv-title-block{text-align:left}
+  .inv-parties{flex-direction:column;gap:16px}
+  .inv-totals-box{width:100%}
+  .totals-box{max-width:100%}
+  .notes-grid{grid-template-columns:1fr}
+  .btn{padding:6px 10px;font-size:10.5px}
+  .tpl-pill{padding:4px 9px;font-size:9.5px}
+}
+@media print{
+  body{background:#fff!important}
+  .hdr,.toolbar,.card:first-child,.toast{display:none!important}
+  .main-grid{grid-template-columns:1fr!important;padding:0!important}
+  .preview-frame{border:none!important;box-shadow:none!important;border-radius:0!important}
+  .inv-paper{padding:20px!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div><span class="ic">🧾</span><h1>Invoice Generator</h1></div>
+  <p>Create Professional Invoices • Multiple Templates • PDF Ready</p>
+</div>
+
+<!-- ═══ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="tpl-pills">
+    <button class="tpl-pill active" onclick="setTemplate(this,'modern')">🎨 Modern</button>
+    <button class="tpl-pill" onclick="setTemplate(this,'classic')">📜 Classic</button>
+    <button class="tpl-pill" onclick="setTemplate(this,'minimal')">✏️ Minimal</button>
+    <button class="tpl-pill" onclick="setTemplate(this,'bold')">💪 Bold</button>
+  </div>
+  <select class="curr-sel" id="currency" onchange="updatePreview()">
+    <option value="₹">₹ INR</option>
+    <option value="$">$ USD</option>
+    <option value="€">€ EUR</option>
+    <option value="£">£ GBP</option>
+    <option value="¥">¥ JPY</option>
+    <option value="A$">A$ AUD</option>
+    <option value="C$">C$ CAD</option>
+  </select>
+  <select class="curr-sel" id="statusSel" onchange="updatePreview()">
+    <option value="draft">📝 Draft</option>
+    <option value="sent">📨 Sent</option>
+    <option value="paid">✅ Paid</option>
+    <option value="overdue">⚠️ Overdue</option>
+  </select>
+  <div class="spacer"></div>
+  <button class="btn btn-y" onclick="loadSample()">📄 Sample</button>
+  <button class="btn btn-g" onclick="updatePreview()">👁️ Preview</button>
+  <button class="btn btn-b" onclick="printInvoice()">🖨️ Print</button>
+  <button class="btn btn-p" onclick="savePDF()">📥 Save PDF</button>
+  <button class="btn btn-o" onclick="saveJSON()">💾 Save</button>
+  <button class="btn btn-o" onclick="document.getElementById('loadFile').click()">📂 Load</button>
+  <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadJSON(event)">
+  <button class="btn btn-r" onclick="resetAll()">🗑️ Reset</button>
+</div>
+
+<!-- ═══ MAIN GRID ═══ -->
+<div class="main-grid">
+
+<!-- ═══ LEFT: FORM ═══ -->
+<div style="display:flex;flex-direction:column;gap:16px">
+
+  <!-- Business Info -->
+  <div class="card">
+    <div class="card-h"><h2>🏢 Your Business</h2></div>
+    <div class="card-b">
+      <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+        <div class="logo-area" id="logoArea">
+          <span class="logo-placeholder" id="logoPlaceholder">📷</span>
+          <img id="logoImg" style="display:none">
+          <input type="file" accept="image/*" onchange="handleLogo(event)">
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div class="form-grid">
+            <div class="form-group fg-full">
+              <label>🏢 Business Name</label>
+              <input class="inp" id="bizName" placeholder="Your Company Name" oninput="updatePreview()">
+            </div>
+            <div class="form-group fg-full">
+              <label>📍 Address</label>
+              <textarea class="inp" id="bizAddress" rows="2" placeholder="Street, City, State, ZIP" oninput="updatePreview()"></textarea>
+            </div>
+            <div class="form-group">
+              <label>📧 Email</label>
+              <input class="inp" id="bizEmail" placeholder="email@company.com" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label>📞 Phone</label>
+              <input class="inp" id="bizPhone" placeholder="+91 98765 43210" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label>🔢 GST / Tax ID</label>
+              <input class="inp" id="bizGST" placeholder="GSTIN / Tax ID" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+              <label>🌐 Website</label>
+              <input class="inp" id="bizWeb" placeholder="www.company.com" oninput="updatePreview()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client + Invoice Details -->
+  <div class="card">
+    <div class="card-h"><h2>👤 Client & Invoice Details</h2></div>
+    <div class="card-b">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>👤 Client Name</label>
+          <input class="inp" id="clientName" placeholder="Client / Company Name" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>📧 Client Email</label>
+          <input class="inp" id="clientEmail" placeholder="client@email.com" oninput="updatePreview()">
+        </div>
+        <div class="form-group fg-full">
+          <label>📍 Client Address</label>
+          <textarea class="inp" id="clientAddress" rows="2" placeholder="Client full address" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="form-group">
+          <label>📞 Client Phone</label>
+          <input class="inp" id="clientPhone" placeholder="+91 12345 67890" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>🔢 Client GST</label>
+          <input class="inp" id="clientGST" placeholder="Client GSTIN" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>🔖 Invoice Number</label>
+          <input class="inp" id="invNumber" placeholder="INV-001" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>📅 Invoice Date</label>
+          <input class="inp" type="date" id="invDate" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>📅 Due Date</label>
+          <input class="inp" type="date" id="invDue" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>📋 PO Number</label>
+          <input class="inp" id="invPO" placeholder="PO-12345" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="card">
+    <div class="card-h">
+      <h2>📦 Items / Services</h2>
+      <span class="badge" id="itemCountBadge">0 items</span>
+    </div>
+    <div class="card-b">
+      <div class="items-wrap">
+        <table class="items-tbl">
+          <thead>
+            <tr>
+              <th style="width:30px"></th>
+              <th>Item / Service</th>
+              <th>Description</th>
+              <th class="right">Qty</th>
+              <th class="right">Rate</th>
+              <th class="right">Tax %</th>
+              <th class="right">Amount</th>
+              <th style="width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
+      <button class="btn-add-row" onclick="addItem()">+ Add Item</button>
+
+      <!-- Totals -->
+      <div class="totals-section">
+        <div class="totals-box">
+          <div class="total-row">
+            <span class="total-label">Subtotal</span>
+            <span class="total-value" id="totSubtotal">₹0</span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Discount <input class="adj-inp" id="discountPct" value="0" type="number" min="0" max="100" step="0.5" oninput="calcTotals()">%</span>
+            <span class="total-value" id="totDiscount" style="color:var(--red)">-₹0</span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Tax Total</span>
+            <span class="total-value" id="totTax">₹0</span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Shipping <input class="adj-inp" id="shippingAmt" value="0" type="number" min="0" step="1" oninput="calcTotals()"></span>
+            <span class="total-value" id="totShipping">₹0</span>
+          </div>
+          <div class="total-row grand">
+            <span class="total-label">Grand Total</span>
+            <span class="total-value" id="totGrand">₹0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment & Notes -->
+  <div class="card">
+    <div class="card-h"><h2>💳 Payment & Notes</h2></div>
+    <div class="card-b">
+      <div class="form-grid">
+        <div class="form-group fg-full">
+          <label>🏦 Payment Details</label>
+          <textarea class="inp" id="paymentInfo" rows="3" placeholder="Bank Name: SBI&#10;Account No: 1234567890&#10;IFSC: SBIN000123&#10;UPI: company@upi" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="notes-grid">
+        <div class="form-group">
+          <label>📝 Notes</label>
+          <textarea class="inp" id="notes" rows="3" placeholder="Thank you for your business!" oninput="updatePreview()"></textarea>
+        </div>
+        <div class="form-group">
+          <label>📋 Terms & Conditions</label>
+          <textarea class="inp" id="terms" rows="3" placeholder="Payment is due within 30 days.&#10;Late fees may apply." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="form-grid" style="margin-top:12px">
+        <div class="form-group">
+          <label>✍️ Signatory Name</label>
+          <input class="inp" id="sigName" placeholder="Authorized Person" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label>🏷️ Designation</label>
+          <input class="inp" id="sigDesig" placeholder="Director / Manager" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ RIGHT: PREVIEW ═══ -->
+<div style="position:sticky;top:110px;align-self:flex-start">
+  <div class="card">
+    <div class="card-h">
+      <h2>👁️ Live Preview</h2>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-b" onclick="printInvoice()" style="padding:4px 10px;font-size:10px">🖨️</button>
+        <button class="btn btn-p" onclick="savePDF()" style="padding:4px 10px;font-size:10px">📥 PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="preview-frame" id="previewFrame">
+    <div class="inv-paper tpl-modern" id="invoicePaper">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════
+   STATE
+   ══════════════════════════════════ */
+let items = [];
+let template = 'modern';
+let logoDataURL = '';
+let itemIdCounter = 0;
+
+/* ══════════════════════════════════
+   INIT
+   ══════════════════════════════════ */
+window.addEventListener('load', () => {
+  document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
+  const due = new Date(); due.setDate(due.getDate() + 30);
+  document.getElementById('invDue').value = due.toISOString().split('T')[0];
+  document.getElementById('invNumber').value = 'INV-' + String(Math.floor(Math.random() * 9000) + 1000);
+  addItem(); addItem(); addItem();
+  updatePreview();
+});
+
+/* ══════════════════════════════════
+   TEMPLATE
+   ══════════════════════════════════ */
+function setTemplate(btn, tpl) {
+  template = tpl;
+  document.querySelectorAll('.tpl-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updatePreview();
+}
+
+/* ══════════════════════════════════
+   LOGO
+   ══════════════════════════════════ */
+function handleLogo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    logoDataURL = ev.target.result;
+    document.getElementById('logoImg').src = logoDataURL;
+    document.getElementById('logoImg').style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════
+   ITEMS MANAGEMENT
+   ══════════════════════════════════ */
+function addItem(data) {
+  itemIdCounter++;
+  const item = data || { id: itemIdCounter, name: '', desc: '', qty: 1, rate: 0, tax: 0 };
+  if (!data) item.id = itemIdCounter;
+  items.push(item);
+  renderItems();
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  renderItems();
+  calcTotals();
+  updatePreview();
+}
+
+function renderItems() {
+  const body = document.getElementById('itemsBody');
+  body.innerHTML = items.map((item, idx) => `
+    <tr data-id="${item.id}">
+      <td class="row-drag">⠿</td>
+      <td><input class="row-inp" value="${esc(item.name)}" placeholder="Item name" onchange="updateItem(${item.id},'name',this.value)"></td>
+      <td><input class="row-inp" value="${esc(item.desc)}" placeholder="Description" onchange="updateItem(${item.id},'desc',this.value)"></td>
+      <td><input class="row-inp num sm" type="number" value="${item.qty}" min="0" step="1" onchange="updateItem(${item.id},'qty',this.value)"></td>
+      <td><input class="row-inp num" type="number" value="${item.rate}" min="0" step="0.01" onchange="updateItem(${item.id},'rate',this.value)"></td>
+      <td><input class="row-inp num sm" type="number" value="${item.tax}" min="0" max="100" step="0.5" onchange="updateItem(${item.id},'tax',this.value)"></td>
+      <td class="row-total">${fmtC(item.qty * item.rate * (1 + item.tax / 100))}</td>
+      <td><button class="row-del" onclick="removeItem(${item.id})">✕</button></td>
+    </tr>
+  `).join('');
+  document.getElementById('itemCountBadge').textContent = items.length + ' items';
+  calcTotals();
+}
+
+function updateItem(id, field, val) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  if (field === 'qty' || field === 'rate' || field === 'tax') val = parseFloat(val) || 0;
+  item[field] = val;
+  renderItems();
+  updatePreview();
+}
+
+/* ══════════════════════════════════
+   CALCULATE TOTALS
+   ══════════════════════════════════ */
+function calcTotals() {
+  const cur = document.getElementById('currency').value;
+  let subtotal = 0, taxTotal = 0;
+
+  items.forEach(i => {
+    const lineTotal = i.qty * i.rate;
+    const lineTax = lineTotal * (i.tax / 100);
+    subtotal += lineTotal;
+    taxTotal += lineTax;
+  });
+
+  const discPct = parseFloat(document.getElementById('discountPct').value) || 0;
+  const discount = subtotal * (discPct / 100);
+  const shipping = parseFloat(document.getElementById('shippingAmt').value) || 0;
+  const grand = subtotal - discount + taxTotal + shipping;
+
+  document.getElementById('totSubtotal').textContent = cur + fmtN(subtotal);
+  document.getElementById('totDiscount').textContent = '-' + cur + fmtN(discount);
+  document.getElementById('totTax').textContent = cur + fmtN(taxTotal);
+  document.getElementById('totShipping').textContent = cur + fmtN(shipping);
+  document.getElementById('totGrand').textContent = cur + fmtN(grand);
+
+  updatePreview();
+}
+
+/* ══════════════════════════════════
+   FORMAT HELPERS
+   ══════════════════════════════════ */
+function fmtN(n) {
+  return Math.abs(n) < 0.01 ? '0.00' : Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtC(n) {
+  const cur = document.getElementById('currency').value;
+  return cur + fmtN(n);
+}
+function esc(s) { return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function escH(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); }
+
+/* ══════════════════════════════════
+   UPDATE PREVIEW
+   ══════════════════════════════════ */
+function updatePreview() {
+  const cur = document.getElementById('currency').value;
+  const paper = document.getElementById('invoicePaper');
+  paper.className = 'inv-paper tpl-' + template;
+
+  /* Gather data */
+  const d = {
+    bizName: document.getElementById('bizName').value || 'Your Business Name',
+    bizAddress: document.getElementById('bizAddress').value,
+    bizEmail: document.getElementById('bizEmail').value,
+    bizPhone: document.getElementById('bizPhone').value,
+    bizGST: document.getElementById('bizGST').value,
+    bizWeb: document.getElementById('bizWeb').value,
+    clientName: document.getElementById('clientName').value || 'Client Name',
+    clientEmail: document.getElementById('clientEmail').value,
+    clientAddress: document.getElementById('clientAddress').value,
+    clientPhone: document.getElementById('clientPhone').value,
+    clientGST: document.getElementById('clientGST').value,
+    invNumber: document.getElementById('invNumber').value || 'INV-0001',
+    invDate: document.getElementById('invDate').value,
+    invDue: document.getElementById('invDue').value,
+    invPO: document.getElementById('invPO').value,
+    paymentInfo: document.getElementById('paymentInfo').value,
+    notes: document.getElementById('notes').value,
+    terms: document.getElementById('terms').value,
+    sigName: document.getElementById('sigName').value,
+    sigDesig: document.getElementById('sigDesig').value,
+  };
+
+  const status = document.getElementById('statusSel').value;
+  const stCls = { draft: 'st-draft', sent: 'st-sent', paid: 'st-paid', overdue: 'st-overdue' }[status];
+  const stLabel = { draft: '📝 Draft', sent: '📨 Sent', paid: '✅ Paid', overdue: '⚠️ Overdue' }[status];
+
+  /* Calc totals */
+  let subtotal = 0, taxTotal = 0;
+  items.forEach(i => {
+    subtotal += i.qty * i.rate;
+    taxTotal += i.qty * i.rate * (i.tax / 100);
+  });
+  const discPct = parseFloat(document.getElementById('discountPct').value) || 0;
+  const discount = subtotal * (discPct / 100);
+  const shipping = parseFloat(document.getElementById('shippingAmt').value) || 0;
+  const grand = subtotal - discount + taxTotal + shipping;
+
+  /* Build items rows */
+  let itemsHTML = items.filter(i => i.name || i.rate).map((i, idx) => {
+    const line = i.qty * i.rate;
+    const lineTax = line * (i.tax / 100);
+    return `<tr>
+      <td>${idx + 1}</td>
+      <td><div class="item-name">${escH(i.name) || 'Item'}</div>${i.desc ? '<div class="item-desc">' + escH(i.desc) + '</div>' : ''}</td>
+      <td class="r">${i.qty}</td>
+      <td class="r">${cur}${fmtN(i.rate)}</td>
+      <td class="r">${i.tax}%</td>
+      <td class="r">${cur}${fmtN(line + lineTax)}</td>
+    </tr>`;
+  }).join('');
+
+  paper.innerHTML = `
+    <!-- Top -->
+    <div class="inv-top">
+      <div class="inv-brand">
+        ${logoDataURL ? '<img src="' + logoDataURL + '" alt="Logo">' : ''}
+        <div class="brand-name">${escH(d.bizName)}</div>
+        <div class="brand-detail">
+          ${d.bizAddress ? escH(d.bizAddress) + '<br>' : ''}
+          ${d.bizEmail ? '📧 ' + escH(d.bizEmail) + '<br>' : ''}
+          ${d.bizPhone ? '📞 ' + escH(d.bizPhone) + '<br>' : ''}
+          ${d.bizGST ? '🔢 GST: ' + escH(d.bizGST) + '<br>' : ''}
+          ${d.bizWeb ? '🌐 ' + escH(d.bizWeb) : ''}
+        </div>
+      </div>
+      <div class="inv-title-block">
+        <div class="inv-title">INVOICE</div>
+        <div class="inv-meta">
+          <div><strong>#</strong> ${escH(d.invNumber)}</div>
+          <div><strong>Date:</strong> ${d.invDate || '—'}</div>
+          <div><strong>Due:</strong> ${d.invDue || '—'}</div>
+          ${d.invPO ? '<div><strong>PO:</strong> ' + escH(d.invPO) + '</div>' : ''}
+        </div>
+        <span class="inv-status ${stCls}">${stLabel}</span>
+      </div>
+    </div>
+
+    <!-- Parties -->
+    <div class="inv-parties">
+      <div class="inv-party">
+        <div class="inv-party-label">Bill To</div>
+        <div class="inv-party-name">${escH(d.clientName)}</div>
+        <div class="inv-party-detail">
+          ${d.clientAddress ? escH(d.clientAddress) + '<br>' : ''}
+          ${d.clientEmail ? '📧 ' + escH(d.clientEmail) + '<br>' : ''}
+          ${d.clientPhone ? '📞 ' + escH(d.clientPhone) + '<br>' : ''}
+          ${d.clientGST ? '🔢 GST: ' + escH(d.clientGST) : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="inv-items">
+      <thead><tr><th>#</th><th>Item / Service</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Tax</th><th class="r">Amount</th></tr></thead>
+      <tbody>${itemsHTML || '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:20px">No items added yet</td></tr>'}</tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="inv-totals">
+      <div class="inv-totals-box">
+        <div class="inv-t-row"><span class="inv-t-label">Subtotal</span><span class="inv-t-val">${cur}${fmtN(subtotal)}</span></div>
+        ${discPct > 0 ? '<div class="inv-t-row"><span class="inv-t-label">Discount (' + discPct + '%)</span><span class="inv-t-val" style="color:var(--red)">-' + cur + fmtN(discount) + '</span></div>' : ''}
+        ${taxTotal > 0 ? '<div class="inv-t-row"><span class="inv-t-label">Tax</span><span class="inv-t-val">' + cur + fmtN(taxTotal) + '</span></div>' : ''}
+        ${shipping > 0 ? '<div class="inv-t-row"><span class="inv-t-label">Shipping</span><span class="inv-t-val">' + cur + fmtN(shipping) + '</span></div>' : ''}
+        <div class="inv-t-grand">
+          <span class="inv-t-label">Grand Total</span>
+          <span class="inv-t-val">${cur}${fmtN(grand)}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    ${d.paymentInfo ? '<div class="inv-payment"><h4>💳 Payment Details</h4>' + escH(d.paymentInfo) + '</div>' : ''}
+
+    <!-- Notes + Terms -->
+    ${d.notes || d.terms ? '<div class="inv-notes">' +
+      (d.notes ? '<h4>📝 Notes</h4><p>' + escH(d.notes) + '</p>' : '') +
+      (d.terms ? '<h4 style="margin-top:10px">📋 Terms & Conditions</h4><p>' + escH(d.terms) + '</p>' : '') +
+    '</div>' : ''}
+
+    <!-- Signature -->
+    ${d.sigName ? '<div class="inv-signature"><div class="inv-sig-box"><div class="inv-sig-line">Authorized Signature</div><div class="inv-sig-name">' + escH(d.sigName) + (d.sigDesig ? ' — ' + escH(d.sigDesig) : '') + '</div></div></div>' : ''}
+
+    <!-- Footer -->
+    <div class="inv-footer">This is a computer-generated invoice. Thank you for your business!</div>
+  `;
+}
+
+/* ══════════════════════════════════
+   SAMPLE DATA
+   ══════════════════════════════════ */
+function loadSample() {
+  document.getElementById('bizName').value = 'GreenTech Solutions Pvt. Ltd.';
+  document.getElementById('bizAddress').value = '42, Tech Park, Sector 18\nGurugram, Haryana 122015, India';
+  document.getElementById('bizEmail').value = 'billing@greentech.in';
+  document.getElementById('bizPhone').value = '+91 98765 43210';
+  document.getElementById('bizGST').value = '06AABCG1234M1Z5';
+  document.getElementById('bizWeb').value = 'www.greentech.in';
+
+  document.getElementById('clientName').value = 'Sharma Enterprises';
+  document.getElementById('clientEmail').value = 'accounts@sharma-ent.com';
+  document.getElementById('clientAddress').value = '78, MG Road, Connaught Place\nNew Delhi 110001, India';
+  document.getElementById('clientPhone').value = '+91 11 2345 6789';
+  document.getElementById('clientGST').value = '07BBBCS5678N1Z3';
+
+  document.getElementById('invPO').value = 'PO-2026-0456';
+  document.getElementById('paymentInfo').value = 'Bank: State Bank of India\nAccount: 39876543210\nIFSC: SBIN0001234\nUPI: greentech@ybl';
+  document.getElementById('notes').value = 'Thank you for choosing GreenTech Solutions!\nWe look forward to working with you again.';
+  document.getElementById('terms').value = '1. Payment due within 30 days of invoice date.\n2. Late payment attracts 2% monthly interest.\n3. All disputes subject to Gurugram jurisdiction.';
+  document.getElementById('sigName').value = 'Rajesh Kumar';
+  document.getElementById('sigDesig').value = 'Finance Director';
+  document.getElementById('discountPct').value = 5;
+  document.getElementById('shippingAmt').value = 500;
+
+  items = [
+    { id: ++itemIdCounter, name: 'Web Development', desc: 'Full-stack responsive website', qty: 1, rate: 85000, tax: 18 },
+    { id: ++itemIdCounter, name: 'Mobile App (Android)', desc: 'Native Android app development', qty: 1, rate: 120000, tax: 18 },
+    { id: ++itemIdCounter, name: 'UI/UX Design', desc: 'Complete design system & prototypes', qty: 1, rate: 45000, tax: 18 },
+    { id: ++itemIdCounter, name: 'Cloud Hosting (Annual)', desc: 'AWS hosting setup & 1 year plan', qty: 1, rate: 24000, tax: 18 },
+    { id: ++itemIdCounter, name: 'SEO Package', desc: '6-month SEO optimization plan', qty: 6, rate: 8000, tax: 18 },
+    { id: ++itemIdCounter, name: 'Maintenance & Support', desc: 'Monthly support & bug fixes', qty: 12, rate: 5000, tax: 18 },
+  ];
+
+  renderItems();
+  updatePreview();
+  toast('📄 Sample data loaded!', 'ok');
+}
+
+/* ══════════════════════════════════
+   PRINT
+   ══════════════════════════════════ */
+function printInvoice() {
+  window.print();
+}
+
+/* ══════════════════════════════════
+   SAVE AS PDF (via print)
+   ══════════════════════════════════ */
+function savePDF() {
+  toast('📥 Use Print dialog → Save as PDF', 'info');
+  setTimeout(() => window.print(), 500);
+}
+
+/* ══════════════════════════════════
+   SAVE / LOAD JSON
+   ══════════════════════════════════ */
+function saveJSON() {
+  const data = {
+    template,
+    logoDataURL,
+    currency: document.getElementById('currency').value,
+    status: document.getElementById('statusSel').value,
+    bizName: document.getElementById('bizName').value,
+    bizAddress: document.getElementById('bizAddress').value,
+    bizEmail: document.getElementById('bizEmail').value,
+    bizPhone: document.getElementById('bizPhone').value,
+    bizGST: document.getElementById('bizGST').value,
+    bizWeb: document.getElementById('bizWeb').value,
+    clientName: document.getElementById('clientName').value,
+    clientEmail: document.getElementById('clientEmail').value,
+    clientAddress: document.getElementById('clientAddress').value,
+    clientPhone: document.getElementById('clientPhone').value,
+    clientGST: document.getElementById('clientGST').value,
+    invNumber: document.getElementById('invNumber').value,
+    invDate: document.getElementById('invDate').value,
+    invDue: document.getElementById('invDue').value,
+    invPO: document.getElementById('invPO').value,
+    paymentInfo: document.getElementById('paymentInfo').value,
+    notes: document.getElementById('notes').value,
+    terms: document.getElementById('terms').value,
+    sigName: document.getElementById('sigName').value,
+    sigDesig: document.getElementById('sigDesig').value,
+    discountPct: document.getElementById('discountPct').value,
+    shippingAmt: document.getElementById('shippingAmt').value,
+    items
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (data.invNumber || 'invoice') + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('💾 Invoice saved!', 'ok');
+}
+
+function loadJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+
+      /* Restore fields */
+      const fields = ['bizName','bizAddress','bizEmail','bizPhone','bizGST','bizWeb',
+        'clientName','clientEmail','clientAddress','clientPhone','clientGST',
+        'invNumber','invDate','invDue','invPO','paymentInfo','notes','terms',
+        'sigName','sigDesig','discountPct','shippingAmt'];
+
+      fields.forEach(f => {
+        if (data[f] !== undefined && document.getElementById(f))
+          document.getElementById(f).value = data[f];
+      });
+
+      if (data.currency) document.getElementById('currency').value = data.currency;
+      if (data.status) document.getElementById('statusSel').value = data.status;
+      if (data.template) {
+        template = data.template;
+        document.querySelectorAll('.tpl-pill').forEach(b =>
+          b.classList.toggle('active', b.textContent.toLowerCase().includes(template)));
+      }
+      if (data.logoDataURL) {
+        logoDataURL = data.logoDataURL;
+        document.getElementById('logoImg').src = logoDataURL;
+        document.getElementById('logoImg').style.display = 'block';
+        document.getElementById('logoPlaceholder').style.display = 'none';
+      }
+      if (data.items) {
+        items = data.items;
+        itemIdCounter = Math.max(...items.map(i => i.id), 0) + 1;
+      }
+
+      renderItems();
+      updatePreview();
+      toast('📂 Invoice loaded!', 'ok');
+    } catch (err) {
+      toast('❌ Invalid file!', 'err');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ══════════════════════════════════
+   RESET
+   ══════════════════════════════════ */
+function resetAll() {
+  if (!confirm('Reset everything? All data will be cleared.')) return;
+
+  const fields = ['bizName','bizAddress','bizEmail','bizPhone','bizGST','bizWeb',
+    'clientName','clientEmail','clientAddress','clientPhone','clientGST',
+    'invPO','paymentInfo','notes','terms','sigName','sigDesig'];
+  fields.forEach(f => document.getElementById(f).value = '');
+
+  document.getElementById('discountPct').value = 0;
+  document.getElementById('shippingAmt').value = 0;
+  document.getElementById('invNumber').value = 'INV-' + String(Math.floor(Math.random() * 9000) + 1000);
+  document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
+  const due = new Date(); due.setDate(due.getDate() + 30);
+  document.getElementById('invDue').value = due.toISOString().split('T')[0];
+
+  logoDataURL = '';
+  document.getElementById('logoImg').style.display = 'none';
+  document.getElementById('logoPlaceholder').style.display = '';
+
+  items = [];
+  itemIdCounter = 0;
+  addItem(); addItem(); addItem();
+  updatePreview();
+  toast('🗑️ Reset complete!', 'info');
+}
+
+/* ══════════════════════════════════
+   TOAST
+   ══════════════════════════════════ */
+function toast(m, t = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = m; el.className = 'toast toast-' + t + ' show';
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+/* ══════════════════════════════════
+   KEYBOARD SHORTCUT
+   ══════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); printInvoice(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveJSON(); }
+});
+</script>
+</body>
+</html>
