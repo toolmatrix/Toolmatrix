@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - Email Owner</title>
+  <title>Contact Owner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; }
-    .tail-container { max-width: 800px; margin: 0 auto; }
+    .tail-container { max-width: 700px; margin: 0 auto; }
   </style>
 </head>
 <body class="bg-emerald-50 min-h-screen">
 
   <div class="min-h-screen flex flex-col">
-    <!-- Header -->
     <header class="bg-emerald-600 text-white py-8 shadow-lg">
       <div class="tail-container px-6 text-center">
         <div class="w-16 h-16 bg-white text-emerald-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-4">
           ✉️
         </div>
         <h1 class="text-4xl font-bold">Contact Owner</h1>
-        <p class="text-emerald-100 mt-2">Message bhejiye directly owner ko</p>
+        <p class="text-emerald-100 mt-2">Message directly bhejiye</p>
       </div>
     </header>
 
     <main class="flex-1 tail-container px-6 py-12">
       <div class="bg-white rounded-3xl shadow-xl p-10">
+        
         <form id="contactForm" onsubmit="sendEmail(event)">
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -58,49 +59,77 @@
                       placeholder="Aapka message yahan likhein..."></textarea>
           </div>
 
-          <button type="submit"
-                  class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 transition-all text-white text-xl font-semibold py-6 rounded-3xl flex items-center justify-center gap-3 shadow-lg">
-            <i class="fa-solid fa-paper-plane"></i>
-            Send Message to Owner
+          <button type="submit" id="submitBtn"
+                  class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 transition-all text-white text-xl font-semibold py-6 rounded-3xl flex items-center justify-center gap-3">
+            <span id="btnText">Send Message to Owner</span>
           </button>
         </form>
-      </div>
 
-      <div class="text-center mt-8 text-emerald-600 text-sm">
-        Owner Email: <strong>toolmatrix415@gmail.com</strong>
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden mt-6 text-center bg-emerald-100 text-emerald-700 py-4 rounded-2xl font-medium">
+          ✅ Message successfully sent to owner!
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden mt-6 text-center bg-red-100 text-red-700 py-4 rounded-2xl font-medium">
+          ❌ Something went wrong. Please try again.
+        </div>
       </div>
     </main>
-
-    <footer class="py-8 text-center text-emerald-600 text-sm">
-      Contact Form • Direct Email to Owner
-    </footer>
   </div>
 
   <script>
+    // ============== EMAILJS CONFIGURATION ==============
+    // Yahan apne EmailJS details paste karein
+    const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";        // Example: service_abc123
+    const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";      // Example: template_xyz789
+    const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";        // Example: abcdef123456789
+
     function sendEmail(e) {
       e.preventDefault();
 
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const subject = document.getElementById('subject').value;
-      const message = document.getElementById('message').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const successMsg = document.getElementById('successMessage');
+      const errorMsg = document.getElementById('errorMessage');
 
-      const ownerEmail = "toolmatrix415@gmail.com";
+      // Loading state
+      submitBtn.disabled = true;
+      btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending...`;
 
-      // Pre-filled email body
-      const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+      const templateParams = {
+        from_name: document.getElementById('name').value,
+        from_email: document.getElementById('email').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value,
+        to_email: "toolmatrix415@gmail.com"
+      };
 
-      // Create mailto link
-      const mailtoLink = `mailto:${ownerEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
-
-      // Open user's default email client
-      window.location.href = mailtoLink;
-
-      // Success message
-      setTimeout(() => {
-        alert("✅ Thank you! Your email client has been opened.\n\nPlease click Send in your email app.");
-      }, 500);
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
+        .then(() => {
+          successMsg.classList.remove('hidden');
+          errorMsg.classList.add('hidden');
+          document.getElementById('contactForm').reset();
+        })
+        .catch((error) => {
+          console.error(error);
+          errorMsg.classList.remove('hidden');
+          successMsg.classList.add('hidden');
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          btnText.textContent = "Send Message to Owner";
+        });
     }
+
+    // Initialize EmailJS
+    window.onload = () => {
+      if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+        alert("⚠️ Pehle EmailJS setup karein!\n\nEmailJS keys replace karein code mein.");
+      } else {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+      }
+    };
   </script>
 </body>
 </html>
