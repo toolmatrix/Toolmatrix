@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lorem Ipsum Generator - Professional Tool</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --light-green: #e8f5e9;
+            --hover-green: #45a049;
+            --text-dark: #333;
+            --bg-gray: #f4f7f4;
+            --header-height: 65px;
+            --sidebar-width: 340px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        body, html {
+            width: 100%; height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-gray);
+            overflow: hidden;
+        }
+
+        .app-wrapper {
+            display: flex; flex-direction: column;
+            height: 100vh; width: 100vw;
+        }
+
+        /* Header */
+        header {
+            height: var(--header-height);
+            background: white;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            color: var(--primary-green);
+            font-weight: 700; font-size: 22px; text-decoration: none;
+        }
+
+        /* Main Workspace Area */
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Side: Generated Text Area */
+        .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: var(--bg-gray);
+            overflow: hidden;
+        }
+
+        .output-container {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #eee;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #outputText {
+            flex: 1;
+            width: 100%;
+            padding: 25px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            line-height: 1.8;
+            font-family: 'Georgia', serif;
+            resize: none;
+            color: #444;
+            background: transparent;
+            overflow-y: auto;
+        }
+
+        .output-footer {
+            padding: 12px 20px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Right Side: Sidebar Controls */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-left: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+            border-bottom: 3px solid var(--primary-green);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-group { margin-bottom: 22px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+            background: #fafafa;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: var(--primary-green);
+            background: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+            padding: 12px;
+            background: var(--light-green);
+            border-radius: 8px;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-green);
+        }
+
+        /* Action Buttons */
+        .btn {
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-generate {
+            background: var(--primary-green);
+            color: white;
+            padding: 16px;
+            width: 100%;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            background: var(--hover-green);
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            background: white;
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            padding: 12px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn-copy:hover {
+            background: var(--light-green);
+        }
+
+        .btn-copy.copied {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, var(--light-green), #c8e6c9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: auto;
+            font-size: 12px;
+            color: #2e7d32;
+            line-height: 1.6;
+        }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .preview-section {
+                flex: none;
+                height: 45vh;
+                padding: 15px;
+            }
+            .sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #eee;
+                flex: none;
+                padding: 20px;
+            }
+            .btn-generate {
+                position: sticky;
+                bottom: 0;
+            }
+            .info-card {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            header { padding: 0 15px; }
+            .logo span { font-size: 18px; }
+            #outputText { font-size: 14px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header>
+            <a href="#" class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M14,17H7V15H14V17M17,13H7V11H17V13M17,9H7V7H17V9M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"/></svg>
+                <span>Lorem<small style="font-weight:300">Ipsum</small></span>
+            </a>
+            <div style="font-size: 11px; color: #999; font-weight: 600;">GENERATOR PRO</div>
+        </header>
+
+        <main>
+            <!-- Left Section: Output -->
+            <section class="preview-section">
+                <div class="output-container">
+                    <textarea id="outputText" readonly placeholder="Click 'Generate' to create Lorem Ipsum text..."></textarea>
+                    <div class="output-footer">
+                        <span id="wordCount">Words: 0</span>
+                        <span id="charCount">Characters: 0</span>
+                        <span id="paraCount">Paragraphs: 0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Section: Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/></svg>
+                    Generator Settings
+                </div>
+                
+                <div class="setting-group">
+                    <label>Amount</label>
+                    <input type="number" id="amount" value="5" min="1" max="100">
+                </div>
+
+                <div class="setting-group">
+                    <label>Type</label>
+                    <select id="type">
+                        <option value="paragraphs">Paragraphs</option>
+                        <option value="sentences">Sentences</option>
+                        <option value="words">Words</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label>HTML Tag (Optional)</label>
+                    <select id="htmlTag">
+                        <option value="none">No HTML Tags</option>
+                        <option value="p">&lt;p&gt; Paragraph</option>
+                        <option value="div">&lt;div&gt; Division</option>
+                        <option value="span">&lt;span&gt; Span</option>
+                        <option value="li">&lt;li&gt; List Item</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="startWithLorem" checked>
+                        Start with "Lorem ipsum dolor sit amet..."
+                    </label>
+                </div>
+
+                <button class="btn btn-generate" id="generateBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/></svg>
+                    Generate Lorem Ipsum
+                </button>
+
+                <button class="btn btn-copy" id="copyBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy to Clipboard
+                </button>
+
+                <div class="info-card">
+                    <strong>💡 Did you know?</strong><br>
+                    Lorem Ipsum has been the industry's standard dummy text since the 1500s, when an unknown printer scrambled a galley of type.
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        // Lorem Ipsum word bank
+        const loremWords = [
+            "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
+            "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
+            "magna", "aliqua", "enim", "ad", "minim", "veniam", "quis", "nostrud",
+            "exercitation", "ullamco", "laboris", "nisi", "aliquip", "ex", "ea", "commodo",
+            "consequat", "duis", "aute", "irure", "in", "reprehenderit", "voluptate",
+            "velit", "esse", "cillum", "eu", "fugiat", "nulla", "pariatur", "excepteur",
+            "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "culpa", "qui",
+            "officia", "deserunt", "mollit", "anim", "id", "est", "laborum", "semper",
+            "rhoncus", "imperdiet", "proin", "fermentum", "leo", "vel", "orci", "porta",
+            "nisl", "nisi", "vitae", "suscipit", "tellus", "mauris", "massa", "tincidunt",
+            "nunc", "pulvinar", "sapien", "ligula", "lacinia", "orci", "maecenas", "feugiat",
+            "diam", "sollicitudin", "volutpat", "eget", "aliquet", "nibh", "praesent"
+        ];
+
+        // DOM Elements
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const outputText = document.getElementById('outputText');
+        const amountInput = document.getElementById('amount');
+        const typeSelect = document.getElementById('type');
+        const htmlTagSelect = document.getElementById('htmlTag');
+        const startWithLorem = document.getElementById('startWithLorem');
+        const wordCountEl = document.getElementById('wordCount');
+        const charCountEl = document.getElementById('charCount');
+        const paraCountEl = document.getElementById('paraCount');
+
+        // Get random word
+        function getRandomWord() {
+            return loremWords[Math.floor(Math.random() * loremWords.length)];
+        }
+
+        // Generate sentence (5-15 words)
+        function generateSentence() {
+            const length = Math.floor(Math.random() * 10) + 5;
+            let sentence = [];
+            for (let i = 0; i < length; i++) {
+                sentence.push(getRandomWord());
+            }
+            let str = sentence.join(' ');
+            return str.charAt(0).toUpperCase() + str.slice(1) + '.';
+        }
+
+        // Generate paragraph (4-7 sentences)
+        function generateParagraph() {
+            const sentenceCount = Math.floor(Math.random() * 4) + 4;
+            let paragraph = [];
+            for (let i = 0; i < sentenceCount; i++) {
+                paragraph.push(generateSentence());
+            }
+            return paragraph.join(' ');
+        }
+
+        // Main generation function
+        generateBtn.addEventListener('click', () => {
+            const amount = parseInt(amountInput.value) || 1;
+            const type = typeSelect.value;
+            const htmlTag = htmlTagSelect.value;
+            let result = [];
+
+            if (type === 'paragraphs') {
+                for (let i = 0; i < amount; i++) result.push(generateParagraph());
+            } else if (type === 'sentences') {
+                for (let i = 0; i < amount; i++) result.push(generateSentence());
+            } else {
+                for (let i = 0; i < amount; i++) result.push(getRandomWord());
+            }
+
+            // Apply HTML tags if selected
+            if (htmlTag !== 'none') {
+                result = result.map(item => `<${htmlTag}>${item}</${htmlTag}>`);
+            }
+
+            // Join based on type
+            let finalOutput;
+            if (type === 'paragraphs') {
+                finalOutput = htmlTag !== 'none' ? result.join('\n') : result.join('\n\n');
+            } else if (type === 'sentences') {
+                finalOutput = result.join(' ');
+            } else {
+                finalOutput = result.join(' ');
+            }
+
+            // Start with Lorem ipsum
+            if (startWithLorem.checked && !finalOutput.toLowerCase().startsWith('lorem ipsum')) {
+                const prefix = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
+                if (type === 'words') {
+                    finalOutput = "lorem ipsum " + finalOutput;
+                } else {
+                    finalOutput = prefix + finalOutput;
+                }
+            }
+
+            outputText.value = finalOutput;
+            updateStats(finalOutput);
+
+            // Animation feedback
+            generateBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => generateBtn.style.transform = '', 150);
+        });
+
+        // Update statistics
+        function updateStats(text) {
+            const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            const chars = text.length;
+            const paras = text.trim() === '' ? 0 : text.split(/\n\n+/).filter(p => p.trim() !== '').length;
+
+            wordCountEl.innerText = `Words: ${words}`;
+            charCountEl.innerText = `Characters: ${chars}`;
+            paraCountEl.innerText = `Paragraphs: ${paras}`;
+        }
+
+        // Copy to clipboard
+        copyBtn.addEventListener('click', () => {
+            if (!outputText.value) {
+                alert('Please generate text first!');
+                return;
+            }
+
+            navigator.clipboard.writeText(outputText.value).then(() => {
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg> Copied!`;
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy to Clipboard`;
+                }, 2000);
+            });
+        });
+
+        // Generate on page load
+        generateBtn.click();
+    </script>
+</body>
+</html>
