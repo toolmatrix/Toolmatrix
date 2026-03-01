@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body{
+      font-family: Arial;
+      background:#f4f7f6;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+    }
+
+    .box{
+      background:white;
+      padding:30px;
+      width:100%;
+      max-width:400px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+      text-align:center;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+      border:1px solid #ccc;
+      border-radius:6px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:none;
+      border-radius:6px;
+      background:#2ecc71;
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#27ae60;
+    }
+
+    .hidden{
+      display:none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box" id="authBox">
+  <h2>Sign Up / Login</h2>
+  <input type="email" id="email" placeholder="Enter Email">
+  <input type="password" id="password" placeholder="Enter Password">
+
+  <button onclick="signUp()">Sign Up</button>
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="box hidden" id="dashboard">
+  <h2>Welcome</h2>
+  <p id="userEmail"></p>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+  const { createClient } = supabase;
+
+  const supabaseClient = createClient(
+    "https://xopuhztkoxidhwmilmlc.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvcHVoenRrb3hpZGh3bWlsbWxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjM0MjgsImV4cCI6MjA4Njk5OTQyOH0.2Ix2jlleW-f5RYlL2i6d9PiQL9PfgGPfw1RkHYFkHgE"
+  );
+
+  const authBox = document.getElementById("authBox");
+  const dashboard = document.getElementById("dashboard");
+  const userEmail = document.getElementById("userEmail");
+
+  async function checkUser(){
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if(session){
+      showDashboard(session.user.email);
+    }
+  }
+
+  function showDashboard(email){
+    authBox.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    userEmail.innerText = "Logged in as: " + email;
+  }
+
+  async function signUp(){
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password
+    });
+
+    if(error){
+      alert(error.message);
+    } else{
+      alert("Check your email for verification");
+    }
+  }
+
+  async function login(){
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if(error){
+      alert(error.message);
+    } else{
+      showDashboard(data.user.email);
+    }
+  }
+
+  async function logout(){
+    await supabaseClient.auth.signOut();
+    location.reload();
+  }
+
+  checkUser();
+</script>
+
+</body>
+</html>
