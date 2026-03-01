@@ -1,1 +1,1010 @@
-aaa
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST Calculator Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+  --g800:#166534;--g900:#14532d;
+  --card:#fff;--text:#14532d;
+  --border:#bbf7d0;--border2:#dcfce7;
+  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
+  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
+  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;width:100%;
+  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--text);
+}
+
+/* ══ HEADER ══ */
+.hdr{
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  padding:18px 22px 14px;text-align:center;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 4px 20px rgba(22,163,74,.2);
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.hdr .ic{font-size:30px;animation:bob 2.5s ease infinite;vertical-align:middle;margin-right:8px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hdr h1{color:#fff;font-size:21px;font-weight:800;display:inline;vertical-align:middle}
+.hdr p{color:var(--g200);font-size:12px;margin-top:3px}
+
+/* ══ CONTAINER ══ */
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* ══ GRID ══ */
+.grid{display:grid;grid-template-columns:400px 1fr;gap:20px}
+
+/* ══ CARD ══ */
+.card{
+  background:var(--card);border-radius:16px;
+  border:1.5px solid var(--border2);
+  box-shadow:0 4px 20px rgba(22,163,74,.08);overflow:hidden;
+}
+.card-head{
+  padding:12px 18px;background:var(--g50);
+  border-bottom:1.5px solid var(--border2);
+  display:flex;align-items:center;gap:8px;
+}
+.card-head h2{font-size:15px;font-weight:800;color:var(--g800)}
+.card-body{padding:20px}
+
+/* ══ MODE TOGGLE ══ */
+.mode-toggle{
+  display:flex;gap:0;margin-bottom:18px;
+  border-radius:12px;overflow:hidden;
+  border:2px solid var(--g300);
+}
+.mode-btn{
+  flex:1;padding:12px;text-align:center;
+  font-size:13px;font-weight:800;cursor:pointer;
+  background:var(--g50);color:var(--g600);
+  transition:.3s;border:none;position:relative;
+}
+.mode-btn.active{background:var(--g500);color:#fff}
+.mode-btn:hover:not(.active){background:var(--g100)}
+.mode-btn .mode-desc{font-size:9.5px;font-weight:600;opacity:.7;display:block;margin-top:2px}
+
+/* ══ GST TYPE (IGST / CGST+SGST) ══ */
+.gst-type-toggle{
+  display:flex;gap:0;margin-bottom:16px;
+  border-radius:10px;overflow:hidden;
+  border:1.5px solid var(--border);
+}
+.gst-type-btn{
+  flex:1;padding:9px;text-align:center;
+  font-size:11.5px;font-weight:700;cursor:pointer;
+  background:var(--g50);color:var(--g600);
+  transition:.2s;border:none;
+}
+.gst-type-btn.active{background:var(--g600);color:#fff}
+.gst-type-btn:hover:not(.active){background:var(--g100)}
+
+/* ══ FORM ══ */
+.form-group{margin-bottom:16px}
+.form-group label{
+  display:flex;align-items:center;gap:5px;
+  font-size:12.5px;font-weight:700;color:var(--g800);margin-bottom:6px;
+}
+.form-group label .emoji{font-size:16px}
+.input-row{display:flex;gap:8px;align-items:stretch}
+.num-input{
+  flex:1;padding:12px 14px;border:2px solid var(--border);
+  border-radius:10px;font-size:16px;font-weight:700;
+  color:var(--text);background:var(--g50);outline:none;
+  font-family:var(--mono);transition:.3s;
+}
+.num-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.18);background:#fff}
+.unit-badge{
+  padding:12px 14px;border-radius:10px;font-size:13px;
+  font-weight:800;background:var(--g100);color:var(--g700);
+  border:2px solid var(--border);white-space:nowrap;
+  display:flex;align-items:center;
+}
+
+/* Rate buttons */
+.rate-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.rate-btn{
+  padding:8px 16px;border-radius:10px;font-size:13px;
+  font-weight:800;cursor:pointer;
+  border:2px solid var(--border);
+  background:var(--g50);color:var(--g700);transition:.2s;
+  text-align:center;flex:1;min-width:60px;
+}
+.rate-btn:hover{background:var(--g100);border-color:var(--g400)}
+.rate-btn.active{background:var(--g500);color:#fff;border-color:var(--g500)}
+
+/* Custom rate */
+.custom-rate{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0 0;
+}
+.custom-rate label{font-size:11px;font-weight:700;color:var(--g600);white-space:nowrap}
+.custom-rate input{
+  width:80px;padding:7px 10px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:13px;font-weight:700;
+  font-family:var(--mono);color:var(--text);background:var(--g50);
+  outline:none;text-align:center;
+}
+.custom-rate input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+
+/* Quantity / Discount */
+.extras-row{display:flex;gap:10px;flex-wrap:wrap}
+.extras-row .form-group{flex:1;min-width:120px}
+
+/* Buttons */
+.btn-calc{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  font-size:15px;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,var(--g500),var(--g700));
+  color:#fff;box-shadow:0 6px 20px rgba(22,163,74,.3);
+  transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:4px;
+}
+.btn-calc:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(22,163,74,.4)}
+.btn-calc:active{transform:translateY(0)}
+.btn-reset{
+  width:100%;padding:10px;border:1.5px solid #fecaca;border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  background:#fef2f2;color:var(--red);margin-top:10px;text-align:center;transition:.2s;
+}
+.btn-reset:hover{background:#fee2e2;transform:translateY(-1px)}
+
+/* ══ RESULT AREA ══ */
+.result-col{display:flex;flex-direction:column;gap:20px}
+
+/* GST Amount Display */
+.gst-display{
+  text-align:center;padding:28px 24px;
+  background:linear-gradient(135deg,var(--g50),var(--g100));
+  border-radius:16px;border:2px solid var(--g200);
+  position:relative;overflow:hidden;
+}
+.gst-display::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top right,rgba(74,222,128,.15),transparent 60%);
+  pointer-events:none;
+}
+.gst-label{font-size:13px;font-weight:700;color:var(--g600);margin-bottom:4px}
+.gst-amount{
+  font-size:42px;font-weight:900;color:var(--g700);
+  font-family:var(--mono);line-height:1.2;
+  animation:popIn .5s ease;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.gst-sub{font-size:12px;color:var(--g500);margin-top:6px;font-weight:600}
+.gst-mode-badge{
+  display:inline-block;padding:4px 14px;border-radius:20px;
+  font-size:11px;font-weight:800;margin-top:8px;
+}
+.badge-exclusive{background:var(--g100);color:var(--g700)}
+.badge-inclusive{background:#fef3c7;color:var(--yellow)}
+
+/* ══ BREAKDOWN CARDS ══ */
+.breakdown-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.bd-card{
+  padding:16px;border-radius:14px;text-align:center;
+  border:1.5px solid var(--border2);transition:.3s;position:relative;overflow:hidden;
+}
+.bd-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top right,rgba(255,255,255,.6),transparent);
+  pointer-events:none;
+}
+.bd-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(22,163,74,.1)}
+.bd-icon{font-size:22px;margin-bottom:4px}
+.bd-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.bd-value{font-size:18px;font-weight:900;font-family:var(--mono)}
+.bd-sub{font-size:10px;font-weight:600;margin-top:2px;opacity:.7}
+.bd-base{background:var(--g50);color:var(--g800)}.bd-base .bd-label{color:var(--g600)}
+.bd-gst{background:#fff7ed;color:var(--orange)}.bd-gst .bd-label{color:var(--orange)}
+.bd-cgst{background:#f0f9ff;color:var(--blue)}.bd-cgst .bd-label{color:var(--blue)}
+.bd-sgst{background:#faf5ff;color:var(--purple)}.bd-sgst .bd-label{color:var(--purple)}
+.bd-igst{background:#fff7ed;color:var(--orange)}.bd-igst .bd-label{color:var(--orange)}
+.bd-total{background:linear-gradient(135deg,var(--g50),var(--g100));color:var(--g800);border-color:var(--g300)}
+.bd-total .bd-label{color:var(--g600)}
+.bd-discount{background:#fef2f2;color:var(--red)}.bd-discount .bd-label{color:var(--red)}
+.bd-qty{background:#ecfdf5;color:var(--cyan)}.bd-qty .bd-label{color:var(--cyan)}
+.bd-cess{background:#fdf4ff;color:var(--pink)}.bd-cess .bd-label{color:var(--pink)}
+
+/* ══ DONUT ══ */
+.chart-card{
+  background:var(--card);border-radius:16px;border:1.5px solid var(--border2);
+  padding:20px;box-shadow:0 4px 20px rgba(22,163,74,.06);
+}
+.chart-card h3{font-size:14px;font-weight:800;color:var(--g800);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.donut-wrap{position:relative;width:200px;height:200px;margin:0 auto}
+.donut-wrap canvas{width:100%!important;height:100%!important}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.donut-center .dc-val{font-size:18px;font-weight:900;color:var(--g700);font-family:var(--mono)}
+.donut-center .dc-lbl{font-size:10px;color:var(--g500);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:14px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--g700)}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+/* ══ INVOICE TABLE ══ */
+.inv-table-wrap{overflow-x:auto;border-radius:10px;border:1.5px solid var(--border2)}
+.inv-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.inv-tbl th{
+  background:var(--g100);color:var(--g800);padding:10px 14px;
+  text-align:right;font-size:11px;font-weight:800;
+  border-bottom:1.5px solid var(--border);
+}
+.inv-tbl th:first-child{text-align:left}
+.inv-tbl td{padding:10px 14px;border-bottom:1px solid var(--border2);text-align:right;font-family:var(--mono);font-size:12px}
+.inv-tbl td:first-child{text-align:left;font-family:inherit;font-weight:600;color:var(--g700)}
+.inv-tbl tr:hover td{background:var(--g50)}
+.inv-tbl .total-row td{background:var(--g100);font-weight:800;color:var(--g800);font-size:13px}
+.inv-tbl .sub-row td{color:var(--g500);font-size:11px}
+
+/* ══ MULTI ITEMS ══ */
+.items-section{margin-top:20px}
+.items-section h4{font-size:13px;font-weight:800;color:var(--g800);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.item-row{
+  display:flex;gap:6px;align-items:center;margin-bottom:8px;
+  padding:8px 12px;background:var(--g50);border-radius:10px;
+  border:1.5px solid var(--border2);flex-wrap:wrap;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.item-row input{
+  padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:12px;font-weight:700;font-family:var(--mono);
+  color:var(--text);background:#fff;outline:none;transition:.3s;
+}
+.item-row input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+.item-row .item-name{flex:2;min-width:100px}
+.item-row .item-price{flex:1;min-width:80px}
+.item-row .item-qty{width:60px}
+.item-row .item-rate{width:70px}
+.item-row .item-total{
+  min-width:90px;text-align:right;font-weight:800;color:var(--g700);
+  font-family:var(--mono);font-size:12px;
+}
+.item-del{
+  width:28px;height:28px;border-radius:6px;border:none;
+  background:#fef2f2;color:var(--red);font-size:14px;
+  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;
+}
+.item-del:hover{background:var(--red);color:#fff}
+.btn-add-item{
+  padding:8px 16px;border:1.5px dashed var(--g400);border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  background:transparent;color:var(--g600);transition:.2s;
+  width:100%;text-align:center;margin-top:4px;
+}
+.btn-add-item:hover{background:var(--g50);border-color:var(--g500)}
+
+/* ══ ACTIONS ══ */
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center}
+.btn-act{
+  padding:10px 20px;border:none;border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:.25s;
+}
+.btn-act:active{transform:scale(.96)!important}
+.btn-dl{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
+.btn-dl:hover{background:var(--g100);transform:translateY(-1px)}
+.btn-print{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe}
+.btn-print:hover{background:#dbeafe;transform:translateY(-1px)}
+.btn-copy{background:#ecfdf5;color:var(--g700);border:1.5px solid var(--g300)}
+.btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
+.btn-share{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
+.btn-share:hover{background:#f3e8ff;transform:translateY(-1px)}
+
+/* ══ HISTORY ══ */
+.history-section{margin-top:20px}
+.history-section h4{font-size:13px;font-weight:800;color:var(--g800);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.hist-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow:auto}
+.hist-item{
+  padding:10px 14px;border-radius:10px;
+  background:var(--g50);border:1.5px solid var(--border2);
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;cursor:pointer;transition:.2s;
+}
+.hist-item:hover{background:var(--g100);border-color:var(--g300);transform:translateX(4px)}
+.hist-val{font-weight:800;font-family:var(--mono);color:var(--g700);flex:1}
+.hist-rate{font-weight:700;color:var(--g500);font-size:11px}
+.hist-mode{
+  font-size:10px;padding:2px 8px;border-radius:10px;
+  font-weight:700;
+}
+.hist-exc{background:var(--g100);color:var(--g600)}
+.hist-inc{background:#fef3c7;color:var(--yellow)}
+.hist-del{
+  width:22px;height:22px;border-radius:5px;border:none;
+  background:transparent;color:var(--red);font-size:12px;
+  cursor:pointer;opacity:.5;transition:.2s;
+}
+.hist-del:hover{opacity:1;background:#fef2f2}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  padding:10px 22px;border-radius:12px;font-size:13px;
+  font-weight:700;color:#fff;z-index:200;
+  pointer-events:none;transition:all .4s;opacity:0;
+  backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-ok{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
+.toast-err{background:rgba(220,38,38,.92);box-shadow:0 6px 24px rgba(220,38,38,.3)}
+.toast-info{background:rgba(37,99,235,.92);box-shadow:0 6px 24px rgba(37,99,235,.3)}
+
+/* ══ HIDDEN ══ */
+.results-wrap{display:none}
+.results-wrap.show{display:flex;flex-direction:column;gap:20px;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ FOOTER ══ */
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--g500);font-weight:600}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--g50)}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .breakdown-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .container{padding:12px}
+  .hdr{padding:13px 12px 10px}
+  .hdr h1{font-size:17px}.hdr .ic{font-size:24px}
+  .card-body{padding:14px}
+  .gst-amount{font-size:30px}
+  .breakdown-grid{grid-template-columns:1fr 1fr}
+  .bd-card{padding:12px}
+  .bd-value{font-size:15px}
+  .donut-wrap{width:160px;height:160px}
+  .rate-btn{padding:7px 10px;font-size:12px}
+  .item-row{flex-direction:column;gap:4px}
+  .item-row input{width:100%!important;min-width:0!important}
+  .item-row .item-total{text-align:left;padding:4px 0}
+  .actions{flex-direction:column}
+  .btn-act{width:100%;justify-content:center}
+}
+@media print{
+  .hdr,.btn-calc,.btn-reset,.actions,.items-section,.history-section,.mode-toggle,.gst-type-toggle,.rate-grid,.custom-rate{display:none!important}
+  body{background:#fff!important}
+  .card{box-shadow:none!important;border:1px solid #ccc!important}
+  .grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div><span class="ic">🧾</span><h1>GST Calculator</h1></div>
+  <p>Calculate GST, CGST, SGST, IGST, Cess — Single & Multi-Item Invoice</p>
+</div>
+
+<div class="container">
+<div class="grid">
+
+<!-- ═══ LEFT: INPUT CARD ═══ -->
+<div>
+<div class="card">
+  <div class="card-head"><h2>📊 GST Details</h2></div>
+  <div class="card-body">
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" onclick="setMode(this,'exclusive')" id="modeExc">
+        ➕ GST Exclusive
+        <span class="mode-desc">Add GST to base price</span>
+      </button>
+      <button class="mode-btn" onclick="setMode(this,'inclusive')" id="modeInc">
+        ➖ GST Inclusive
+        <span class="mode-desc">Extract GST from total price</span>
+      </button>
+    </div>
+
+    <!-- GST Type -->
+    <div class="gst-type-toggle">
+      <button class="gst-type-btn active" onclick="setGSTType(this,'igst')">🏛️ IGST (Inter-State)</button>
+      <button class="gst-type-btn" onclick="setGSTType(this,'cgst_sgst')">🏠 CGST + SGST (Intra-State)</button>
+    </div>
+
+    <!-- Amount -->
+    <div class="form-group">
+      <label><span class="emoji">💵</span> <span id="amountLabel">Base Amount (Excl. GST)</span></label>
+      <div class="input-row">
+        <input type="text" class="num-input" id="amount" value="10,000" oninput="formatNum(this)" placeholder="Enter amount">
+        <span class="unit-badge">₹</span>
+      </div>
+    </div>
+
+    <!-- GST Rate -->
+    <div class="form-group">
+      <label><span class="emoji">📈</span> GST Rate</label>
+      <div class="rate-grid">
+        <button class="rate-btn" onclick="selectRate(this,0)">0%</button>
+        <button class="rate-btn" onclick="selectRate(this,0.25)">0.25%</button>
+        <button class="rate-btn" onclick="selectRate(this,3)">3%</button>
+        <button class="rate-btn" onclick="selectRate(this,5)">5%</button>
+        <button class="rate-btn" onclick="selectRate(this,12)">12%</button>
+        <button class="rate-btn active" onclick="selectRate(this,18)">18%</button>
+        <button class="rate-btn" onclick="selectRate(this,28)">28%</button>
+      </div>
+      <div class="custom-rate">
+        <label>Custom:</label>
+        <input type="number" id="customRate" min="0" max="100" step="0.01" placeholder="%" oninput="selectCustomRate(this.value)">
+        <span style="font-size:11px;font-weight:700;color:var(--g600)">%</span>
+      </div>
+    </div>
+
+    <!-- Cess -->
+    <div class="form-group">
+      <label><span class="emoji">💎</span> Cess Rate (if any)</label>
+      <div class="input-row">
+        <input type="number" class="num-input" id="cessRate" value="0" min="0" max="100" step="0.01" style="font-size:14px">
+        <span class="unit-badge">%</span>
+      </div>
+    </div>
+
+    <!-- Quantity & Discount -->
+    <div class="extras-row">
+      <div class="form-group">
+        <label><span class="emoji">📦</span> Quantity</label>
+        <input type="number" class="num-input" id="quantity" value="1" min="1" max="99999" style="font-size:14px">
+      </div>
+      <div class="form-group">
+        <label><span class="emoji">🏷️</span> Discount (%)</label>
+        <input type="number" class="num-input" id="discount" value="0" min="0" max="100" step="0.01" style="font-size:14px">
+      </div>
+    </div>
+
+    <!-- Calculate -->
+    <button class="btn-calc" onclick="calculate()">⚡ Calculate GST</button>
+    <button class="btn-reset" onclick="resetAll()">🗑️ Reset All</button>
+
+    <!-- Multi-Item Section -->
+    <div class="items-section">
+      <h4>📋 Multi-Item Invoice</h4>
+      <div id="itemsList"></div>
+      <button class="btn-add-item" onclick="addItem()">+ Add Item</button>
+      <button class="btn-calc" onclick="calcMultiItems()" style="margin-top:10px;font-size:13px;padding:11px">
+        📋 Calculate Invoice
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- History -->
+<div class="card" style="margin-top:20px">
+  <div class="card-head"><h2>📜 History</h2></div>
+  <div class="card-body">
+    <div class="hist-list" id="histList">
+      <div style="text-align:center;color:var(--g400);font-size:12px;padding:10px">No calculations yet</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ RIGHT: RESULTS ═══ -->
+<div class="result-col">
+  <div class="results-wrap" id="resultsWrap">
+
+    <!-- GST Display -->
+    <div class="gst-display" id="gstDisplay">
+      <div class="gst-label" id="gstLabel">GST Amount</div>
+      <div class="gst-amount" id="gstValue">₹0</div>
+      <div class="gst-sub" id="gstSub">18% GST on ₹10,000</div>
+      <div class="gst-mode-badge badge-exclusive" id="modeBadge">➕ GST Exclusive</div>
+    </div>
+
+    <!-- Breakdown Cards -->
+    <div class="breakdown-grid" id="breakdownGrid"></div>
+
+    <!-- Chart + Invoice in row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" id="chartInvRow">
+      <!-- Donut -->
+      <div class="chart-card">
+        <h3>🍩 Breakdown</h3>
+        <div class="donut-wrap">
+          <canvas id="donutCanvas" width="200" height="200"></canvas>
+          <div class="donut-center">
+            <div class="dc-val" id="dcVal">₹0</div>
+            <div class="dc-lbl">Total</div>
+          </div>
+        </div>
+        <div class="legend" id="chartLegend"></div>
+      </div>
+
+      <!-- Invoice Table -->
+      <div class="chart-card">
+        <h3>🧾 Tax Invoice</h3>
+        <div class="inv-table-wrap">
+          <table class="inv-tbl" id="invTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn-act btn-copy" onclick="copyResult()">📑 Copy</button>
+      <button class="btn-act btn-dl" onclick="downloadInvoice()">⬇️ Download</button>
+      <button class="btn-act btn-print" onclick="window.print()">🖨️ Print</button>
+      <button class="btn-act btn-share" onclick="shareCalc()">🔗 Share</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="footer">Made with 💚 — GST Calculator Tool</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════
+   STATE
+   ═══════════════════════════════════ */
+let MODE = 'exclusive';
+let GST_TYPE = 'igst';
+let GST_RATE = 18;
+let lastResult = null;
+let history = JSON.parse(localStorage.getItem('gst_history') || '[]');
+
+/* ═══════════════════════════════════
+   FORMAT HELPERS
+   ═══════════════════════════════════ */
+function formatINR(n){
+  n=Math.round(n);let s=Math.abs(n).toString();
+  let l3=s.slice(-3),rest=s.slice(0,-3);
+  if(rest)l3=','+l3;
+  return(n<0?'-':'')+rest.replace(/\B(?=(\d{2})+(?!\d))/g,',')+l3;
+}
+function fmtC(n){return '₹'+formatINR(n)}
+function formatNum(el){let v=el.value.replace(/[^0-9]/g,'');el.value=formatINR(parseInt(v)||0)}
+function unformat(s){return parseFloat(String(s).replace(/[^0-9.-]/g,''))||0}
+
+/* ═══════════════════════════════════
+   MODE / TYPE
+   ═══════════════════════════════════ */
+function setMode(btn,mode){
+  MODE=mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('amountLabel').textContent=
+    mode==='exclusive'?'Base Amount (Excl. GST)':'Total Amount (Incl. GST)';
+}
+function setGSTType(btn,type){
+  GST_TYPE=type;
+  document.querySelectorAll('.gst-type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function selectRate(btn,rate){
+  GST_RATE=rate;
+  document.querySelectorAll('.rate-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRate').value='';
+}
+function selectCustomRate(val){
+  const r=parseFloat(val);
+  if(!isNaN(r)&&r>=0){
+    GST_RATE=r;
+    document.querySelectorAll('.rate-btn').forEach(b=>b.classList.remove('active'));
+  }
+}
+
+/* ═══════════════════════════════════
+   CALCULATE
+   ═══════════════════════════════════ */
+function calculate(){
+  const inputAmt=unformat(document.getElementById('amount').value);
+  const cessRate=parseFloat(document.getElementById('cessRate').value)||0;
+  const qty=parseInt(document.getElementById('quantity').value)||1;
+  const disc=parseFloat(document.getElementById('discount').value)||0;
+
+  if(inputAmt<=0){toast('⚠️ Enter valid amount!','err');return}
+
+  /* Apply quantity and discount */
+  let subtotal=inputAmt*qty;
+  const discAmt=subtotal*(disc/100);
+  subtotal-=discAmt;
+
+  let baseAmt,gstAmt,cessAmt,totalAmt;
+
+  if(MODE==='exclusive'){
+    baseAmt=subtotal;
+    gstAmt=baseAmt*(GST_RATE/100);
+    cessAmt=baseAmt*(cessRate/100);
+    totalAmt=baseAmt+gstAmt+cessAmt;
+  }else{
+    totalAmt=subtotal;
+    baseAmt=totalAmt/(1+(GST_RATE/100)+(cessRate/100));
+    gstAmt=baseAmt*(GST_RATE/100);
+    cessAmt=baseAmt*(cessRate/100);
+  }
+
+  /* Split CGST/SGST */
+  let cgst=0,sgst=0,igst=0;
+  if(GST_TYPE==='igst'){
+    igst=gstAmt;
+  }else{
+    cgst=gstAmt/2;
+    sgst=gstAmt/2;
+  }
+
+  lastResult={baseAmt,gstAmt,cessAmt,totalAmt,cgst,sgst,igst,discAmt,qty,
+    rate:GST_RATE,cessRate,mode:MODE,type:GST_TYPE,inputAmt};
+
+  renderResults();
+  saveHistory();
+  toast('✅ GST Calculated: '+fmtC(gstAmt),'ok');
+}
+
+/* ═══════════════════════════════════
+   RENDER RESULTS
+   ═══════════════════════════════════ */
+function renderResults(){
+  const r=lastResult;
+  document.getElementById('resultsWrap').classList.add('show');
+
+  /* GST Display */
+  document.getElementById('gstValue').textContent=fmtC(r.gstAmt);
+  document.getElementById('gstSub').textContent=`${r.rate}% GST on ${fmtC(r.baseAmt)}`;
+  document.getElementById('gstLabel').textContent=r.type==='igst'?'IGST Amount':'CGST + SGST Amount';
+  const badge=document.getElementById('modeBadge');
+  badge.textContent=r.mode==='exclusive'?'➕ GST Exclusive':'➖ GST Inclusive';
+  badge.className='gst-mode-badge '+(r.mode==='exclusive'?'badge-exclusive':'badge-inclusive');
+
+  /* Breakdown Cards */
+  let cards='';
+  cards+=bdCard('bd-base','💵','Base Price',fmtC(r.baseAmt),'Before GST');
+
+  if(r.discAmt>0) cards+=bdCard('bd-discount','🏷️','Discount','-'+fmtC(r.discAmt),'Applied');
+
+  if(r.type==='igst'){
+    cards+=bdCard('bd-igst','🏛️','IGST ('+r.rate+'%)',fmtC(r.igst),'Inter-State');
+  }else{
+    cards+=bdCard('bd-cgst','🏠','CGST ('+(r.rate/2)+'%)',fmtC(r.cgst),'Central GST');
+    cards+=bdCard('bd-sgst','🏡','SGST ('+(r.rate/2)+'%)',fmtC(r.sgst),'State GST');
+  }
+
+  if(r.cessAmt>0) cards+=bdCard('bd-cess','💎','Cess ('+r.cessRate+'%)',fmtC(r.cessAmt),'Additional');
+  if(r.qty>1) cards+=bdCard('bd-qty','📦','Quantity','× '+r.qty,'Items');
+
+  cards+=bdCard('bd-total','🏦','Total Amount',fmtC(r.totalAmt),'Final payable');
+  document.getElementById('breakdownGrid').innerHTML=cards;
+
+  /* Donut */
+  drawDonut(r);
+
+  /* Invoice Table */
+  renderInvoice(r);
+}
+
+function bdCard(cls,icon,label,value,sub){
+  return `<div class="bd-card ${cls}">
+    <div class="bd-icon">${icon}</div>
+    <div class="bd-label">${label}</div>
+    <div class="bd-value">${value}</div>
+    <div class="bd-sub">${sub}</div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════
+   DONUT
+   ═══════════════════════════════════ */
+function drawDonut(r){
+  const c=document.getElementById('donutCanvas');
+  const ctx=c.getContext('2d');
+  c.width=400;c.height=400;
+  ctx.clearRect(0,0,400,400);
+
+  const cx=200,cy=200,oR=180,iR=120;
+  const parts=[];
+  parts.push({val:r.baseAmt,color:'#4ade80',label:'Base'});
+  if(r.type==='igst'){
+    parts.push({val:r.igst,color:'#ea580c',label:'IGST'});
+  }else{
+    parts.push({val:r.cgst,color:'#2563eb',label:'CGST'});
+    parts.push({val:r.sgst,color:'#9333ea',label:'SGST'});
+  }
+  if(r.cessAmt>0) parts.push({val:r.cessAmt,color:'#db2777',label:'Cess'});
+
+  const total=parts.reduce((s,p)=>s+p.val,0);
+  let startAngle=-Math.PI/2;
+
+  parts.forEach(p=>{
+    const sweep=(p.val/total)*2*Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx,cy,oR,startAngle,startAngle+sweep);
+    ctx.arc(cx,cy,iR,startAngle+sweep,startAngle,true);
+    ctx.closePath();
+    ctx.fillStyle=p.color;ctx.fill();
+    startAngle+=sweep;
+  });
+
+  document.getElementById('dcVal').textContent=fmtC(r.totalAmt);
+
+  /* Legend */
+  document.getElementById('chartLegend').innerHTML=parts.map(p=>
+    `<div class="legend-item"><div class="legend-dot" style="background:${p.color}"></div>${p.label}: ${fmtC(p.val)}</div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════
+   INVOICE TABLE
+   ═══════════════════════════════════ */
+function renderInvoice(r){
+  let html=`<thead><tr><th style="text-align:left">Description</th><th>Amount</th></tr></thead><tbody>`;
+
+  html+=invRow('Original Price (per unit)',fmtC(r.inputAmt));
+  if(r.qty>1) html+=invRow('Quantity','× '+r.qty,'sub-row');
+  if(r.discAmt>0) html+=invRow('Discount','-'+fmtC(r.discAmt),'sub-row');
+  html+=invRow('Taxable Amount',fmtC(r.baseAmt));
+
+  if(r.type==='igst'){
+    html+=invRow(`IGST @ ${r.rate}%`,fmtC(r.igst));
+  }else{
+    html+=invRow(`CGST @ ${r.rate/2}%`,fmtC(r.cgst));
+    html+=invRow(`SGST @ ${r.rate/2}%`,fmtC(r.sgst));
+  }
+
+  if(r.cessAmt>0) html+=invRow(`Cess @ ${r.cessRate}%`,fmtC(r.cessAmt));
+
+  html+=`<tr class="total-row"><td>Total Amount</td><td>${fmtC(r.totalAmt)}</td></tr>`;
+  html+=`</tbody>`;
+
+  document.getElementById('invTable').innerHTML=html;
+}
+
+function invRow(desc,val,cls=''){
+  return `<tr class="${cls}"><td>${desc}</td><td>${val}</td></tr>`;
+}
+
+/* ═══════════════════════════════════
+   MULTI ITEMS
+   ═══════════════════════════════════ */
+let itemCounter=0;
+function addItem(){
+  itemCounter++;
+  const div=document.createElement('div');
+  div.className='item-row';div.id='item-'+itemCounter;
+  div.innerHTML=`
+    <input class="item-name" placeholder="Item name" value="Item ${itemCounter}">
+    <input class="item-price" type="number" placeholder="Price" value="1000" min="0">
+    <input class="item-qty" type="number" placeholder="Qty" value="1" min="1">
+    <input class="item-rate" type="number" placeholder="GST%" value="18" min="0" max="100">
+    <span class="item-total">₹0</span>
+    <button class="item-del" onclick="this.parentElement.remove()">✕</button>
+  `;
+  document.getElementById('itemsList').appendChild(div);
+}
+
+function calcMultiItems(){
+  const rows=document.querySelectorAll('.item-row');
+  if(!rows.length){toast('⚠️ Add items first!','err');return}
+
+  let totalBase=0,totalGST=0,totalCess=0,totalFinal=0;
+  const cessRate=parseFloat(document.getElementById('cessRate').value)||0;
+  let invoiceRows=[];
+
+  rows.forEach(row=>{
+    const name=row.querySelector('.item-name').value||'Item';
+    const price=parseFloat(row.querySelector('.item-price').value)||0;
+    const qty=parseInt(row.querySelector('.item-qty').value)||1;
+    const rate=parseFloat(row.querySelector('.item-rate').value)||0;
+
+    const sub=price*qty;
+    let base,gst,cess,total;
+
+    if(MODE==='exclusive'){
+      base=sub;gst=base*(rate/100);cess=base*(cessRate/100);total=base+gst+cess;
+    }else{
+      total=sub;base=total/(1+(rate/100)+(cessRate/100));
+      gst=base*(rate/100);cess=base*(cessRate/100);
+    }
+
+    row.querySelector('.item-total').textContent=fmtC(total);
+    totalBase+=base;totalGST+=gst;totalCess+=cess;totalFinal+=total;
+
+    invoiceRows.push({name,price,qty,rate,base,gst,cess,total});
+  });
+
+  /* Update results using combined */
+  lastResult={
+    baseAmt:totalBase,gstAmt:totalGST,cessAmt:totalCess,totalAmt:totalFinal,
+    cgst:GST_TYPE==='cgst_sgst'?totalGST/2:0,
+    sgst:GST_TYPE==='cgst_sgst'?totalGST/2:0,
+    igst:GST_TYPE==='igst'?totalGST:0,
+    discAmt:0,qty:1,rate:'Mixed',cessRate,mode:MODE,type:GST_TYPE,inputAmt:totalBase
+  };
+  renderResults();
+  renderMultiInvoice(invoiceRows);
+  toast('📋 Invoice calculated: '+fmtC(totalFinal),'ok');
+}
+
+function renderMultiInvoice(items){
+  const r=lastResult;
+  let html=`<thead><tr>
+    <th style="text-align:left">Item</th><th>Price</th><th>Qty</th><th>GST%</th><th>GST</th><th>Total</th>
+  </tr></thead><tbody>`;
+
+  items.forEach(i=>{
+    html+=`<tr>
+      <td>${i.name}</td><td>${fmtC(i.price)}</td><td>${i.qty}</td>
+      <td>${i.rate}%</td><td>${fmtC(i.gst)}</td><td>${fmtC(i.total)}</td>
+    </tr>`;
+  });
+
+  html+=`<tr class="total-row"><td colspan="4">Total</td><td>${fmtC(r.gstAmt)}</td><td>${fmtC(r.totalAmt)}</td></tr>`;
+  html+=`</tbody>`;
+  document.getElementById('invTable').innerHTML=html;
+}
+
+/* ═══════════════════════════════════
+   HISTORY
+   ═══════════════════════════════════ */
+function saveHistory(){
+  const r=lastResult;
+  history.unshift({
+    amount:r.inputAmt,rate:r.rate,gst:r.gstAmt,
+    total:r.totalAmt,mode:r.mode,type:r.type,
+    time:new Date().toLocaleTimeString()
+  });
+  if(history.length>20) history.pop();
+  localStorage.setItem('gst_history',JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory(){
+  const el=document.getElementById('histList');
+  if(!history.length){
+    el.innerHTML='<div style="text-align:center;color:var(--g400);font-size:12px;padding:10px">No calculations yet</div>';
+    return;
+  }
+  el.innerHTML=history.map((h,i)=>`
+    <div class="hist-item" onclick="loadHistory(${i})">
+      <span style="font-size:14px">${h.type==='igst'?'🏛️':'🏠'}</span>
+      <span class="hist-val">${fmtC(h.amount)} → GST ${fmtC(h.gst)}</span>
+      <span class="hist-rate">${h.rate}%</span>
+      <span class="hist-mode ${h.mode==='exclusive'?'hist-exc':'hist-inc'}">${h.mode==='exclusive'?'Excl':'Incl'}</span>
+      <button class="hist-del" onclick="event.stopPropagation();deleteHistory(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i){
+  const h=history[i];
+  document.getElementById('amount').value=formatINR(h.amount);
+  GST_RATE=parseFloat(h.rate)||18;
+  /* Activate matching rate btn */
+  document.querySelectorAll('.rate-btn').forEach(b=>{
+    b.classList.toggle('active',parseFloat(b.textContent)===GST_RATE);
+  });
+  setMode(document.getElementById(h.mode==='exclusive'?'modeExc':'modeInc'),h.mode);
+  document.querySelectorAll('.gst-type-btn').forEach((b,idx)=>{
+    b.classList.toggle('active',
+      (h.type==='igst'&&idx===0)||(h.type==='cgst_sgst'&&idx===1));
+  });
+  GST_TYPE=h.type;
+  calculate();
+  toast('📜 History loaded!','info');
+}
+
+function deleteHistory(i){
+  history.splice(i,1);
+  localStorage.setItem('gst_history',JSON.stringify(history));
+  renderHistory();
+  toast('🗑️ Removed','info');
+}
+
+/* ═══════════════════════════════════
+   COPY / DOWNLOAD / SHARE
+   ═══════════════════════════════════ */
+function copyResult(){
+  if(!lastResult){toast('⚠️ Calculate first!','err');return}
+  const r=lastResult;
+  let txt=`GST Calculation\n`;
+  txt+=`Mode: ${r.mode==='exclusive'?'Exclusive':'Inclusive'}\n`;
+  txt+=`Base Amount: ${fmtC(r.baseAmt)}\n`;
+  txt+=`GST Rate: ${r.rate}%\n`;
+  if(r.type==='igst') txt+=`IGST: ${fmtC(r.igst)}\n`;
+  else txt+=`CGST: ${fmtC(r.cgst)}\nSGST: ${fmtC(r.sgst)}\n`;
+  if(r.cessAmt>0) txt+=`Cess: ${fmtC(r.cessAmt)}\n`;
+  txt+=`Total: ${fmtC(r.totalAmt)}\n`;
+
+  navigator.clipboard.writeText(txt).then(()=>toast('📋 Copied!','ok'))
+    .catch(()=>toast('📋 Copy failed','err'));
+}
+
+function downloadInvoice(){
+  if(!lastResult){toast('⚠️ Calculate first!','err');return}
+  const r=lastResult;
+  let csv='Description,Amount\n';
+  csv+=`Base Amount,${Math.round(r.baseAmt)}\n`;
+  if(r.type==='igst') csv+=`IGST (${r.rate}%),${Math.round(r.igst)}\n`;
+  else{csv+=`CGST (${r.rate/2}%),${Math.round(r.cgst)}\n`;csv+=`SGST (${r.rate/2}%),${Math.round(r.sgst)}\n`}
+  if(r.cessAmt>0) csv+=`Cess (${r.cessRate}%),${Math.round(r.cessAmt)}\n`;
+  csv+=`Total,${Math.round(r.totalAmt)}\n`;
+
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='gst_invoice.csv';a.click();URL.revokeObjectURL(a.href);
+  toast('⬇️ Downloaded!','ok');
+}
+
+function shareCalc(){
+  if(!lastResult){toast('⚠️ Calculate first!','err');return}
+  const r=lastResult;
+  const params=`?amt=${Math.round(r.inputAmt)}&rate=${r.rate}&mode=${r.mode}&type=${r.type}&cess=${r.cessRate}`;
+  const url=window.location.href.split('?')[0]+params;
+  navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!','ok'))
+    .catch(()=>toast('🔗 '+url,'info'));
+}
+
+/* ═══════════════════════════════════
+   RESET
+   ═══════════════════════════════════ */
+function resetAll(){
+  document.getElementById('amount').value='10,000';
+  document.getElementById('cessRate').value='0';
+  document.getElementById('quantity').value='1';
+  document.getElementById('discount').value='0';
+  document.getElementById('customRate').value='';
+  GST_RATE=18;
+  document.querySelectorAll('.rate-btn').forEach((b,i)=>b.classList.toggle('active',i===5));
+  document.getElementById('resultsWrap').classList.remove('show');
+  document.getElementById('itemsList').innerHTML='';
+  lastResult=null;
+  toast('🗑️ Reset!','info');
+}
+
+/* ═══════════════════════════════════
+   TOAST
+   ═══════════════════════════════════ */
+function toast(m,t='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=m;el.className='toast toast-'+t+' show';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+/* ═══════════════════════════════════
+   URL PARAMS
+   ═══════════════════════════════════ */
+window.addEventListener('load',()=>{
+  renderHistory();
+  const p=new URLSearchParams(window.location.search);
+  if(p.has('amt')){
+    document.getElementById('amount').value=formatINR(parseInt(p.get('amt')));
+    GST_RATE=parseFloat(p.get('rate'))||18;
+    document.querySelectorAll('.rate-btn').forEach(b=>
+      b.classList.toggle('active',parseFloat(b.textContent)===GST_RATE));
+    const mode=p.get('mode')||'exclusive';
+    setMode(document.getElementById(mode==='exclusive'?'modeExc':'modeInc'),mode);
+    const type=p.get('type')||'igst';
+    GST_TYPE=type;
+    document.querySelectorAll('.gst-type-btn').forEach((b,i)=>
+      b.classList.toggle('active',(type==='igst'&&i===0)||(type==='cgst_sgst'&&i===1)));
+    document.getElementById('cessRate').value=p.get('cess')||0;
+    setTimeout(()=>calculate(),300);
+  }
+});
+
+/* Keyboard */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){calculate();e.preventDefault()}
+});
+</script>
+</body>
+</html>
