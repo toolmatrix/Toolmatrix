@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Text to Speech — Free Online Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- meSpeak for download -->
+    <script src="https://cdn.jsdelivr.net/npm/mespeak@1.7.2/mespeak.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mespeak@1.7.2/mespeak-voices.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -468,6 +471,7 @@ Then click the ▶ Speak button to hear it read aloud!
 • History of recent speeches
 • Sample texts to try
 • Works 100% offline!
+• Download audio (WAV) using eSpeak
 
 🌍 Supports English, Urdu, Hindi, Arabic, Chinese, Spanish, French, German and many more languages!" spellcheck="true"></textarea>
             </div>
@@ -487,13 +491,15 @@ Then click the ▶ Speak button to hear it read aloud!
                         <span class="prog-time" id="progTotal">0:00</span>
                     </div>
 
-                    <!-- Controls -->
+                    <!-- Controls (added download button) -->
                     <div class="controls">
                         <button class="ctrl-btn" onclick="skipBack()" title="Restart"><i class="fas fa-backward"></i></button>
                         <button class="ctrl-btn" onclick="slowDown()" title="Slower"><i class="fas fa-minus"></i></button>
                         <button class="ctrl-play" id="playBtn" onclick="togglePlayPause()" title="Play/Pause"><i class="fas fa-play" id="playIcon"></i></button>
                         <button class="ctrl-btn" onclick="speedUp()" title="Faster"><i class="fas fa-plus"></i></button>
                         <button class="ctrl-btn" onclick="stopSpeech()" title="Stop"><i class="fas fa-stop"></i></button>
+                        <!-- NEW DOWNLOAD BUTTON -->
+                        <button class="ctrl-btn" onclick="downloadAudio()" title="Download as WAV (eSpeak)"><i class="fas fa-download"></i></button>
                     </div>
 
                     <!-- Speaking Info -->
@@ -549,6 +555,10 @@ Then click the ▶ Speak button to hear it read aloud!
     let estimatedDuration = 0;
     let progressInterval = null;
     let waveInterval = null;
+
+    // ========== meSpeak initialization ==========
+    meSpeak.loadConfig(meSpeakDefaultConfig);
+    meSpeak.loadVoice('en/en-us'); // default English voice
 
     // ========== INIT VOICES ==========
     function loadVoices() {
@@ -649,17 +659,13 @@ Then click the ▶ Speak button to hear it read aloud!
         updateSlider('pitch', v);
     }
     function updateSpeedPresets(v) {
-        document.querySelectorAll('#speedRange').closest('.slider-group').querySelectorAll('.sl-preset')
-        // Simplified approach
         const presets = document.getElementById('speedRange').parentElement.parentElement.parentElement.querySelectorAll('.sl-preset');
         presets.forEach(p => {
             const pv = parseFloat(p.textContent);
             p.classList.toggle('active', Math.abs(pv - parseFloat(v)) < 0.05);
         });
     }
-    function updatePitchPresets(v) {
-        // handled visually
-    }
+    function updatePitchPresets(v) { /* optional */ }
 
     // ========== TEXT ANALYSIS ==========
     editor.addEventListener('input', analyzeText);
@@ -942,6 +948,44 @@ Then click the ▶ Speak button to hear it read aloud!
     // ========== SIDEBAR ==========
     function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sbov').classList.toggle('show'); }
     function closeSB() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbov').classList.remove('show'); }
+
+    // ========== DOWNLOAD AUDIO (using meSpeak) ==========
+    function downloadAudio() {
+        const text = editor.value.trim();
+        if (!text) { toast('Type some text first ⚠️'); return; }
+
+        const speed = parseFloat(document.getElementById('speedRange').value);
+        const pitch = parseFloat(document.getElementById('pitchRange').value);
+        const volume = parseFloat(document.getElementById('volRange').value);
+
+        // meSpeak expects speed in relative units (1 = normal)
+        // pitch: 0-99 (espeak range) – we map 0..2 to 0..99 roughly
+        const espeakPitch = Math.round(pitch * 50); // 1.0 -> 50, 2.0 -> 100, clamp
+        const clampedPitch = Math.min(99, Math.max(0, espeakPitch));
+
+        // volume is handled by meSpeak amplitude? We'll ignore for now
+
+        toast('Generating audio... ⏳');
+
+        // Use default voice (en-us) – we could improve by mapping selected voice language
+        meSpeak.speak(text, {
+            pitch: clampedPitch,
+            speed: speed * 160, // meSpeak speed roughly 80-450, default ~175, 1x -> 160 feels close
+            wordgap: 0,
+            amplitude: volume * 100
+        }, () => {
+            // callback when done – data is the WAV as ArrayBuffer
+            const wavBuffer = meSpeak.getSpeakWav();
+            const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'speech.wav';
+            a.click();
+            URL.revokeObjectURL(url);
+            toast('Download started 📥');
+        });
+    }
 
     // ========== HELPERS ==========
     function escHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
