@@ -3,87 +3,663 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL Formatter - Tool Matrix</title>
-<meta name="description" content="Format your SQL queries online. Mobile-friendly SQL formatter tool by Tool Matrix.">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>SQL Formatter Tool</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f0f4ff;--bg2:#e8eeff;--card:#fff;
+    --p:#4f46e5;--p-light:#818cf8;--p-dark:#3730a3;
+    --p50:#eef2ff;--p100:#e0e7ff;--p200:#c7d2fe;--p300:#a5b4fc;
+    --text:#1e1b4b;--text2:#4338ca;--text3:#6366f1;
+    --border:#c7d2fe;--border2:#e0e7ff;
+    --green:#059669;--green-bg:#ecfdf5;
+    --red:#dc2626;--red-bg:#fef2f2;
+    --orange:#ea580c;--yellow:#ca8a04;--cyan:#0891b2;
+    --shadow:0 8px 32px rgba(79,70,229,.12);
+    --shadow-sm:0 4px 16px rgba(79,70,229,.08);
+    --radius:14px;--radius-sm:10px;
+  }
+  body{
+    min-height:100vh;width:100%;
+    background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 50%,var(--p50) 100%);
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    color:var(--text);padding:20px;
+    display:flex;align-items:flex-start;justify-content:center;
+  }
+  .app{width:100%;max-width:1100px;}
+
+  /* ── Header ── */
+  .header{
+    background:linear-gradient(135deg,var(--p),var(--p-dark));
+    border-radius:20px 20px 0 0;
+    padding:28px 30px 22px;text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .header::before{
+    content:'';position:absolute;top:-60%;left:-40%;
+    width:180%;height:220%;
+    background:radial-gradient(circle,rgba(255,255,255,.07) 0%,transparent 60%);
+    pointer-events:none;
+  }
+  .header .icon{font-size:42px;margin-bottom:6px;display:inline-block;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .header h1{color:#fff;font-size:26px;font-weight:800;letter-spacing:.5px}
+  .header p{color:var(--p200);font-size:13.5px;margin-top:4px}
+
+  /* ── Toolbar ── */
+  .toolbar{
+    background:var(--card);border-bottom:1.5px solid var(--border2);
+    padding:14px 20px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  }
+  .tool-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .tool-group label{font-size:12.5px;font-weight:600;color:var(--p-dark);white-space:nowrap}
+  .tool-select{
+    padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;
+    font-size:13px;color:var(--text);background:var(--p50);
+    outline:none;cursor:pointer;transition:.3s;
+  }
+  .tool-select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+  .tool-check{display:flex;align-items:center;gap:5px;cursor:pointer}
+  .tool-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--p);cursor:pointer}
+  .tool-check span{font-size:12.5px;font-weight:600;color:var(--p-dark)}
+  .spacer{flex:1}
+
+  /* ── Buttons ── */
+  .btn{
+    padding:9px 18px;border:none;border-radius:var(--radius-sm);
+    font-size:13.5px;font-weight:700;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:all .3s ease;white-space:nowrap;
+  }
+  .btn-format{
+    background:linear-gradient(135deg,var(--p),var(--p-dark));
+    color:#fff;box-shadow:0 4px 14px rgba(79,70,229,.3);
+  }
+  .btn-format:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,70,229,.4)}
+  .btn-copy{background:var(--green-bg);color:var(--green);border:1.5px solid #a7f3d0}
+  .btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
+  .btn-clear{background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca}
+  .btn-clear:hover{background:#fee2e2;transform:translateY(-1px)}
+  .btn-paste{background:var(--p50);color:var(--p);border:1.5px solid var(--border)}
+  .btn-paste:hover{background:var(--p100);transform:translateY(-1px)}
+  .btn-minify{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
+  .btn-minify:hover{background:#fef3c7;transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)!important}
+
+  /* ── Main Area ── */
+  .main{
+    display:flex;flex-wrap:wrap;
+    background:var(--card);
+    border-bottom:1.5px solid var(--border2);
+    min-height:420px;
+  }
+  .panel{
+    flex:1 1 400px;display:flex;flex-direction:column;
+    min-height:400px;position:relative;
+  }
+  .panel + .panel{border-left:1.5px solid var(--border2)}
+  .panel-head{
+    padding:12px 18px;
+    background:var(--p50);border-bottom:1.5px solid var(--border2);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .panel-head h3{font-size:14px;font-weight:700;color:var(--p-dark);display:flex;align-items:center;gap:6px}
+  .panel-head .badge{
+    font-size:11px;padding:3px 9px;border-radius:20px;
+    background:var(--p100);color:var(--p);font-weight:600;
+  }
+
+  /* Input */
+  #sqlInput{
+    flex:1;width:100%;padding:18px;border:none;outline:none;
+    font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+    font-size:14px;line-height:1.7;color:var(--text);
+    background:transparent;resize:none;
+    tab-size:2;
+  }
+  #sqlInput::placeholder{color:#a5b4fc}
+
+  /* Output */
+  .output-wrap{flex:1;overflow:auto;position:relative}
+  #sqlOutput{
+    width:100%;height:100%;padding:18px;margin:0;
+    font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+    font-size:14px;line-height:1.7;
+    white-space:pre;overflow:auto;
+    background:transparent;color:var(--text);
+    border:none;
+  }
+
+  /* Syntax Colors */
+  .sql-keyword{color:var(--p);font-weight:700}
+  .sql-function{color:var(--orange);font-weight:600}
+  .sql-string{color:var(--green)}
+  .sql-number{color:var(--red)}
+  .sql-comment{color:#94a3b8;font-style:italic}
+  .sql-operator{color:var(--cyan);font-weight:600}
+  .sql-paren{color:#a855f7;font-weight:700}
+  .sql-comma{color:#64748b}
+
+  /* ── Status Bar ── */
+  .statusbar{
+    background:var(--card);border-radius:0 0 20px 20px;
+    padding:12px 20px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+    border-top:1.5px solid var(--border2);
+    box-shadow:var(--shadow-sm);
+  }
+  .stat{font-size:12px;color:var(--p-dark);font-weight:500;display:flex;align-items:center;gap:4px}
+  .stat .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .dot-green{background:var(--green)}
+  .dot-blue{background:var(--p)}
+
+  /* ── Toast ── */
+  .toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);
+    padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;
+    color:#fff;z-index:9999;pointer-events:none;
+    transition:all .4s ease;opacity:0;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast-success{background:var(--green);box-shadow:0 6px 20px rgba(5,150,105,.3)}
+  .toast-error{background:var(--red);box-shadow:0 6px 20px rgba(220,38,38,.3)}
+  .toast-info{background:var(--p);box-shadow:0 6px 20px rgba(79,70,229,.3)}
+
+  /* ── Responsive ── */
+  @media(max-width:768px){
+    body{padding:10px}
+    .header{border-radius:16px 16px 0 0;padding:22px 16px 18px}
+    .header h1{font-size:21px}
+    .header .icon{font-size:34px}
+    .toolbar{padding:10px 14px;gap:8px}
+    .panel + .panel{border-left:none;border-top:1.5px solid var(--border2)}
+    .panel{min-height:260px}
+    .main{min-height:auto}
+    .statusbar{border-radius:0 0 16px 16px;padding:10px 14px}
+    .btn{padding:8px 13px;font-size:12.5px}
+  }
+  @media(max-width:480px){
+    body{padding:0}
+    .app{border-radius:0}
+    .header{border-radius:0;padding:18px 12px 15px}
+    .header h1{font-size:18px}
+    .toolbar{padding:10px 10px;gap:6px}
+    .panel-head{padding:10px 12px}
+    #sqlInput,#sqlOutput{padding:12px;font-size:12.5px}
+    .statusbar{border-radius:0;padding:10px 12px}
+    .btn{padding:7px 11px;font-size:12px;gap:4px}
+  }
+</style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col">
+<body>
 
-<header class="text-center py-6">
-<h1 class="text-3xl md:text-4xl font-bold text-blue-700">SQL Formatter</h1>
-<p class="text-gray-600 mt-2">Paste your SQL and format it properly</p>
-</header>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="icon">🗃️</div>
+    <h1>SQL Formatter & Beautifier</h1>
+    <p>Paste your SQL — Format, Beautify, Highlight & Copy</p>
+  </div>
 
-<main class="flex-grow flex flex-col items-center px-4">
-<div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-4xl space-y-4">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="tool-group">
+      <label>📏 Indent:</label>
+      <select class="tool-select" id="indentSize">
+        <option value="2">2 Spaces</option>
+        <option value="4" selected>4 Spaces</option>
+        <option value="tab">Tab</option>
+      </select>
+    </div>
+    <div class="tool-group">
+      <label class="tool-check">
+        <input type="checkbox" id="uppercaseKeywords" checked>
+        <span>🔠 Uppercase Keywords</span>
+      </label>
+    </div>
+    <div class="tool-group">
+      <label class="tool-check">
+        <input type="checkbox" id="highlightSyntax" checked>
+        <span>🎨 Syntax Highlight</span>
+      </label>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-paste" onclick="pasteSQL()">📋 Paste</button>
+    <button class="btn btn-format" onclick="formatSQL()">⚡ Format</button>
+    <button class="btn btn-minify" onclick="minifySQL()">🗜️ Minify</button>
+    <button class="btn btn-copy" onclick="copySQL()">📑 Copy</button>
+    <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear</button>
+  </div>
 
-<label class="block font-semibold text-gray-700">Enter SQL Query:</label>
-<textarea id="sqlInput" rows="8" class="w-full p-4 border rounded-lg" placeholder="Paste your SQL query here..."></textarea>
+  <!-- Main Panels -->
+  <div class="main">
+    <!-- Input Panel -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📝 Input SQL</h3>
+        <span class="badge" id="inputLen">0 chars</span>
+      </div>
+      <textarea id="sqlInput" placeholder="Paste or type your SQL query here...&#10;&#10;Example:&#10;SELECT u.id, u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id WHERE o.total > 100 ORDER BY o.total DESC;" spellcheck="false"></textarea>
+    </div>
 
-<button onclick="formatSQL()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-Format SQL
-</button>
+    <!-- Output Panel -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>✨ Formatted Output</h3>
+        <span class="badge" id="outputLen">0 chars</span>
+      </div>
+      <div class="output-wrap">
+        <pre id="sqlOutput"><span style="color:#a5b4fc">Formatted SQL will appear here...</span></pre>
+      </div>
+    </div>
+  </div>
 
-<div id="result" class="mt-4 p-4 bg-gray-100 rounded-lg hidden">
-<h3 class="font-semibold text-blue-700">Formatted SQL:</h3>
-<pre id="formattedSQL" class="mt-2 text-gray-700 whitespace-pre-wrap"></pre>
-<button onclick="copySQL()" class="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold">
-Copy to Clipboard
-</button>
+  <!-- Status Bar -->
+  <div class="statusbar">
+    <div class="stat"><span class="dot dot-green"></span> Ready</div>
+    <div class="stat" id="statKeywords"><span class="dot dot-blue"></span> Keywords: 0</div>
+    <div class="stat" id="statLines"><span class="dot dot-blue"></span> Lines: 0</div>
+    <div class="stat" id="statTime"><span class="dot dot-blue"></span> Time: 0ms</div>
+  </div>
 </div>
-<script async="async" data-cfasync="false" src="https://logshandgripquarterback.com/521557a0097cb796fb53391d503caea3/invoke.js"></script>
-<div id="container-521557a0097cb796fb53391d503caea3"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-  atOptions = {
-    'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://logshandgripquarterback.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+// ─── SQL Keywords & Functions ───
+const SQL_KEYWORDS = [
+  'SELECT','FROM','WHERE','AND','OR','NOT','IN','ON','AS','JOIN',
+  'LEFT','RIGHT','INNER','OUTER','FULL','CROSS','NATURAL',
+  'INSERT','INTO','VALUES','UPDATE','SET','DELETE','DROP','CREATE',
+  'TABLE','DATABASE','INDEX','VIEW','ALTER','ADD','COLUMN',
+  'PRIMARY','KEY','FOREIGN','REFERENCES','CONSTRAINT','DEFAULT',
+  'NULL','NOT NULL','UNIQUE','CHECK','AUTO_INCREMENT',
+  'ORDER BY','GROUP BY','HAVING','LIMIT','OFFSET','DISTINCT',
+  'UNION','UNION ALL','INTERSECT','EXCEPT','EXISTS',
+  'BETWEEN','LIKE','IS','IS NOT','IS NULL','IS NOT NULL',
+  'CASE','WHEN','THEN','ELSE','END',
+  'ASC','DESC','ALL','ANY','SOME',
+  'GRANT','REVOKE','COMMIT','ROLLBACK','SAVEPOINT','TRANSACTION',
+  'BEGIN','DECLARE','FETCH','CURSOR','OPEN','CLOSE',
+  'IF','ELSE','WHILE','FOR','LOOP','RETURN','EXEC','EXECUTE',
+  'PROCEDURE','FUNCTION','TRIGGER','WITH','RECURSIVE','OVER','PARTITION BY',
+  'ROWS','RANGE','UNBOUNDED','PRECEDING','FOLLOWING','CURRENT ROW',
+  'TOP','PERCENT','INTO','TRUNCATE','REPLACE','MERGE','USING',
+  'MATCHED','EXPLAIN','ANALYZE','CASCADE','RESTRICT','TEMP','TEMPORARY',
+  'ENABLE','DISABLE','RENAME','TO','SCHEMA','TABLESPACE','SEQUENCE',
+  'NEXTVAL','CURRVAL','LATERAL','PIVOT','UNPIVOT','APPLY',
+  'GROUPING','SETS','CUBE','ROLLUP','FILTER','WITHIN GROUP',
+  'ARRAY','JSON','CAST','CONVERT','COALESCE','NULLIF',
+  'ROW_NUMBER','RANK','DENSE_RANK','NTILE','LAG','LEAD',
+  'FIRST_VALUE','LAST_VALUE','NTH_VALUE'
+];
 
-<script src="https://logshandgripquarterback.com/2f/8e/73/2f8e73ae0d35ba6e793c280b73571187.js"></script>
-</div>
-</main>
+const SQL_FUNCTIONS = [
+  'COUNT','SUM','AVG','MIN','MAX','ABS','CEIL','CEILING','FLOOR','ROUND',
+  'POWER','SQRT','MOD','SIGN','RAND','RANDOM',
+  'CONCAT','LENGTH','LEN','UPPER','LOWER','TRIM','LTRIM','RTRIM',
+  'SUBSTRING','SUBSTR','LEFT','RIGHT','REPLACE','REVERSE','REPEAT',
+  'LPAD','RPAD','CHARINDEX','POSITION','INSTR','CHAR_LENGTH',
+  'NOW','GETDATE','CURDATE','CURTIME','CURRENT_DATE','CURRENT_TIME',
+  'CURRENT_TIMESTAMP','DATE','TIME','YEAR','MONTH','DAY','HOUR','MINUTE','SECOND',
+  'DATEADD','DATEDIFF','DATE_FORMAT','TO_CHAR','TO_DATE','TO_NUMBER',
+  'EXTRACT','INTERVAL','EPOCH',
+  'IFNULL','ISNULL','NVL','NVL2','IIF','DECODE',
+  'CAST','CONVERT','COALESCE','NULLIF','GREATEST','LEAST',
+  'ROW_NUMBER','RANK','DENSE_RANK','NTILE','LAG','LEAD',
+  'FIRST_VALUE','LAST_VALUE','NTH_VALUE',
+  'STRING_AGG','GROUP_CONCAT','ARRAY_AGG','JSON_AGG',
+  'EXISTS','NOT EXISTS'
+];
 
-<footer class="text-center py-4 text-gray-500 text-sm">
-© 2026 Tool Matrix
-</footer>
+// Major clause keywords that should start on a new line
+const MAJOR_KEYWORDS = [
+  'SELECT','FROM','WHERE','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN',
+  'OUTER JOIN','FULL JOIN','FULL OUTER JOIN','CROSS JOIN','NATURAL JOIN',
+  'LEFT OUTER JOIN','RIGHT OUTER JOIN',
+  'ON','AND','OR','ORDER BY','GROUP BY','HAVING','LIMIT','OFFSET',
+  'UNION','UNION ALL','INTERSECT','EXCEPT','INSERT INTO','VALUES',
+  'UPDATE','SET','DELETE FROM','CREATE TABLE','ALTER TABLE','DROP TABLE',
+  'CASE','WHEN','THEN','ELSE','END',
+  'WITH','RETURNING','PARTITION BY','WINDOW'
+];
 
-<script>
-// Basic SQL Formatter
-function formatSQL(){
-let sql = document.getElementById("sqlInput").value.trim();
-if(!sql){ alert("Please enter SQL query!"); return; }
-
-// Keywords list
-const keywords = ["SELECT","FROM","WHERE","JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","ON","GROUP BY","ORDER BY","HAVING","INSERT INTO","VALUES","UPDATE","SET","DELETE","CREATE TABLE","ALTER TABLE","DROP TABLE"];
-
-// Capitalize keywords
-keywords.forEach(keyword=>{
-  const regex = new RegExp("\\b"+keyword+"\\b","gi");
-  sql = sql.replace(regex, keyword);
+// ─── Input char count ───
+const sqlInput = document.getElementById('sqlInput');
+sqlInput.addEventListener('input', () => {
+  document.getElementById('inputLen').textContent = sqlInput.value.length + ' chars';
 });
 
-// Add line breaks for main clauses
-sql = sql.replace(/\b(FROM|WHERE|JOIN|INNER JOIN|LEFT JOIN|RIGHT JOIN|GROUP BY|ORDER BY|HAVING|VALUES|SET)\b/g, "\n$1");
+// ─── Format SQL ───
+function formatSQL() {
+  const start = performance.now();
+  const raw = sqlInput.value.trim();
+  if (!raw) { showToast('⚠️ Please enter SQL first!', 'error'); return; }
 
-// Indent subqueries (basic)
-sql = sql.replace(/\(/g,"(\n  ").replace(/\)/g,"\n)");
+  const indent = getIndent();
+  const upper = document.getElementById('uppercaseKeywords').checked;
+  const highlight = document.getElementById('highlightSyntax').checked;
 
-// Display formatted SQL
-document.getElementById("formattedSQL").innerText = sql;
-document.getElementById("result").classList.remove("hidden");
+  let formatted = beautifySQL(raw, indent, upper);
+
+  // Stats
+  const kwCount = countKeywords(formatted);
+  const lineCount = formatted.split('\n').length;
+  const elapsed = (performance.now() - start).toFixed(1);
+
+  document.getElementById('statKeywords').innerHTML = `<span class="dot dot-blue"></span> Keywords: ${kwCount}`;
+  document.getElementById('statLines').innerHTML = `<span class="dot dot-blue"></span> Lines: ${lineCount}`;
+  document.getElementById('statTime').innerHTML = `<span class="dot dot-blue"></span> Time: ${elapsed}ms`;
+  document.getElementById('outputLen').textContent = formatted.length + ' chars';
+
+  const output = document.getElementById('sqlOutput');
+  if (highlight) {
+    output.innerHTML = syntaxHighlight(formatted);
+  } else {
+    output.textContent = formatted;
+  }
+
+  showToast('✅ SQL Formatted Successfully!', 'success');
 }
 
-// Copy to clipboard
-function copySQL(){
-const formatted = document.getElementById("formattedSQL").innerText;
-navigator.clipboard.writeText(formatted).then(()=>alert("SQL copied to clipboard!"));
+// ─── Core Beautifier ───
+function beautifySQL(sql, indent, upper) {
+  // Preserve strings and comments
+  const preserved = [];
+  let idx = 0;
+
+  // Extract string literals
+  sql = sql.replace(/'([^'\\]|\\.)*'/g, (m) => {
+    preserved.push(m);
+    return `__STR${idx++}__`;
+  });
+  sql = sql.replace(/"([^"\\]|\\.)*"/g, (m) => {
+    preserved.push(m);
+    return `__STR${idx++}__`;
+  });
+
+  // Extract comments
+  sql = sql.replace(/--.*$/gm, (m) => {
+    preserved.push(m);
+    return `__STR${idx++}__`;
+  });
+  sql = sql.replace(/\/\*[\s\S]*?\*\//g, (m) => {
+    preserved.push(m);
+    return `__STR${idx++}__`;
+  });
+
+  // Normalize whitespace
+  sql = sql.replace(/\s+/g, ' ').trim();
+
+  // Sort major keywords by length desc for greedy matching
+  const sortedMajor = [...MAJOR_KEYWORDS].sort((a, b) => b.length - a.length);
+
+  // Insert newlines before major keywords
+  for (const kw of sortedMajor) {
+    const regex = new RegExp(`\\b(${kw.replace(/ /g, '\\s+')})\\b`, 'gi');
+    sql = sql.replace(regex, '\n$1');
+  }
+
+  // Handle commas — put new line after comma in SELECT
+  let lines = sql.split('\n').map(l => l.trim()).filter(l => l);
+
+  let result = [];
+  let indentLevel = 0;
+  let inSelect = false;
+
+  for (let line of lines) {
+    const upperLine = line.toUpperCase().trim();
+
+    // Determine indent level
+    if (/^(END)\b/i.test(upperLine)) { indentLevel = Math.max(0, indentLevel - 1); }
+
+    // Check if entering SELECT
+    if (/^SELECT\b/i.test(upperLine)) { inSelect = true; }
+    if (/^FROM\b/i.test(upperLine)) { inSelect = false; }
+
+    // Handle commas within SELECT — split by comma
+    if (inSelect && line.includes(',') && !/^SELECT\b/i.test(upperLine)) {
+      const parts = splitByComma(line);
+      for (const part of parts) {
+        let processed = upper ? applyUppercase(part.trim()) : part.trim();
+        result.push(indent.repeat(indentLevel + 1) + processed);
+      }
+    } else {
+      // Adjust indent for sub-keywords
+      let currentIndent = indentLevel;
+      if (/^(AND|OR)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
+      if (/^(ON)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
+      if (/^(WHEN|THEN|ELSE)\b/i.test(upperLine)) { currentIndent = indentLevel + 1; }
+
+      // For primary clauses like FROM, WHERE, JOIN etc — same level as SELECT
+      if (/^(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|NATURAL|ORDER BY|GROUP BY|HAVING|LIMIT|OFFSET|UNION|INSERT|UPDATE|DELETE|SET|VALUES|CREATE|ALTER|DROP|WITH|RETURNING)\b/i.test(upperLine)) {
+        currentIndent = indentLevel;
+      }
+
+      // Handle SELECT items on same line
+      if (/^SELECT\b/i.test(upperLine)) {
+        // Split SELECT fields
+        const selectMatch = line.match(/^(SELECT\s+(?:DISTINCT\s+)?)(.*)/i);
+        if (selectMatch && selectMatch[2].includes(',')) {
+          let keyword = selectMatch[1].trim();
+          let fields = selectMatch[2];
+          if (upper) keyword = keyword.toUpperCase();
+
+          const parts = splitByComma(fields);
+          let processed = upper ? applyUppercase(parts[0].trim()) : parts[0].trim();
+          result.push(indent.repeat(currentIndent) + keyword + ' ' + processed);
+
+          for (let i = 1; i < parts.length; i++) {
+            processed = upper ? applyUppercase(parts[i].trim()) : parts[i].trim();
+            result.push(indent.repeat(currentIndent + 1) + processed);
+          }
+        } else {
+          let processed = upper ? applyUppercase(line) : line;
+          result.push(indent.repeat(currentIndent) + processed);
+        }
+      } else {
+        let processed = upper ? applyUppercase(line) : line;
+        result.push(indent.repeat(currentIndent) + processed);
+      }
+    }
+
+    if (/^(CASE)\b/i.test(upperLine)) { indentLevel++; }
+  }
+
+  let output = result.join('\n');
+
+  // Restore preserved strings
+  for (let i = preserved.length - 1; i >= 0; i--) {
+    output = output.replace(`__STR${i}__`, preserved[i]);
+  }
+
+  // Clean up extra blank lines
+  output = output.replace(/\n{3,}/g, '\n\n');
+
+  return output;
 }
+
+function splitByComma(str) {
+  const parts = [];
+  let depth = 0, current = '';
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    if (ch === ',' && depth === 0) {
+      parts.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  if (current.trim()) parts.push(current.trim());
+  return parts;
+}
+
+function applyUppercase(str) {
+  // Uppercase SQL keywords but not strings/identifiers
+  const allKw = [...SQL_KEYWORDS, ...SQL_FUNCTIONS].sort((a, b) => b.length - a.length);
+  for (const kw of allKw) {
+    const regex = new RegExp(`\\b(${kw.replace(/ /g,'\\s+')})\\b`, 'gi');
+    str = str.replace(regex, (m) => m.toUpperCase());
+  }
+  return str;
+}
+
+// ─── Syntax Highlighting ───
+function syntaxHighlight(sql) {
+  // Escape HTML
+  let html = sql.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Comments
+  html = html.replace(/(--.*$)/gm, '<span class="sql-comment">$1</span>');
+  html = html.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="sql-comment">$1</span>');
+
+  // Strings
+  html = html.replace(/('([^'\\]|\\.)*')/g, '<span class="sql-string">$1</span>');
+
+  // Numbers
+  html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="sql-number">$1</span>');
+
+  // Functions (before keywords)
+  const funcRegex = new RegExp(`\\b(${SQL_FUNCTIONS.join('|')})\\s*(?=\\()`, 'gi');
+  html = html.replace(funcRegex, '<span class="sql-function">$1</span>');
+
+  // Keywords
+  const kwSorted = [...SQL_KEYWORDS].sort((a,b) => b.length - a.length);
+  for (const kw of kwSorted) {
+    const r = new RegExp(`\\b(${kw.replace(/ /g,'\\s+')})\\b`, 'g');
+    html = html.replace(r, (match) => {
+      // Avoid double-wrapping
+      if (match.includes('<span')) return match;
+      return `<span class="sql-keyword">${match}</span>`;
+    });
+  }
+
+  // Parentheses
+  html = html.replace(/([()])/g, '<span class="sql-paren">$1</span>');
+
+  // Operators
+  html = html.replace(/([=&lt;&gt;!]+|&lt;&gt;|&gt;=|&lt;=)/g, '<span class="sql-operator">$1</span>');
+
+  // Commas
+  html = html.replace(/(,)/g, '<span class="sql-comma">$1</span>');
+
+  return html;
+}
+
+// ─── Minify SQL ───
+function minifySQL() {
+  const raw = sqlInput.value.trim();
+  if (!raw) { showToast('⚠️ Please enter SQL first!', 'error'); return; }
+
+  let minified = raw
+    .replace(/--.*$/gm, '')           // Remove single-line comments
+    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+    .replace(/\s+/g, ' ')            // Collapse whitespace
+    .replace(/\s*([,()=<>!;])\s*/g, '$1') // Remove space around operators
+    .trim();
+
+  const output = document.getElementById('sqlOutput');
+  const highlight = document.getElementById('highlightSyntax').checked;
+
+  if (highlight) {
+    output.innerHTML = syntaxHighlight(minified);
+  } else {
+    output.textContent = minified;
+  }
+
+  document.getElementById('outputLen').textContent = minified.length + ' chars';
+  document.getElementById('statLines').innerHTML = `<span class="dot dot-blue"></span> Lines: 1`;
+  showToast('🗜️ SQL Minified!', 'info');
+}
+
+// ─── Copy ───
+function copySQL() {
+  const output = document.getElementById('sqlOutput');
+  const text = output.textContent || output.innerText;
+  if (!text || text.includes('will appear here')) {
+    showToast('⚠️ Nothing to copy!', 'error'); return;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 Copied to clipboard!', 'success');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Copied to clipboard!', 'success');
+  });
+}
+
+// ─── Paste ───
+function pasteSQL() {
+  navigator.clipboard.readText().then(text => {
+    sqlInput.value = text;
+    document.getElementById('inputLen').textContent = text.length + ' chars';
+    showToast('📋 Pasted from clipboard!', 'info');
+  }).catch(() => {
+    showToast('⚠️ Clipboard access denied!', 'error');
+  });
+}
+
+// ─── Clear ───
+function clearAll() {
+  sqlInput.value = '';
+  document.getElementById('sqlOutput').innerHTML = '<span style="color:#a5b4fc">Formatted SQL will appear here...</span>';
+  document.getElementById('inputLen').textContent = '0 chars';
+  document.getElementById('outputLen').textContent = '0 chars';
+  document.getElementById('statKeywords').innerHTML = '<span class="dot dot-blue"></span> Keywords: 0';
+  document.getElementById('statLines').innerHTML = '<span class="dot dot-blue"></span> Lines: 0';
+  document.getElementById('statTime').innerHTML = '<span class="dot dot-blue"></span> Time: 0ms';
+  showToast('🗑️ Cleared!', 'info');
+}
+
+// ─── Helpers ───
+function getIndent() {
+  const val = document.getElementById('indentSize').value;
+  return val === 'tab' ? '\t' : ' '.repeat(parseInt(val));
+}
+
+function countKeywords(sql) {
+  let count = 0;
+  const upper = sql.toUpperCase();
+  for (const kw of SQL_KEYWORDS) {
+    const regex = new RegExp(`\\b${kw}\\b`, 'g');
+    const matches = upper.match(regex);
+    if (matches) count += matches.length;
+  }
+  return count;
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast toast-' + type + ' show';
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+}
+
+// ─── Keyboard Shortcut ───
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { formatSQL(); e.preventDefault(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') { copySQL(); e.preventDefault(); }
+});
+
+// Tab support in textarea
+sqlInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = sqlInput.selectionStart;
+    const end = sqlInput.selectionEnd;
+    sqlInput.value = sqlInput.value.substring(0, start) + '  ' + sqlInput.value.substring(end);
+    sqlInput.selectionStart = sqlInput.selectionEnd = start + 2;
+  }
+});
 </script>
 
 </body>
