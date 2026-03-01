@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Speed Test Tool — Free Website Performance Analyzer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --primary:#43B02A;--primary-dark:#369321;--primary-light:#E8F5E3;
+    --primary-lighter:#F2FAF0;--accent:#2E7D1E;--bg:#F5FBF3;
+    --text:#1A2E14;--text-light:#5A7D50;--white:#ffffff;
+    --shadow:0 4px 24px rgba(67,176,42,0.10);
+    --shadow-lg:0 8px 40px rgba(67,176,42,0.13);
+    --radius:16px;--radius-sm:10px;
+    --red:#E53935;--orange:#FF9800;--yellow:#FBC02D;--green:#43B02A;
+    --blue:#1E88E5;
+  }
+
+  body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden}
+
+  /* NAVBAR */
+  .navbar{background:var(--primary);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(67,176,42,0.18);position:sticky;top:0;z-index:100}
+  .navbar .logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;color:#fff;text-decoration:none}
+  .navbar .logo svg{width:30px;height:30px}
+  .navbar .nav-links{display:flex;gap:20px}
+  .navbar .nav-links a{color:rgba(255,255,255,0.85);font-size:14px;font-weight:500;text-decoration:none;transition:.2s}
+  .navbar .nav-links a:hover{color:#fff}
+
+  /* HERO */
+  .hero{text-align:center;padding:48px 20px 10px}
+  .hero h1{font-size:40px;font-weight:900;color:var(--text);margin-bottom:12px;line-height:1.15}
+  .hero h1 span{color:var(--primary)}
+  .hero p{color:var(--text-light);font-size:16px;max-width:640px;margin:0 auto}
+
+  /* SEARCH CARD */
+  .search-card{max-width:780px;width:93%;margin:30px auto 0;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:28px 32px;border:1.5px solid #D5EDCF;text-align:center}
+  .search-card h2{font-size:18px;font-weight:700;color:var(--accent);margin-bottom:16px}
+  .input-row{display:flex;gap:10px;max-width:620px;margin:0 auto}
+  .input-row input{flex:1;padding:14px 18px;border-radius:50px;border:2px solid #C8E6C0;font-family:'Inter',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border .2s}
+  .input-row input:focus{border-color:var(--primary)}
+  .input-row input::placeholder{color:#A9C9A0}
+  .input-row button{padding:14px 34px;border-radius:50px;border:none;background:var(--primary);color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(67,176,42,0.35);white-space:nowrap;display:flex;align-items:center;gap:8px}
+  .input-row button:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 6px 24px rgba(67,176,42,0.4)}
+  .input-row button svg{width:18px;height:18px}
+  .input-row button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+  /* STRATEGY TOGGLE */
+  .strategy-toggle{display:flex;justify-content:center;gap:0;margin:16px auto 0;background:var(--primary-light);border-radius:50px;max-width:280px;padding:4px}
+  .strategy-btn{flex:1;padding:10px 16px;border-radius:50px;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;transition:.25s}
+  .strategy-btn.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(67,176,42,0.3)}
+
+  /* LOADING */
+  .loading-section{display:none;text-align:center;padding:60px 20px}
+  .loading-section.active{display:block}
+  .loader-ring{width:80px;height:80px;border:5px solid #D5EDCF;border-top-color:var(--primary);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 20px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-section h3{font-size:20px;color:var(--text);margin-bottom:8px}
+  .loading-section p{font-size:14px;color:var(--text-light)}
+  .loading-steps{max-width:400px;margin:20px auto 0;text-align:left}
+  .loading-step{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text-light);opacity:.4;transition:.4s}
+  .loading-step.active{opacity:1;color:var(--text)}
+  .loading-step.done{opacity:1;color:var(--green)}
+  .loading-step .step-icon{width:22px;height:22px;border-radius:50%;background:#D5EDCF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:.3s}
+  .loading-step.active .step-icon{background:var(--primary);color:#fff}
+  .loading-step.done .step-icon{background:var(--green);color:#fff}
+
+  /* RESULTS */
+  .results-section{display:none;max-width:900px;width:95%;margin:30px auto 50px}
+  .results-section.active{display:block}
+
+  /* SCORE HEADER */
+  .score-header{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1.5px solid #D5EDCF;padding:30px;text-align:center;margin-bottom:20px}
+  .score-header .tested-url{font-size:13px;color:var(--text-light);margin-bottom:6px;word-break:break-all}
+  .score-header .tested-url span{color:var(--primary);font-weight:600}
+  .score-header h2{font-size:22px;font-weight:800;margin-bottom:24px}
+  .score-header h2 span{color:var(--primary)}
+
+  /* CIRCULAR SCORE */
+  .score-circles{display:flex;flex-wrap:wrap;justify-content:center;gap:28px}
+  .score-circle-wrap{text-align:center}
+  .score-circle{width:120px;height:120px;position:relative}
+  .score-circle svg{width:120px;height:120px;transform:rotate(-90deg)}
+  .score-circle .bg{fill:none;stroke:#E8F5E3;stroke-width:8}
+  .score-circle .fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease,stroke 1s ease}
+  .score-circle .score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px;font-weight:900}
+  .score-circle-wrap .score-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-light);margin-top:8px}
+
+  /* LEGEND */
+  .legend{display:flex;justify-content:center;gap:20px;margin-top:20px;flex-wrap:wrap}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-light)}
+  .legend-dot{width:12px;height:12px;border-radius:3px}
+  .legend-dot.fast{background:var(--green)}
+  .legend-dot.avg{background:var(--orange)}
+  .legend-dot.slow{background:var(--red)}
+
+  /* METRICS GRID */
+  .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-bottom:20px}
+  .metric-card{background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow);border:1.5px solid #D5EDCF;padding:20px;transition:transform .2s}
+  .metric-card:hover{transform:translateY(-3px)}
+  .metric-card .m-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .metric-card .m-name{font-size:13px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.4px}
+  .metric-card .m-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#fff}
+  .m-badge.good{background:var(--green)}
+  .m-badge.needs{background:var(--orange)}
+  .m-badge.poor{background:var(--red)}
+  .metric-card .m-value{font-size:28px;font-weight:900;margin-bottom:4px}
+  .metric-card .m-desc{font-size:12px;color:var(--text-light);line-height:1.5}
+  .metric-card .m-bar{height:6px;background:#E8F5E3;border-radius:5px;margin-top:10px;overflow:hidden}
+  .metric-card .m-bar-fill{height:100%;border-radius:5px;transition:width 1.2s ease}
+
+  /* DIAGNOSTICS */
+  .diag-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid #D5EDCF;padding:24px;margin-bottom:20px}
+  .diag-card h3{font-size:18px;font-weight:800;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .diag-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #E8F5E3}
+  .diag-item:last-child{border-bottom:none}
+  .diag-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+  .diag-icon.pass{background:#E8F5E3;color:var(--green)}
+  .diag-icon.warn{background:#FFF3E0;color:var(--orange)}
+  .diag-icon.fail{background:#FFEBEE;color:var(--red)}
+  .diag-icon.info{background:#E3F2FD;color:var(--blue)}
+  .diag-text h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+  .diag-text p{font-size:12px;color:var(--text-light);line-height:1.5}
+  .diag-text .savings{font-size:11px;font-weight:600;color:var(--orange);margin-top:3px}
+
+  /* SCREENSHOT */
+  .screenshot-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid #D5EDCF;padding:24px;margin-bottom:20px;text-align:center}
+  .screenshot-card h3{font-size:18px;font-weight:800;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .screenshot-card img{max-width:360px;width:100%;border-radius:var(--radius-sm);border:2px solid #D5EDCF;box-shadow:var(--shadow)}
+
+  /* TREEMAP */
+  .treemap-bar{display:flex;height:30px;border-radius:6px;overflow:hidden;margin-bottom:6px}
+  .treemap-seg{height:100%;transition:width 1s ease;position:relative;cursor:pointer}
+  .treemap-seg:hover{opacity:.85}
+  .treemap-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .treemap-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-light)}
+  .treemap-legend-item .dot{width:10px;height:10px;border-radius:3px}
+
+  /* ERROR */
+  .error-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);border:2px solid #FFCDD2;padding:40px;text-align:center;max-width:600px;margin:30px auto}
+  .error-card .err-icon{font-size:50px;margin-bottom:12px}
+  .error-card h3{font-size:20px;color:var(--red);margin-bottom:8px}
+  .error-card p{font-size:14px;color:var(--text-light)}
+
+  /* FOOTER */
+  .footer{text-align:center;padding:24px;color:var(--text-light);font-size:13px;border-top:1px solid #D5EDCF;background:var(--primary-lighter);margin-top:40px}
+
+  /* RESPONSIVE */
+  @media(max-width:650px){
+    .navbar{padding:0 16px}
+    .hero h1{font-size:26px}
+    .hero p{font-size:13px}
+    .search-card{padding:20px 16px}
+    .input-row{flex-direction:column}
+    .input-row button{justify-content:center}
+    .score-circles{gap:16px}
+    .score-circle{width:90px;height:90px}
+    .score-circle svg{width:90px;height:90px}
+    .score-circle .score-num{font-size:24px}
+    .metrics-grid{grid-template-columns:1fr}
+    .score-header{padding:20px}
+    .navbar .nav-links{display:none}
+  }
+
+  /* ANIMATIONS */
+  .fade-in{animation:fadeIn .5s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .slide-up{animation:slideUp .6s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    SpeedTest Pro
+  </a>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">Features</a>
+    <a href="#">API</a>
+    <a href="#">About</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Test Your <span>Website Speed</span><br>in Seconds</h1>
+  <p>Analyze performance, get detailed metrics & actionable suggestions to make your website lightning fast — powered by Google PageSpeed Insights.</p>
+</section>
+
+<!-- SEARCH CARD -->
+<div class="search-card" id="searchCard">
+  <h2>🔍 Enter Website URL to Analyze</h2>
+  <div class="input-row">
+    <input type="url" id="urlInput" placeholder="https://example.com" value="">
+    <button id="analyzeBtn" onclick="startAnalysis()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Analyze
+    </button>
+  </div>
+  <div class="strategy-toggle">
+    <button class="strategy-btn active" id="mobileBtn" onclick="setStrategy('mobile')">📱 Mobile</button>
+    <button class="strategy-btn" id="desktopBtn" onclick="setStrategy('desktop')">🖥️ Desktop</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-section" id="loadingSection">
+  <div class="loader-ring"></div>
+  <h3 id="loadingTitle">Analyzing Website...</h3>
+  <p id="loadingUrl"></p>
+  <div class="loading-steps">
+    <div class="loading-step" id="step1"><div class="step-icon">1</div> Connecting to server...</div>
+    <div class="loading-step" id="step2"><div class="step-icon">2</div> Fetching page resources...</div>
+    <div class="loading-step" id="step3"><div class="step-icon">3</div> Analyzing performance metrics...</div>
+    <div class="loading-step" id="step4"><div class="step-icon">4</div> Running Lighthouse audit...</div>
+    <div class="loading-step" id="step5"><div class="step-icon">5</div> Generating report...</div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results-section" id="resultsSection">
+  <!-- Score Header -->
+  <div class="score-header fade-in" id="scoreHeader">
+    <p class="tested-url">Results for: <span id="testedUrl"></span></p>
+    <h2>Performance <span>Score</span></h2>
+    <div class="score-circles" id="scoreCircles"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot fast"></div> Good (90-100)</div>
+      <div class="legend-item"><div class="legend-dot avg"></div> Needs Work (50-89)</div>
+      <div class="legend-item"><div class="legend-dot slow"></div> Poor (0-49)</div>
+    </div>
+  </div>
+
+  <!-- Core Web Vitals -->
+  <div class="diag-card slide-up" style="margin-top:20px" id="cwvCard">
+    <h3>📊 Core Web Vitals Assessment</h3>
+    <div id="cwvContent"></div>
+  </div>
+
+  <!-- Metrics Grid -->
+  <div class="metrics-grid slide-up" id="metricsGrid"></div>
+
+  <!-- Screenshot -->
+  <div class="screenshot-card slide-up" id="screenshotCard" style="display:none">
+    <h3>📸 Page Screenshot</h3>
+    <img id="screenshotImg" src="" alt="Page Screenshot">
+  </div>
+
+  <!-- Diagnostics / Opportunities -->
+  <div class="diag-card slide-up" id="opportunitiesCard">
+    <h3>💡 Opportunities & Suggestions</h3>
+    <div id="opportunitiesList"></div>
+  </div>
+
+  <!-- Passed Audits -->
+  <div class="diag-card slide-up" id="passedCard">
+    <h3>✅ Passed Audits</h3>
+    <div id="passedList"></div>
+  </div>
+
+  <!-- Re-test button -->
+  <div style="text-align:center;margin:30px 0">
+    <button class="strategy-btn active" style="padding:14px 40px;font-size:15px;border-radius:50px;cursor:pointer;border:none;background:var(--primary);color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(67,176,42,0.35)" onclick="resetTool()">
+      🔄 Test Another URL
+    </button>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div class="error-card" id="errorCard" style="display:none">
+  <div class="err-icon">❌</div>
+  <h3 id="errTitle">Analysis Failed</h3>
+  <p id="errMsg">Could not analyze the website. Please check the URL and try again.</p>
+  <br>
+  <button class="strategy-btn active" style="padding:12px 30px;border-radius:50px;cursor:pointer;border:none;background:var(--primary);color:#fff;font-weight:700" onclick="resetTool()">Try Again</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  © 2025 SpeedTest Pro — Free Website Performance Analyzer | Powered by Google PageSpeed Insights API
+</div>
+
+<script>
+  // ===== CONFIG =====
+  const API_BASE = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+  let strategy = 'mobile';
+
+  // ===== ELEMENTS =====
+  const urlInput = document.getElementById('urlInput');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const loadingSection = document.getElementById('loadingSection');
+  const resultsSection = document.getElementById('resultsSection');
+  const errorCard = document.getElementById('errorCard');
+  const searchCard = document.getElementById('searchCard');
+
+  // Strategy toggle
+  function setStrategy(s) {
+    strategy = s;
+    document.getElementById('mobileBtn').classList.toggle('active', s === 'mobile');
+    document.getElementById('desktopBtn').classList.toggle('active', s === 'desktop');
+  }
+
+  // Enter key
+  urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') startAnalysis(); });
+
+  // ===== LOADING STEPS ANIMATION =====
+  function animateLoadingSteps() {
+    const steps = ['step1','step2','step3','step4','step5'];
+    steps.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'loading-step';
+      setTimeout(() => { el.classList.add('active'); }, i * 2500);
+      if (i > 0) {
+        setTimeout(() => { document.getElementById(steps[i-1]).classList.remove('active'); document.getElementById(steps[i-1]).classList.add('done'); }, i * 2500);
+      }
+    });
+  }
+
+  // ===== VALIDATE URL =====
+  function normalizeUrl(url) {
+    url = url.trim();
+    if (!url) return '';
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    return url;
+  }
+
+  // ===== START ANALYSIS =====
+  async function startAnalysis() {
+    let url = normalizeUrl(urlInput.value);
+    if (!url) { alert('⚠️ Please enter a website URL!'); return; }
+    urlInput.value = url;
+
+    // UI states
+    searchCard.style.display = 'block';
+    loadingSection.classList.add('active');
+    resultsSection.classList.remove('active');
+    errorCard.style.display = 'none';
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></div> Analyzing...';
+    document.getElementById('loadingUrl').textContent = url;
+    animateLoadingSteps();
+
+    try {
+      const categories = ['performance','accessibility','best-practices','seo'];
+      const catParam = categories.map(c => `category=${c}`).join('&');
+      const apiUrl = `${API_BASE}?url=${encodeURIComponent(url)}&strategy=${strategy}&${catParam}`;
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      const data = await response.json();
+
+      if (data.error) throw new Error(data.error.message || 'API returned an error');
+
+      // Hide loading, show results
+      loadingSection.classList.remove('active');
+      resultsSection.classList.add('active');
+      renderResults(data, url);
+
+    } catch (err) {
+      console.error(err);
+      loadingSection.classList.remove('active');
+      errorCard.style.display = 'block';
+      document.getElementById('errMsg').textContent = err.message || 'Could not analyze. Check URL and try again.';
+    }
+
+    analyzeBtn.disabled = false;
+    analyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Analyze';
+  }
+
+  // ===== RENDER RESULTS =====
+  function renderResults(data, url) {
+    const lhr = data.lighthouseResult;
+    const categories = lhr.categories;
+    const audits = lhr.audits;
+
+    // Tested URL
+    document.getElementById('testedUrl').textContent = url;
+
+    // 1. SCORE CIRCLES
+    const scoreData = [
+      { key: 'performance', label: 'Performance', icon: '⚡' },
+      { key: 'accessibility', label: 'Accessibility', icon: '♿' },
+      { key: 'best-practices', label: 'Best Practices', icon: '✅' },
+      { key: 'seo', label: 'SEO', icon: '🔍' }
+    ];
+
+    const circlesHtml = scoreData.map(s => {
+      const cat = categories[s.key];
+      if (!cat) return '';
+      const score = Math.round((cat.score || 0) * 100);
+      const color = score >= 90 ? 'var(--green)' : score >= 50 ? 'var(--orange)' : 'var(--red)';
+      const circumference = 2 * Math.PI * 48;
+      const offset = circumference - (score / 100) * circumference;
+      return `
+        <div class="score-circle-wrap">
+          <div class="score-circle">
+            <svg viewBox="0 0 120 120">
+              <circle class="bg" cx="60" cy="60" r="48"/>
+              <circle class="fill" cx="60" cy="60" r="48"
+                stroke="${color}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${offset}"
+              />
+            </svg>
+            <div class="score-num" style="color:${color}">${score}</div>
+          </div>
+          <div class="score-label">${s.icon} ${s.label}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('scoreCircles').innerHTML = circlesHtml;
+
+    // 2. CORE WEB VITALS
+    const cwvMetrics = [
+      { key: 'largest-contentful-paint', label: 'Largest Contentful Paint (LCP)', good: 2500, poor: 4000, unit: 'ms' },
+      { key: 'first-contentful-paint', label: 'First Contentful Paint (FCP)', good: 1800, poor: 3000, unit: 'ms' },
+      { key: 'total-blocking-time', label: 'Total Blocking Time (TBT)', good: 200, poor: 600, unit: 'ms' },
+      { key: 'cumulative-layout-shift', label: 'Cumulative Layout Shift (CLS)', good: 0.1, poor: 0.25, unit: '' },
+      { key: 'speed-index', label: 'Speed Index', good: 3400, poor: 5800, unit: 'ms' },
+    ];
+
+    let cwvHtml = '';
+    cwvMetrics.forEach(m => {
+      const audit = audits[m.key];
+      if (!audit) return;
+      const val = audit.numericValue || 0;
+      const display = audit.displayValue || (m.unit === 'ms' ? (val/1000).toFixed(1) + ' s' : val.toFixed(3));
+      const status = val <= m.good ? 'pass' : val <= m.poor ? 'warn' : 'fail';
+      const statusLabel = status === 'pass' ? 'Good' : status === 'warn' ? 'Needs Work' : 'Poor';
+      const icon = status === 'pass' ? '✓' : status === 'warn' ? '!' : '✕';
+      cwvHtml += `
+        <div class="diag-item">
+          <div class="diag-icon ${status}">${icon}</div>
+          <div class="diag-text">
+            <h4>${m.label}</h4>
+            <p><strong>${display}</strong> — ${statusLabel}</p>
+          </div>
+        </div>`;
+    });
+    document.getElementById('cwvContent').innerHTML = cwvHtml;
+
+    // 3. METRICS CARDS
+    const metricCards = [
+      { key: 'first-contentful-paint', label: 'First Contentful Paint', desc: 'Time when the first text or image is painted.', icon: '🎨', max: 6000 },
+      { key: 'largest-contentful-paint', label: 'Largest Contentful Paint', desc: 'Time when the largest content element is visible.', icon: '📐', max: 8000 },
+      { key: 'total-blocking-time', label: 'Total Blocking Time', desc: 'Sum of time the main thread was blocked.', icon: '⏱️', max: 1500 },
+      { key: 'cumulative-layout-shift', label: 'Cumulative Layout Shift', desc: 'Measures visual stability of the page.', icon: '📏', max: 1 },
+      { key: 'speed-index', label: 'Speed Index', desc: 'How quickly the contents are visually displayed.', icon: '⚡', max: 10000 },
+      { key: 'interactive', label: 'Time to Interactive', desc: 'Time until the page is fully interactive.', icon: '🖱️', max: 10000 },
+    ];
+
+    let metricsHtml = '';
+    metricCards.forEach(m => {
+      const audit = audits[m.key];
+      if (!audit) return;
+      const score = audit.score || 0;
+      const val = audit.numericValue || 0;
+      const display = audit.displayValue || '';
+      const color = score >= 0.9 ? 'var(--green)' : score >= 0.5 ? 'var(--orange)' : 'var(--red)';
+      const badge = score >= 0.9 ? 'good' : score >= 0.5 ? 'needs' : 'poor';
+      const badgeText = score >= 0.9 ? 'Good' : score >= 0.5 ? 'Average' : 'Poor';
+      const pct = Math.min((val / m.max) * 100, 100);
+      metricsHtml += `
+        <div class="metric-card">
+          <div class="m-top">
+            <span class="m-name">${m.icon} ${m.label}</span>
+            <span class="m-badge ${badge}">${badgeText}</span>
+          </div>
+          <div class="m-value" style="color:${color}">${display}</div>
+          <div class="m-desc">${m.desc}</div>
+          <div class="m-bar"><div class="m-bar-fill" style="width:${100-pct}%;background:${color}"></div></div>
+        </div>`;
+    });
+    document.getElementById('metricsGrid').innerHTML = metricsHtml;
+
+    // 4. SCREENSHOT
+    const screenshot = audits['final-screenshot'];
+    if (screenshot && screenshot.details && screenshot.details.data) {
+      document.getElementById('screenshotImg').src = screenshot.details.data;
+      document.getElementById('screenshotCard').style.display = 'block';
+    } else {
+      document.getElementById('screenshotCard').style.display = 'none';
+    }
+
+    // 5. OPPORTUNITIES
+    const opps = lhr.categories.performance.auditRefs
+      .filter(a => a.group === 'load-opportunities')
+      .map(a => audits[a.id])
+      .filter(a => a && a.score !== null && a.score < 1)
+      .sort((a, b) => (a.score || 0) - (b.score || 0));
+
+    let oppsHtml = '';
+    if (opps.length === 0) {
+      oppsHtml = '<p style="color:var(--green);font-size:14px;padding:10px 0">🎉 No major opportunities found — your site is well optimized!</p>';
+    } else {
+      opps.forEach(a => {
+        const score = a.score || 0;
+        const status = score >= 0.9 ? 'pass' : score >= 0.5 ? 'warn' : 'fail';
+        const icon = status === 'fail' ? '✕' : status === 'warn' ? '!' : '✓';
+        const savings = a.details && a.details.overallSavingsMs ? `Potential savings: ~${(a.details.overallSavingsMs/1000).toFixed(1)}s` : '';
+        oppsHtml += `
+          <div class="diag-item">
+            <div class="diag-icon ${status}">${icon}</div>
+            <div class="diag-text">
+              <h4>${a.title}</h4>
+              <p>${a.description ? a.description.split('[')[0].trim() : ''}</p>
+              ${savings ? `<div class="savings">⏱ ${savings}</div>` : ''}
+            </div>
+          </div>`;
+      });
+    }
+    document.getElementById('opportunitiesList').innerHTML = oppsHtml;
+
+    // 6. PASSED AUDITS
+    const passed = lhr.categories.performance.auditRefs
+      .map(a => audits[a.id])
+      .filter(a => a && a.score === 1)
+      .slice(0, 12);
+
+    let passedHtml = '';
+    passed.forEach(a => {
+      passedHtml += `
+        <div class="diag-item">
+          <div class="diag-icon pass">✓</div>
+          <div class="diag-text">
+            <h4>${a.title}</h4>
+            <p>${a.displayValue || 'Passed'}</p>
+          </div>
+        </div>`;
+    });
+    document.getElementById('passedList').innerHTML = passedHtml || '<p style="font-size:13px;color:var(--text-light)">No passed audits data available.</p>';
+
+    // Scroll to results
+    document.getElementById('scoreHeader').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ===== RESET =====
+  function resetTool() {
+    resultsSection.classList.remove('active');
+    loadingSection.classList.remove('active');
+    errorCard.style.display = 'none';
+    searchCard.style.display = 'block';
+    urlInput.value = '';
+    urlInput.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
