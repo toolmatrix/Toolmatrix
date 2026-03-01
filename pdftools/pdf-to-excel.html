@@ -2,799 +2,972 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Sign PDF - eSign PDF Documents Free Online</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Sacramento&family=Pacifico&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF to Excel Converter — Free Online Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--pri:#2ECC71;--pri-d:#27AE60;--pri-dd:#1E8449;--pri-l:#A9DFBF;--pri-ll:#D5F5E3;--pri-lll:#EAFAF1;--bg:#F0FFF4;--w:#FFFFFF;--dk:#1a1a2e;--md:#4a4a5a;--lt:#7a7a8a;--red:#e74c3c;--blue:#3498db}
-        html{width:100%;height:100%;overflow-x:hidden}
-        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dk);width:100%;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
 
-        .nav{width:100%;background:var(--w);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--pri-ll);box-shadow:0 2px 15px rgba(46,204,113,.08);position:sticky;top:0;z-index:999;flex-shrink:0}
-        .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-        .logo-b{width:38px;height:38px;background:linear-gradient(135deg,var(--pri),var(--pri-dd));border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(46,204,113,.3)}
-        .logo-b svg{width:19px;height:19px;color:#fff}
-        .logo-t{font-size:20px;font-weight:800;color:var(--dk)}.logo-t span{color:var(--pri)}
-        .nav-m{display:flex;gap:5px}
-        .nav-m a{text-decoration:none;font-size:13px;font-weight:600;color:var(--md);padding:7px 14px;border-radius:8px;transition:.3s}
-        .nav-m a:hover{background:var(--pri-lll);color:var(--pri-d)}
-        .nav-m a.on{background:var(--pri);color:#fff}
-
-        .main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
-        .hero-bg{position:absolute;top:0;left:0;width:100%;height:300px;background:linear-gradient(180deg,var(--pri-ll) 0%,transparent 100%);z-index:0}
-
-        .hero{width:100%;text-align:center;padding:36px 20px 14px;position:relative;z-index:1}
-        .badge{display:inline-flex;align-items:center;gap:7px;background:var(--w);border:1px solid var(--pri-l);padding:6px 16px;border-radius:50px;font-size:11px;font-weight:600;color:var(--pri-dd);margin-bottom:12px;box-shadow:0 2px 8px rgba(46,204,113,.1)}
-        .badge svg{width:13px;height:13px;flex-shrink:0}
-        .hero h1{font-size:34px;font-weight:900;line-height:1.15;margin-bottom:8px}
-        .hero h1 .gr{background:linear-gradient(135deg,var(--pri),var(--pri-dd));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .hero>p{font-size:14px;color:var(--lt);max-width:560px;margin:0 auto;line-height:1.6}
-
-        .tool-w{width:100%;max-width:1100px;padding:0 12px;margin:16px auto 40px;position:relative;z-index:1}
-        .tool-c{width:100%;background:var(--w);border-radius:20px;box-shadow:0 12px 50px rgba(46,204,113,.13);border:1.5px solid var(--pri-ll);overflow:hidden}
-        .st{display:none}.st.on{display:block}
-
-        /* UPLOAD */
-        .st-up{padding:48px 28px;text-align:center;cursor:pointer;position:relative;transition:.3s}
-        .st-up::after{content:'';position:absolute;inset:14px;border:3px dashed var(--pri-l);border-radius:14px;pointer-events:none;transition:.3s}
-        .st-up.drag::after{border-color:var(--pri);background:rgba(46,204,113,.04)}
-        .up-circ{width:85px;height:85px;background:linear-gradient(135deg,var(--pri-ll),var(--pri-l));border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;animation:breathe 3s ease-in-out infinite}
-        @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(46,204,113,.25)}50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(46,204,113,0)}}
-        .up-circ svg{width:38px;height:38px;color:var(--pri-d)}
-        .st-up h2{font-size:19px;font-weight:700;margin-bottom:6px}
-        .st-up .sub{font-size:13px;color:var(--lt);margin-bottom:18px}
-        .sel-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:13px 34px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 22px rgba(46,204,113,.3);font-family:'Inter',sans-serif;position:relative;z-index:2}
-        .sel-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,204,113,.4)}
-        .sel-btn svg{width:18px;height:18px}
-        .fmts{margin-top:14px;font-size:11px;color:var(--lt);display:flex;align-items:center;justify-content:center;gap:6px}
-        .ftg{background:var(--pri-lll);color:var(--pri-dd);padding:3px 10px;border-radius:5px;font-weight:700;font-size:10px}
-        .finp{display:none}
-
-        /* EDITOR */
-        .st-edit{padding:0}
-        .ed-layout{display:flex;width:100%;min-height:600px}
-
-        /* Sidebar */
-        .sb{width:310px;flex-shrink:0;background:var(--w);border-right:2px solid var(--pri-ll);overflow-y:auto;max-height:750px;padding:16px 14px;display:flex;flex-direction:column}
-
-        .sb-file{display:flex;align-items:center;gap:8px;background:var(--pri-lll);border:1.5px solid var(--pri-l);border-radius:10px;padding:10px 12px;margin-bottom:12px}
-        .sb-f-ic{width:34px;height:34px;background:linear-gradient(135deg,#C0392B,#E74C3C);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-        .sb-f-ic svg{width:16px;height:16px;color:#fff}
-        .sb-f-nfo{flex:1;min-width:0}
-        .sb-f-nm{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .sb-f-sz{font-size:9px;color:var(--lt);margin-top:1px}
-
-        /* Sig mode tabs */
-        .sig-tabs{display:flex;gap:3px;margin-bottom:14px;background:var(--pri-lll);border-radius:10px;padding:3px}
-        .sig-tab{flex:1;padding:9px 6px;border-radius:8px;border:none;background:transparent;font-size:11px;font-weight:700;color:var(--md);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
-        .sig-tab:hover{color:var(--pri-d)}
-        .sig-tab.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px rgba(46,204,113,.3)}
-        .sig-tab svg{width:14px;height:14px}
-
-        .s-label{font-size:11px;font-weight:700;color:var(--dk);margin-bottom:7px;display:flex;align-items:center;gap:5px}
-        .s-label svg{width:13px;height:13px;color:var(--pri-d)}
-        .sb-div{height:1px;background:var(--pri-ll);margin:12px 0}
-
-        /* Draw panel */
-        .draw-panel{margin-bottom:12px}
-        .draw-canvas-wrap{width:100%;height:160px;border:2.5px solid var(--pri-l);border-radius:12px;background:#fff;position:relative;overflow:hidden;cursor:crosshair;margin-bottom:6px;touch-action:none}
-        .draw-canvas-wrap canvas{width:100%;height:100%;display:block}
-        .draw-placeholder{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--lt);font-weight:600;pointer-events:none;text-align:center}
-        .draw-placeholder svg{width:24px;height:24px;display:block;margin:0 auto 4px;opacity:.4}
-        .draw-actions{display:flex;gap:4px}
-        .da-btn{flex:1;padding:7px 8px;border-radius:7px;border:1.5px solid var(--pri-l);background:var(--w);font-size:10px;font-weight:600;color:var(--pri-d);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px}
-        .da-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
-        .da-btn svg{width:12px;height:12px}
-
-        /* Color picker for draw */
-        .color-row{display:flex;gap:5px;margin:8px 0}
-        .clr-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:.3s;flex-shrink:0}
-        .clr-dot:hover{transform:scale(1.15)}
-        .clr-dot.on{border-color:var(--dk);box-shadow:0 0 0 2px var(--w),0 0 0 4px var(--dk)}
-        .pen-size{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-        .pen-size label{font-size:10px;font-weight:700;color:var(--lt)}
-        .pen-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--pri-ll);outline:none}
-        .pen-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--pri);cursor:pointer}
-        .pen-val{font-size:10px;font-weight:700;color:var(--pri-d);min-width:24px;text-align:right}
-
-        /* Type panel */
-        .type-panel{margin-bottom:12px}
-        .type-input{width:100%;padding:12px;border:2px solid var(--pri-l);border-radius:10px;font-size:28px;font-weight:400;color:var(--dk);outline:none;font-family:'Dancing Script',cursive;text-align:center;transition:.3s}
-        .type-input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
-        .type-input::placeholder{color:var(--lt);font-size:16px;font-family:'Inter',sans-serif}
-        .font-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
-        .font-opt{padding:10px 8px;border-radius:8px;border:2px solid var(--pri-l);background:var(--w);cursor:pointer;transition:.3s;text-align:center;font-size:20px;color:var(--dk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .font-opt:hover{border-color:var(--pri)}
-        .font-opt.on{border-color:var(--pri);background:var(--pri-lll)}
-
-        /* Upload panel */
-        .upload-panel{margin-bottom:12px}
-        .img-up-area{border:2.5px dashed var(--pri-l);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:.3s;background:var(--pri-lll)}
-        .img-up-area:hover{border-color:var(--pri)}
-        .img-up-area svg{width:26px;height:26px;color:var(--pri-d);margin-bottom:4px}
-        .img-up-area p{font-size:11px;font-weight:600;color:var(--pri-d)}
-        .img-prev-box{border:2px solid var(--pri-l);border-radius:10px;overflow:hidden;position:relative;background:#f5f5f5;display:none;margin-bottom:6px}
-        .img-prev-box img{width:100%;max-height:130px;object-fit:contain;display:block;padding:8px}
-        .img-prev-box .img-rm{position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(0,0,0,.5);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;transition:.3s}
-        .img-prev-box .img-rm:hover{background:var(--red)}
-        .img-prev-box .img-rm svg{width:12px;height:12px}
-
-        /* Signature preview */
-        .sig-preview{margin:10px 0;padding:14px;background:var(--pri-lll);border:1.5px solid var(--pri-l);border-radius:12px;text-align:center;min-height:70px;display:flex;align-items:center;justify-content:center}
-        .sig-preview img{max-width:100%;max-height:80px;object-fit:contain}
-        .sig-preview .sig-text{font-size:32px;color:var(--dk)}
-        .sig-preview .empty{font-size:11px;color:var(--lt);font-weight:600}
-
-        /* Add to doc button */
-        .add-sig-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:12px 16px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 20px rgba(46,204,113,.3);font-family:'Inter',sans-serif;margin-top:auto}
-        .add-sig-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(46,204,113,.4)}
-        .add-sig-btn:disabled{opacity:.5;cursor:not-allowed}
-        .add-sig-btn svg{width:18px;height:18px}
-
-        /* Fields row */
-        .fields-row{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
-        .field-btn{padding:7px 10px;border-radius:8px;border:1.5px solid var(--pri-l);background:var(--w);font-size:10px;font-weight:600;color:var(--pri-d);cursor:pointer;transition:.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap}
-        .field-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
-        .field-btn svg{width:12px;height:12px}
-
-        /* PREVIEW AREA */
-        .prev-area{flex:1;background:#e0e0e0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:20px 14px;gap:14px;min-height:600px;position:relative}
-
-        .pdf-page-wrap{position:relative;background:var(--w);box-shadow:0 4px 20px rgba(0,0,0,.12);border-radius:3px}
-        .pdf-page-wrap canvas{display:block}
-        .page-label-bottom{position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,.5);color:#fff;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
-
-        /* Signature element on page */
-        .sig-el{position:absolute;cursor:move;border:2px dashed transparent;border-radius:4px;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;z-index:10;transition:border-color .2s}
-        .sig-el:hover,.sig-el.active{border-color:var(--pri)}
-        .sig-el img{max-width:100%;max-height:100%;pointer-events:none;display:block}
-        .sig-el .sig-text-el{pointer-events:none;white-space:nowrap}
-        .sig-el .del-sig{position:absolute;top:-12px;right:-12px;width:24px;height:24px;background:var(--red);border:2px solid #fff;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-        .sig-el:hover .del-sig,.sig-el.active .del-sig{display:flex}
-        .sig-el .resize-handle{position:absolute;bottom:-6px;right:-6px;width:14px;height:14px;background:var(--pri);border:2px solid #fff;border-radius:3px;cursor:nwse-resize;display:none;z-index:20;box-shadow:0 1px 4px rgba(0,0,0,.3)}
-        .sig-el:hover .resize-handle,.sig-el.active .resize-handle{display:block}
-
-        /* Date/text field on page */
-        .field-el{position:absolute;cursor:move;border:2px dashed transparent;border-radius:4px;padding:4px 8px;font-size:12px;font-weight:600;color:var(--dk);background:rgba(255,255,200,.5);user-select:none;touch-action:none;z-index:10;white-space:nowrap;transition:border-color .2s}
-        .field-el:hover,.field-el.active{border-color:var(--blue);background:rgba(255,255,200,.8)}
-        .field-el .del-sig{position:absolute;top:-12px;right:-12px;width:22px;height:22px;background:var(--red);border:2px solid #fff;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;z-index:20}
-        .field-el:hover .del-sig,.field-el.active .del-sig{display:flex}
-
-        /* Download bar */
-        .dl-bar{width:100%;padding:14px 20px;background:var(--w);border-top:2px solid var(--pri-ll);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;flex-shrink:0}
-        .dl-bar-info{font-size:12px;font-weight:600;color:var(--lt);display:flex;align-items:center;gap:6px}
-        .dl-bar-info svg{width:14px;height:14px;color:var(--pri-d)}
-        .dl-bar-info strong{color:var(--dk)}
-        .dl-bar-actions{display:flex;gap:8px}
-        .dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;border:none;padding:11px 28px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:.3s;box-shadow:0 6px 20px rgba(46,204,113,.3);font-family:'Inter',sans-serif}
-        .dl-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 25px rgba(46,204,113,.4)}
-        .dl-btn:disabled{opacity:.5;cursor:not-allowed}
-        .dl-btn svg{width:17px;height:17px}
-        .rst-btn{padding:11px 20px;border-radius:11px;border:2px solid var(--pri-l);background:var(--w);color:var(--pri-d);font-size:13px;font-weight:600;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif}
-        .rst-btn:hover{background:var(--pri-lll);border-color:var(--pri)}
-
-        /* FEATURES */
-        .feats{width:100%;padding:0 16px 50px}
-        .feats h2{text-align:center;font-size:24px;font-weight:800;margin-bottom:30px}
-        .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1000px;margin:0 auto}
-        .ft{background:var(--w);padding:24px 20px;border-radius:16px;text-align:center;border:1px solid var(--pri-ll);box-shadow:0 2px 10px rgba(46,204,113,.06);transition:.3s}
-        .ft:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(46,204,113,.12)}
-        .ft-ic{width:50px;height:50px;background:var(--pri-lll);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--pri-d)}
-        .ft-ic svg{width:24px;height:24px}
-        .ft h3{font-size:14px;font-weight:700;margin-bottom:5px}
-        .ft p{font-size:11px;color:var(--lt);line-height:1.5}
-
-        .foot{width:100%;background:var(--w);border-top:2px solid var(--pri-ll);padding:20px 16px;text-align:center;flex-shrink:0}
-        .foot p{font-size:12px;color:var(--lt)}.foot a{color:var(--pri-d);text-decoration:none;font-weight:700}
-
-        @media(max-width:900px){.fg{grid-template-columns:repeat(2,1fr)}.ed-layout{flex-direction:column}.sb{width:100%;max-height:none;border-right:none;border-bottom:2px solid var(--pri-ll);flex-direction:column}.prev-area{min-height:450px}}
-        @media(max-width:600px){
-            .nav{padding:10px 12px}.nav-m{display:none}.logo-t{font-size:17px}.logo-b{width:34px;height:34px;border-radius:9px}.logo-b svg{width:16px;height:16px}
-            .hero{padding:24px 12px 8px}.badge{font-size:10px;padding:5px 12px}.hero h1{font-size:23px}.hero>p{font-size:12px}
-            .tool-w{padding:0 6px;margin:12px auto 24px}.tool-c{border-radius:14px}
-            .st-up{padding:30px 12px}.st-up::after{inset:8px}.up-circ{width:68px;height:68px;margin-bottom:14px}.up-circ svg{width:30px;height:30px}.st-up h2{font-size:16px}.st-up .sub{font-size:12px}
-            .sel-btn{padding:12px 24px;font-size:14px;width:100%;max-width:240px;justify-content:center}
-            .sb{padding:12px 10px}
-            .sig-tabs{gap:2px;padding:2px}.sig-tab{padding:8px 4px;font-size:10px;gap:3px}.sig-tab svg{width:12px;height:12px}
-            .draw-canvas-wrap{height:130px}
-            .type-input{font-size:22px;padding:10px}
-            .font-opt{font-size:16px;padding:8px 6px}
-            .prev-area{min-height:380px;padding:14px 8px;gap:10px}
-            .dl-bar{padding:10px 12px;flex-direction:column;align-items:stretch}.dl-bar-actions{flex-direction:column;gap:6px}
-            .dl-btn{width:100%;justify-content:center;padding:12px}.rst-btn{width:100%;text-align:center}
-            .fg{grid-template-columns:1fr;gap:12px}.feats h2{font-size:20px;margin-bottom:22px}
-            .ft{padding:20px 16px}.foot{padding:16px 10px}.foot p{font-size:11px}
-            .fields-row{gap:3px}.field-btn{padding:6px 8px;font-size:9px}
+        :root{
+            --g50:#f1fdf2;--g100:#E8F5E9;--g200:#C8E6C9;--g300:#A5D6A7;
+            --g400:#81C784;--g500:#66BB6A;--g600:#4CAF50;--g700:#43A047;
+            --g800:#388E3C;--g900:#2E7D32;--g950:#1B5E20;
+            --white:#ffffff;--dark:#1a2e1a;--text:#2c3e2c;
+            --textLight:#6b7e6b;--textMuted:#94a894;--border:#d4ead4;
+            --red:#EF5350;--redDark:#D32F2F;--blue:#2196F3;
+            --shadow-sm:0 2px 8px rgba(46,125,50,.08);
+            --shadow:0 8px 30px rgba(46,125,50,.10);
+            --shadow-lg:0 20px 60px rgba(46,125,50,.15);
+            --radius:16px;--radius-sm:10px;--radius-xs:6px;
+            --transition:.25s cubic-bezier(.4,0,.2,1);
         }
-        @media(max-width:360px){.hero h1{font-size:19px}.sel-btn{font-size:13px;padding:11px 20px}}
+
+        html,body{width:100%;height:100%;overflow:hidden;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:var(--g100);color:var(--text);-webkit-font-smoothing:antialiased}
+
+        /* ===== APP ===== */
+        .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== NAVBAR ===== */
+        .navbar{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
+            padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;
+            box-shadow:0 4px 20px rgba(27,94,32,.3);z-index:100;position:relative}
+        .nav-left{display:flex;align-items:center;gap:14px}
+        .logo-box{width:40px;height:40px;background:var(--white);border-radius:11px;
+            display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--g700);
+            box-shadow:0 3px 10px rgba(0,0,0,.15)}
+        .logo-text{font-size:20px;font-weight:800;color:var(--white);letter-spacing:-.5px}
+        .logo-text span{color:#FFEB3B}
+        .nav-center{display:flex;align-items:center;gap:20px;position:absolute;left:50%;transform:translateX(-50%)}
+        .nav-step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);transition:var(--transition)}
+        .nav-step.active{color:#FFEB3B}
+        .nav-step.done{color:var(--g300)}
+        .nav-step .step-num{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:var(--transition)}
+        .nav-step.active .step-num{border-color:#FFEB3B;background:rgba(255,235,59,.15);color:#FFEB3B}
+        .nav-step.done .step-num{border-color:var(--g300);background:var(--g600);color:white}
+        .step-line{width:40px;height:2px;background:rgba(255,255,255,.15);border-radius:2px}
+        .step-line.done{background:var(--g400)}
+        .nav-right{display:flex;align-items:center;gap:10px}
+        .nav-btn{height:38px;padding:0 18px;background:rgba(255,255,255,.12);
+            border:1.5px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:13px;
+            font-weight:600;cursor:pointer;transition:var(--transition);font-family:inherit;
+            display:flex;align-items:center;gap:7px}
+        .nav-btn:hover{background:rgba(255,255,255,.2)}
+        .nav-btn.yellow{background:linear-gradient(135deg,#FFEB3B,#FFC107);color:var(--g950);
+            border-color:transparent;box-shadow:0 3px 15px rgba(255,193,7,.3)}
+        .nav-btn.yellow:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(255,193,7,.4)}
+        .mobile-menu{display:none;width:38px;height:38px;border-radius:8px;
+            border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);
+            color:white;font-size:18px;cursor:pointer;align-items:center;justify-content:center}
+
+        /* ===== MAIN ===== */
+        .main{flex:1;display:flex;overflow:hidden;position:relative}
+
+        /* ===== SIDEBAR ===== */
+        .sidebar{width:280px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);
+            display:flex;flex-direction:column;overflow:hidden;z-index:50}
+        .sb-hdr{flex-shrink:0;padding:16px 18px;border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;background:var(--g50)}
+        .sb-title{font-size:13px;font-weight:700;color:var(--g900);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .sb-close{display:none;width:30px;height:30px;border-radius:8px;border:none;background:var(--g200);
+            color:var(--g800);font-size:14px;cursor:pointer;align-items:center;justify-content:center;transition:var(--transition)}
+        .sb-close:hover{background:var(--g600);color:white}
+        .sb-scroll{flex:1;overflow-y:auto;padding:16px 18px}
+        .sb-scroll::-webkit-scrollbar{width:5px}
+        .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
+        .sg{margin-bottom:20px}
+        .sg-label{font-size:11.5px;font-weight:700;color:var(--g800);text-transform:uppercase;
+            letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .sg-label i{color:var(--g600);font-size:13px}
+        .sg-select,.sg-input{width:100%;padding:10px 14px;border:2px solid var(--g200);border-radius:var(--radius-sm);
+            font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:var(--transition);
+            background:var(--white);appearance:none;-webkit-appearance:none}
+        .sg-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%234CAF50' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
+        .sg-select:focus,.sg-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+        .chip-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .chip{padding:9px 12px;border:2px solid var(--g200);border-radius:var(--radius-sm);font-size:12px;
+            font-weight:600;text-align:center;cursor:pointer;transition:var(--transition);
+            background:var(--white);color:var(--text);font-family:inherit}
+        .chip:hover{border-color:var(--g400);background:var(--g50)}
+        .chip.active{background:var(--g600);color:white;border-color:var(--g600)}
+        .sb-footer{flex-shrink:0;padding:16px 18px;border-top:1px solid var(--border);background:var(--g50)}
+        .sb-convert-btn{width:100%;padding:14px 20px;
+            background:linear-gradient(135deg,var(--g600),var(--g900));color:white;border:none;
+            border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;align-items:center;
+            justify-content:center;gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);
+            position:relative;overflow:hidden}
+        .sb-convert-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
+        .sb-convert-btn:hover::after{left:100%}
+        .sb-convert-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(46,125,50,.4)}
+        .sb-convert-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+        /* ===== CENTER CONTENT ===== */
+        .center{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+        /* ===== UPLOAD SCREEN ===== */
+        .screen{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;
+            overflow-y:auto;padding:30px}
+        .screen.active{display:flex}
+
+        .upload-card{width:100%;max-width:680px;background:var(--white);border-radius:24px;
+            box-shadow:var(--shadow-lg);padding:50px 40px;text-align:center;animation:fadeUp .5s ease}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .upload-icon-big{width:110px;height:110px;
+            background:linear-gradient(135deg,var(--g200),var(--g100));border-radius:50%;
+            display:flex;align-items:center;justify-content:center;margin:0 auto 25px;
+            font-size:46px;color:var(--g600);transition:var(--transition)}
+        .upload-card:hover .upload-icon-big{transform:scale(1.08);
+            background:linear-gradient(135deg,var(--g400),var(--g300));color:white}
+        .upload-card h2{font-size:28px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .upload-card p{font-size:15px;color:var(--textMuted);margin-bottom:28px;max-width:420px;margin-left:auto;margin-right:auto}
+        .drop-zone{border:3px dashed var(--g300);border-radius:20px;padding:45px 30px;cursor:pointer;
+            transition:var(--transition);margin-bottom:25px;background:var(--g50)}
+        .drop-zone:hover,.drop-zone.drag-over{border-color:var(--g600);background:var(--g100);transform:scale(1.01)}
+        .drop-zone-inner{display:flex;flex-direction:column;align-items:center;gap:12px}
+        .drop-zone i{font-size:36px;color:var(--g500)}
+        .drop-zone h3{font-size:17px;font-weight:700;color:var(--g800)}
+        .drop-zone span{font-size:13px;color:var(--textMuted)}
+        .browse-btn{padding:13px 35px;background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:white;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:inline-flex;align-items:center;gap:10px;
+            box-shadow:0 5px 20px rgba(46,125,50,.3)}
+        .browse-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(46,125,50,.4)}
+        .upload-features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+        .uf{display:flex;align-items:center;gap:10px;padding:14px;background:var(--g50);border-radius:12px}
+        .uf i{font-size:20px;color:var(--g600);flex-shrink:0}
+        .uf-text{text-align:left}
+        .uf-text strong{font-size:13px;color:var(--text);display:block}
+        .uf-text span{font-size:11px;color:var(--textMuted)}
+
+        /* ===== PROCESSING SCREEN ===== */
+        .process-card{width:100%;max-width:500px;background:var(--white);border-radius:24px;
+            box-shadow:var(--shadow-lg);padding:50px 40px;text-align:center;animation:fadeUp .5s ease}
+        .process-spinner{width:80px;height:80px;margin:0 auto 25px;position:relative}
+        .p-ring{width:80px;height:80px;border:5px solid var(--g200);border-top-color:var(--g600);
+            border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .process-card h3{font-size:22px;font-weight:800;color:var(--g900);margin-bottom:8px}
+        .process-card p{font-size:14px;color:var(--textMuted)}
+        .progress-track{width:100%;height:8px;background:var(--g100);border-radius:10px;margin-top:25px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));
+            border-radius:10px;width:0%;transition:width .3s}
+        .progress-label{font-size:12px;color:var(--textMuted);margin-top:10px;font-weight:600}
+
+        /* ===== PREVIEW / RESULT SCREEN ===== */
+        .result-layout{flex:1;display:none;overflow:hidden}
+        .result-layout.active{display:flex}
+        .result-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:2px solid var(--border)}
+        .result-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+        .rpanel-hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+            padding:12px 18px;background:var(--g50);border-bottom:1px solid var(--border)}
+        .rpanel-title{font-size:12.5px;font-weight:700;color:var(--g800);display:flex;align-items:center;gap:8px;
+            text-transform:uppercase;letter-spacing:.5px}
+        .rpanel-title i{font-size:15px;color:var(--g600)}
+        .rpanel-actions{display:flex;gap:6px}
+        .rpanel-btn{padding:5px 12px;border:1.5px solid var(--g200);border-radius:var(--radius-xs);
+            background:var(--white);color:var(--g800);font-size:11.5px;font-weight:600;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;align-items:center;gap:5px}
+        .rpanel-btn:hover{background:var(--g600);color:white;border-color:var(--g600)}
+        .rpanel-body{flex:1;overflow:auto;padding:0;position:relative}
+
+        /* PDF Preview */
+        .pdf-pages{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;background:#e8e8e8}
+        .pdf-page-wrap{background:white;box-shadow:0 4px 20px rgba(0,0,0,.12);border-radius:4px;overflow:hidden;max-width:100%}
+        .pdf-page-wrap canvas{display:block;width:100%;height:auto}
+        .pdf-page-label{text-align:center;padding:6px;font-size:11px;font-weight:600;
+            color:var(--textMuted);background:var(--g50);border-top:1px solid #eee}
+
+        /* Excel Preview Table */
+        .excel-preview{padding:16px;overflow:auto;min-height:100%}
+        .excel-table-wrap{overflow:auto;border-radius:var(--radius-sm);border:1px solid var(--g200)}
+        .excel-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+        .excel-table thead th{background:var(--g600);color:white;padding:11px 16px;text-align:left;
+            font-size:12px;font-weight:700;position:sticky;top:0;z-index:2;white-space:nowrap}
+        .excel-table tbody td{padding:10px 16px;border-bottom:1px solid var(--g100);
+            white-space:nowrap;max-width:250px;overflow:hidden;text-overflow:ellipsis}
+        .excel-table tbody tr:hover{background:var(--g50)}
+        .excel-table tbody tr:nth-child(even){background:#fafff9}
+        .row-num{color:var(--textMuted);font-weight:700;font-size:11px;width:40px;text-align:center;background:var(--g50)!important}
+
+        /* Sheet Tabs */
+        .sheet-tabs{flex-shrink:0;display:flex;gap:0;background:var(--g100);border-top:1px solid var(--border);
+            padding:0 10px;overflow-x:auto;align-items:flex-end;height:38px}
+        .sheet-tab{padding:8px 18px;font-size:12px;font-weight:600;color:var(--textLight);
+            background:transparent;border:1.5px solid transparent;border-bottom:none;
+            border-radius:8px 8px 0 0;cursor:pointer;transition:var(--transition);font-family:inherit;
+            white-space:nowrap;position:relative;top:1px}
+        .sheet-tab:hover{color:var(--g800);background:rgba(255,255,255,.5)}
+        .sheet-tab.active{color:var(--g900);background:var(--white);border-color:var(--border);font-weight:700}
+
+        /* ===== FILE INFO BAR ===== */
+        .file-bar{flex-shrink:0;display:none;align-items:center;gap:14px;padding:10px 18px;
+            background:var(--white);border-bottom:1px solid var(--border)}
+        .file-bar.show{display:flex}
+        .fb-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--red),var(--redDark));
+            border-radius:12px;display:flex;align-items:center;justify-content:center;
+            font-size:20px;color:white;flex-shrink:0}
+        .fb-info{flex:1;min-width:0}
+        .fb-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .fb-meta{font-size:12px;color:var(--textMuted);display:flex;gap:12px;margin-top:2px}
+        .fb-meta span{display:flex;align-items:center;gap:4px}
+        .fb-remove{width:34px;height:34px;border-radius:50%;border:2px solid var(--red);background:transparent;
+            color:var(--red);font-size:14px;cursor:pointer;transition:var(--transition);
+            display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .fb-remove:hover{background:var(--red);color:white}
+
+        /* ===== OVERLAY ===== */
+        .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
+            align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+        .overlay.show{display:flex}
+        .overlay-modal{background:var(--white);border-radius:24px;padding:50px 45px;text-align:center;
+            box-shadow:0 30px 80px rgba(0,0,0,.2);max-width:440px;width:92%;animation:pop .35s ease}
+        @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .suc-icon{width:85px;height:85px;background:linear-gradient(135deg,var(--g500),var(--g800));
+            border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+            font-size:38px;color:white;animation:bounceIn .5s ease}
+        @keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .suc-title{font-size:24px;font-weight:800;color:var(--g900);margin-bottom:6px}
+        .suc-desc{font-size:14px;color:var(--textMuted);margin-bottom:28px}
+        .dl-btn{padding:15px 45px;background:linear-gradient(135deg,var(--g600),var(--g900));
+            color:white;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;
+            transition:var(--transition);font-family:inherit;box-shadow:0 6px 25px rgba(46,125,50,.35);
+            display:inline-flex;align-items:center;gap:10px}
+        .dl-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(46,125,50,.45)}
+        .dl-btn.excel-dl{background:linear-gradient(135deg,#1B7D3C,#145A2B)}
+        .close-modal{margin-top:14px;padding:10px 28px;background:transparent;border:2px solid var(--g200);
+            color:var(--g800);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:inline-block}
+        .close-modal:hover{background:var(--g100);border-color:var(--g400)}
+
+        /* ===== TOAST ===== */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:var(--g900);color:white;padding:12px 28px;border-radius:50px;font-size:14px;
+            font-weight:600;font-family:inherit;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.25);
+            opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+        /* ===== MOBILE BOTTOM BAR ===== */
+        .mob-bar{display:none;flex-shrink:0;background:var(--white);border-top:1px solid var(--border);
+            padding:8px 10px;gap:6px;z-index:80}
+        .mob-bar .mb{flex:1;padding:10px 6px;background:var(--g50);border:1.5px solid var(--g200);
+            border-radius:10px;font-size:11px;font-weight:600;color:var(--g800);cursor:pointer;
+            transition:var(--transition);font-family:inherit;display:flex;flex-direction:column;
+            align-items:center;gap:3px}
+        .mob-bar .mb i{font-size:16px}
+        .mob-bar .mb.mb-go{background:linear-gradient(135deg,var(--g600),var(--g800));
+            color:white;border-color:var(--g600);box-shadow:0 3px 12px rgba(46,125,50,.3)}
+
+        /* Mobile view toggle */
+        .mob-toggle{display:none;flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--border);padding:6px 12px;gap:6px}
+        .mt-btn{flex:1;padding:9px;font-size:12.5px;font-weight:600;text-align:center;border-radius:8px;
+            cursor:pointer;transition:var(--transition);font-family:inherit;color:var(--textLight);
+            background:transparent;border:1.5px solid transparent;display:flex;align-items:center;
+            justify-content:center;gap:6px}
+        .mt-btn.active{background:var(--white);color:var(--g900);border-color:var(--border);box-shadow:var(--shadow-sm)}
+
+        /* Sidebar overlay */
+        .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+        .sb-overlay.show{display:block}
+
+        /* Empty state */
+        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+            height:100%;color:var(--textMuted);padding:30px;text-align:center}
+        .empty-state i{font-size:50px;color:var(--g200);margin-bottom:14px}
+        .empty-state h3{font-size:16px;color:var(--textLight);font-weight:600}
+        .empty-state p{font-size:13px;margin-top:4px}
+
+        /* Stats Row */
+        .stats-row{display:flex;gap:12px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+        .stat-pill{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--g50);
+            border-radius:50px;font-size:12px;font-weight:600;color:var(--g800);border:1px solid var(--g200)}
+        .stat-pill i{color:var(--g600)}
+
+        /* Page selector */
+        .page-sel{display:flex;flex-wrap:wrap;gap:6px}
+        .page-chip{width:36px;height:36px;border-radius:8px;border:2px solid var(--g200);
+            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+            cursor:pointer;transition:var(--transition);color:var(--text);background:var(--white)}
+        .page-chip:hover{border-color:var(--g500);background:var(--g50)}
+        .page-chip.sel{background:var(--g600);color:white;border-color:var(--g600)}
+
+        #fileInput{display:none}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:900px){
+            .nav-center{display:none}
+            .nav-right .nav-btn.desk{display:none}
+            .mobile-menu{display:flex}
+            .mob-bar{display:flex}
+            .mob-toggle{display:flex}
+            .sidebar{position:fixed;left:-300px;top:0;bottom:0;z-index:100;
+                transition:left var(--transition);box-shadow:var(--shadow-lg)}
+            .sidebar.open{left:0}
+            .sb-close{display:flex}
+            .result-layout{flex-direction:column}
+            .result-left{border-right:none;border-bottom:2px solid var(--border);flex:none;height:50%}
+            .result-right{flex:none;height:50%;display:none}
+            .result-right.mob-show{display:flex}
+            .result-left.mob-hide{display:none}
+            .navbar{height:54px;padding:0 14px}
+            .logo-text{font-size:17px}
+            .logo-box{width:34px;height:34px;font-size:17px;border-radius:9px}
+            .upload-features{grid-template-columns:1fr}
+            .upload-card{padding:30px 24px}
+            .upload-card h2{font-size:22px}
+        }
+        @media(max-width:480px){
+            .drop-zone{padding:30px 16px}
+            .upload-card h2{font-size:20px}
+            .upload-card p{font-size:13px}
+        }
     </style>
 </head>
 <body>
 
-<nav class="nav">
-    <a href="#" class="logo">
-        <div class="logo-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <span class="logo-t">Sign<span>PDF</span></span>
-    </a>
-    <div class="nav-m">
-        <a href="#">Merge PDF</a>
-        <a href="#" class="on">Sign PDF</a>
-        <a href="#">Protect</a>
-        <a href="#">Compress</a>
-    </div>
-</nav>
+<div class="app">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="mobile-menu" onclick="toggleSB()"><i class="fas fa-bars"></i></button>
+            <div class="logo-box"><i class="fas fa-table"></i></div>
+            <div class="logo-text">PDF<span>2Excel</span></div>
+        </div>
+        <div class="nav-center">
+            <div class="nav-step active" id="ns1"><span class="step-num">1</span> Upload</div>
+            <div class="step-line" id="sl1"></div>
+            <div class="nav-step" id="ns2"><span class="step-num">2</span> Preview</div>
+            <div class="step-line" id="sl2"></div>
+            <div class="nav-step" id="ns3"><span class="step-num">3</span> Download</div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn desk" onclick="toggleSB()"><i class="fas fa-cog"></i> Settings</button>
+            <button class="nav-btn yellow" id="navConvertBtn" onclick="startConvert()" disabled>
+                <i class="fas fa-file-excel"></i> Convert
+            </button>
+        </div>
+    </nav>
 
-<div class="main">
-    <div class="hero-bg" id="heroBg"></div>
-    <section class="hero" id="heroSec">
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Free eSign — Legally Valid Signatures</div>
-        <h1><span class="gr">Sign PDF</span> Documents<br>Online Free</h1>
-        <p>Draw, type or upload your signature and place it anywhere on your PDF. Fast, free, secure and legally binding!</p>
-    </section>
+    <!-- MAIN -->
+    <div class="main">
+        <div class="sb-overlay" id="sbOverlay" onclick="closeSB()"></div>
 
-    <div class="tool-w" id="toolWrap">
-        <div class="tool-c">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sb-hdr">
+                <div class="sb-title"><i class="fas fa-sliders-h"></i> Settings</div>
+                <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sb-scroll">
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-file-excel"></i> Output Format</div>
+                    <select class="sg-select" id="setFormat">
+                        <option value="xlsx" selected>.xlsx (Excel 2007+)</option>
+                        <option value="xls">.xls (Excel 97-2003)</option>
+                        <option value="csv">.csv (Comma Separated)</option>
+                    </select>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-layer-group"></i> Sheet Mode</div>
+                    <div class="chip-row">
+                        <button class="chip active" onclick="setSheetMode('single',this)">Single Sheet</button>
+                        <button class="chip" onclick="setSheetMode('perpage',this)">Per Page</button>
+                    </div>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-text-height"></i> Extract Mode</div>
+                    <select class="sg-select" id="setExtractMode">
+                        <option value="auto" selected>Auto Detect Tables</option>
+                        <option value="all">All Text Content</option>
+                    </select>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-tag"></i> File Name</div>
+                    <input type="text" class="sg-input" id="setFileName" value="converted" placeholder="Enter file name">
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-file-alt"></i> Pages</div>
+                    <select class="sg-select" id="setPages">
+                        <option value="all" selected>All Pages</option>
+                        <option value="custom">Custom Selection</option>
+                    </select>
+                </div>
+                <div class="sg" id="pageSelGroup" style="display:none">
+                    <div class="sg-label"><i class="fas fa-th"></i> Select Pages</div>
+                    <div class="page-sel" id="pageSel"></div>
+                </div>
+                <div class="sg">
+                    <div class="sg-label"><i class="fas fa-columns"></i> Column Separator</div>
+                    <select class="sg-select" id="setColSep">
+                        <option value="auto" selected>Auto (Spaces/Tabs)</option>
+                        <option value="tab">Tab</option>
+                        <option value="spaces">Multiple Spaces (3+)</option>
+                        <option value="fixed">Fixed Width</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sb-footer">
+                <button class="sb-convert-btn" id="sbConvertBtn" onclick="startConvert()" disabled>
+                    <i class="fas fa-file-excel"></i> Convert to Excel
+                </button>
+            </div>
+        </div>
 
-            <!-- UPLOAD -->
-            <div class="st on st-up" id="sUp">
-                <div class="up-circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-                <h2>Drop your PDF file here</h2>
-                <p class="sub">or click the button to browse</p>
-                <button class="sel-btn" onclick="document.getElementById('finp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Select PDF</button>
-                <div class="fmts">Supported: <span class="ftg">.PDF</span></div>
-                <input type="file" id="finp" class="finp" accept=".pdf,application/pdf">
+        <!-- CENTER -->
+        <div class="center">
+            <!-- File Info Bar -->
+            <div class="file-bar" id="fileBar">
+                <div class="fb-icon"><i class="fas fa-file-pdf"></i></div>
+                <div class="fb-info">
+                    <div class="fb-name" id="fbName"></div>
+                    <div class="fb-meta">
+                        <span><i class="fas fa-file"></i> <span id="fbPages">0</span> pages</span>
+                        <span><i class="fas fa-weight-hanging"></i> <span id="fbSize">0</span></span>
+                    </div>
+                </div>
+                <button class="fb-remove" onclick="removeFile()" title="Remove"><i class="fas fa-times"></i></button>
             </div>
 
-            <!-- EDITOR -->
-            <div class="st st-edit" id="sEdit">
-                <div class="ed-layout">
-                    <!-- SIDEBAR -->
-                    <div class="sb" id="sidebar">
-                        <div class="sb-file">
-                            <div class="sb-f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                            <div class="sb-f-nfo"><div class="sb-f-nm" id="fname">doc.pdf</div><div class="sb-f-sz" id="fsize">1 MB · 5 pg</div></div>
-                        </div>
-
-                        <!-- Sig Tabs -->
-                        <div class="sig-tabs">
-                            <button class="sig-tab on" data-mode="draw" onclick="setSigMode('draw',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>Draw</button>
-                            <button class="sig-tab" data-mode="type" onclick="setSigMode('type',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Type</button>
-                            <button class="sig-tab" data-mode="upload" onclick="setSigMode('upload',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-                        </div>
-
-                        <!-- DRAW -->
-                        <div id="drawPanel">
-                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>Draw Your Signature</div>
-                            <div class="draw-canvas-wrap" id="drawWrap">
-                                <canvas id="drawCanvas"></canvas>
-                                <div class="draw-placeholder" id="drawPlaceholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>Draw here</div>
-                            </div>
-                            <div class="color-row">
-                                <div class="clr-dot on" style="background:#1a1a2e" data-color="#1a1a2e" onclick="setDrawColor(this)"></div>
-                                <div class="clr-dot" style="background:#2c3e50" data-color="#2c3e50" onclick="setDrawColor(this)"></div>
-                                <div class="clr-dot" style="background:#2980b9" data-color="#2980b9" onclick="setDrawColor(this)"></div>
-                                <div class="clr-dot" style="background:#c0392b" data-color="#c0392b" onclick="setDrawColor(this)"></div>
-                                <div class="clr-dot" style="background:#27ae60" data-color="#27ae60" onclick="setDrawColor(this)"></div>
-                            </div>
-                            <div class="pen-size">
-                                <label>Size:</label>
-                                <input type="range" class="pen-slider" id="penSize" min="1" max="6" value="2" oninput="drawLineWidth=+this.value;document.getElementById('penVal').textContent=this.value+'px'">
-                                <span class="pen-val" id="penVal">2px</span>
-                            </div>
-                            <div class="draw-actions">
-                                <button class="da-btn" onclick="clearDraw()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear</button>
-                                <button class="da-btn" onclick="undoDraw()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Undo</button>
-                            </div>
-                        </div>
-
-                        <!-- TYPE -->
-                        <div id="typePanel" style="display:none">
-                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Type Your Name</div>
-                            <input type="text" class="type-input" id="typeInput" placeholder="Your name" value="" oninput="updateTypeSig()">
-                            <div class="font-grid" id="fontGrid"></div>
-                            <div class="color-row" id="typeColors">
-                                <div class="clr-dot on" style="background:#1a1a2e" data-color="#1a1a2e" onclick="setTypeColor(this)"></div>
-                                <div class="clr-dot" style="background:#2c3e50" data-color="#2c3e50" onclick="setTypeColor(this)"></div>
-                                <div class="clr-dot" style="background:#2980b9" data-color="#2980b9" onclick="setTypeColor(this)"></div>
-                                <div class="clr-dot" style="background:#c0392b" data-color="#c0392b" onclick="setTypeColor(this)"></div>
-                            </div>
-                        </div>
-
-                        <!-- UPLOAD -->
-                        <div id="uploadPanel" style="display:none">
-                            <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Upload Signature Image</div>
-                            <div class="img-prev-box" id="sigImgPrev"><img id="sigImgEl" src=""><button class="img-rm" onclick="removeSigImg()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-                            <div class="img-up-area" id="sigUpArea" onclick="document.getElementById('sigImgInp').click()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                <p>Click to upload signature</p>
-                            </div>
-                            <input type="file" id="sigImgInp" class="finp" accept="image/*">
-                        </div>
-
-                        <div class="sb-div"></div>
-
-                        <!-- Extra Fields -->
-                        <div class="s-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Add Fields</div>
-                        <div class="fields-row">
-                            <button class="field-btn" onclick="addField('date')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Date</button>
-                            <button class="field-btn" onclick="addField('name')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Name</button>
-                            <button class="field-btn" onclick="addField('text')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Text</button>
-                            <button class="field-btn" onclick="addField('initials')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>Initials</button>
-                        </div>
-
-                        <div class="sb-div"></div>
-
-                        <button class="add-sig-btn" id="addSigBtn" onclick="placeSignature()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
-                            Place Signature on PDF
-                        </button>
-                    </div>
-
-                    <!-- PREVIEW + DOWNLOAD -->
-                    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-                        <div class="prev-area" id="prevArea"></div>
-                        <div class="dl-bar">
-                            <div class="dl-bar-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Signatures: <strong id="sigCount">0</strong></div>
-                            <div class="dl-bar-actions">
-                                <button class="rst-btn" onclick="resetAll()">Start Over</button>
-                                <button class="dl-btn" id="dlBtn" onclick="downloadSigned()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Signed PDF</button>
-                            </div>
+            <!-- Screen 1: Upload -->
+            <div class="screen active" id="screenUpload">
+                <div class="upload-card">
+                    <div class="upload-icon-big"><i class="fas fa-file-pdf"></i></div>
+                    <h2>PDF to Excel Converter</h2>
+                    <p>Apni PDF file upload karein aur hum isko automatically Excel spreadsheet mein convert kar denge!</p>
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-inner">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Drop PDF File Here</h3>
+                            <span>Supports .pdf files up to 100MB</span>
                         </div>
                     </div>
+                    <button class="browse-btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Select PDF File
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <div class="upload-features">
+                        <div class="uf"><i class="fas fa-table"></i><div class="uf-text"><strong>Smart Table Detection</strong><span>Auto-detect tables</span></div></div>
+                        <div class="uf"><i class="fas fa-lock"></i><div class="uf-text"><strong>100% Secure</strong><span>Browser-only processing</span></div></div>
+                        <div class="uf"><i class="fas fa-bolt"></i><div class="uf-text"><strong>Instant Convert</strong><span>Fast & accurate</span></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Processing -->
+            <div class="screen" id="screenProcess">
+                <div class="process-card">
+                    <div class="process-spinner"><div class="p-ring"></div></div>
+                    <h3 id="processTitle">Reading PDF...</h3>
+                    <p id="processDesc">Extracting data from your PDF file</p>
+                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-label" id="progressLabel">0%</div>
+                </div>
+            </div>
+
+            <!-- Screen 3: Result (Split View) -->
+            <div class="mob-toggle" id="mobToggle">
+                <button class="mt-btn active" onclick="mobSwitch('pdf',this)"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="mt-btn" onclick="mobSwitch('excel',this)"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+
+            <div class="result-layout" id="screenResult">
+                <!-- Left: PDF Preview -->
+                <div class="result-left" id="resLeft">
+                    <div class="rpanel-hdr">
+                        <div class="rpanel-title"><i class="fas fa-file-pdf"></i> PDF Preview</div>
+                    </div>
+                    <div class="rpanel-body">
+                        <div class="pdf-pages" id="pdfPages"></div>
+                    </div>
+                </div>
+                <!-- Right: Excel Preview -->
+                <div class="result-right" id="resRight">
+                    <div class="rpanel-hdr">
+                        <div class="rpanel-title"><i class="fas fa-file-excel"></i> Excel Preview</div>
+                        <div class="rpanel-actions">
+                            <button class="rpanel-btn" onclick="downloadExcel()"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <div class="rpanel-body">
+                        <div class="excel-preview" id="excelPreview">
+                            <div class="empty-state"><i class="fas fa-table"></i><h3>Excel preview will appear here</h3></div>
+                        </div>
+                    </div>
+                    <div class="sheet-tabs" id="sheetTabs"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FEATURES (now with id="featSec") -->
-    <div class="feats" id="featSec">
-        <h2>Why use our PDF Signer?</h2>
-        <div class="fg">
-            <div class="ft">
-                <div class="ft-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                <h3>Legally Binding</h3>
-                <p>Your signatures are valid and recognized.</p>
-            </div>
-            <div class="ft">
-                <div class="ft-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                <h3>Three Ways to Sign</h3>
-                <p>Draw, type or upload – whatever works for you.</p>
-            </div>
-            <div class="ft">
-                <div class="ft-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-                <h3>Add Text Fields</h3>
-                <p>Insert dates, names, initials or any text.</p>
-            </div>
-        </div>
+    <!-- MOBILE BOTTOM BAR -->
+    <div class="mob-bar">
+        <button class="mb" onclick="toggleSB()"><i class="fas fa-cog"></i> Settings</button>
+        <button class="mb" onclick="removeFile()"><i class="fas fa-redo"></i> Reset</button>
+        <button class="mb mb-go" id="mobConvertBtn" onclick="startConvert()"><i class="fas fa-file-excel"></i> Convert</button>
     </div>
 </div>
 
-<footer class="foot"><p>Made with 💚 by <a href="#">ToolMatrix</a> — Free online PDF eSign tool</p></footer>
+<!-- SUCCESS OVERLAY -->
+<div class="overlay" id="successOverlay">
+    <div class="overlay-modal">
+        <div class="suc-icon"><i class="fas fa-check"></i></div>
+        <div class="suc-title">Excel Ready! 🎉</div>
+        <div class="suc-desc">Your PDF has been converted to Excel successfully!</div>
+        <div class="stats-row" id="statsRow"></div>
+        <br>
+        <button class="dl-btn excel-dl" id="dlBtn" onclick="downloadExcel()"><i class="fas fa-download"></i> Download Excel</button>
+        <br>
+        <button class="close-modal" onclick="closeSuccess()"><i class="fas fa-times"></i> Close</button>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-const{jsPDF:JsPDF}=window.jspdf;
+    // ========== GLOBALS ==========
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
 
-let chosenFile=null,pdfViewDoc=null,pdfBuf=null,numPages=0;
-let sigMode='draw',drawColor='#1a1a2e',drawLineWidth=2;
-let typeFont="'Dancing Script',cursive",typeColor='#1a1a2e';
-let sigImgData=null,drawHistory=[];
-let placedElements=[];// {type,pageNum,x,y,w,h,data,color,font,text,el}
+    let pdfFile = null;
+    let pdfDoc = null;
+    let pdfBytes = null;
+    let totalPages = 0;
+    let extractedData = [];  // [{page, rows: [[cell,cell,...], ...]}]
+    let workbook = null;
+    let sheetMode = 'single';
+    let selectedPages = new Set();
 
-const fonts=[
-    {name:'Dancing Script',css:"'Dancing Script',cursive"},
-    {name:'Great Vibes',css:"'Great Vibes',cursive"},
-    {name:'Sacramento',css:"'Sacramento',cursive"},
-    {name:'Pacifico',css:"'Pacifico',cursive"},
-    {name:'Caveat',css:"'Caveat',cursive"},
-    {name:'Courier',css:"'Courier New',monospace"}
-];
+    // ========== UPLOAD ==========
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
 
-const sUp=document.getElementById('sUp'),sEdit=document.getElementById('sEdit');
-const finp=document.getElementById('finp'),sigImgInp=document.getElementById('sigImgInp');
-
-function show(el){[sUp,sEdit].forEach(s=>s.classList.remove('on'));el.classList.add('on')}
-
-sUp.addEventListener('dragover',e=>{e.preventDefault();sUp.classList.add('drag')});
-sUp.addEventListener('dragleave',()=>sUp.classList.remove('drag'));
-sUp.addEventListener('drop',e=>{e.preventDefault();sUp.classList.remove('drag');if(e.dataTransfer.files.length)pickPDF(e.dataTransfer.files[0])});
-sUp.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&!e.target.closest('.sel-btn'))finp.click()});
-finp.addEventListener('change',e=>{if(e.target.files.length)pickPDF(e.target.files[0])});
-sigImgInp.addEventListener('change',e=>{if(e.target.files.length)pickSigImg(e.target.files[0])});
-
-function fmtSz(b){if(!b)return'0B';const u=['B','KB','MB','GB'];const i=Math.floor(Math.log(b)/Math.log(1024));return(b/Math.pow(1024,i)).toFixed(1)+u[i]}
-
-async function pickPDF(file){
-    if(!file.name.toLowerCase().endsWith('.pdf')&&file.type!=='application/pdf'){alert('Select a PDF');return}
-    chosenFile=file;pdfBuf=await file.arrayBuffer();
-    pdfViewDoc=await pdfjsLib.getDocument({data:pdfBuf.slice(0)}).promise;
-    numPages=pdfViewDoc.numPages;
-    document.getElementById('fname').textContent=file.name;
-    document.getElementById('fsize').textContent=fmtSz(file.size)+' · '+numPages+'pg';
-
-    // Safely hide hero and features (check if elements exist)
-    const heroSec = document.getElementById('heroSec');
-    const heroBg = document.getElementById('heroBg');
-    const featSec = document.getElementById('featSec');
-    if(heroSec) heroSec.style.display='none';
-    if(heroBg) heroBg.style.display='none';
-    if(featSec) featSec.style.display='none';
-
-    document.getElementById('toolWrap').style.maxWidth='100%';
-    document.getElementById('toolWrap').style.margin='0';
-    document.getElementById('toolWrap').style.padding='0';
-    const tc=document.querySelector('.tool-c');
-    if(tc){
-        tc.style.borderRadius='0';tc.style.border='none';tc.style.boxShadow='none';
-    }
-    show(sEdit);
-    initDraw();
-    buildFontGrid();
-    await renderPages();
-}
-
-// ===== DRAW =====
-let drawCanvas,drawCtx,isDrawing=false;
-
-function initDraw(){
-    drawCanvas=document.getElementById('drawCanvas');
-    const wrap=document.getElementById('drawWrap');
-    drawCanvas.width=wrap.offsetWidth;drawCanvas.height=wrap.offsetHeight;
-    drawCtx=drawCanvas.getContext('2d');
-    drawCtx.lineCap='round';drawCtx.lineJoin='round';
-
-    const getPos=e=>{
-        const r=drawCanvas.getBoundingClientRect();
-        const t=e.touches?e.touches[0]:e;
-        return{x:(t.clientX-r.left)*(drawCanvas.width/r.width),y:(t.clientY-r.top)*(drawCanvas.height/r.height)};
-    };
-    const start=e=>{e.preventDefault();isDrawing=true;const p=getPos(e);drawCtx.beginPath();drawCtx.moveTo(p.x,p.y);document.getElementById('drawPlaceholder').style.display='none'};
-    const move=e=>{if(!isDrawing)return;e.preventDefault();const p=getPos(e);drawCtx.strokeStyle=drawColor;drawCtx.lineWidth=drawLineWidth;drawCtx.lineTo(p.x,p.y);drawCtx.stroke()};
-    const end=()=>{if(isDrawing){isDrawing=false;drawHistory.push(drawCanvas.toDataURL())}};
-
-    drawCanvas.addEventListener('mousedown',start);drawCanvas.addEventListener('mousemove',move);
-    drawCanvas.addEventListener('mouseup',end);drawCanvas.addEventListener('mouseleave',end);
-    drawCanvas.addEventListener('touchstart',start,{passive:false});drawCanvas.addEventListener('touchmove',move,{passive:false});
-    drawCanvas.addEventListener('touchend',end);
-}
-
-function clearDraw(){
-    if(!drawCtx)return;
-    drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-    drawHistory=[];document.getElementById('drawPlaceholder').style.display='';
-}
-
-function undoDraw(){
-    if(!drawHistory.length)return;
-    drawHistory.pop();drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-    if(drawHistory.length){
-        const img=new Image();img.onload=()=>drawCtx.drawImage(img,0,0);img.src=drawHistory[drawHistory.length-1];
-    }else{document.getElementById('drawPlaceholder').style.display=''}
-}
-
-function setDrawColor(el){
-    document.querySelectorAll('#drawPanel .clr-dot').forEach(d=>d.classList.remove('on'));
-    el.classList.add('on');drawColor=el.dataset.color;
-}
-
-// ===== TYPE =====
-function buildFontGrid(){
-    const grid=document.getElementById('fontGrid');grid.innerHTML='';
-    fonts.forEach((f,i)=>{
-        const btn=document.createElement('div');
-        btn.className='font-opt'+(i===0?' on':'');
-        btn.style.fontFamily=f.css;
-        btn.textContent='Signature';
-        btn.onclick=()=>{
-            document.querySelectorAll('.font-opt').forEach(b=>b.classList.remove('on'));
-            btn.classList.add('on');typeFont=f.css;updateTypeSig();
-        };
-        grid.appendChild(btn);
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault(); dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f && f.type === 'application/pdf') handleFile(f);
+        else toast('Please drop a PDF file ⚠️');
     });
-}
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
-function updateTypeSig(){
-    const input=document.getElementById('typeInput');
-    document.querySelectorAll('.font-opt').forEach(b=>{
-        b.textContent=input.value||'Signature';
+    document.getElementById('setPages').addEventListener('change', function() {
+        document.getElementById('pageSelGroup').style.display = this.value === 'custom' ? 'block' : 'none';
     });
-}
 
-function setTypeColor(el){
-    document.querySelectorAll('#typeColors .clr-dot').forEach(d=>d.classList.remove('on'));
-    el.classList.add('on');typeColor=el.dataset.color;
-}
+    async function handleFile(file) {
+        pdfFile = file;
+        pdfBytes = await file.arrayBuffer();
+        pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+        totalPages = pdfDoc.numPages;
 
-// ===== UPLOAD SIG =====
-function pickSigImg(file){
-    if(!file.type.startsWith('image/')){alert('Select an image');return}
-    const r=new FileReader();r.onload=e=>{
-        sigImgData=e.target.result;
-        document.getElementById('sigImgEl').src=sigImgData;
-        document.getElementById('sigImgPrev').style.display='block';
-        document.getElementById('sigUpArea').style.display='none';
-    };r.readAsDataURL(file);
-}
+        // Update UI
+        document.getElementById('fbName').textContent = file.name;
+        document.getElementById('fbPages').textContent = totalPages;
+        document.getElementById('fbSize').textContent = fmtSize(file.size);
+        document.getElementById('fileBar').classList.add('show');
+        document.getElementById('navConvertBtn').disabled = false;
+        document.getElementById('sbConvertBtn').disabled = false;
 
-function removeSigImg(){
-    sigImgData=null;sigImgInp.value='';
-    document.getElementById('sigImgPrev').style.display='none';
-    document.getElementById('sigUpArea').style.display='';
-}
-
-function setSigMode(mode,btn){
-    sigMode=mode;
-    document.querySelectorAll('.sig-tab').forEach(t=>t.classList.remove('on'));
-    btn.classList.add('on');
-    document.getElementById('drawPanel').style.display=mode==='draw'?'':'none';
-    document.getElementById('typePanel').style.display=mode==='type'?'':'none';
-    document.getElementById('uploadPanel').style.display=mode==='upload'?'':'none';
-}
-
-// ===== RENDER PAGES =====
-async function renderPages(){
-    const area=document.getElementById('prevArea');area.innerHTML='';
-    for(let i=1;i<=numPages;i++){
-        const page=await pdfViewDoc.getPage(i);
-        const scale=Math.min(600/page.getViewport({scale:1}).width,1.2);
-        const vp=page.getViewport({scale});
-        const wrap=document.createElement('div');
-        wrap.className='pdf-page-wrap';wrap.id='pageWrap-'+i;
-        wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
-        wrap.dataset.page=i;
-        const canvas=document.createElement('canvas');
-        canvas.width=vp.width;canvas.height=vp.height;
-        const ctx=canvas.getContext('2d');
-        await page.render({canvasContext:ctx,viewport:vp}).promise;
-        const label=document.createElement('div');label.className='page-label-bottom';label.textContent='Page '+i;
-        wrap.appendChild(canvas);wrap.appendChild(label);area.appendChild(wrap);
-    }
-}
-
-// ===== PLACE SIGNATURE =====
-function placeSignature(){
-    const firstPage=document.getElementById('pageWrap-1');
-    if(!firstPage){alert('No PDF loaded');return}
-
-    let sigData=null,sigType='img',sigText='',sigColor='',sigFont='';
-
-    if(sigMode==='draw'){
-        if(!drawHistory.length){alert('Please draw your signature first');return}
-        sigData=drawCanvas.toDataURL('image/png');sigType='img';
-    }else if(sigMode==='type'){
-        const text=document.getElementById('typeInput').value.trim();
-        if(!text){alert('Please type your name');return}
-        sigText=text;sigType='text';sigColor=typeColor;sigFont=typeFont;
-    }else if(sigMode==='upload'){
-        if(!sigImgData){alert('Please upload a signature image');return}
-        sigData=sigImgData;sigType='img';
-    }
-
-    createSigElement(firstPage,1,sigType,sigData,sigText,sigColor,sigFont,150,60);
-}
-
-function addField(type){
-    const firstPage=document.getElementById('pageWrap-1');
-    if(!firstPage)return;
-    let text='';
-    if(type==='date')text=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-    else if(type==='name')text=document.getElementById('typeInput').value||'Your Name';
-    else if(type==='initials')text=(document.getElementById('typeInput').value||'YN').split(' ').map(w=>w[0]).join('').toUpperCase();
-    else{text=prompt('Enter text:','Text here');if(!text)return}
-
-    createFieldElement(firstPage,1,text);
-}
-
-function createSigElement(pageWrap,pageNum,type,imgData,text,color,font,w,h){
-    const el=document.createElement('div');
-    el.className='sig-el';
-    el.style.width=w+'px';el.style.height=h+'px';
-    el.style.left='50px';el.style.top=(pageWrap.offsetHeight-h-80)+'px';
-
-    if(type==='img'){
-        const img=document.createElement('img');img.src=imgData;el.appendChild(img);
-    }else{
-        const span=document.createElement('div');span.className='sig-text-el';
-        span.style.fontFamily=font;span.style.color=color;
-        span.style.fontSize=Math.min(h*.6,36)+'px';
-        span.textContent=text;el.appendChild(span);
-    }
-
-    const delBtn=document.createElement('div');delBtn.className='del-sig';delBtn.textContent='×';
-    delBtn.onclick=e=>{e.stopPropagation();el.remove();updateCount()};
-    el.appendChild(delBtn);
-
-    const resizeH=document.createElement('div');resizeH.className='resize-handle';
-    el.appendChild(resizeH);
-
-    makeDraggable(el,pageWrap);makeResizable(el,resizeH);
-    pageWrap.appendChild(el);
-
-    const obj={type,pageNum,el,imgData,text,color,font};
-    placedElements.push(obj);
-    updateCount();
-}
-
-function createFieldElement(pageWrap,pageNum,text){
-    const el=document.createElement('div');
-    el.className='field-el';
-    el.style.left='50px';el.style.top=(pageWrap.offsetHeight-140)+'px';
-    el.textContent=text;
-
-    const delBtn=document.createElement('div');delBtn.className='del-sig';delBtn.textContent='×';
-    delBtn.onclick=e=>{e.stopPropagation();el.remove();updateCount()};
-    el.appendChild(delBtn);
-
-    makeDraggable(el,pageWrap);
-    pageWrap.appendChild(el);
-    placedElements.push({type:'field',pageNum,el,text});
-    updateCount();
-}
-
-function updateCount(){
-    const count=document.querySelectorAll('.sig-el,.field-el').length;
-    document.getElementById('sigCount').textContent=count;
-    document.getElementById('dlBtn').disabled=count===0;
-}
-
-// ===== DRAG & RESIZE =====
-function makeDraggable(el,container){
-    let startX,startY,elX,elY,dragging=false;
-
-    const start=e=>{
-        if(e.target.classList.contains('del-sig')||e.target.classList.contains('resize-handle'))return;
-        e.preventDefault();dragging=true;el.classList.add('active');
-        const t=e.touches?e.touches[0]:e;
-        const r=container.getBoundingClientRect();
-        startX=t.clientX;startY=t.clientY;
-        elX=el.offsetLeft;elY=el.offsetTop;
-    };
-    const move=e=>{
-        if(!dragging)return;e.preventDefault();
-        const t=e.touches?e.touches[0]:e;
-        const dx=t.clientX-startX,dy=t.clientY-startY;
-        let nx=elX+dx,ny=elY+dy;
-        nx=Math.max(0,Math.min(nx,container.offsetWidth-el.offsetWidth));
-        ny=Math.max(0,Math.min(ny,container.offsetHeight-el.offsetHeight));
-        el.style.left=nx+'px';el.style.top=ny+'px';
-    };
-    const end=()=>{dragging=false;el.classList.remove('active')};
-
-    el.addEventListener('mousedown',start);document.addEventListener('mousemove',move);document.addEventListener('mouseup',end);
-    el.addEventListener('touchstart',start,{passive:false});document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',end);
-}
-
-function makeResizable(el,handle){
-    let startX,startY,startW,startH,resizing=false;
-
-    const start=e=>{
-        e.preventDefault();e.stopPropagation();resizing=true;
-        const t=e.touches?e.touches[0]:e;
-        startX=t.clientX;startY=t.clientY;
-        startW=el.offsetWidth;startH=el.offsetHeight;
-    };
-    const move=e=>{
-        if(!resizing)return;e.preventDefault();
-        const t=e.touches?e.touches[0]:e;
-        const nw=Math.max(40,startW+(t.clientX-startX));
-        const nh=Math.max(20,startH+(t.clientY-startY));
-        el.style.width=nw+'px';el.style.height=nh+'px';
-        const txtEl=el.querySelector('.sig-text-el');
-        if(txtEl)txtEl.style.fontSize=Math.min(nh*.6,48)+'px';
-    };
-    const end=()=>{resizing=false};
-
-    handle.addEventListener('mousedown',start);document.addEventListener('mousemove',move);document.addEventListener('mouseup',end);
-    handle.addEventListener('touchstart',start,{passive:false});document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',end);
-}
-
-// ===== DOWNLOAD =====
-async function downloadSigned(){
-    const dlBtn=document.getElementById('dlBtn');dlBtn.disabled=true;dlBtn.innerHTML='<svg class="spin-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite;width:17px;height:17px"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Processing...';
-
-    try{
-        const firstPage=await pdfViewDoc.getPage(1);
-        const origVp=firstPage.getViewport({scale:1});
-        const scale=2;
-        const pdf=new JsPDF({orientation:origVp.width>origVp.height?'landscape':'portrait',unit:'pt',format:[origVp.width,origVp.height]});
-
-        for(let i=1;i<=numPages;i++){
-            const page=await pdfViewDoc.getPage(i);
-            const pageVp=page.getViewport({scale});
-            const canvas=document.createElement('canvas');
-            canvas.width=pageVp.width;canvas.height=pageVp.height;
-            const ctx=canvas.getContext('2d');
-            ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
-            await page.render({canvasContext:ctx,viewport:pageVp}).promise;
-
-            const origPageVp=page.getViewport({scale:1});
-            if(i>1)pdf.addPage([origPageVp.width,origPageVp.height],origPageVp.width>origPageVp.height?'landscape':'portrait');
-            pdf.addImage(canvas.toDataURL('image/jpeg',.92),'JPEG',0,0,origPageVp.width,origPageVp.height);
-
-            // Find placed elements on this page
-            const pageWrap=document.getElementById('pageWrap-'+i);
-            if(!pageWrap)continue;
-            const renderScale=origPageVp.width/pageWrap.offsetWidth;
-
-            const sigEls=pageWrap.querySelectorAll('.sig-el');
-            for(const sigEl of sigEls){
-                const sx=sigEl.offsetLeft*renderScale;
-                const sy=sigEl.offsetTop*renderScale;
-                const sw=sigEl.offsetWidth*renderScale;
-                const sh=sigEl.offsetHeight*renderScale;
-
-                const imgEl=sigEl.querySelector('img');
-                const txtEl=sigEl.querySelector('.sig-text-el');
-                if(imgEl){
-                    const tempCanvas=document.createElement('canvas');
-                    tempCanvas.width=sw*2;tempCanvas.height=sh*2;
-                    const tCtx=tempCanvas.getContext('2d');
-                    const tempImg=new Image();
-                    await new Promise(r=>{tempImg.onload=r;tempImg.src=imgEl.src});
-                    tCtx.drawImage(tempImg,0,0,tempCanvas.width,tempCanvas.height);
-                    pdf.addImage(tempCanvas.toDataURL('image/png'),'PNG',sx,sy,sw,sh);
-                }else if(txtEl){
-                    const fontSize=parseFloat(getComputedStyle(txtEl).fontSize)*renderScale;
-                    const fontFamily=txtEl.style.fontFamily||'Helvetica';
-                    pdf.setFontSize(fontSize*.7);
-                    pdf.setTextColor(txtEl.style.color||'#000');
-                    pdf.text(txtEl.textContent,sx+4,sy+sh*.7);
-                }
-            }
-
-            const fieldEls=pageWrap.querySelectorAll('.field-el');
-            for(const fEl of fieldEls){
-                const fx=fEl.offsetLeft*renderScale;
-                const fy=fEl.offsetTop*renderScale;
-                const fh=fEl.offsetHeight*renderScale;
-                pdf.setFontSize(11*renderScale);
-                pdf.setTextColor('#1a1a2e');
-                const text=fEl.childNodes[0]?.textContent||fEl.textContent;
-                pdf.text(text,fx+4,fy+fh*.7);
-            }
+        // Build page selector
+        selectedPages.clear();
+        const ps = document.getElementById('pageSel');
+        ps.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            selectedPages.add(i);
+            const c = document.createElement('button');
+            c.className = 'page-chip sel';
+            c.textContent = i;
+            c.onclick = () => { c.classList.toggle('sel'); selectedPages.has(i) ? selectedPages.delete(i) : selectedPages.add(i); };
+            ps.appendChild(c);
         }
 
-        const blob=pdf.output('blob');
-        const url=URL.createObjectURL(blob);
-        const name=chosenFile.name.replace(/\.pdf$/i,'')+'_signed.pdf';
-        const a=document.createElement('a');a.href=url;a.download=name;
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-        setTimeout(()=>URL.revokeObjectURL(url),5000);
-    }catch(err){
-        console.error(err);alert('Error: '+err.message);
+        setStep(1);
+        toast('PDF loaded! ' + totalPages + ' pages ✅');
     }
 
-    dlBtn.disabled=false;
-    dlBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Signed PDF';
-}
-
-function resetAll(){
-    if(!confirm('Remove all signatures and start over?'))return;
-    chosenFile=null;pdfViewDoc=null;pdfBuf=null;numPages=0;
-    placedElements=[];finp.value='';clearDraw();
-    document.getElementById('typeInput').value='';
-    removeSigImg();
-
-    // Show hero and features again
-    const heroSec = document.getElementById('heroSec');
-    const heroBg = document.getElementById('heroBg');
-    const featSec = document.getElementById('featSec');
-    if(heroSec) heroSec.style.display='';
-    if(heroBg) heroBg.style.display='';
-    if(featSec) featSec.style.display='';
-
-    document.getElementById('toolWrap').style.maxWidth='1100px';
-    document.getElementById('toolWrap').style.margin='16px auto 40px';
-    document.getElementById('toolWrap').style.padding='0 12px';
-    const tc=document.querySelector('.tool-c');
-    if(tc){
-        tc.style.borderRadius='20px';tc.style.border='1.5px solid var(--pri-ll)';tc.style.boxShadow='0 12px 50px rgba(46,204,113,.13)';
+    function removeFile() {
+        pdfFile = null; pdfDoc = null; pdfBytes = null; totalPages = 0;
+        extractedData = []; workbook = null;
+        document.getElementById('fileBar').classList.remove('show');
+        document.getElementById('navConvertBtn').disabled = true;
+        document.getElementById('sbConvertBtn').disabled = true;
+        fileInput.value = '';
+        showScreen('screenUpload');
+        document.getElementById('screenResult').classList.remove('active');
+        document.getElementById('pdfPages').innerHTML = '';
+        document.getElementById('excelPreview').innerHTML = '<div class="empty-state"><i class="fas fa-table"></i><h3>Excel preview here</h3></div>';
+        document.getElementById('sheetTabs').innerHTML = '';
+        setStep(0);
     }
-    updateCount();show(sUp);
-}
+
+    function fmtSize(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    // ========== STEPS ==========
+    function setStep(s) {
+        ['ns1','ns2','ns3'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            el.classList.remove('active','done');
+            if (i < s) el.classList.add('done');
+            else if (i === s) el.classList.add('active');
+        });
+        ['sl1','sl2'].forEach((id, i) => {
+            document.getElementById(id).classList.toggle('done', i < s);
+        });
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        if (id === 'screenResult') {
+            document.getElementById('screenResult').classList.add('active');
+        } else {
+            document.getElementById(id).classList.add('active');
+        }
+    }
+
+    // ========== SIDEBAR ==========
+    function toggleSB() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sbOverlay').classList.toggle('show'); }
+    function closeSB() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbOverlay').classList.remove('show'); }
+    function setSheetMode(m, el) {
+        sheetMode = m;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // ========== MOBILE TOGGLE ==========
+    function mobSwitch(view, el) {
+        document.querySelectorAll('.mt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if (view === 'excel') {
+            document.getElementById('resLeft').classList.add('mob-hide');
+            document.getElementById('resRight').classList.add('mob-show');
+        } else {
+            document.getElementById('resLeft').classList.remove('mob-hide');
+            document.getElementById('resRight').classList.remove('mob-show');
+        }
+    }
+
+    // ========== CONVERT ==========
+    async function startConvert() {
+        if (!pdfDoc) { toast('Upload a PDF first ⚠️'); return; }
+        showScreen('screenProcess');
+        setStep(1);
+        closeSB();
+
+        extractedData = [];
+        const mode = document.getElementById('setExtractMode').value;
+        const pageMode = document.getElementById('setPages').value;
+        const pagesToProcess = [];
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (pageMode === 'all' || selectedPages.has(i)) pagesToProcess.push(i);
+        }
+
+        // Render PDF pages & extract text
+        const pdfPagesEl = document.getElementById('pdfPages');
+        pdfPagesEl.innerHTML = '';
+
+        for (let idx = 0; idx < pagesToProcess.length; idx++) {
+            const pNum = pagesToProcess[idx];
+            const progress = Math.round(((idx + 1) / pagesToProcess.length) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressLabel').textContent = `Page ${idx + 1} of ${pagesToProcess.length} (${progress}%)`;
+            document.getElementById('processTitle').textContent = 'Extracting Page ' + pNum + '...';
+
+            const page = await pdfDoc.getPage(pNum);
+
+            // Render thumbnail
+            const vp = page.getViewport({ scale: 1.2 });
+            const canvas = document.createElement('canvas');
+            canvas.width = vp.width;
+            canvas.height = vp.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'pdf-page-wrap';
+            wrap.appendChild(canvas);
+            const label = document.createElement('div');
+            label.className = 'pdf-page-label';
+            label.textContent = 'Page ' + pNum;
+            wrap.appendChild(label);
+            pdfPagesEl.appendChild(wrap);
+
+            // Extract text
+            const textContent = await page.getTextContent();
+            const items = textContent.items;
+
+            if (mode === 'auto') {
+                // Smart table extraction: group by Y coordinate then sort by X
+                const rows = extractTableRows(items, vp.height);
+                extractedData.push({ page: pNum, rows });
+            } else {
+                // All text
+                const rows = extractAllText(items, vp.height);
+                extractedData.push({ page: pNum, rows });
+            }
+
+            await sleep(80);
+        }
+
+        // Build workbook
+        buildWorkbook();
+        setStep(2);
+        showScreen('screenResult');
+        document.getElementById('screenResult').classList.add('active');
+        renderExcelPreview();
+
+        // Show success
+        const fmt = document.getElementById('setFormat').value;
+        document.getElementById('statsRow').innerHTML = `
+            <div class="stat-pill"><i class="fas fa-file"></i> ${pagesToProcess.length} pages</div>
+            <div class="stat-pill"><i class="fas fa-table"></i> ${countTotalRows()} rows</div>
+            <div class="stat-pill"><i class="fas fa-file-excel"></i> .${fmt}</div>
+        `;
+        document.getElementById('successOverlay').classList.add('show');
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // ========== TABLE EXTRACTION ==========
+    function extractTableRows(items, pageH) {
+        if (!items.length) return [['(Empty page)']];
+
+        // Group items by their Y position (within tolerance)
+        const tolerance = 5;
+        const lineMap = [];
+
+        items.forEach(item => {
+            const y = Math.round(pageH - item.transform[5]);
+            const x = item.transform[4];
+            const text = item.str.trim();
+            if (!text) return;
+
+            let found = false;
+            for (const line of lineMap) {
+                if (Math.abs(line.y - y) < tolerance) {
+                    line.items.push({ x, text });
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) lineMap.push({ y, items: [{ x, text }] });
+        });
+
+        // Sort lines by Y, items by X
+        lineMap.sort((a, b) => a.y - b.y);
+        lineMap.forEach(l => l.items.sort((a, b) => a.x - b.x));
+
+        // Detect columns by clustering X positions across all rows
+        const allX = [];
+        lineMap.forEach(l => l.items.forEach(it => allX.push(it.x)));
+        allX.sort((a, b) => a - b);
+
+        const colPositions = clusterPositions(allX, 25);
+        const numCols = Math.max(colPositions.length, 1);
+
+        // Build rows
+        const rows = [];
+        lineMap.forEach(line => {
+            const row = new Array(numCols).fill('');
+            line.items.forEach(item => {
+                const colIdx = findClosestCol(item.x, colPositions);
+                if (row[colIdx]) row[colIdx] += ' ' + item.text;
+                else row[colIdx] = item.text;
+            });
+            rows.push(row);
+        });
+
+        return rows.length ? rows : [['(No data found)']];
+    }
+
+    function clusterPositions(positions, threshold) {
+        if (!positions.length) return [0];
+        const clusters = [positions[0]];
+        for (let i = 1; i < positions.length; i++) {
+            const last = clusters[clusters.length - 1];
+            if (positions[i] - last > threshold) {
+                clusters.push(positions[i]);
+            }
+        }
+        return clusters;
+    }
+
+    function findClosestCol(x, cols) {
+        let minDist = Infinity, idx = 0;
+        cols.forEach((c, i) => {
+            const d = Math.abs(x - c);
+            if (d < minDist) { minDist = d; idx = i; }
+        });
+        return idx;
+    }
+
+    function extractAllText(items, pageH) {
+        const tolerance = 5;
+        const lines = [];
+
+        items.forEach(item => {
+            const y = Math.round(pageH - item.transform[5]);
+            const text = item.str;
+            if (!text.trim()) return;
+
+            let found = false;
+            for (const line of lines) {
+                if (Math.abs(line.y - y) < tolerance) {
+                    line.text += ' ' + text;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) lines.push({ y, text });
+        });
+
+        lines.sort((a, b) => a.y - b.y);
+        return lines.map(l => [l.text.trim()]);
+    }
+
+    // ========== BUILD WORKBOOK ==========
+    function buildWorkbook() {
+        workbook = XLSX.utils.book_new();
+
+        if (sheetMode === 'perpage') {
+            extractedData.forEach(data => {
+                const ws = XLSX.utils.aoa_to_sheet(data.rows);
+                autoWidth(ws, data.rows);
+                XLSX.utils.book_append_sheet(workbook, ws, 'Page ' + data.page);
+            });
+        } else {
+            // Single sheet — combine all
+            let allRows = [];
+            extractedData.forEach((data, i) => {
+                if (i > 0 && allRows.length) allRows.push([]); // blank separator
+                if (extractedData.length > 1) allRows.push(['--- Page ' + data.page + ' ---']);
+                allRows = allRows.concat(data.rows);
+            });
+            const ws = XLSX.utils.aoa_to_sheet(allRows);
+            autoWidth(ws, allRows);
+            XLSX.utils.book_append_sheet(workbook, ws, 'Sheet1');
+        }
+    }
+
+    function autoWidth(ws, rows) {
+        if (!rows.length) return;
+        const maxCols = Math.max(...rows.map(r => r.length));
+        const colWidths = [];
+        for (let c = 0; c < maxCols; c++) {
+            let max = 10;
+            rows.forEach(r => {
+                if (r[c]) max = Math.max(max, String(r[c]).length);
+            });
+            colWidths.push({ wch: Math.min(max + 2, 50) });
+        }
+        ws['!cols'] = colWidths;
+    }
+
+    function countTotalRows() {
+        let count = 0;
+        extractedData.forEach(d => count += d.rows.length);
+        return count;
+    }
+
+    // ========== RENDER EXCEL PREVIEW ==========
+    function renderExcelPreview(sheetIdx = 0) {
+        if (!workbook) return;
+        const names = workbook.SheetNames;
+        const ws = workbook.Sheets[names[sheetIdx]];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+        // Build sheet tabs
+        const tabsEl = document.getElementById('sheetTabs');
+        tabsEl.innerHTML = '';
+        names.forEach((name, i) => {
+            const t = document.createElement('button');
+            t.className = 'sheet-tab' + (i === sheetIdx ? ' active' : '');
+            t.textContent = name;
+            t.onclick = () => renderExcelPreview(i);
+            tabsEl.appendChild(t);
+        });
+
+        // Build table
+        const prev = document.getElementById('excelPreview');
+        if (!data.length) {
+            prev.innerHTML = '<div class="empty-state"><i class="fas fa-table"></i><h3>No data</h3></div>';
+            return;
+        }
+
+        const maxCols = Math.max(...data.map(r => (r ? r.length : 0)));
+        const colLetters = [];
+        for (let c = 0; c < maxCols; c++) colLetters.push(colLetter(c));
+
+        let html = '<div class="excel-table-wrap"><table class="excel-table"><thead><tr><th class="row-num">#</th>';
+        colLetters.forEach(l => html += `<th>${l}</th>`);
+        html += '</tr></thead><tbody>';
+
+        data.forEach((row, ri) => {
+            html += `<tr><td class="row-num">${ri + 1}</td>`;
+            for (let c = 0; c < maxCols; c++) {
+                const val = (row && row[c] !== undefined) ? escHtml(String(row[c])) : '';
+                html += `<td title="${val}">${val}</td>`;
+            }
+            html += '</tr>';
+        });
+
+        html += '</tbody></table></div>';
+        prev.innerHTML = html;
+    }
+
+    function colLetter(n) {
+        let s = '';
+        while (n >= 0) { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; }
+        return s;
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ========== DOWNLOAD ==========
+    function downloadExcel() {
+        if (!workbook) { toast('Nothing to download ⚠️'); return; }
+        const fmt = document.getElementById('setFormat').value;
+        const name = document.getElementById('setFileName').value || 'converted';
+        const ext = fmt === 'csv' ? 'csv' : (fmt === 'xls' ? 'xls' : 'xlsx');
+        const bookType = fmt === 'csv' ? 'csv' : (fmt === 'xls' ? 'biff8' : 'xlsx');
+
+        XLSX.writeFile(workbook, `${name}.${ext}`, { bookType });
+        toast('Downloaded! 🎉');
+        closeSuccess();
+        setStep(2);
+
+        // Update step 3
+        document.getElementById('ns3').classList.add('done');
+    }
+
+    function closeSuccess() {
+        document.getElementById('successOverlay').classList.remove('show');
+    }
+
+    // ========== TOAST ==========
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
 </script>
 </body>
 </html>
