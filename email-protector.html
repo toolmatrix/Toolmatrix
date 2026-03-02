@@ -1,145 +1,334 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <style>
-    body { font-family: 'Segoe UI', system-ui, sans-serif; }
-    .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Protector – ToolMatrix</title>
+    <meta name="description" content="Protect your email address from spam bots. Generate obfuscated email links that humans can click but bots cannot harvest.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#10b981;--accent:#0ea5e9;--dark:#0f172a;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+
+        /* HEADER */
+        header{background:linear-gradient(135deg,#020617,#0f172a);border-bottom:1px solid rgba(16,185,129,0.15);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+        .logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;box-shadow:0 4px 15px rgba(16,185,129,0.4)}
+        .logo-text{font-size:1.45rem;font-weight:900}
+        .logo-text .t{background:linear-gradient(135deg,#fff,#cbd5e1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-text .m{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .back-btn{display:flex;align-items:center;gap:8px;color:#94a3b8;text-decoration:none;font-size:0.88rem;font-weight:600;padding:8px 16px;border-radius:10px;border:1px solid rgba(148,163,184,0.2);transition:all 0.3s}
+        .back-btn:hover{color:#fff;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.08)}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,#020617 0%,#0f172a 60%,#1e293b 100%);padding:60px 24px 70px;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(16,185,129,0.1) 0%,transparent 65%);border-radius:50%;pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;font-size:0.82rem;font-weight:700;padding:7px 16px;border-radius:50px;margin-bottom:20px;letter-spacing:0.3px}
+        .hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;color:#fff;margin-bottom:14px;letter-spacing:-1px}
+        .hero h1 span{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{color:#94a3b8;font-size:1.05rem;max-width:560px;margin:0 auto;line-height:1.7}
+
+        /* MAIN CONTENT */
+        .main{max-width:900px;margin:0 auto;padding:50px 24px 80px}
+
+        /* TOOL CARD */
+        .tool-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:28px}
+        .tool-card h2{font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+        .tool-card h2 i{width:36px;height:36px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(14,165,233,0.12));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;color:var(--primary);flex-shrink:0}
+
+        /* CONTACT FORM */
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-group{display:flex;flex-direction:column;gap:7px}
+        .form-group.full{grid-column:1/-1}
+        label{font-size:0.84rem;font-weight:600;color:#374151}
+        .req{color:#ef4444;margin-left:2px}
+        input[type="text"],input[type="email"],textarea,select{width:100%;padding:13px 16px;background:#f8fafc;border:1.5px solid var(--border);border-radius:11px;color:var(--dark);font-size:0.93rem;font-family:'Inter',sans-serif;transition:all 0.3s;outline:none;resize:none}
+        input:focus,textarea:focus,select:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(16,185,129,0.08)}
+        input::placeholder,textarea::placeholder{color:#9ca3af}
+        textarea{min-height:130px;line-height:1.6}
+        select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+        /* CHAR COUNT */
+        .char-count{font-size:0.75rem;color:#9ca3af;text-align:right;margin-top:4px}
+        .char-count.warn{color:#f59e0b}
+        .char-count.limit{color:#ef4444}
+
+        /* SUBJECT TAGS */
+        .subject-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+        .stag{padding:6px 14px;background:#f1f5f9;border:1.5px solid var(--border);border-radius:50px;font-size:0.8rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.25s;user-select:none}
+        .stag:hover{border-color:var(--primary);color:var(--primary);background:rgba(16,185,129,0.06)}
+        .stag.active{background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(14,165,233,0.08));border-color:var(--primary);color:var(--primary)}
+
+        /* SEND BUTTON */
+        .send-btn{width:100%;padding:16px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:1rem;border:none;border-radius:12px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 25px rgba(16,185,129,0.3);margin-top:24px}
+        .send-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 35px rgba(16,185,129,0.45)}
+        .send-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none}
+
+        /* ALERTS */
+        .alert{padding:14px 18px;border-radius:12px;font-size:0.9rem;font-weight:500;margin-top:18px;display:none;align-items:center;gap:12px;line-height:1.5}
+        .alert.show{display:flex}
+        .alert i{font-size:1.1rem;flex-shrink:0}
+        .alert.success{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#065f46}
+        .alert.success i{color:#10b981}
+        .alert.error{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#991b1b}
+        .alert.error i{color:#ef4444}
+        .alert.info{background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);color:#0c4a6e}
+        .alert.info i{color:#0ea5e9}
+
+        /* CONTACT INFO CARD */
+        .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:4px}
+        .info-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:#f8fafc;border:1px solid var(--border);border-radius:14px;transition:all 0.3s;cursor:default}
+        .info-item:hover{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.03)}
+        .info-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+        .info-icon.green{background:rgba(16,185,129,0.12);color:#10b981}
+        .info-icon.blue{background:rgba(14,165,233,0.12);color:#0ea5e9}
+        .info-icon.purple{background:rgba(139,92,246,0.12);color:#8b5cf6}
+        .info-text{}
+        .info-label{font-size:0.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
+        .info-value{font-size:0.92rem;font-weight:700;color:var(--dark);margin-top:2px}
+
+        /* HOW IT WORKS */
+        .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:4px}
+        .step-item{text-align:center;padding:22px 16px;background:#f8fafc;border:1px solid var(--border);border-radius:14px;transition:all 0.3s}
+        .step-item:hover{border-color:rgba(16,185,129,0.25);transform:translateY(-3px);box-shadow:0 8px 20px rgba(16,185,129,0.08)}
+        .step-num{width:38px;height:38px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;font-weight:800;margin:0 auto 12px}
+        .step-icon{font-size:1.6rem;margin-bottom:10px}
+        .step-title{font-size:0.9rem;font-weight:700;color:var(--dark);margin-bottom:5px}
+        .step-desc{font-size:0.8rem;color:var(--muted);line-height:1.5}
+
+        /* SPINNER */
+        .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* SUCCESS OVERLAY */
+        .success-overlay{display:none;text-align:center;padding:20px 0}
+        .success-overlay.show{display:block}
+        .success-circle{width:90px;height:90px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(14,165,233,0.12));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;border:2px solid rgba(16,185,129,0.3);animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+        @keyframes popIn{0%{transform:scale(0.4);opacity:0}100%{transform:scale(1);opacity:1}}
+        .success-circle i{font-size:2.2rem;color:#10b981}
+        .success-overlay h3{font-size:1.4rem;font-weight:800;color:var(--dark);margin-bottom:8px}
+        .success-overlay p{color:var(--muted);font-size:0.95rem;line-height:1.6;max-width:340px;margin:0 auto 20px}
+        .send-again-btn{padding:11px 28px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:0.9rem;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.3s}
+        .send-again-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,0.35)}
+
+        @media(max-width:640px){
+            .form-grid{grid-template-columns:1fr}
+            .form-group.full{grid-column:1}
+            .tool-card{padding:24px 20px}
+            .hero{padding:40px 20px 50px}
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-emerald-50 to-teal-50 min-h-screen">
+<body>
 
-  <div class="min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-2xl w-full">
-      
-      <!-- Header -->
-      <div class="text-center mb-10">
-        <div class="w-20 h-20 bg-emerald-600 text-white rounded-3xl flex items-center justify-center text-5xl mx-auto shadow-xl shadow-emerald-200">
-          ✉️
+<header>
+    <a href="index.html" class="logo">
+        <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+        <span class="logo-text"><span class="t">Tool</span><span class="m">Matrix</span></span>
+    </a>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</header>
+
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-envelope"></i> Contact Us</div>
+    <h1>Get in <span>Touch</span></h1>
+    <p>Have a question, suggestion, or issue? Send us a message and we'll get back to you as soon as possible.</p>
+</section>
+
+<main class="main">
+
+    <!-- CONTACT INFO -->
+    <div class="tool-card">
+        <h2><i class="fas fa-circle-info"></i> Contact Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon green"><i class="fas fa-envelope"></i></div>
+                <div class="info-text">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">toolmatrix415@gmail.com</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon blue"><i class="fas fa-clock"></i></div>
+                <div class="info-text">
+                    <div class="info-label">Response Time</div>
+                    <div class="info-value">Within 24–48 hours</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon purple"><i class="fas fa-globe"></i></div>
+                <div class="info-text">
+                    <div class="info-label">Website</div>
+                    <div class="info-value">toolmatrix.space</div>
+                </div>
+            </div>
         </div>
-        <h1 class="text-4xl font-bold text-emerald-900 mt-6">Get in Touch</h1>
-        <p class="text-emerald-600 mt-2 text-lg">Direct message to the owner</p>
-      </div>
+    </div>
 
-      <!-- Form Card -->
-      <div class="glass rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden">
-        <div class="p-10">
-          <form id="contactForm" onsubmit="sendEmail(event)">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-emerald-700 text-sm font-medium mb-1">Full Name</label>
-                <input type="text" id="name" required
-                       class="w-full px-5 py-4 bg-white border border-emerald-200 rounded-2xl focus:outline-none focus:border-emerald-500 transition-all"
-                       placeholder="John Doe">
-              </div>
-              <div>
-                <label class="block text-emerald-700 text-sm font-medium mb-1">Email Address</label>
-                <input type="email" id="email" required
-                       class="w-full px-5 py-4 bg-white border border-emerald-200 rounded-2xl focus:outline-none focus:border-emerald-500 transition-all"
-                       placeholder="you@example.com">
-              </div>
+    <!-- CONTACT FORM -->
+    <div class="tool-card">
+        <h2><i class="fas fa-paper-plane"></i> Send Us a Message</h2>
+
+        <!-- Form -->
+        <div id="formArea">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="fname">First Name <span class="req">*</span></label>
+                    <input type="text" id="fname" placeholder="Your first name" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="lname">Last Name</label>
+                    <input type="text" id="lname" placeholder="Your last name" maxlength="50">
+                </div>
+                <div class="form-group full">
+                    <label for="uemail">Your Email <span class="req">*</span></label>
+                    <input type="email" id="uemail" placeholder="you@example.com">
+                </div>
+                <div class="form-group full">
+                    <label for="subject">Subject <span class="req">*</span></label>
+                    <input type="text" id="subject" placeholder="What is your message about?" maxlength="100">
+                    <div class="subject-tags">
+                        <span class="stag" data-val="General Inquiry">💬 General Inquiry</span>
+                        <span class="stag" data-val="Bug Report">🐛 Bug Report</span>
+                        <span class="stag" data-val="Feature Request">✨ Feature Request</span>
+                        <span class="stag" data-val="Partnership">🤝 Partnership</span>
+                        <span class="stag" data-val="Feedback">⭐ Feedback</span>
+                        <span class="stag" data-val="Other">📌 Other</span>
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label for="message">Message <span class="req">*</span></label>
+                    <textarea id="message" placeholder="Write your message here… (minimum 20 characters)" maxlength="1000"></textarea>
+                    <div class="char-count" id="charCount">0 / 1000</div>
+                </div>
             </div>
 
-            <div class="mt-6">
-              <label class="block text-emerald-700 text-sm font-medium mb-1">Subject</label>
-              <input type="text" id="subject" required
-                     class="w-full px-5 py-4 bg-white border border-emerald-200 rounded-2xl focus:outline-none focus:border-emerald-500 transition-all"
-                     placeholder="Website Inquiry">
+            <div class="alert error" id="errorAlert">
+                <i class="fas fa-circle-exclamation"></i>
+                <span id="errorText">Please fill all required fields.</span>
             </div>
 
-            <div class="mt-6">
-              <label class="block text-emerald-700 text-sm font-medium mb-1">Message</label>
-              <textarea id="message" rows="6" required
-                        class="w-full px-5 py-4 bg-white border border-emerald-200 rounded-3xl focus:outline-none focus:border-emerald-500 transition-all resize-none"
-                        placeholder="Write your message here..."></textarea>
-            </div>
-
-            <button type="submit" id="submitBtn"
-                    class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-all text-white font-semibold text-lg py-6 rounded-3xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-300">
-              <span id="btnText">Send Message</span>
+            <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i> Send Message
             </button>
-          </form>
         </div>
-      </div>
 
-      <p class="text-center text-emerald-600 text-sm mt-8">
-        Owner Email: <span class="font-medium">toolmatrix415@gmail.com</span>
-      </p>
+        <!-- Success Overlay -->
+        <div class="success-overlay" id="successOverlay">
+            <div class="success-circle"><i class="fas fa-check"></i></div>
+            <h3>Message Sent! 🎉</h3>
+            <p>Thank you for reaching out. We've received your message and will reply to your email within 24–48 hours.</p>
+            <button class="send-again-btn" id="sendAgainBtn"><i class="fas fa-rotate-left"></i> Send Another Message</button>
+        </div>
     </div>
-  </div>
-
-  <!-- Success Modal -->
-  <div id="successModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-    <div class="bg-white rounded-3xl p-10 text-center max-w-sm mx-4">
-      <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-5xl mx-auto mb-6">
-        ✅
-      </div>
-      <h2 class="text-2xl font-bold text-emerald-900">Message Sent!</h2>
-      <p class="text-emerald-600 mt-3">Thank you! Your message has been sent successfully to the owner.</p>
-      <button onclick="closeModal()" 
-              class="mt-8 bg-emerald-600 text-white px-10 py-3.5 rounded-2xl font-medium">
-        Done
-      </button>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // ================== EMAILJS SETUP ==================
-    // Yahan apne EmailJS details daalein
-    const SERVICE_ID = "YOUR_SERVICE_ID";
-    const TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-    const PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+</main>
 
-    function sendEmail(e) {
-      e.preventDefault();
-
-      const btn = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
-
-      btn.disabled = true;
-      btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending...`;
-
-      const templateParams = {
-        from_name: document.getElementById('name').value,
-        from_email: document.getElementById('email').value,
-        subject: document.getElementById('subject').value,
-        message: document.getElementById('message').value,
-        to_email: "toolmatrix415@gmail.com"
-      };
-
-      emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
-        .then(() => {
-          document.getElementById('successModal').classList.remove('hidden');
-          document.getElementById('contactForm').reset();
-        })
-        .catch((err) => {
-          alert("Failed to send message. Please try again.");
-          console.error(err);
-        })
-        .finally(() => {
-          btn.disabled = false;
-          btnText.textContent = "Send Message";
+<script>
+(function(){
+    // Subject quick-tag click
+    document.querySelectorAll('.stag').forEach(function(tag) {
+        tag.addEventListener('click', function() {
+            document.querySelectorAll('.stag').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('subject').value = this.getAttribute('data-val');
         });
+    });
+
+    // Char counter
+    const msgArea = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+    msgArea.addEventListener('input', function() {
+        const len = this.value.length;
+        charCount.textContent = len + ' / 1000';
+        charCount.className = 'char-count' + (len > 900 ? ' limit' : len > 700 ? ' warn' : '');
+    });
+
+    // Alert helpers
+    function showError(msg) {
+        document.getElementById('errorText').textContent = msg;
+        document.getElementById('errorAlert').classList.add('show');
+    }
+    function hideError() {
+        document.getElementById('errorAlert').classList.remove('show');
     }
 
-    function closeModal() {
-      document.getElementById('successModal').classList.add('hidden');
+    // Validate email
+    function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+    // Set button loading state
+    function setLoading(on) {
+        const btn = document.getElementById('sendBtn');
+        btn.disabled = on;
+        btn.innerHTML = on
+            ? '<div class="spinner"></div> Sending…'
+            : '<i class="fas fa-paper-plane"></i> Send Message';
     }
 
-    // Initialize EmailJS
-    window.onload = () => {
-      if (PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-        console.warn("Please replace EmailJS credentials in the code.");
-      } else {
-        emailjs.init(PUBLIC_KEY);
-      }
-    };
-  </script>
+    // SEND
+    document.getElementById('sendBtn').addEventListener('click', async function() {
+        hideError();
+
+        const fname   = document.getElementById('fname').value.trim();
+        const lname   = document.getElementById('lname').value.trim();
+        const uemail  = document.getElementById('uemail').value.trim();
+        const subject = document.getElementById('subject').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        // Validation
+        if (!fname)             { showError('Please enter your first name.'); return; }
+        if (!uemail)            { showError('Please enter your email address.'); return; }
+        if (!validEmail(uemail)){ showError('Please enter a valid email address.'); return; }
+        if (!subject)           { showError('Please enter a subject or pick one from the quick tags.'); return; }
+        if (message.length < 20){ showError('Message is too short. Please write at least 20 characters.'); return; }
+
+        setLoading(true);
+
+        // Build mailto link and open it
+        const fullName   = fname + (lname ? ' ' + lname : '');
+        const ownerEmail = 'support@toolmatrix.space'; // <-- Website owner ka email yahan rakho
+        const emailSubject = encodeURIComponent('[ToolMatrix Contact] ' + subject);
+        const emailBody = encodeURIComponent(
+            'From: ' + fullName + '\n' +
+            'Email: ' + uemail + '\n' +
+            'Subject: ' + subject + '\n\n' +
+            '--- Message ---\n' +
+            message + '\n\n' +
+            '---\nSent via ToolMatrix Contact Form\ntoolmatrix.space'
+        );
+
+        // Try mailto first (opens email client)
+        const mailtoLink = 'mailto:' + ownerEmail + '?subject=' + emailSubject + '&body=' + emailBody;
+        window.location.href = mailtoLink;
+
+        // After short delay show success state
+        setTimeout(function() {
+            setLoading(false);
+            document.getElementById('formArea').style.display = 'none';
+            document.getElementById('successOverlay').classList.add('show');
+        }, 1200);
+    });
+
+    // Send Again button
+    document.getElementById('sendAgainBtn').addEventListener('click', function() {
+        document.getElementById('formArea').style.display = 'block';
+        document.getElementById('successOverlay').classList.remove('show');
+        // Clear form
+        document.getElementById('fname').value = '';
+        document.getElementById('lname').value = '';
+        document.getElementById('uemail').value = '';
+        document.getElementById('subject').value = '';
+        document.getElementById('message').value = '';
+        document.getElementById('charCount').textContent = '0 / 1000';
+        document.querySelectorAll('.stag').forEach(t => t.classList.remove('active'));
+        hideError();
+    });
+
+})();
+</script>
 </body>
 </html>
