@@ -160,119 +160,119 @@
     </div>
 
     <script>
-        const { createClient } = supabase;
-        const sb = createClient(
-            "https://zykeocrfxbjicfeahzny.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
-        );
-
-        // If already logged in, redirect
-        sb.auth.getSession().then(({ data: { session } }) => {
-            if (session) window.location.href = 'index.html';
-        });
-
-        // Password strength
-        document.getElementById('password').addEventListener('input', function() {
-            const val = this.value;
-            const bar = document.getElementById('strengthBar');
-            const label = document.getElementById('strengthLabel');
-            let strength = 0;
-            if (val.length >= 8) strength++;
-            if (/[A-Z]/.test(val)) strength++;
-            if (/[0-9]/.test(val)) strength++;
-            if (/[^A-Za-z0-9]/.test(val)) strength++;
-            const colors = ['','#ef4444','#f59e0b','#3b82f6','#10b981'];
-            const labels = ['','Weak','Fair','Good','Strong'];
-            bar.style.width = (strength * 25) + '%';
-            bar.style.background = colors[strength] || '';
-            label.textContent = val.length > 0 ? labels[strength] || '' : '';
-            label.style.color = colors[strength] || '#64748b';
-        });
-
-        // Show/hide password
-        document.getElementById('eyeToggle').addEventListener('click', function() {
-            const input = document.getElementById('password');
-            const icon = document.getElementById('eyeIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
-        });
-
-        function showError(msg) {
-            document.getElementById('errorText').textContent = msg;
-            document.getElementById('errorMsg').classList.add('show');
-            document.getElementById('successMsg').classList.remove('show');
-        }
-        function hideError() {
-            document.getElementById('errorMsg').classList.remove('show');
+    (function(){
+        function waitSB(cb){
+            if(window.supabase && window.supabase.createClient) cb();
+            else setTimeout(function(){ waitSB(cb); }, 50);
         }
 
-        function setLoading(loading) {
-            const btn = document.getElementById('signupBtn');
-            btn.disabled = loading;
-            btn.innerHTML = loading
-                ? '<div class="spinner"></div> Creating account…'
-                : '<i class="fas fa-user-plus"></i> Create Account';
-        }
+        waitSB(function(){
+            var sb = window.supabase.createClient(
+                "https://zykeocrfxbjicfeahzny.supabase.co",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
+            );
 
-        document.getElementById('signupBtn').addEventListener('click', async () => {
-            hideError();
-            const fullname = document.getElementById('fullname').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            // Already logged in? → go home
+            sb.auth.getSession().then(function(r){
+                if(r.data && r.data.session) window.location.href = 'index.html';
+            });
 
-            if (!fullname) { showError('Please enter your full name.'); return; }
-            if (!email) { showError('Please enter your email address.'); return; }
-            if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
-
-            setLoading(true);
-            const { data, error } = await sb.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: { full_name: fullname },
-                    emailRedirectTo: window.location.origin + '/index.html'
+            // Google OAuth redirect (SIGNED_IN event fires on return)
+            sb.auth.onAuthStateChange(function(event, session){
+                if(event === 'SIGNED_IN' && session){
+                    sessionStorage.setItem('tm_just_logged_in','1');
+                    window.location.href = 'index.html';
                 }
             });
-            setLoading(false);
 
-            if (error) {
-                showError(error.message || 'Could not create account. Please try again.');
-                return;
+            // Password strength
+            document.getElementById('password').addEventListener('input', function(){
+                var val = this.value;
+                var s = 0;
+                if(val.length >= 8) s++;
+                if(/[A-Z]/.test(val)) s++;
+                if(/[0-9]/.test(val)) s++;
+                if(/[^A-Za-z0-9]/.test(val)) s++;
+                var colors = ['','#ef4444','#f59e0b','#3b82f6','#10b981'];
+                var labels = ['','Weak','Fair','Good','Strong'];
+                var bar = document.getElementById('strengthBar');
+                bar.style.width  = (s*25)+'%';
+                bar.style.background = colors[s]||'';
+                var lbl = document.getElementById('strengthLabel');
+                lbl.textContent  = val.length > 0 ? labels[s]||'' : '';
+                lbl.style.color  = colors[s]||'#64748b';
+            });
+
+            // Show/hide password
+            document.getElementById('eyeToggle').addEventListener('click', function(){
+                var inp  = document.getElementById('password');
+                var icon = document.getElementById('eyeIcon');
+                if(inp.type === 'password'){ inp.type='text';  icon.className='fas fa-eye-slash'; }
+                else                       { inp.type='password'; icon.className='fas fa-eye'; }
+            });
+
+            function showError(msg){
+                document.getElementById('errorText').textContent = msg;
+                document.getElementById('errorMsg').classList.add('show');
+                document.getElementById('successMsg').classList.remove('show');
+            }
+            function hideError(){
+                document.getElementById('errorMsg').classList.remove('show');
+            }
+            function setLoading(on){
+                var btn = document.getElementById('signupBtn');
+                btn.disabled = on;
+                btn.innerHTML = on
+                    ? '<div class="spinner"></div> Creating account…'
+                    : '<i class="fas fa-user-plus"></i> Create Account';
             }
 
-            // Check if email confirmation is required
-            if (data.user && data.session) {
-                // Auto-confirmed (e.g. email confirmation disabled in Supabase)
-                sessionStorage.setItem('tm_just_logged_in', '1');
-                window.location.href = 'index.html';
-            } else {
-                // Email confirmation required
-                document.getElementById('formFields').style.opacity = '0.4';
-                document.getElementById('formFields').style.pointerEvents = 'none';
-                document.getElementById('successMsg').classList.add('show');
-            }
-        });
+            // ── Email Signup ──
+            document.getElementById('signupBtn').addEventListener('click', async function(){
+                hideError();
+                var fullname = document.getElementById('fullname').value.trim();
+                var email    = document.getElementById('email').value.trim();
+                var password = document.getElementById('password').value;
 
-        // Google OAuth
-        document.getElementById('googleBtn').addEventListener('click', async () => {
-            await sb.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin + '/index.html' }
+                if(!fullname)          { showError('Please enter your full name.'); return; }
+                if(!email)             { showError('Please enter your email address.'); return; }
+                if(password.length<6)  { showError('Password must be at least 6 characters.'); return; }
+
+                setLoading(true);
+                var result = await sb.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: { full_name: fullname },
+                        emailRedirectTo: window.location.origin + '/index.html'
+                    }
+                });
+                setLoading(false);
+
+                if(result.error){ showError(result.error.message || 'Could not create account. Try again.'); return; }
+
+                if(result.data.user && result.data.session){
+                    // Email confirm disabled — auto login
+                    sessionStorage.setItem('tm_just_logged_in','1');
+                    window.location.href = 'index.html';
+                } else {
+                    // Email confirm required
+                    document.getElementById('formFields').style.opacity      = '0.4';
+                    document.getElementById('formFields').style.pointerEvents = 'none';
+                    document.getElementById('successMsg').classList.add('show');
+                }
+            });
+
+            // ── Google OAuth ──
+            document.getElementById('googleBtn').addEventListener('click', async function(){
+                sessionStorage.setItem('tm_just_logged_in','1');
+                await sb.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin + '/index.html' }
+                });
             });
         });
-
-        // Handle OAuth redirect (Google sets session in URL hash)
-        sb.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                sessionStorage.setItem('tm_just_logged_in', '1');
-                window.location.href = 'index.html';
-            }
-        });
+    })();
     </script>
 </body>
 </html>
