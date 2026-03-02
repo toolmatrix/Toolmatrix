@@ -1,112 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In – ToolMatrix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;min-height:100vh;background:linear-gradient(135deg,#e0fdf4 0%,#f0fffe 30%,#e0f7ff 60%,#dff6ff 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+        /* Decorative blobs */
+        body::before{content:'';position:absolute;top:-80px;left:-80px;width:420px;height:420px;background:radial-gradient(circle,rgba(16,185,129,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:blobFloat 8s ease-in-out infinite}
+        body::after{content:'';position:absolute;bottom:-80px;right:-80px;width:380px;height:380px;background:radial-gradient(circle,rgba(14,165,233,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:blobFloat 8s ease-in-out infinite reverse}
+        .blob-mid{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(110,231,183,0.07) 0%,transparent 65%);border-radius:50%;pointer-events:none}
+        @keyframes blobFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.04)}}
 
-<style>
-body{
-font-family:Arial;
-background:#f0fff4;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
-}
-.box{
-background:white;
-padding:30px;
-width:100%;
-max-width:400px;
-border-radius:12px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
-text-align:center;
-}
-input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:1px solid #ccc;
-border-radius:6px;
-}
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-.email-btn{background:#2ecc71;color:white;}
-.google{background:#db4437;color:white;}
-.facebook{background:#1877f2;color:white;}
-.github{background:#333;color:white;}
-</style>
+        .back-link{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:8px;color:#0f172a;text-decoration:none;font-size:0.9rem;font-weight:600;transition:color 0.3s;z-index:10;background:rgba(255,255,255,0.7);padding:8px 16px;border-radius:50px;backdrop-filter:blur(8px);border:1px solid rgba(16,185,129,0.2)}
+        .back-link:hover{color:#10b981;background:rgba(255,255,255,0.95)}
+        .back-link i{font-size:0.85rem}
+
+        .card{background:rgba(255,255,255,0.82);border:1px solid rgba(16,185,129,0.18);border-radius:28px;padding:48px 44px;width:100%;max-width:440px;position:relative;z-index:1;box-shadow:0 8px 40px rgba(16,185,129,0.10),0 2px 12px rgba(14,165,233,0.08);backdrop-filter:blur(18px)}
+
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;margin-bottom:36px;justify-content:center}
+        .logo-icon{width:46px;height:46px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:14px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;box-shadow:0 4px 20px rgba(16,185,129,0.4)}
+        .logo-text{font-size:1.7rem;font-weight:900}
+        .logo-text .t{background:linear-gradient(135deg,#0f172a,#334155);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-text .m{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+        h1{font-size:1.75rem;font-weight:800;color:#0f172a;text-align:center;margin-bottom:6px}
+        .subtitle{text-align:center;color:#64748b;font-size:0.95rem;margin-bottom:32px}
+
+        .form-group{margin-bottom:18px}
+        label{display:block;font-size:0.85rem;font-weight:600;color:#374151;margin-bottom:8px}
+        .input-wrap{position:relative}
+        .input-wrap i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:1rem;pointer-events:none}
+        input[type="email"],input[type="password"]{width:100%;padding:14px 16px 14px 46px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;color:#0f172a;font-size:0.95rem;font-family:'Inter',sans-serif;transition:all 0.3s;outline:none}
+        input:focus{border-color:#10b981;background:#ffffff;box-shadow:0 0 0 4px rgba(16,185,129,0.08)}
+        input::placeholder{color:#9ca3af}
+
+        .forgot{display:block;text-align:right;font-size:0.82rem;color:#10b981;text-decoration:none;font-weight:600;margin-top:-10px;margin-bottom:24px}
+        .forgot:hover{color:#6ee7b7}
+
+        .btn{width:100%;padding:15px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:1rem;border:none;border-radius:12px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 25px rgba(16,185,129,0.35)}
+        .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 35px rgba(16,185,129,0.5)}
+        .btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+        .divider{display:flex;align-items:center;gap:14px;margin:24px 0;color:#9ca3af;font-size:0.82rem;font-weight:500}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e8f0}
+
+        .btn-google{width:100%;padding:14px;background:#ffffff;border:1.5px solid #e2e8f0;color:#374151;font-weight:600;font-size:0.95rem;border-radius:12px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:12px}
+        .btn-google:hover{border-color:#10b981;background:#f8fafc;color:#0f172a}
+        .btn-google img{width:20px;height:20px}
+
+        .error-msg{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;padding:12px 16px;border-radius:10px;font-size:0.87rem;font-weight:500;margin-bottom:18px;display:none;align-items:center;gap:10px}
+        .error-msg.show{display:flex}
+        .error-msg i{color:#f87171;flex-shrink:0}
+
+        .signup-link{text-align:center;margin-top:24px;color:#64748b;font-size:0.9rem}
+        .signup-link a{color:#10b981;font-weight:700;text-decoration:none}
+        .signup-link a:hover{color:#6ee7b7}
+
+        .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:480px){.card{padding:32px 24px}}
+    </style>
 </head>
-
 <body>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="blob-mid"></div>
 
-<div class="box">
-<h2>Login</h2>
+    <div class="card">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="logo-text"><span class="t">Tool</span><span class="m">Matrix</span></span>
+        </a>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Log in to your ToolMatrix account</p>
 
-<button class="email-btn" onclick="login()">Login with Email</button>
+        <div class="error-msg" id="errorMsg">
+            <i class="fas fa-circle-exclamation"></i>
+            <span id="errorText">Something went wrong.</span>
+        </div>
 
-<hr>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+        </div>
 
-<button class="google" onclick="socialLogin('google')">
-🔵 Login with Google
-</button>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+            </div>
+        </div>
 
-<button class="facebook" onclick="socialLogin('facebook')">
-📘 Login with Facebook
-</button>
+        <a href="#" class="forgot">Forgot password?</a>
 
-<button class="github" onclick="socialLogin('github')">
-🐱 Login with GitHub
-</button>
+        <button class="btn" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
 
-<p style="margin-top:15px;">
-Don't have account? <a href="signup.html">Sign Up</a>
-</p>
+        <div class="divider">or continue with</div>
 
-</div>
+        <button class="btn-google" id="googleBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Continue with Google
+        </button>
 
-<script>
-const { createClient } = supabase;
+        <p class="signup-link">Don't have an account? <a href="signup.html">Sign up free</a></p>
+    </div>
 
-const supabaseClient = createClient(
-"https://zykeocrfxbjicfeahzny.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
-);
+    <script>
+        const { createClient } = supabase;
+        const sb = createClient(
+            "https://zykeocrfxbjicfeahzny.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
+        );
 
-async function login(){
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+        // If already logged in, redirect
+        sb.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'index.html';
+        });
 
-const { error } = await supabaseClient.auth.signInWithPassword({
-email,
-password
-});
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorMsg').classList.add('show');
+        }
+        function hideError() {
+            document.getElementById('errorMsg').classList.remove('show');
+        }
 
-if(error){ alert(error.message); }
-else{ window.location.href="/index.html"; }
-}
+        function setLoading(loading) {
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = loading;
+            btn.innerHTML = loading
+                ? '<div class="spinner"></div> Logging in…'
+                : '<i class="fas fa-sign-in-alt"></i> Log In';
+        }
 
-async function socialLogin(provider){
-await supabaseClient.auth.signInWithOAuth({
-provider: provider,
-options: {
-redirectTo: "https://toolmatrix.space/index.html"
-}
-});
-}
-</script>
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            hideError();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
+            if (!email || !password) {
+                showError('Please enter your email and password.');
+                return;
+            }
+
+            setLoading(true);
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            setLoading(false);
+
+            if (error) {
+                showError(error.message || 'Invalid email or password.');
+                return;
+            }
+
+            // Mark as just logged in for welcome toast
+            sessionStorage.setItem('tm_just_logged_in', '1');
+            window.location.href = 'index.html';
+        });
+
+        // Enter key support
+        document.getElementById('password').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+
+        // Google OAuth
+        document.getElementById('googleBtn').addEventListener('click', async () => {
+            await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + '/index.html' }
+            });
+        });
+    </script>
 </body>
 </html>
