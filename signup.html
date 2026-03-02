@@ -1,112 +1,278 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Sign Up</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up – ToolMatrix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;min-height:100vh;background:linear-gradient(135deg,#e0fdf4 0%,#f0fffe 30%,#e0f7ff 60%,#dff6ff 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+        body::before{content:'';position:absolute;top:-80px;right:-80px;width:420px;height:420px;background:radial-gradient(circle,rgba(14,165,233,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:blobFloat 8s ease-in-out infinite}
+        body::after{content:'';position:absolute;bottom:-80px;left:-80px;width:380px;height:380px;background:radial-gradient(circle,rgba(16,185,129,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:blobFloat 8s ease-in-out infinite reverse}
+        .blob-mid{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(110,231,183,0.07) 0%,transparent 65%);border-radius:50%;pointer-events:none}
+        @keyframes blobFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.04)}}
 
-<style>
-body{
-font-family:Arial;
-background:#eafaf1;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
-}
-.box{
-background:white;
-padding:30px;
-width:100%;
-max-width:400px;
-border-radius:12px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
-text-align:center;
-}
-input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:1px solid #ccc;
-border-radius:6px;
-}
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-.email-btn{background:#2ecc71;color:white;}
-.google{background:#db4437;color:white;}
-.facebook{background:#1877f2;color:white;}
-.github{background:#333;color:white;}
-</style>
+        .back-link{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:8px;color:#0f172a;text-decoration:none;font-size:0.9rem;font-weight:600;transition:color 0.3s;z-index:10;background:rgba(255,255,255,0.7);padding:8px 16px;border-radius:50px;backdrop-filter:blur(8px);border:1px solid rgba(16,185,129,0.2)}
+        .back-link:hover{color:#10b981;background:rgba(255,255,255,0.95)}
+
+        .card{background:rgba(255,255,255,0.82);border:1px solid rgba(16,185,129,0.18);border-radius:28px;padding:48px 44px;width:100%;max-width:460px;position:relative;z-index:1;box-shadow:0 8px 40px rgba(16,185,129,0.10),0 2px 12px rgba(14,165,233,0.08);backdrop-filter:blur(18px)}
+
+        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;margin-bottom:36px;justify-content:center}
+        .logo-icon{width:46px;height:46px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:14px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;box-shadow:0 4px 20px rgba(16,185,129,0.4)}
+        .logo-text{font-size:1.7rem;font-weight:900}
+        .logo-text .t{background:linear-gradient(135deg,#0f172a,#334155);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-text .m{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+        h1{font-size:1.75rem;font-weight:800;color:#0f172a;text-align:center;margin-bottom:6px}
+        .subtitle{text-align:center;color:#64748b;font-size:0.95rem;margin-bottom:32px}
+
+        .perks{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+        .perk{display:flex;align-items:center;gap:6px;color:#64748b;font-size:0.8rem;font-weight:600}
+        .perk i{color:#10b981;font-size:0.75rem}
+
+        .form-group{margin-bottom:18px}
+        label{display:block;font-size:0.85rem;font-weight:600;color:#374151;margin-bottom:8px}
+        .input-wrap{position:relative}
+        .input-wrap i.icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:1rem;pointer-events:none}
+        .input-wrap .eye-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:0.95rem;transition:color 0.3s;background:none;border:none;padding:4px}
+        .input-wrap .eye-toggle:hover{color:#10b981}
+        input{width:100%;padding:14px 16px 14px 46px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;color:#0f172a;font-size:0.95rem;font-family:'Inter',sans-serif;transition:all 0.3s;outline:none}
+        input:focus{border-color:#0ea5e9;background:#ffffff;box-shadow:0 0 0 4px rgba(14,165,233,0.08)}
+        input::placeholder{color:#9ca3af}
+        .input-has-eye input{padding-right:46px}
+
+        .password-strength{height:4px;border-radius:4px;margin-top:8px;background:rgba(71,85,105,0.3);overflow:hidden;transition:all 0.3s}
+        .password-strength-bar{height:100%;border-radius:4px;width:0%;transition:width 0.4s,background 0.4s}
+        .strength-label{font-size:0.75rem;color:#64748b;margin-top:5px;min-height:16px}
+
+        .error-msg{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;padding:12px 16px;border-radius:10px;font-size:0.87rem;font-weight:500;margin-bottom:18px;display:none;align-items:center;gap:10px}
+        .error-msg.show{display:flex}
+        .error-msg i{color:#f87171;flex-shrink:0}
+
+        .success-msg{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;padding:18px 20px;border-radius:12px;font-size:0.92rem;font-weight:500;margin-bottom:18px;display:none;text-align:center}
+        .success-msg.show{display:block}
+        .success-msg i{display:block;font-size:2rem;margin-bottom:10px;color:#10b981}
+        .success-msg strong{display:block;font-size:1.05rem;color:white;margin-bottom:6px}
+
+        .btn{width:100%;padding:15px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:1rem;border:none;border-radius:12px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 25px rgba(16,185,129,0.35)}
+        .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 35px rgba(16,185,129,0.5)}
+        .btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+        .divider{display:flex;align-items:center;gap:14px;margin:24px 0;color:#9ca3af;font-size:0.82rem;font-weight:500}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e8f0}
+
+        .btn-google{width:100%;padding:14px;background:#ffffff;border:1.5px solid #e2e8f0;color:#374151;font-weight:600;font-size:0.95rem;border-radius:12px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:12px}
+        .btn-google:hover{border-color:#0ea5e9;background:#f8fafc;color:#0f172a}
+        .btn-google img{width:20px;height:20px}
+
+        .terms{text-align:center;color:#9ca3af;font-size:0.8rem;margin-top:18px;line-height:1.6}
+        .terms a{color:#10b981;text-decoration:none;font-weight:600}
+        .terms a:hover{color:#059669}
+
+        .login-link{text-align:center;margin-top:22px;color:#64748b;font-size:0.9rem}
+        .login-link a{color:#10b981;font-weight:700;text-decoration:none}
+        .login-link a:hover{color:#6ee7b7}
+
+        .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:480px){.card{padding:32px 22px}.perks{gap:12px}}
+    </style>
 </head>
-
 <body>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="blob-mid"></div>
 
-<div class="box">
-<h2>Create Account</h2>
+    <div class="card">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="logo-text"><span class="t">Tool</span><span class="m">Matrix</span></span>
+        </a>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
+        <h1>Create account</h1>
+        <p class="subtitle">Join thousands using ToolMatrix for free</p>
 
-<button class="email-btn" onclick="signUp()">Sign Up with Email</button>
+        <div class="perks">
+            <span class="perk"><i class="fas fa-check"></i> 100+ Free Tools</span>
+            <span class="perk"><i class="fas fa-check"></i> No Credit Card</span>
+            <span class="perk"><i class="fas fa-check"></i> Instant Access</span>
+        </div>
 
-<hr>
+        <div class="error-msg" id="errorMsg">
+            <i class="fas fa-circle-exclamation"></i>
+            <span id="errorText">Something went wrong.</span>
+        </div>
 
-<button class="google" onclick="socialSignup('google')">
-🔵 Sign Up with Google
-</button>
+        <div class="success-msg" id="successMsg">
+            <i class="fas fa-envelope-circle-check"></i>
+            <strong>Check your email!</strong>
+            We've sent a confirmation link. Please verify your email to complete signup.
+        </div>
 
-<button class="facebook" onclick="socialSignup('facebook')">
-📘 Sign Up with Facebook
-</button>
+        <div id="formFields">
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <div class="input-wrap">
+                    <i class="fas fa-user icon"></i>
+                    <input type="text" id="fullname" placeholder="Your full name" autocomplete="name">
+                </div>
+            </div>
 
-<button class="github" onclick="socialSignup('github')">
-🐱 Sign Up with GitHub
-</button>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrap">
+                    <i class="fas fa-envelope icon"></i>
+                    <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+                </div>
+            </div>
 
-<p style="margin-top:15px;">
-Already have account? <a href="login.html">Login</a>
-</p>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrap input-has-eye">
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password">
+                    <button class="eye-toggle" id="eyeToggle" type="button" tabindex="-1">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+                <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
+                <div class="strength-label" id="strengthLabel"></div>
+            </div>
 
-</div>
+            <button class="btn" id="signupBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
 
-<script>
-const { createClient } = supabase;
+            <div class="divider">or sign up with</div>
 
-const supabaseClient = createClient(
-"https://zykeocrfxbjicfeahzny.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
-);
+            <button class="btn-google" id="googleBtn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Continue with Google
+            </button>
 
-async function signUp(){
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+            <p class="terms">By signing up, you agree to our <a href="terms-and-condition.html">Terms of Use</a> and <a href="privacy-policy.html">Privacy Policy</a></p>
+        </div>
 
-const { error } = await supabaseClient.auth.signUp({
-email,
-password
-});
+        <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
 
-if(error){ alert(error.message); }
-else{ alert("Check your email for verification"); }
-}
+    <script>
+        const { createClient } = supabase;
+        const sb = createClient(
+            "https://zykeocrfxbjicfeahzny.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
+        );
 
-async function socialSignup(provider){
-await supabaseClient.auth.signInWithOAuth({
-provider: provider,
-options: {
-redirectTo: window.location.origin + "/index.html"
-}
-});
-}
-</script>
+        // If already logged in, redirect
+        sb.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'index.html';
+        });
 
+        // Password strength
+        document.getElementById('password').addEventListener('input', function() {
+            const val = this.value;
+            const bar = document.getElementById('strengthBar');
+            const label = document.getElementById('strengthLabel');
+            let strength = 0;
+            if (val.length >= 8) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (/[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+            const colors = ['','#ef4444','#f59e0b','#3b82f6','#10b981'];
+            const labels = ['','Weak','Fair','Good','Strong'];
+            bar.style.width = (strength * 25) + '%';
+            bar.style.background = colors[strength] || '';
+            label.textContent = val.length > 0 ? labels[strength] || '' : '';
+            label.style.color = colors[strength] || '#64748b';
+        });
+
+        // Show/hide password
+        document.getElementById('eyeToggle').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorMsg').classList.add('show');
+            document.getElementById('successMsg').classList.remove('show');
+        }
+        function hideError() {
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+
+        function setLoading(loading) {
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = loading;
+            btn.innerHTML = loading
+                ? '<div class="spinner"></div> Creating account…'
+                : '<i class="fas fa-user-plus"></i> Create Account';
+        }
+
+        document.getElementById('signupBtn').addEventListener('click', async () => {
+            hideError();
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!fullname) { showError('Please enter your full name.'); return; }
+            if (!email) { showError('Please enter your email address.'); return; }
+            if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+
+            setLoading(true);
+            const { data, error } = await sb.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { full_name: fullname },
+                    emailRedirectTo: window.location.origin + '/index.html'
+                }
+            });
+            setLoading(false);
+
+            if (error) {
+                showError(error.message || 'Could not create account. Please try again.');
+                return;
+            }
+
+            // Check if email confirmation is required
+            if (data.user && data.session) {
+                // Auto-confirmed (e.g. email confirmation disabled in Supabase)
+                sessionStorage.setItem('tm_just_logged_in', '1');
+                window.location.href = 'index.html';
+            } else {
+                // Email confirmation required
+                document.getElementById('formFields').style.opacity = '0.4';
+                document.getElementById('formFields').style.pointerEvents = 'none';
+                document.getElementById('successMsg').classList.add('show');
+            }
+        });
+
+        // Google OAuth
+        document.getElementById('googleBtn').addEventListener('click', async () => {
+            await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + '/index.html' }
+            });
+        });
+
+        // Handle OAuth redirect (Google sets session in URL hash)
+        sb.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                sessionStorage.setItem('tm_just_logged_in', '1');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
 </body>
 </html>
