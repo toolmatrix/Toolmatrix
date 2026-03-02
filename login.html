@@ -118,69 +118,76 @@
     </div>
 
     <script>
-        const { createClient } = supabase;
-        const sb = createClient(
-            "https://zykeocrfxbjicfeahzny.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
-        );
-
-        // If already logged in, redirect
-        sb.auth.getSession().then(({ data: { session } }) => {
-            if (session) window.location.href = 'index.html';
-        });
-
-        function showError(msg) {
-            document.getElementById('errorText').textContent = msg;
-            document.getElementById('errorMsg').classList.add('show');
-        }
-        function hideError() {
-            document.getElementById('errorMsg').classList.remove('show');
+    (function(){
+        // ── Wait for Supabase SDK ──
+        function waitSB(cb){
+            if(window.supabase && window.supabase.createClient) cb();
+            else setTimeout(function(){ waitSB(cb); }, 50);
         }
 
-        function setLoading(loading) {
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = loading;
-            btn.innerHTML = loading
-                ? '<div class="spinner"></div> Logging in…'
-                : '<i class="fas fa-sign-in-alt"></i> Log In';
-        }
+        waitSB(function(){
+            var sb = window.supabase.createClient(
+                "https://zykeocrfxbjicfeahzny.supabase.co",
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a2VvY3JmeGJqaWNmZWFoem55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTkxMTQsImV4cCI6MjA4Nzk5NTExNH0.S7_Lx03URFuNm1ok-YkTe4u69WOvmczltoEQ_6zrOVw"
+            );
 
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            hideError();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            // Already logged in? → go home
+            sb.auth.getSession().then(function(r){
+                if(r.data && r.data.session) window.location.href = 'index.html';
+            });
 
-            if (!email || !password) {
-                showError('Please enter your email and password.');
-                return;
+            // Google OAuth redirect handler
+            sb.auth.onAuthStateChange(function(event, session){
+                if(event === 'SIGNED_IN' && session){
+                    sessionStorage.setItem('tm_just_logged_in','1');
+                    window.location.href = 'index.html';
+                }
+            });
+
+            function showError(msg){
+                document.getElementById('errorText').textContent = msg;
+                document.getElementById('errorMsg').classList.add('show');
+            }
+            function hideError(){
+                document.getElementById('errorMsg').classList.remove('show');
+            }
+            function setLoading(on){
+                var btn = document.getElementById('loginBtn');
+                btn.disabled = on;
+                btn.innerHTML = on
+                    ? '<div class="spinner"></div> Logging in…'
+                    : '<i class="fas fa-sign-in-alt"></i> Log In';
             }
 
-            setLoading(true);
-            const { data, error } = await sb.auth.signInWithPassword({ email, password });
-            setLoading(false);
+            // ── Email / Password Login ──
+            document.getElementById('loginBtn').addEventListener('click', async function(){
+                hideError();
+                var email    = document.getElementById('email').value.trim();
+                var password = document.getElementById('password').value;
+                if(!email || !password){ showError('Please enter your email and password.'); return; }
+                setLoading(true);
+                var result = await sb.auth.signInWithPassword({ email: email, password: password });
+                setLoading(false);
+                if(result.error){ showError(result.error.message || 'Invalid email or password.'); return; }
+                sessionStorage.setItem('tm_just_logged_in','1');
+                window.location.href = 'index.html';
+            });
 
-            if (error) {
-                showError(error.message || 'Invalid email or password.');
-                return;
-            }
+            // Enter key
+            document.getElementById('password').addEventListener('keydown', function(e){
+                if(e.key === 'Enter') document.getElementById('loginBtn').click();
+            });
 
-            // Mark as just logged in for welcome toast
-            sessionStorage.setItem('tm_just_logged_in', '1');
-            window.location.href = 'index.html';
-        });
-
-        // Enter key support
-        document.getElementById('password').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('loginBtn').click();
-        });
-
-        // Google OAuth
-        document.getElementById('googleBtn').addEventListener('click', async () => {
-            await sb.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin + '/index.html' }
+            // ── Google OAuth ──
+            document.getElementById('googleBtn').addEventListener('click', async function(){
+                sessionStorage.setItem('tm_just_logged_in','1');
+                await sb.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin + '/index.html' }
+                });
             });
         });
+    })();
     </script>
 </body>
 </html>
