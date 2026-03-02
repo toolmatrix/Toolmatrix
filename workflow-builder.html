@@ -3,298 +3,773 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workflow Builder - ToolMatrix.space</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/workflow.css">
+    <title>Workflow Builder – ToolMatrix</title>
+    <meta name="description" content="Create custom automated workflows by combining multiple tools. Batch process files with smart automation on ToolMatrix.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary:#10b981;--primary-dark:#059669;--primary-light:#6ee7b7;
+            --accent:#0ea5e9;--dark:#0f172a;--muted:#64748b;
+            --border:#e2e8f0;--bg:#f8fafc;--white:#ffffff;
+            --shadow:0 4px 20px rgba(0,0,0,0.06);
+            --radius:16px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        html{scroll-behavior:smooth}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);line-height:1.6;overflow-x:hidden}
+
+        /* ── HEADER ── */
+        header{background:linear-gradient(135deg,#020617,#0f172a);border-bottom:1px solid rgba(16,185,129,0.15);height:68px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
+        .logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;box-shadow:0 4px 15px rgba(16,185,129,0.4)}
+        .logo-text{font-size:1.45rem;font-weight:900}
+        .logo-text .t{background:linear-gradient(135deg,#fff,#cbd5e1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-text .m{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .back-btn{display:flex;align-items:center;gap:8px;color:#94a3b8;text-decoration:none;font-size:0.88rem;font-weight:600;padding:8px 18px;border-radius:10px;border:1px solid rgba(148,163,184,0.2);transition:var(--transition)}
+        .back-btn:hover{color:#fff;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.08)}
+
+        /* ── HERO ── */
+        .hero{background:linear-gradient(150deg,#f0fdf9 0%,#e0f7ff 50%,#f0f9ff 100%);border-bottom:1px solid var(--border);padding:64px 24px 70px;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-60px;left:-60px;width:350px;height:350px;background:radial-gradient(circle,rgba(16,185,129,0.1) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+        .hero::after{content:'';position:absolute;bottom:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(14,165,233,0.1) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#059669;font-size:0.82rem;font-weight:700;padding:7px 18px;border-radius:50px;margin-bottom:18px;position:relative;z-index:1}
+        .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;color:var(--dark);letter-spacing:-1.5px;margin-bottom:14px;position:relative;z-index:1}
+        .hero h1 span{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{color:var(--muted);font-size:1.05rem;max-width:580px;margin:0 auto 36px;line-height:1.75;position:relative;z-index:1}
+        .hero-btns{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+        .btn-primary{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:0.97rem;border:none;border-radius:12px;cursor:pointer;transition:var(--transition);box-shadow:0 6px 25px rgba(16,185,129,0.3);text-decoration:none;font-family:inherit}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(16,185,129,0.45)}
+        .btn-secondary{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:white;color:var(--dark);font-weight:700;font-size:0.97rem;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:var(--transition);text-decoration:none;font-family:inherit}
+        .btn-secondary:hover{border-color:var(--primary);color:var(--primary);background:rgba(16,185,129,0.04)}
+
+        /* ── MAIN LAYOUT ── */
+        .page-wrap{max-width:1100px;margin:0 auto;padding:50px 24px 80px}
+
+        /* ── SECTION TITLE ── */
+        .sec-title{font-size:1.5rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+        .sec-sub{font-size:0.93rem;color:var(--muted);margin-bottom:24px}
+
+        /* ── STATS ROW ── */
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:44px}
+        .stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;text-align:center;box-shadow:var(--shadow);transition:var(--transition)}
+        .stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25)}
+        .stat-num{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+        .stat-label{font-size:0.82rem;font-weight:600;color:var(--muted);margin-top:6px}
+
+        /* ── BUILDER AREA ── */
+        .builder-wrap{display:grid;grid-template-columns:280px 1fr;gap:24px;margin-bottom:40px}
+
+        /* Tool Palette */
+        .palette{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+        .palette-title{font-size:0.88rem;font-weight:700;color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+        .palette-title i{color:var(--primary)}
+        .palette-sub{font-size:0.76rem;color:var(--muted);margin-bottom:16px}
+        .palette-search{width:100%;padding:9px 14px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;outline:none;font-family:inherit;color:var(--dark);transition:var(--transition);margin-bottom:14px}
+        .palette-search:focus{border-color:var(--primary);background:white}
+        .palette-search::placeholder{color:#9ca3af}
+        .cat-label{font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 6px;padding-left:4px}
+        .tool-chip{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:grab;transition:var(--transition);border:1.5px solid transparent;margin-bottom:4px;user-select:none}
+        .tool-chip:hover{background:#f0fdf4;border-color:rgba(16,185,129,0.2)}
+        .tool-chip:active{cursor:grabbing;transform:scale(0.97)}
+        .tool-chip.dragging{opacity:0.5}
+        .chip-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+        .chip-name{font-size:0.82rem;font-weight:600;color:var(--dark)}
+
+        /* Canvas */
+        .canvas-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:480px}
+        .canvas-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+        .canvas-header-left{display:flex;align-items:center;gap:10px}
+        .canvas-title{font-size:0.95rem;font-weight:700;color:var(--dark)}
+        .canvas-badge{font-size:0.72rem;font-weight:700;background:rgba(16,185,129,0.1);color:#059669;padding:3px 10px;border-radius:50px;border:1px solid rgba(16,185,129,0.2)}
+        .canvas-actions{display:flex;gap:8px}
+        .canvas-btn{padding:7px 14px;font-size:0.8rem;font-weight:600;border-radius:8px;cursor:pointer;transition:var(--transition);font-family:inherit;display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);background:white;color:var(--muted)}
+        .canvas-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(16,185,129,0.04)}
+        .canvas-btn.danger:hover{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,0.04)}
+
+        /* Workflow canvas */
+        .workflow-canvas{flex:1;padding:24px;display:flex;flex-wrap:wrap;gap:0;align-content:flex-start;position:relative;min-height:380px}
+        .canvas-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;transition:opacity 0.3s}
+        .canvas-empty i{font-size:2.8rem;color:#d1d5db;margin-bottom:12px;display:block}
+        .canvas-empty p{color:#9ca3af;font-size:0.9rem;font-weight:500}
+        .canvas-empty span{font-size:0.8rem;color:#c4c4c4}
+
+        /* Drop zone highlight */
+        .workflow-canvas.drag-over{background:rgba(16,185,129,0.03);border:2px dashed rgba(16,185,129,0.3);border-radius:12px}
+
+        /* Workflow steps */
+        .wf-step{display:flex;align-items:center;gap:0;margin-bottom:12px;animation:slideIn 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+        @keyframes slideIn{0%{opacity:0;transform:scale(0.8) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+        .wf-node{display:flex;align-items:center;gap:12px;background:white;border:1.5px solid var(--border);border-radius:14px;padding:13px 16px;min-width:170px;max-width:200px;cursor:pointer;transition:var(--transition);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+        .wf-node:hover{border-color:rgba(16,185,129,0.4);box-shadow:0 4px 16px rgba(16,185,129,0.12);transform:translateY(-2px)}
+        .wf-node.selected{border-color:var(--primary);background:rgba(16,185,129,0.03);box-shadow:0 0 0 3px rgba(16,185,129,0.15)}
+        .wf-node-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+        .wf-node-info{}
+        .wf-node-name{font-size:0.83rem;font-weight:700;color:var(--dark);line-height:1.2}
+        .wf-node-cat{font-size:0.72rem;color:var(--muted);font-weight:500;margin-top:2px}
+        .wf-node-del{position:absolute;top:-7px;right:-7px;width:20px;height:20px;background:#ef4444;border-radius:50%;display:none;align-items:center;justify-content:center;color:white;font-size:0.6rem;cursor:pointer;border:2px solid white;transition:var(--transition)}
+        .wf-node:hover .wf-node-del{display:flex}
+        .wf-node-del:hover{background:#dc2626;transform:scale(1.2)}
+        .wf-arrow{display:flex;align-items:center;padding:0 6px;color:#d1d5db;font-size:1rem;flex-shrink:0}
+
+        /* ── CONFIG PANEL ── */
+        .config-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;display:none}
+        .config-panel.show{display:block}
+        .config-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+        .config-title{font-size:1rem;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:10px}
+        .config-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:4px;border-radius:6px;transition:var(--transition)}
+        .config-close:hover{color:#ef4444;background:rgba(239,68,68,0.08)}
+        .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .cfg-group{display:flex;flex-direction:column;gap:6px}
+        .cfg-group.full{grid-column:1/-1}
+        .cfg-label{font-size:0.8rem;font-weight:600;color:#374151}
+        .cfg-input,.cfg-select{width:100%;padding:10px 13px;background:#f8fafc;border:1.5px solid var(--border);border-radius:9px;font-size:0.85rem;font-family:inherit;color:var(--dark);outline:none;transition:var(--transition)}
+        .cfg-input:focus,.cfg-select:focus{border-color:var(--primary);background:white;box-shadow:0 0 0 3px rgba(16,185,129,0.08)}
+        .cfg-select{cursor:pointer}
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:9px}
+        .toggle-label{font-size:0.83rem;font-weight:600;color:var(--dark)}
+        .toggle{position:relative;width:38px;height:22px;cursor:pointer}
+        .toggle input{display:none}
+        .toggle-track{position:absolute;inset:0;background:#d1d5db;border-radius:50px;transition:0.3s}
+        .toggle input:checked~.toggle-track{background:linear-gradient(135deg,#10b981,#0ea5e9)}
+        .toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+        .toggle input:checked~.toggle-thumb{left:19px}
+
+        /* ── RUN PANEL ── */
+        .run-panel{background:linear-gradient(135deg,#f0fdf9,#e0f7ff);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+        .run-info h3{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+        .run-info p{font-size:0.88rem;color:var(--muted);max-width:420px;line-height:1.6}
+        .run-btns{display:flex;gap:10px;flex-wrap:wrap}
+        .btn-run{padding:13px 28px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:0.95rem;border:none;border-radius:11px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;font-family:inherit;box-shadow:0 4px 18px rgba(16,185,129,0.3)}
+        .btn-run:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(16,185,129,0.45)}
+        .btn-run:disabled{opacity:0.55;cursor:not-allowed;transform:none}
+        .btn-save{padding:13px 22px;background:white;color:var(--dark);font-weight:700;font-size:0.95rem;border:1.5px solid var(--border);border-radius:11px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;font-family:inherit}
+        .btn-save:hover{border-color:var(--primary);color:var(--primary)}
+
+        /* ── SAVED WORKFLOWS ── */
+        .saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:44px}
+        .saved-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:var(--transition);cursor:pointer}
+        .saved-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25)}
+        .saved-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+        .saved-card-icon{width:42px;height:42px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(14,165,233,0.1));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--primary)}
+        .saved-card-menu{padding:4px;color:var(--muted);cursor:pointer;border-radius:6px;border:none;background:none;font-size:0.9rem;transition:var(--transition)}
+        .saved-card-menu:hover{background:#f1f5f9;color:var(--dark)}
+        .saved-card-name{font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:4px}
+        .saved-card-steps{font-size:0.8rem;color:var(--muted);margin-bottom:12px}
+        .saved-card-tags{display:flex;flex-wrap:wrap;gap:5px}
+        .stag{font-size:0.72rem;font-weight:600;padding:3px 9px;border-radius:50px}
+        .stag.green{background:rgba(16,185,129,0.1);color:#059669}
+        .stag.blue{background:rgba(14,165,233,0.1);color:#0369a1}
+        .stag.orange{background:rgba(245,158,11,0.1);color:#b45309}
+        .stag.red{background:rgba(239,68,68,0.1);color:#b91c1c}
+        .stag.purple{background:rgba(139,92,246,0.1);color:#6d28d9}
+
+        /* ── TEMPLATE GRID ── */
+        .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:44px}
+        .tpl-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden}
+        .tpl-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,#10b981,#0ea5e9);transform:scaleX(0);transition:transform 0.3s;transform-origin:left}
+        .tpl-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3)}
+        .tpl-card:hover::before{transform:scaleX(1)}
+        .tpl-icon{font-size:2rem;margin-bottom:12px}
+        .tpl-name{font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:6px}
+        .tpl-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:14px}
+        .tpl-steps{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+        .tpl-step-tag{font-size:0.72rem;font-weight:600;padding:3px 8px;background:#f1f5f9;border-radius:5px;color:var(--muted)}
+        .tpl-arrow{font-size:0.65rem;color:#d1d5db}
+        .tpl-use-btn{margin-top:14px;width:100%;padding:9px;background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(14,165,233,0.08));border:1px solid rgba(16,185,129,0.2);color:#059669;font-weight:700;font-size:0.82rem;border-radius:9px;cursor:pointer;transition:var(--transition);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px}
+        .tpl-use-btn:hover{background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;border-color:transparent}
+
+        /* ── PROGRESS MODAL ── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.show{display:flex}
+        .modal{background:white;border-radius:20px;padding:36px;max-width:460px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,0.15);animation:modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+        @keyframes modalIn{0%{transform:scale(0.85);opacity:0}100%{transform:scale(1);opacity:1}}
+        .modal-icon{width:64px;height:64px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(14,165,233,0.1));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.7rem;color:var(--primary)}
+        .modal h3{font-size:1.3rem;font-weight:800;color:var(--dark);text-align:center;margin-bottom:8px}
+        .modal p{font-size:0.9rem;color:var(--muted);text-align:center;margin-bottom:24px}
+        .progress-steps{}
+        .prog-step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+        .prog-step:last-child{border-bottom:none}
+        .prog-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0}
+        .prog-icon.done{background:rgba(16,185,129,0.12);color:#10b981}
+        .prog-icon.running{background:rgba(14,165,233,0.12);color:#0ea5e9;animation:pulse 1s ease-in-out infinite}
+        .prog-icon.wait{background:#f1f5f9;color:#9ca3af}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .prog-name{font-size:0.88rem;font-weight:600;color:var(--dark);flex:1}
+        .prog-status{font-size:0.75rem;font-weight:600}
+        .prog-status.done{color:#10b981}
+        .prog-status.running{color:#0ea5e9}
+        .prog-status.wait{color:#9ca3af}
+        .modal-bar-wrap{margin:18px 0 24px;background:#f1f5f9;border-radius:50px;height:8px;overflow:hidden}
+        .modal-bar{height:100%;background:linear-gradient(90deg,#10b981,#0ea5e9);border-radius:50px;width:0%;transition:width 0.6s ease}
+        .modal-close-btn{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:white;font-weight:700;font-size:0.95rem;border:none;border-radius:11px;cursor:pointer;font-family:inherit;display:none;transition:var(--transition)}
+        .modal-close-btn.show{display:block}
+        .modal-close-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,0.35)}
+
+        /* ── TOAST ── */
+        .toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:14px 20px;border-radius:12px;font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);z-index:999;max-width:320px}
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast i{color:#10b981;font-size:1rem}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px){
+            .builder-wrap{grid-template-columns:1fr}
+            .config-grid{grid-template-columns:1fr}
+            .cfg-group.full{grid-column:1}
+            .run-panel{flex-direction:column;align-items:flex-start}
+            .page-wrap{padding:30px 16px 60px}
+            .hero{padding:44px 16px 50px}
+        }
+    </style>
 </head>
-<body class="workflow-page">
+<body>
 
-<!-- ========== WORKFLOW NAVBAR ========== -->
-<nav class="workflow-navbar">
-    <div class="nav-container">
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
         <a href="index.html" class="logo">
-            <i class="fas fa-arrow-left"></i>
-            <span>Tool<span class="highlight">Matrix</span></span>
+            <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="logo-text"><span class="t">Tool</span><span class="m">Matrix</span></span>
         </a>
-        <div class="workflow-nav-center">
-            <input type="text" id="workflowName" class="workflow-name-input" 
-                   placeholder="My Workflow" value="Untitled Workflow">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-magic"></i> Workflow Builder</div>
+    <h1>Create <span>Custom Workflows</span></h1>
+    <p>Drag & drop tools to build automated pipelines. Combine PDF, Image, and Text tools to process files in one click.</p>
+    <div class="hero-btns">
+        <button class="btn-primary" id="heroCreateBtn"><i class="fas fa-plus"></i> New Workflow</button>
+        <a href="#templates" class="btn-secondary"><i class="fas fa-th-large"></i> Browse Templates</a>
+    </div>
+</section>
+
+<!-- MAIN -->
+<div class="page-wrap">
+
+    <!-- STATS -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-num" id="statSteps">0</div>
+            <div class="stat-label">Steps Added</div>
         </div>
-        <div class="workflow-nav-actions">
-            <button class="btn-nav-action" id="btnSaveWorkflow" title="Save Workflow">
-                <i class="fas fa-save"></i>
-                <span>Save</span>
-            </button>
-            <button class="btn-nav-action" id="btnLoadWorkflow" title="My Workflows">
-                <i class="fas fa-folder-open"></i>
-                <span>My Workflows</span>
-            </button>
-            <button class="btn-nav-action btn-run" id="btnRunWorkflow" title="Run Workflow">
-                <i class="fas fa-play"></i>
-                <span>Run</span>
-            </button>
+        <div class="stat-card">
+            <div class="stat-num">74</div>
+            <div class="stat-label">Available Tools</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num" id="statSaved">0</div>
+            <div class="stat-label">Saved Workflows</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Free Forever</div>
         </div>
     </div>
-</nav>
 
-<!-- ========== MAIN WORKFLOW AREA ========== -->
-<div class="workflow-container">
+    <!-- BUILDER -->
+    <div class="sec-title">🔧 Build Your Workflow</div>
+    <div class="sec-sub">Drag tools from the left panel onto the canvas to create your workflow.</div>
 
-    <!-- LEFT SIDEBAR - Tool Palette -->
-    <aside class="tool-palette" id="toolPalette">
-        <div class="palette-header">
-            <h3><i class="fas fa-toolbox"></i> Tools</h3>
-            <input type="text" id="toolSearch" placeholder="Search tools..." class="tool-search">
+    <div class="builder-wrap">
+        <!-- Tool Palette -->
+        <div class="palette">
+            <div class="palette-title"><i class="fas fa-toolbox"></i> Available Tools</div>
+            <div class="palette-sub">Drag a tool to the canvas →</div>
+            <input type="text" class="palette-search" id="paletteSearch" placeholder="Search tools…">
+            <div id="paletteList"></div>
         </div>
 
-        <div class="palette-categories">
-            <!-- PDF Tools -->
-            <div class="palette-category">
-                <div class="category-header" data-toggle="pdf-tools">
-                    <i class="fas fa-file-pdf" style="color:#e74c3c"></i>
-                    <span>PDF Tools</span>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
+        <!-- Canvas -->
+        <div class="canvas-wrap">
+            <div class="canvas-header">
+                <div class="canvas-header-left">
+                    <div class="canvas-title">My Workflow</div>
+                    <div class="canvas-badge" id="stepCountBadge">0 steps</div>
                 </div>
-                <div class="category-tools" id="pdf-tools">
-                    <div class="palette-tool" draggable="true" data-tool="pdf-compress" data-category="pdf">
-                        <i class="fas fa-compress"></i>
-                        <span>Compress PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-merge" data-category="pdf">
-                        <i class="fas fa-object-group"></i>
-                        <span>Merge PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-split" data-category="pdf">
-                        <i class="fas fa-cut"></i>
-                        <span>Split PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-to-jpg" data-category="pdf">
-                        <i class="fas fa-image"></i>
-                        <span>PDF to JPG</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="jpg-to-pdf" data-category="pdf">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>JPG to PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-protect" data-category="pdf">
-                        <i class="fas fa-lock"></i>
-                        <span>Protect PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-unlock" data-category="pdf">
-                        <i class="fas fa-unlock"></i>
-                        <span>Unlock PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-rotate" data-category="pdf">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Rotate PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-watermark" data-category="pdf">
-                        <i class="fas fa-tint"></i>
-                        <span>Add Watermark</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-pagenumber" data-category="pdf">
-                        <i class="fas fa-sort-numeric-down"></i>
-                        <span>Page Numbers</span>
-                    </div>
+                <div class="canvas-actions">
+                    <button class="canvas-btn" id="undoBtn"><i class="fas fa-rotate-left"></i> Undo</button>
+                    <button class="canvas-btn danger" id="clearBtn"><i class="fas fa-trash"></i> Clear</button>
                 </div>
             </div>
-
-            <!-- Image Tools -->
-            <div class="palette-category">
-                <div class="category-header" data-toggle="image-tools">
-                    <i class="fas fa-image" style="color:#3498db"></i>
-                    <span>Image Tools</span>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="category-tools" id="image-tools">
-                    <div class="palette-tool" draggable="true" data-tool="img-compress" data-category="image">
-                        <i class="fas fa-compress-arrows-alt"></i>
-                        <span>Compress Image</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="img-resize" data-category="image">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                        <span>Resize Image</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="img-crop" data-category="image">
-                        <i class="fas fa-crop-alt"></i>
-                        <span>Crop Image</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="img-convert" data-category="image">
-                        <i class="fas fa-exchange-alt"></i>
-                        <span>Convert Format</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="img-watermark" data-category="image">
-                        <i class="fas fa-stamp"></i>
-                        <span>Add Watermark</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="img-rotate" data-category="image">
-                        <i class="fas fa-redo"></i>
-                        <span>Rotate Image</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Convert Tools -->
-            <div class="palette-category">
-                <div class="category-header" data-toggle="convert-tools">
-                    <i class="fas fa-exchange-alt" style="color:#2ecc71"></i>
-                    <span>Convert</span>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="category-tools" id="convert-tools">
-                    <div class="palette-tool" draggable="true" data-tool="word-to-pdf" data-category="convert">
-                        <i class="fas fa-file-word"></i>
-                        <span>Word to PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="excel-to-pdf" data-category="convert">
-                        <i class="fas fa-file-excel"></i>
-                        <span>Excel to PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="ppt-to-pdf" data-category="convert">
-                        <i class="fas fa-file-powerpoint"></i>
-                        <span>PPT to PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="html-to-pdf" data-category="convert">
-                        <i class="fas fa-code"></i>
-                        <span>HTML to PDF</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="pdf-to-word" data-category="convert">
-                        <i class="fas fa-file-alt"></i>
-                        <span>PDF to Word</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Text Tools -->
-            <div class="palette-category">
-                <div class="category-header" data-toggle="text-tools">
-                    <i class="fas fa-font" style="color:#9b59b6"></i>
-                    <span>Text Tools</span>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="category-tools" id="text-tools">
-                    <div class="palette-tool" draggable="true" data-tool="text-case" data-category="text">
-                        <i class="fas fa-text-height"></i>
-                        <span>Change Case</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="text-count" data-category="text">
-                        <i class="fas fa-calculator"></i>
-                        <span>Word Count</span>
-                    </div>
-                    <div class="palette-tool" draggable="true" data-tool="text-find-replace" data-category="text">
-                        <i class="fas fa-search"></i>
-                        <span>Find & Replace</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- CENTER - Workflow Canvas -->
-    <main class="workflow-canvas-area">
-        <!-- Upload Zone (First step) -->
-        <div class="upload-zone" id="uploadZone">
-            <div class="upload-content">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <h3>Start Your Workflow</h3>
-                <p>Drag & drop your files here or click to browse</p>
-                <p class="upload-hint">Then drag tools from the left panel to build your pipeline</p>
-                <input type="file" id="fileInput" multiple hidden>
-                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-plus"></i> Select Files
-                </button>
-            </div>
-        </div>
-
-        <!-- File Info Bar -->
-        <div class="file-info-bar" id="fileInfoBar" style="display:none;">
-            <div class="file-chips" id="fileChips"></div>
-            <button class="btn-add-more" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-plus"></i> Add More
-            </button>
-        </div>
-
-        <!-- Workflow Pipeline -->
-        <div class="workflow-pipeline-builder" id="workflowPipeline">
-            <div class="pipeline-placeholder" id="pipelinePlaceholder">
-                <div class="drop-zone-indicator">
-                    <i class="fas fa-plus-circle"></i>
+            <div class="workflow-canvas" id="wfCanvas">
+                <div class="canvas-empty" id="canvasEmpty">
+                    <i class="fas fa-diagram-project"></i>
                     <p>Drag tools here to build your workflow</p>
+                    <span>or use a template below</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Run Button (bottom) -->
-        <div class="workflow-run-bar" id="runBar" style="display:none;">
-            <button class="btn btn-run-large" id="btnRunLarge">
-                <i class="fas fa-play-circle"></i>
-                Process Workflow
-                <span class="step-count" id="stepCount">0 steps</span>
-            </button>
+    <!-- Config Panel -->
+    <div class="config-panel" id="configPanel">
+        <div class="config-header">
+            <div class="config-title" id="configTitle"><i class="fas fa-sliders"></i> Step Settings</div>
+            <button class="config-close" id="configClose"><i class="fas fa-xmark"></i></button>
         </div>
+        <div class="config-grid" id="configGrid"></div>
+    </div>
 
-        <!-- Progress Overlay -->
-        <div class="processing-overlay" id="processingOverlay" style="display:none;">
-            <div class="processing-content">
-                <div class="processing-spinner"></div>
-                <h3>Processing Your Workflow</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p class="progress-text" id="progressText">Step 1 of 3: Compressing PDF...</p>
-            </div>
+    <!-- Run Panel -->
+    <div class="run-panel">
+        <div class="run-info">
+            <h3>Ready to run your workflow?</h3>
+            <p>Once your steps are set up, click Run to process your files automatically through each step in sequence.</p>
         </div>
+        <div class="run-btns">
+            <button class="btn-run" id="runBtn" disabled><i class="fas fa-play"></i> Run Workflow</button>
+            <button class="btn-save" id="saveWfBtn"><i class="fas fa-bookmark"></i> Save</button>
+        </div>
+    </div>
 
-        <!-- Result Zone -->
-        <div class="result-zone" id="resultZone" style="display:none;">
-            <div class="result-content">
-                <i class="fas fa-check-circle"></i>
-                <h3>Workflow Complete!</h3>
-                <p class="result-summary" id="resultSummary"></p>
-                <div class="result-actions">
-                    <button class="btn btn-primary btn-download" id="btnDownload">
-                        <i class="fas fa-download"></i> Download Result
-                    </button>
-                    <button class="btn btn-secondary" id="btnReset">
-                        <i class="fas fa-redo"></i> Start Over
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
+    <!-- SAVED WORKFLOWS -->
+    <div class="sec-title">📁 Saved Workflows</div>
+    <div class="sec-sub">Your previously created workflows.</div>
+    <div class="saved-grid" id="savedGrid">
+        <!-- Populated by JS -->
+    </div>
 
-    <!-- RIGHT SIDEBAR - Tool Settings -->
-    <aside class="tool-settings" id="toolSettings" style="display:none;">
-        <div class="settings-header">
-            <h3><i class="fas fa-cog"></i> <span id="settingsTitle">Tool Settings</span></h3>
-            <button class="btn-close-settings" id="btnCloseSettings">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="settings-body" id="settingsBody">
-            <!-- Dynamic settings will be loaded here -->
-        </div>
-    </aside>
-</div>
+    <!-- TEMPLATES -->
+    <div class="sec-title" id="templates">⚡ Workflow Templates</div>
+    <div class="sec-sub">Start fast with a pre-built template.</div>
+    <div class="template-grid" id="templateGrid"></div>
 
-<!-- ========== LOAD WORKFLOWS MODAL ========== -->
-<div class="modal-overlay" id="loadModal" style="display:none;">
+</div><!-- end page-wrap -->
+
+<!-- PROGRESS MODAL -->
+<div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-        <div class="modal-header">
-            <h3><i class="fas fa-folder-open"></i> My Saved Workflows</h3>
-            <button class="modal-close" id="btnCloseModal"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body" id="modalWorkflowsList">
-            <!-- Loaded from database -->
-        </div>
+        <div class="modal-icon"><i class="fas fa-play"></i></div>
+        <h3>Running Workflow</h3>
+        <p>Processing your steps in sequence…</p>
+        <div class="progress-steps" id="modalSteps"></div>
+        <div class="modal-bar-wrap"><div class="modal-bar" id="modalBar"></div></div>
+        <button class="modal-close-btn" id="modalCloseBtn">✅ Done — Close</button>
     </div>
 </div>
 
-<!-- ========== TOAST NOTIFICATION ========== -->
-<div class="toast-container" id="toastContainer"></div>
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Saved!</span></div>
 
-<script src="js/database.js"></script>
-<script src="js/workflow.js"></script>
+<script>
+(function(){
+    'use strict';
+
+    // ── DATA ──────────────────────────────────────────────────────────
+    const TOOLS = [
+        { id:'pdf-merge',   name:'PDF Merger',       cat:'PDF',    icon:'fas fa-object-group', color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/pdf-merge.html' },
+        { id:'pdf-split',   name:'PDF Splitter',     cat:'PDF',    icon:'fas fa-cut',          color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/pdf-split.html' },
+        { id:'pdf-comp',    name:'PDF Compressor',   cat:'PDF',    icon:'fas fa-file-zipper',  color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/pdf-compressor.html' },
+        { id:'pdf-to-word', name:'PDF to Word',      cat:'PDF',    icon:'fas fa-file-word',    color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/pdf-to-word.html' },
+        { id:'pdf-to-jpg',  name:'PDF to JPG',       cat:'PDF',    icon:'fas fa-file-image',   color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/pdf-to-jpg.html' },
+        { id:'ocr-pdf',     name:'OCR PDF',          cat:'PDF',    icon:'fas fa-text-height',  color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/ocr-pdf.html' },
+        { id:'word-pdf',    name:'Word to PDF',      cat:'PDF',    icon:'fas fa-file-pdf',     color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/word-to-pdf.html' },
+        { id:'sign-pdf',    name:'Sign PDF',         cat:'PDF',    icon:'fas fa-signature',    color:'#ef4444', bg:'rgba(239,68,68,0.1)',   link:'pdftools/sign-pdf.html' },
+        { id:'img-comp',    name:'Image Compress',   cat:'Image',  icon:'fas fa-compress',     color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/image-compressor.html' },
+        { id:'img-resize',  name:'Image Resizer',    cat:'Image',  icon:'fas fa-expand-alt',   color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/image-resizer.html' },
+        { id:'bg-remove',   name:'BG Remover',       cat:'Image',  icon:'fas fa-cut',          color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/background-remover.html' },
+        { id:'webp-conv',   name:'WebP Converter',   cat:'Image',  icon:'fas fa-globe',        color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/webp-converter.html' },
+        { id:'watermark',   name:'Watermark Image',  cat:'Image',  icon:'fas fa-water',        color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/watermark-image.html' },
+        { id:'crop-img',    name:'Crop Image',       cat:'Image',  icon:'fas fa-crop',         color:'#10b981', bg:'rgba(16,185,129,0.1)', link:'imagetools/crop-image.html' },
+        { id:'word-count',  name:'Word Counter',     cat:'Text',   icon:'fas fa-sort-amount-up',color:'#3b82f6', bg:'rgba(59,130,246,0.1)',link:'texttools/word-counter.html' },
+        { id:'case-conv',   name:'Case Converter',   cat:'Text',   icon:'fas fa-font',         color:'#3b82f6', bg:'rgba(59,130,246,0.1)', link:'texttools/text-case-converter.html' },
+        { id:'grammar',     name:'Grammar Checker',  cat:'Text',   icon:'fas fa-spell-check',  color:'#3b82f6', bg:'rgba(59,130,246,0.1)', link:'texttools/grammar-checker.html' },
+        { id:'tts',         name:'Text to Speech',   cat:'Text',   icon:'fas fa-volume-high',  color:'#3b82f6', bg:'rgba(59,130,246,0.1)', link:'texttools/text-to-speech.html' },
+        { id:'json-fmt',    name:'JSON Formatter',   cat:'Dev',    icon:'fas fa-brackets-curly',color:'#8b5cf6', bg:'rgba(139,92,246,0.1)',link:'webtools/json-formatter.html' },
+        { id:'minifier',    name:'HTML Minifier',    cat:'Dev',    icon:'fas fa-code',         color:'#8b5cf6', bg:'rgba(139,92,246,0.1)', link:'webtools/minifier.html' },
+        { id:'qr-gen',      name:'QR Generator',     cat:'Utility',icon:'fas fa-qrcode',       color:'#ec4899', bg:'rgba(236,72,153,0.1)', link:'utilitytools/qr-generator.html' },
+        { id:'pass-gen',    name:'Password Gen',     cat:'Utility',icon:'fas fa-key',          color:'#ec4899', bg:'rgba(236,72,153,0.1)', link:'utilitytools/password-generator.html' },
+    ];
+
+    const TEMPLATES = [
+        { icon:'📄', name:'PDF Batch Processor', desc:'Compress, then merge multiple PDFs into one clean file.', steps:['PDF Compressor','PDF Merger'], tags:['PDF','green'] },
+        { icon:'🖼️', name:'Image Optimizer', desc:'Resize images and compress them for web use.', steps:['Image Resizer','Image Compress'], tags:['Image','green'] },
+        { icon:'📝', name:'Document Converter', desc:'Convert Word to PDF then add a digital signature.', steps:['Word to PDF','Sign PDF'], tags:['PDF','blue'] },
+        { icon:'🌐', name:'Web Image Pipeline', desc:'Remove background, convert to WebP, then compress.', steps:['BG Remover','WebP Converter','Image Compress'], tags:['Image','green'] },
+        { icon:'🔐', name:'Secure PDF Flow', desc:'Merge PDFs, compress, then protect with password.', steps:['PDF Merger','PDF Compressor','Protect PDF'], tags:['PDF','orange'] },
+        { icon:'📊', name:'Content Pipeline', desc:'Grammar check, convert case, then generate QR for sharing.', steps:['Grammar Checker','Case Converter','QR Generator'], tags:['Text','blue'] },
+    ];
+
+    // State
+    let wfSteps = [];
+    let selectedNode = null;
+    let savedWorkflows = JSON.parse(localStorage.getItem('tm_workflows') || '[]');
+
+    // ── PALETTE RENDER ────────────────────────────────────────────────
+    function renderPalette(filter) {
+        const list = document.getElementById('paletteList');
+        const cats = {};
+        TOOLS.forEach(t => {
+            if (filter && !t.name.toLowerCase().includes(filter.toLowerCase()) && !t.cat.toLowerCase().includes(filter.toLowerCase())) return;
+            if (!cats[t.cat]) cats[t.cat] = [];
+            cats[t.cat].push(t);
+        });
+        let html = '';
+        Object.keys(cats).forEach(cat => {
+            html += `<div class="cat-label">${cat}</div>`;
+            cats[cat].forEach(t => {
+                html += `<div class="tool-chip" draggable="true" data-id="${t.id}" title="Drag to canvas">
+                    <div class="chip-icon" style="background:${t.bg};color:${t.color}"><i class="${t.icon}"></i></div>
+                    <span class="chip-name">${t.name}</span>
+                </div>`;
+            });
+        });
+        if (!html) html = '<p style="font-size:0.82rem;color:#9ca3af;padding:8px 4px;">No tools found</p>';
+        list.innerHTML = html;
+        attachChipEvents();
+    }
+
+    function attachChipEvents() {
+        document.querySelectorAll('.tool-chip').forEach(chip => {
+            chip.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('toolId', chip.dataset.id);
+                chip.classList.add('dragging');
+            });
+            chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+            chip.addEventListener('click', () => {
+                const tool = TOOLS.find(t => t.id === chip.dataset.id);
+                if (tool) addStep(tool);
+            });
+        });
+    }
+
+    // ── CANVAS ────────────────────────────────────────────────────────
+    const canvas = document.getElementById('wfCanvas');
+
+    canvas.addEventListener('dragover', e => { e.preventDefault(); canvas.classList.add('drag-over'); });
+    canvas.addEventListener('dragleave', () => canvas.classList.remove('drag-over'));
+    canvas.addEventListener('drop', e => {
+        e.preventDefault();
+        canvas.classList.remove('drag-over');
+        const id = e.dataTransfer.getData('toolId');
+        const tool = TOOLS.find(t => t.id === id);
+        if (tool) addStep(tool);
+    });
+
+    function addStep(tool) {
+        if (wfSteps.find(s => s.id === tool.id)) { showToast('⚠️ This step is already added', '#f59e0b'); return; }
+        wfSteps.push({ ...tool, config: {} });
+        renderCanvas();
+        updateUI();
+        showToast(`✅ "${tool.name}" added`);
+    }
+
+    function removeStep(id) {
+        wfSteps = wfSteps.filter(s => s.id !== id);
+        if (selectedNode === id) { selectedNode = null; document.getElementById('configPanel').classList.remove('show'); }
+        renderCanvas();
+        updateUI();
+    }
+
+    function renderCanvas() {
+        const empty = document.getElementById('canvasEmpty');
+        // Remove existing nodes
+        canvas.querySelectorAll('.wf-step').forEach(n => n.remove());
+
+        if (wfSteps.length === 0) {
+            empty.style.opacity = '1';
+            return;
+        }
+        empty.style.opacity = '0';
+
+        wfSteps.forEach((step, i) => {
+            const div = document.createElement('div');
+            div.className = 'wf-step';
+            div.innerHTML = `
+                ${i > 0 ? '<div class="wf-arrow"><i class="fas fa-chevron-right"></i></div>' : ''}
+                <div class="wf-node${selectedNode === step.id ? ' selected' : ''}" data-id="${step.id}">
+                    <div class="wf-node-icon" style="background:${step.bg};color:${step.color}"><i class="${step.icon}"></i></div>
+                    <div class="wf-node-info">
+                        <div class="wf-node-name">${step.name}</div>
+                        <div class="wf-node-cat">${step.cat}</div>
+                    </div>
+                    <div class="wf-node-del" data-del="${step.id}"><i class="fas fa-xmark"></i></div>
+                </div>
+            `;
+            canvas.appendChild(div);
+        });
+
+        // Node click → config
+        canvas.querySelectorAll('.wf-node').forEach(node => {
+            node.addEventListener('click', () => openConfig(node.dataset.id));
+        });
+        // Delete
+        canvas.querySelectorAll('.wf-node-del').forEach(btn => {
+            btn.addEventListener('click', e => { e.stopPropagation(); removeStep(btn.dataset.del); });
+        });
+    }
+
+    // ── CONFIG PANEL ──────────────────────────────────────────────────
+    function openConfig(id) {
+        selectedNode = id;
+        renderCanvas();
+        const step = wfSteps.find(s => s.id === id);
+        const panel = document.getElementById('configPanel');
+        document.getElementById('configTitle').innerHTML = `<i class="${step.icon}" style="color:${step.color}"></i> ${step.name} — Settings`;
+        // Generic config options
+        document.getElementById('configGrid').innerHTML = `
+            <div class="cfg-group">
+                <label class="cfg-label">Step Name</label>
+                <input class="cfg-input" id="cfgName" value="${step.name}" placeholder="Step name">
+            </div>
+            <div class="cfg-group">
+                <label class="cfg-label">Output Format</label>
+                <select class="cfg-select" id="cfgFormat">
+                    <option>Same as input</option>
+                    <option>PDF</option><option>JPG</option>
+                    <option>PNG</option><option>WebP</option>
+                    <option>DOCX</option><option>TXT</option>
+                </select>
+            </div>
+            <div class="cfg-group full">
+                <label class="cfg-label">Quality / Compression</label>
+                <input class="cfg-input" type="range" min="10" max="100" value="80" id="cfgQuality" style="padding:6px 0;cursor:pointer">
+                <span style="font-size:0.78rem;color:var(--muted)" id="qualityVal">80%</span>
+            </div>
+            <div class="cfg-group full">
+                <div class="toggle-row">
+                    <span class="toggle-label">Skip on Error</span>
+                    <label class="toggle"><input type="checkbox" id="cfgSkip"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+                </div>
+            </div>
+            <div class="cfg-group full">
+                <div class="toggle-row">
+                    <span class="toggle-label">Auto-download output</span>
+                    <label class="toggle"><input type="checkbox" id="cfgAuto" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+                </div>
+            </div>
+        `;
+        // Quality slider live
+        const slider = document.getElementById('cfgQuality');
+        const qVal = document.getElementById('qualityVal');
+        slider.addEventListener('input', () => qVal.textContent = slider.value + '%');
+        panel.classList.add('show');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.getElementById('configClose').addEventListener('click', () => {
+        document.getElementById('configPanel').classList.remove('show');
+        selectedNode = null;
+        renderCanvas();
+    });
+
+    // ── UPDATE UI ─────────────────────────────────────────────────────
+    function updateUI() {
+        const n = wfSteps.length;
+        document.getElementById('stepCountBadge').textContent = n + (n === 1 ? ' step' : ' steps');
+        document.getElementById('statSteps').textContent = n;
+        document.getElementById('runBtn').disabled = n === 0;
+    }
+
+    // Undo
+    document.getElementById('undoBtn').addEventListener('click', () => {
+        if (wfSteps.length === 0) return;
+        wfSteps.pop();
+        renderCanvas();
+        updateUI();
+        showToast('↩️ Last step removed');
+    });
+
+    // Clear
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        if (wfSteps.length === 0) return;
+        wfSteps = [];
+        selectedNode = null;
+        document.getElementById('configPanel').classList.remove('show');
+        renderCanvas();
+        updateUI();
+        showToast('🗑️ Canvas cleared');
+    });
+
+    // ── RUN WORKFLOW ──────────────────────────────────────────────────
+    document.getElementById('runBtn').addEventListener('click', () => {
+        const overlay = document.getElementById('modalOverlay');
+        const stepsEl = document.getElementById('modalSteps');
+        const bar = document.getElementById('modalBar');
+        const closeBtn = document.getElementById('modalCloseBtn');
+
+        stepsEl.innerHTML = wfSteps.map((s, i) =>
+            `<div class="prog-step" id="prog-${i}">
+                <div class="prog-icon wait" id="prog-icon-${i}"><i class="fas fa-clock"></i></div>
+                <span class="prog-name">${s.name}</span>
+                <span class="prog-status wait" id="prog-st-${i}">Waiting</span>
+            </div>`
+        ).join('');
+
+        bar.style.width = '0%';
+        closeBtn.classList.remove('show');
+        overlay.classList.add('show');
+
+        let current = 0;
+        function runNext() {
+            if (current >= wfSteps.length) {
+                bar.style.width = '100%';
+                closeBtn.classList.add('show');
+                document.getElementById('modalSteps').querySelectorAll('.prog-icon').forEach(el => {
+                    el.className = 'prog-icon done';
+                    el.innerHTML = '<i class="fas fa-check"></i>';
+                });
+                return;
+            }
+            // Mark running
+            const icon = document.getElementById(`prog-icon-${current}`);
+            const st = document.getElementById(`prog-st-${current}`);
+            icon.className = 'prog-icon running';
+            icon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            st.className = 'prog-status running';
+            st.textContent = 'Processing…';
+
+            const pct = Math.round(((current) / wfSteps.length) * 100);
+            bar.style.width = pct + '%';
+
+            setTimeout(() => {
+                icon.className = 'prog-icon done';
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+                st.className = 'prog-status done';
+                st.textContent = 'Done ✓';
+                current++;
+                setTimeout(runNext, 300);
+            }, 900 + Math.random() * 600);
+        }
+        runNext();
+    });
+
+    document.getElementById('modalCloseBtn').addEventListener('click', () => {
+        document.getElementById('modalOverlay').classList.remove('show');
+        showToast('🎉 Workflow completed successfully!');
+    });
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modalOverlay'))
+            document.getElementById('modalOverlay').classList.remove('show');
+    });
+
+    // ── SAVE WORKFLOW ─────────────────────────────────────────────────
+    document.getElementById('saveWfBtn').addEventListener('click', () => {
+        if (wfSteps.length === 0) { showToast('⚠️ Add steps first', '#f59e0b'); return; }
+        const wf = {
+            id: Date.now(),
+            name: 'Workflow ' + (savedWorkflows.length + 1),
+            steps: wfSteps.map(s => s.name),
+            icons: wfSteps.map(s => s.icon),
+            colors: wfSteps.map(s => s.color),
+            cat: wfSteps[0].cat,
+            date: new Date().toLocaleDateString()
+        };
+        savedWorkflows.push(wf);
+        localStorage.setItem('tm_workflows', JSON.stringify(savedWorkflows));
+        document.getElementById('statSaved').textContent = savedWorkflows.length;
+        renderSaved();
+        showToast('📁 Workflow saved!');
+    });
+
+    // ── RENDER SAVED ──────────────────────────────────────────────────
+    function renderSaved() {
+        const grid = document.getElementById('savedGrid');
+        if (savedWorkflows.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#9ca3af;font-size:0.9rem;">
+                <i class="fas fa-folder-open" style="font-size:2.5rem;display:block;margin-bottom:10px;color:#d1d5db;"></i>
+                No saved workflows yet. Build and save one above!
+            </div>`;
+            return;
+        }
+        const catColor = { PDF:'red', Image:'green', Text:'blue', Dev:'purple', Utility:'orange' };
+        grid.innerHTML = savedWorkflows.map(wf => `
+            <div class="saved-card" onclick="loadWorkflow(${wf.id})">
+                <div class="saved-card-top">
+                    <div class="saved-card-icon"><i class="fas fa-diagram-project"></i></div>
+                    <button class="saved-card-menu" onclick="event.stopPropagation();deleteSaved(${wf.id})"><i class="fas fa-trash" style="color:#ef4444"></i></button>
+                </div>
+                <div class="saved-card-name">${wf.name}</div>
+                <div class="saved-card-steps">${wf.steps.length} step${wf.steps.length !== 1 ? 's' : ''} · Saved ${wf.date}</div>
+                <div class="saved-card-tags">${wf.steps.slice(0,3).map(s => `<span class="stag ${catColor[wf.cat]||'blue'}">${s}</span>`).join('')}${wf.steps.length > 3 ? `<span class="stag blue">+${wf.steps.length-3}</span>` : ''}</div>
+            </div>
+        `).join('');
+    }
+
+    window.deleteSaved = function(id) {
+        savedWorkflows = savedWorkflows.filter(w => w.id !== id);
+        localStorage.setItem('tm_workflows', JSON.stringify(savedWorkflows));
+        document.getElementById('statSaved').textContent = savedWorkflows.length;
+        renderSaved();
+        showToast('🗑️ Workflow deleted');
+    };
+
+    window.loadWorkflow = function(id) {
+        const wf = savedWorkflows.find(w => w.id === id);
+        if (!wf) return;
+        wfSteps = wf.steps.map(name => TOOLS.find(t => t.name === name)).filter(Boolean);
+        renderCanvas();
+        updateUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast(`📂 "${wf.name}" loaded`);
+    };
+
+    // ── TEMPLATES ─────────────────────────────────────────────────────
+    function renderTemplates() {
+        const grid = document.getElementById('templateGrid');
+        grid.innerHTML = TEMPLATES.map((t, i) => `
+            <div class="tpl-card">
+                <div class="tpl-icon">${t.icon}</div>
+                <div class="tpl-name">${t.name}</div>
+                <div class="tpl-desc">${t.desc}</div>
+                <div class="tpl-steps">
+                    ${t.steps.map((s, si) => `
+                        <span class="tpl-step-tag">${s}</span>
+                        ${si < t.steps.length - 1 ? '<span class="tpl-arrow"><i class="fas fa-chevron-right"></i></span>' : ''}
+                    `).join('')}
+                </div>
+                <button class="tpl-use-btn" onclick="useTemplate(${i})"><i class="fas fa-magic"></i> Use This Template</button>
+            </div>
+        `).join('');
+    }
+
+    window.useTemplate = function(i) {
+        const tpl = TEMPLATES[i];
+        wfSteps = [];
+        tpl.steps.forEach(name => {
+            const tool = TOOLS.find(t => t.name === name);
+            if (tool) wfSteps.push({ ...tool, config: {} });
+        });
+        renderCanvas();
+        updateUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast(`⚡ Template "${tpl.name}" loaded!`);
+    };
+
+    // ── TOAST ─────────────────────────────────────────────────────────
+    function showToast(msg, color) {
+        const toast = document.getElementById('toast');
+        const icon = toast.querySelector('i');
+        document.getElementById('toastMsg').textContent = msg;
+        if (color) icon.style.color = color; else icon.style.color = '#10b981';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── PALETTE SEARCH ────────────────────────────────────────────────
+    document.getElementById('paletteSearch').addEventListener('input', function() {
+        renderPalette(this.value);
+    });
+
+    // Hero create button
+    document.getElementById('heroCreateBtn').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('paletteSearch').focus();
+    });
+
+    // ── INIT ──────────────────────────────────────────────────────────
+    renderPalette('');
+    renderCanvas();
+    renderTemplates();
+    renderSaved();
+    document.getElementById('statSaved').textContent = savedWorkflows.length;
+    updateUI();
+
+})();
+</script>
 </body>
 </html>
