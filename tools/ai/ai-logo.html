@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Logo Maker – ToolMatrix</title>
+    <meta name="description" content="Create professional logos with AI for free. Describe your brand and get instant logo concepts.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#10b981;--dark:#0f172a;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+        header{background:linear-gradient(135deg,#020617,#0f172a);border-bottom:1px solid rgba(16,185,129,0.15);height:68px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
+        .logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#10b981,#0ea5e9);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem}
+        .logo-text{font-size:1.45rem;font-weight:900}
+        .logo-text .t{background:linear-gradient(135deg,#fff,#cbd5e1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo-text .m{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .back-btn{display:flex;align-items:center;gap:8px;color:#94a3b8;text-decoration:none;font-size:0.88rem;font-weight:600;padding:8px 18px;border-radius:10px;border:1px solid rgba(148,163,184,0.2);transition:all 0.3s}
+        .back-btn:hover{color:#fff;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.08)}
+        /* HERO */
+        .hero{background:linear-gradient(150deg,#fffbeb,#fef9c3,#fff7ed);border-bottom:1px solid var(--border);padding:56px 24px 64px;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-60px;left:-60px;width:350px;height:350px;background:radial-gradient(circle,rgba(245,158,11,0.12) 0%,transparent 70%);border-radius:50%}
+        .hero::after{content:'';position:absolute;bottom:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(239,68,68,0.08) 0%,transparent 70%);border-radius:50%}
+        .ai-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(239,68,68,0.08));border:1px solid rgba(245,158,11,0.3);color:#b45309;font-size:0.82rem;font-weight:700;padding:7px 18px;border-radius:50px;margin-bottom:18px;position:relative;z-index:1}
+        .hero h1{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:900;color:var(--dark);letter-spacing:-1.5px;margin-bottom:12px;position:relative;z-index:1}
+        .hero h1 span{background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto;line-height:1.7;position:relative;z-index:1}
+        .main{max-width:960px;margin:0 auto;padding:44px 24px 80px}
+        /* FORM */
+        .card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:24px}
+        .card h2{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+        .card h2 i{color:#f59e0b}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+        .fg-full{grid-column:1/-1}
+        .fg label{display:block;font-size:0.8rem;font-weight:700;color:#374151;margin-bottom:7px}
+        .fi{width:100%;padding:12px 15px;background:#f8fafc;border:1.5px solid var(--border);border-radius:11px;font-size:0.93rem;font-family:'Inter',sans-serif;color:var(--dark);outline:none;transition:all 0.3s}
+        .fi:focus{border-color:#f59e0b;background:#fff;box-shadow:0 0 0 4px rgba(245,158,11,0.08)}
+        .fi::placeholder{color:#9ca3af}
+        .fs{width:100%;padding:12px 15px;background:#f8fafc;border:1.5px solid var(--border);border-radius:11px;font-size:0.88rem;font-family:'Inter',sans-serif;color:var(--dark);outline:none;cursor:pointer;transition:all 0.3s}
+        .fs:focus{border-color:#f59e0b;background:#fff}
+        /* STYLE GRID */
+        .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:6px}
+        .sopt{padding:10px 8px;border:2px solid var(--border);border-radius:11px;text-align:center;cursor:pointer;transition:all 0.25s;font-size:0.78rem;font-weight:700;color:var(--muted)}
+        .sopt:hover,.sopt.active{border-color:#f59e0b;color:#b45309;background:rgba(245,158,11,0.1)}
+        .sopt span{font-size:1.4rem;display:block;margin-bottom:5px}
+        /* COLOR SWATCHES */
+        .color-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+        .cswatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all 0.2s;flex-shrink:0}
+        .cswatch.active{border-color:#0f172a;transform:scale(1.15)}
+        .cswatch:hover{transform:scale(1.1)}
+        /* GEN BUTTON */
+        .gen-btn{width:100%;padding:16px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:white;font-weight:800;font-size:1rem;border:none;border-radius:13px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:11px;box-shadow:0 6px 25px rgba(245,158,11,0.3);margin-top:8px}
+        .gen-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 35px rgba(245,158,11,0.45)}
+        .gen-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none}
+        /* LOGO GRID */
+        .logo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+        .logo-item{border:2px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.3s;background:#f8fafc}
+        .logo-item:hover{border-color:#f59e0b;transform:translateY(-4px);box-shadow:0 12px 28px rgba(245,158,11,0.15)}
+        .logo-item.selected{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,0.2)}
+        .logo-img{width:100%;aspect-ratio:1;object-fit:contain;padding:8px;display:block}
+        .logo-load{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+        .logo-spinner{width:36px;height:36px;border:3px solid rgba(245,158,11,0.15);border-top-color:#f59e0b;border-radius:50%;animation:spin 0.8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .logo-foot{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fff;font-size:0.75rem;font-weight:700;color:var(--muted)}
+        .logo-dl{background:none;border:none;color:#f59e0b;cursor:pointer;font-size:0.8rem;font-weight:700;padding:3px 8px;border-radius:6px;font-family:'Inter',sans-serif}
+        .logo-dl:hover{background:rgba(245,158,11,0.1)}
+        /* PREVIEW */
+        .preview-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+        .pimg-wrap{background:#f8fafc;border-radius:14px;padding:20px;border:1px solid var(--border);text-align:center}
+        .pimg-wrap img{max-width:100%;max-height:220px;object-fit:contain}
+        .pinfo h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+        .pinfo p{font-size:0.86rem;color:var(--muted);line-height:1.6;margin-bottom:18px}
+        .dl-btn{display:inline-flex;align-items:center;gap:9px;padding:12px 24px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:white;font-weight:700;font-size:0.92rem;border:none;border-radius:11px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;box-shadow:0 4px 18px rgba(245,158,11,0.3)}
+        .dl-btn:hover{transform:translateY(-2px)}
+        .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+        .results-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+        .regen-btn{padding:9px 18px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:white;border:none;border-radius:9px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:7px;transition:all 0.3s}
+        .regen-btn:hover{transform:translateY(-1px)}
+        .hidden{display:none}
+        @media(max-width:640px){.form-grid,.preview-inner{grid-template-columns:1fr}.fg-full{grid-column:1}.main{padding:28px 16px 60px}}
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-inner">
+        <a href="../index.html" class="logo">
+            <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+            <span class="logo-text"><span class="t">Tool</span><span class="m">Matrix</span></span>
+        </a>
+        <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</header>
+<section class="hero">
+    <div class="ai-badge"><i class="fas fa-stars"></i> AI Powered</div>
+    <h1>AI <span>Logo Maker</span></h1>
+    <p>Describe your brand and let AI generate unique professional logo concepts. Free, fast, no design skills needed.</p>
+</section>
+<main class="main">
+    <div class="card">
+        <h2><i class="fas fa-pen-fancy"></i> Brand Details</h2>
+        <div class="form-grid">
+            <div class="fg">
+                <label>Brand / Company Name <span style="color:#ef4444">*</span></label>
+                <input type="text" class="fi" id="brandName" placeholder="e.g. ToolMatrix, NexaShop…" maxlength="40">
+            </div>
+            <div class="fg">
+                <label>Industry</label>
+                <select class="fs" id="industry">
+                    <option value="technology">Technology / Software</option>
+                    <option value="e-commerce">E-Commerce / Retail</option>
+                    <option value="food and restaurant">Food & Restaurant</option>
+                    <option value="fashion">Fashion / Clothing</option>
+                    <option value="health and wellness">Health & Wellness</option>
+                    <option value="education">Education</option>
+                    <option value="finance">Finance / Banking</option>
+                    <option value="creative agency">Creative Agency</option>
+                    <option value="gaming">Gaming</option>
+                    <option value="travel">Travel</option>
+                    <option value="construction">Construction</option>
+                    <option value="beauty and cosmetics">Beauty & Cosmetics</option>
+                </select>
+            </div>
+            <div class="fg fg-full">
+                <label>Brand Description (optional)</label>
+                <input type="text" class="fi" id="brandDesc" placeholder="e.g. A modern tools platform for creators and developers" maxlength="100">
+            </div>
+            <div class="fg fg-full">
+                <label>Logo Style</label>
+                <div class="style-grid" id="styleGrid">
+                    <div class="sopt active" data-s="minimalist, flat design, clean, simple"><span>⬜</span>Minimalist</div>
+                    <div class="sopt" data-s="modern geometric, bold shapes, abstract"><span>🔷</span>Geometric</div>
+                    <div class="sopt" data-s="vintage, retro, classic badge style"><span>🏆</span>Vintage</div>
+                    <div class="sopt" data-s="luxury, elegant, premium, sophisticated"><span>✨</span>Luxury</div>
+                    <div class="sopt" data-s="playful, fun, colorful, friendly, cartoon"><span>🎨</span>Playful</div>
+                    <div class="sopt" data-s="futuristic, tech, gradient, glow, cyberpunk"><span>🚀</span>Futuristic</div>
+                    <div class="sopt" data-s="hand drawn, sketch, organic, illustrative"><span>✏️</span>Hand-drawn</div>
+                    <div class="sopt" data-s="3D dimensional, modern render, glossy"><span>🔮</span>3D Style</div>
+                </div>
+            </div>
+            <div class="fg fg-full">
+                <label>Brand Color</label>
+                <div class="color-row">
+                    <div class="cswatch active" data-c="blue and white" style="background:#3b82f6" title="Blue"></div>
+                    <div class="cswatch" data-c="emerald green and white" style="background:#10b981" title="Green"></div>
+                    <div class="cswatch" data-c="amber orange and black" style="background:#f59e0b" title="Orange"></div>
+                    <div class="cswatch" data-c="red and white" style="background:#ef4444" title="Red"></div>
+                    <div class="cswatch" data-c="purple and white" style="background:#8b5cf6" title="Purple"></div>
+                    <div class="cswatch" data-c="pink and white" style="background:#ec4899" title="Pink"></div>
+                    <div class="cswatch" data-c="black and white, monochrome" style="background:#0f172a" title="Black"></div>
+                    <div class="cswatch" data-c="sky blue and white" style="background:#0ea5e9" title="Sky Blue"></div>
+                    <div class="cswatch" data-c="gold and dark navy" style="background:#d97706" title="Gold"></div>
+                </div>
+            </div>
+            <div class="fg">
+                <label>Concepts to Generate</label>
+                <select class="fs" id="numLogos">
+                    <option value="2">2 Concepts</option>
+                    <option value="4" selected>4 Concepts</option>
+                    <option value="6">6 Concepts</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label>Background</label>
+                <select class="fs" id="bgOpt">
+                    <option value="white background">White</option>
+                    <option value="transparent background">Transparent</option>
+                    <option value="dark background">Dark</option>
+                    <option value="gradient background">Gradient</option>
+                </select>
+            </div>
+        </div>
+        <button class="gen-btn" id="genBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate Logo Concepts</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card hidden" id="resultsCard">
+        <div class="results-header">
+            <div class="results-title"><i class="fas fa-th-large" style="color:#f59e0b"></i> Logo Concepts — <span id="brandLabel" style="color:#f59e0b"></span></div>
+            <button class="regen-btn" id="regenBtn"><i class="fas fa-rotate"></i> Regenerate</button>
+        </div>
+        <div class="logo-grid" id="logoGrid"></div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="card hidden" id="previewCard" style="background:linear-gradient(135deg,#fffbeb,#fff7ed);border-color:rgba(245,158,11,0.2)">
+        <h2><i class="fas fa-eye"></i> Selected Logo Preview</h2>
+        <div class="preview-inner">
+            <div class="pimg-wrap"><img id="previewImg" src="" alt="Selected logo"></div>
+            <div class="pinfo">
+                <h3 id="previewBrand">Your Brand</h3>
+                <p id="previewStyle">Style details will appear here.</p>
+                <button class="dl-btn" id="dlBtn"><i class="fas fa-download"></i> Download Logo</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+(function(){
+    var selStyle = 'minimalist, flat design, clean, simple';
+    var selColor = 'blue and white';
+    var selUrl   = '';
+    var lastBrand= '';
+    var loaded   = 0;
+    var total    = 0;
+
+    document.querySelectorAll('.sopt').forEach(function(o){
+        o.addEventListener('click',function(){
+            document.querySelectorAll('.sopt').forEach(function(x){x.classList.remove('active')});
+            this.classList.add('active');
+            selStyle = this.dataset.s;
+        });
+    });
+    document.querySelectorAll('.cswatch').forEach(function(s){
+        s.addEventListener('click',function(){
+            document.querySelectorAll('.cswatch').forEach(function(x){x.classList.remove('active')});
+            this.classList.add('active');
+            selColor = this.dataset.c;
+        });
+    });
+
+    function buildPrompt(brand,idx){
+        var industry = document.getElementById('industry').value;
+        var desc     = document.getElementById('brandDesc').value.trim();
+        var bg       = document.getElementById('bgOpt').value;
+        var variants = ['primary concept','secondary concept','icon variant','wordmark variant','badge style','alternate layout'];
+        return 'Professional logo design for brand name "'+brand+'", '+industry+' company'+(desc?', '+desc:'')+', '+selStyle+' logo style, '+selColor+' color palette, '+bg+', '+variants[idx%variants.length]+', vector art, sharp clean edges, centered, professional brand identity, no watermark';
+    }
+
+    function buildUrl(prompt){
+        return 'https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?width=512&height=512&seed='+Math.floor(Math.random()*999999)+'&nologo=true&enhance=true';
+    }
+
+    function generate(){
+        var brand = document.getElementById('brandName').value.trim();
+        if(!brand){alert('Please enter your brand name!');return;}
+        lastBrand = brand;
+        total = parseInt(document.getElementById('numLogos').value)||4;
+        loaded = 0;
+
+        var rc = document.getElementById('resultsCard');
+        rc.classList.remove('hidden');
+        rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+        document.getElementById('previewCard').classList.add('hidden');
+        document.getElementById('brandLabel').textContent = brand;
+
+        var btn = document.getElementById('genBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="logo-spinner" style="width:20px;height:20px;border-width:3px;margin:0"></div> Generating…';
+
+        var grid = document.getElementById('logoGrid');
+        grid.innerHTML = '';
+
+        for(var i=0;i<total;i++){
+            (function(idx){
+                var item = document.createElement('div');
+                item.className = 'logo-item';
+                item.id = 'li-'+idx;
+                item.innerHTML = '<div class="logo-load"><div class="logo-spinner"></div></div><div class="logo-foot"><span>Concept '+(idx+1)+'</span></div>';
+                grid.appendChild(item);
+
+                var url = buildUrl(buildPrompt(brand,idx));
+                var img = new Image();
+                img.onload = function(){
+                    var el = document.getElementById('li-'+idx);
+                    if(!el) return;
+                    el.innerHTML = '<img class="logo-img" src="'+url+'" alt="Logo '+(idx+1)+'"><div class="logo-foot"><span>Concept '+(idx+1)+'</span><button class="logo-dl" onclick="event.stopPropagation();dlLogo(\''+url+'\',\''+brand+'-logo-'+(idx+1)+'\')"><i class="fas fa-download"></i> Save</button></div>';
+                    el.addEventListener('click',function(){selectLogo(url,brand,idx+1)});
+                    checkDone();
+                };
+                img.onerror = function(){
+                    var el = document.getElementById('li-'+idx);
+                    if(el) el.innerHTML = '<div class="logo-load" style="flex-direction:column;gap:8px"><i class="fas fa-triangle-exclamation" style="color:#ef4444;font-size:1.5rem"></i><span style="font-size:0.75rem;color:#64748b">Failed</span></div><div class="logo-foot"><span>Concept '+(idx+1)+'</span></div>';
+                    checkDone();
+                };
+                img.src = url;
+            })(i);
+        }
+    }
+
+    function checkDone(){
+        loaded++;
+        if(loaded>=total){
+            var btn = document.getElementById('genBtn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Logo Concepts';
+        }
+    }
+
+    function selectLogo(url,brand,num){
+        selUrl = url;
+        document.querySelectorAll('.logo-item').forEach(function(el){el.classList.remove('selected')});
+        var pc = document.getElementById('previewCard');
+        pc.classList.remove('hidden');
+        document.getElementById('previewImg').src = url;
+        document.getElementById('previewBrand').textContent = brand;
+        document.getElementById('previewStyle').textContent = 'Concept '+num+' · '+selStyle+' · '+selColor;
+        pc.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    window.dlLogo = function(url,name){
+        var a = document.createElement('a');
+        a.href = url; a.download = name+'.png'; a.target='_blank'; a.click();
+    };
+
+    document.getElementById('dlBtn').addEventListener('click',function(){
+        if(selUrl) dlLogo(selUrl,lastBrand+'-logo');
+    });
+    document.getElementById('genBtn').addEventListener('click',generate);
+    document.getElementById('regenBtn').addEventListener('click',function(){loaded=0;generate()});
+    document.getElementById('brandName').addEventListener('keydown',function(e){if(e.key==='Enter') generate()});
+})();
+</script>
+</body>
+</html>
