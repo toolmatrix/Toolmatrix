@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black & White Photo Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 25%, #f1f8e9 50%, #dcedc8 75%, #e8f5e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2e7d32;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            text-align: center;
+            padding: 35px 20px 10px;
+        }
+
+        .logo-box {
+            width: 85px; height: 85px;
+            background: linear-gradient(135deg, #37474f, #607d8b, #37474f);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 40px;
+            box-shadow: 0 10px 30px rgba(55, 71, 79, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .logo-box::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #81c784, #a5d6a7, #81c784);
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .header h1 {
+            font-size: 2.1rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #2e7d32, #388e3c, #43a047);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            color: #66bb6a;
+            font-size: 0.92rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* ===== FEATURE CHIPS ===== */
+        .feature-chips {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0 28px;
+        }
+
+        .chip {
+            background: rgba(255,255,255,0.75);
+            border: 1.5px solid #a5d6a7;
+            border-radius: 50px;
+            padding: 7px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #388e3c;
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .chip:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+        }
+
+        /* ===== UPLOAD AREA ===== */
+        .upload-area {
+            background: rgba(255,255,255,0.65);
+            border: 2.5px dashed #81c784;
+            border-radius: 26px;
+            padding: 55px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: #43a047;
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(67, 160, 71, 0.12);
+        }
+
+        .upload-area.dragover {
+            border-color: #2e7d32;
+            background: #e8f5e9;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 58px;
+            margin-bottom: 14px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .upload-area h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .upload-area .hint {
+            color: #81c784;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .browse-btn {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 12px 34px;
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 6px 20px rgba(67, 160, 71, 0.3);
+            transition: all 0.3s;
+        }
+
+        .browse-btn:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 10px 30px rgba(67, 160, 71, 0.45);
+        }
+
+        #fileInput { display: none; }
+
+        /* ===== EDITOR PANEL ===== */
+        .editor-panel {
+            display: none;
+            margin-top: 28px;
+            animation: slideUp 0.5s ease;
+        }
+
+        .editor-panel.show { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== IMAGE COMPARISON ===== */
+        .comparison-container {
+            background: rgba(255,255,255,0.7);
+            border: 1.5px solid #c8e6c9;
+            border-radius: 22px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .comparison-header h3 {
+            font-size: 1.05rem;
+            color: #2e7d32;
+        }
+
+        .img-info {
+            display: flex; gap: 12px; flex-wrap: wrap;
+        }
+
+        .info-tag {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #388e3c;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .img-box {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .img-box:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .img-box img, .img-box canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .img-label {
+            position: absolute;
+            top: 12px; left: 12px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(8px);
+        }
+
+        .label-original {
+            background: rgba(67, 160, 71, 0.85);
+            color: #fff;
+        }
+
+        .label-bw {
+            background: rgba(55, 71, 79, 0.85);
+            color: #fff;
+        }
+
+        /* ===== FILTER MODES ===== */
+        .filter-section {
+            margin-top: 22px;
+            background: rgba(255,255,255,0.7);
+            border: 1.5px solid #c8e6c9;
+            border-radius: 22px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-section h3 {
+            font-size: 1rem;
+            color: #2e7d32;
+            margin-bottom: 16px;
+        }
+
+        .filter-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .filter-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 16px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .filter-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+        }
+
+        .filter-card.active {
+            border-color: #43a047;
+            background: #e8f5e9;
+            box-shadow: 0 6px 20px rgba(67, 160, 71, 0.18);
+        }
+
+        .filter-card.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px; right: 10px;
+            background: #43a047;
+            color: #fff;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .filter-card .filter-icon {
+            font-size: 30px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .filter-card .filter-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #37474f;
+        }
+
+        .filter-card .filter-desc {
+            font-size: 0.68rem;
+            color: #90a4ae;
+            margin-top: 3px;
+        }
+
+        /* ===== SLIDERS ===== */
+        .sliders-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .slider-group {
+            background: #fff;
+            border: 1.5px solid #e8f5e9;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .slider-group .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slider-group .slider-header label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .slider-group .slider-header span {
+            background: #e8f5e9;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #43a047;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #c8e6c9, #43a047);
+            outline: none;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2e7d32, #43a047);
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(46,125,50,0.3);
+            transition: transform 0.2s;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 14px 36px;
+            border: none;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-convert {
+            background: linear-gradient(135deg, #37474f, #546e7a, #607d8b);
+            color: #fff;
+            box-shadow: 0 8px 28px rgba(55, 71, 79, 0.35);
+        }
+
+        .btn-convert:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(55, 71, 79, 0.5);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #2e7d32, #43a047, #66bb6a);
+            color: #fff;
+            box-shadow: 0 8px 28px rgba(46, 125, 50, 0.35);
+            display: none;
+        }
+
+        .btn-download.show { display: flex; }
+
+        .btn-download:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(46, 125, 50, 0.5);
+        }
+
+        .btn-reset {
+            background: #fff;
+            color: #e53935;
+            border: 2px solid #ef9a9a;
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.1);
+        }
+
+        .btn-reset:hover {
+            background: #ffebee;
+            transform: translateY(-2px);
+        }
+
+        .btn-new {
+            background: #fff;
+            color: #43a047;
+            border: 2px solid #a5d6a7;
+            box-shadow: 0 4px 15px rgba(67,160,71,0.1);
+        }
+
+        .btn-new:hover {
+            background: #e8f5e9;
+            transform: translateY(-2px);
+        }
+
+        /* ===== FORMAT SELECT ===== */
+        .download-options {
+            display: none;
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        .download-options.show { display: block; }
+
+        .format-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .format-btn {
+            padding: 9px 22px;
+            border: 2px solid #c8e6c9;
+            background: #fff;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            color: #388e3c;
+            transition: all 0.3s;
+        }
+
+        .format-btn:hover, .format-btn.active {
+            background: #e8f5e9;
+            border-color: #43a047;
+        }
+
+        .quality-row {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .quality-row label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #388e3c;
+        }
+
+        .quality-row select {
+            padding: 8px 16px;
+            border: 1.5px solid #c8e6c9;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.82rem;
+            color: #2e7d32;
+            background: #fff;
+            outline: none;
+        }
+
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(232, 245, 233, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.show { display: flex; }
+
+        .loader-ring {
+            width: 70px; height: 70px;
+            border: 5px solid #c8e6c9;
+            border-top-color: #2e7d32;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-overlay p {
+            margin-top: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #2e7d32, #43a047);
+            color: #fff;
+            padding: 14px 30px;
+            border-radius: 60px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 10px 35px rgba(46,125,50,0.4);
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            margin-top: 45px;
+            padding: 20px;
+            color: #81c784;
+            font-size: 0.82rem;
+        }
+
+        .footer-features {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .footer-feature {
+            font-size: 0.76rem;
+            color: #66bb6a;
+            font-weight: 500;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* ===== HIDDEN CANVAS ===== */
+        #hiddenCanvas { display: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .header h1 { font-size: 1.55rem; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .sliders-grid { grid-template-columns: 1fr; }
+            .filter-modes { grid-template-columns: repeat(3, 1fr); }
+            .actions { flex-direction: column; align-items: center; }
+        }
+
+        @media (max-width: 480px) {
+            .filter-modes { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo-box">🖤</div>
+        <h1>Black & White Converter</h1>
+        <p class="subtitle">Convert any photo to stunning B&W or grayscale — instantly ✨</p>
+    </div>
+
+    <!-- FEATURE CHIPS -->
+    <div class="feature-chips">
+        <div class="chip">⚡ Instant Convert</div>
+        <div class="chip">🎨 6 B&W Modes</div>
+        <div class="chip">🎛️ Fine Controls</div>
+        <div class="chip">💾 HD Download</div>
+        <div class="chip">🔒 100% Private</div>
+    </div>
+
+    <!-- UPLOAD AREA -->
+    <div class="upload-area" id="dropZone">
+        <span class="upload-icon">📷</span>
+        <h2>Drop your photo here</h2>
+        <p class="hint">or click to browse — supports PNG, JPG, JPEG, WEBP, BMP</p>
+        <button class="browse-btn" onclick="document.getElementById('fileInput').click()">📁 Browse Photo</button>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <!-- EDITOR PANEL -->
+    <div class="editor-panel" id="editorPanel">
+
+        <!-- COMPARISON -->
+        <div class="comparison-container">
+            <div class="comparison-header">
+                <h3>🖼️ Before & After</h3>
+                <div class="img-info">
+                    <span class="info-tag" id="infoName">—</span>
+                    <span class="info-tag" id="infoDim">—</span>
+                    <span class="info-tag" id="infoSize">—</span>
+                </div>
+            </div>
+            <div class="comparison-grid">
+                <div class="img-box">
+                    <span class="img-label label-original">🌈 Original</span>
+                    <img id="originalImg" src="" alt="Original">
+                </div>
+                <div class="img-box">
+                    <span class="img-label label-bw">🖤 B&W Result</span>
+                    <canvas id="bwCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER MODES -->
+        <div class="filter-section">
+            <h3>🎨 Choose B&W Style</h3>
+            <div class="filter-modes" id="filterModes">
+                <div class="filter-card active" data-filter="classic" onclick="selectFilter(this)">
+                    <span class="filter-icon">⬛</span>
+                    <span class="filter-name">Classic</span>
+                    <span class="filter-desc">Standard grayscale</span>
+                </div>
+                <div class="filter-card" data-filter="luminosity" onclick="selectFilter(this)">
+                    <span class="filter-icon">💡</span>
+                    <span class="filter-name">Luminosity</span>
+                    <span class="filter-desc">Human-eye weighted</span>
+                </div>
+                <div class="filter-card" data-filter="high-contrast" onclick="selectFilter(this)">
+                    <span class="filter-icon">🔲</span>
+                    <span class="filter-name">High Contrast</span>
+                    <span class="filter-desc">Deep blacks & whites</span>
+                </div>
+                <div class="filter-card" data-filter="vintage" onclick="selectFilter(this)">
+                    <span class="filter-icon">📜</span>
+                    <span class="filter-name">Vintage</span>
+                    <span class="filter-desc">Warm sepia-gray tone</span>
+                </div>
+                <div class="filter-card" data-filter="noir" onclick="selectFilter(this)">
+                    <span class="filter-icon">🌑</span>
+                    <span class="filter-name">Film Noir</span>
+                    <span class="filter-desc">Dramatic dark mood</span>
+                </div>
+                <div class="filter-card" data-filter="soft" onclick="selectFilter(this)">
+                    <span class="filter-icon">☁️</span>
+                    <span class="filter-name">Soft B&W</span>
+                    <span class="filter-desc">Gentle faded look</span>
+                </div>
+            </div>
+
+            <!-- SLIDERS -->
+            <div class="sliders-grid">
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label>☀️ Brightness</label>
+                        <span id="brightnessVal">0</span>
+                    </div>
+                    <input type="range" id="brightness" min="-100" max="100" value="0" oninput="updateSlider('brightness')">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label>🎛️ Contrast</label>
+                        <span id="contrastVal">0</span>
+                    </div>
+                    <input type="range" id="contrast" min="-100" max="100" value="0" oninput="updateSlider('contrast')">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label>🌀 Grain</label>
+                        <span id="grainVal">0</span>
+                    </div>
+                    <input type="range" id="grain" min="0" max="80" value="0" oninput="updateSlider('grain')">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label>🔳 Vignette</label>
+                        <span id="vignetteVal">0</span>
+                    </div>
+                    <input type="range" id="vignette" min="0" max="100" value="0" oninput="updateSlider('vignette')">
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+            <button class="action-btn btn-convert" onclick="applyFilter()">🖤 Convert to B&W</button>
+            <button class="action-btn btn-download" id="downloadBtn" onclick="toggleDownloadOptions()">💾 Download</button>
+            <button class="action-btn btn-reset" onclick="resetSliders()">🔄 Reset</button>
+            <button class="action-btn btn-new" onclick="newPhoto()">📷 New Photo</button>
+        </div>
+
+        <!-- DOWNLOAD OPTIONS -->
+        <div class="download-options" id="downloadOptions">
+            <div class="format-row">
+                <button class="format-btn active" data-fmt="png" onclick="selectFormat(this)">PNG</button>
+                <button class="format-btn" data-fmt="jpeg" onclick="selectFormat(this)">JPEG</button>
+                <button class="format-btn" data-fmt="webp" onclick="selectFormat(this)">WEBP</button>
+            </div>
+            <div class="quality-row">
+                <label>Quality:</label>
+                <select id="qualitySelect">
+                    <option value="1.0">Maximum (100%)</option>
+                    <option value="0.92" selected>High (92%)</option>
+                    <option value="0.8">Medium (80%)</option>
+                    <option value="0.6">Low (60%)</option>
+                </select>
+                <button class="browse-btn" style="padding:10px 28px; font-size:0.85rem;" onclick="downloadImage()">⬇️ Download Now</button>
+            </div>
+        </div>
+
+    </div><!-- editor-panel end -->
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Made with 💚 — Black & White Photo Converter</p>
+        <div class="footer-features">
+            <span class="footer-feature">🔒 No Upload</span>
+            <span class="footer-feature">⚡ Real-time</span>
+            <span class="footer-feature">🖥️ Works Offline</span>
+            <span class="footer-feature">🆓 Free Forever</span>
+        </div>
+    </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loader-ring"></div>
+    <p>Converting your photo...</p>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Done!</div>
+
+<!-- HIDDEN CANVAS -->
+<canvas id="hiddenCanvas"></canvas>
+
+<script>
+    let originalImage = null;
+    let currentFilter = 'classic';
+    let selectedFormat = 'png';
+    let imageFileName = 'photo';
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const editorPanel = document.getElementById('editorPanel');
+    const bwCanvas = document.getElementById('bwCanvas');
+    const ctx = bwCanvas.getContext('2d');
+
+    // ===== DRAG & DROP =====
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    dropZone.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fileInput.click(); });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+    // ===== HANDLE FILE =====
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) return;
+        imageFileName = file.name.split('.')[0];
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                originalImage = img;
+                document.getElementById('originalImg').src = e.target.result;
+                document.getElementById('infoName').textContent = '📄 ' + file.name;
+                document.getElementById('infoDim').textContent = '📐 ' + img.width + ' × ' + img.height;
+                document.getElementById('infoSize').textContent = '💾 ' + formatSize(file.size);
+
+                // Setup canvas
+                bwCanvas.width = img.width;
+                bwCanvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                dropZone.style.display = 'none';
+                editorPanel.classList.add('show');
+
+                // Auto convert
+                applyFilter();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    // ===== SELECT FILTER =====
+    function selectFilter(el) {
+        document.querySelectorAll('.filter-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        currentFilter = el.dataset.filter;
+        applyFilter();
+    }
+
+    // ===== UPDATE SLIDER =====
+    function updateSlider(name) {
+        const val = document.getElementById(name).value;
+        document.getElementById(name + 'Val').textContent = val;
+        applyFilter();
+    }
+
+    // ===== RESET SLIDERS =====
+    function resetSliders() {
+        ['brightness', 'contrast', 'grain', 'vignette'].forEach(s => {
+            document.getElementById(s).value = s === 'brightness' || s === 'contrast' ? 0 : 0;
+            document.getElementById(s + 'Val').textContent = '0';
+        });
+        applyFilter();
+    }
+
+    // ===== NEW PHOTO =====
+    function newPhoto() {
+        originalImage = null;
+        fileInput.value = '';
+        dropZone.style.display = '';
+        editorPanel.classList.remove('show');
+        document.getElementById('downloadBtn').classList.remove('show');
+        document.getElementById('downloadOptions').classList.remove('show');
+        resetSliders();
+    }
+
+    // ===== APPLY FILTER =====
+    function applyFilter() {
+        if (!originalImage) return;
+
+        const w = originalImage.width;
+        const h = originalImage.height;
+        bwCanvas.width = w;
+        bwCanvas.height = h;
+        ctx.drawImage(originalImage, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, w, h);
+        const data = imageData.data;
+
+        const brightness = parseInt(document.getElementById('brightness').value);
+        const contrast = parseInt(document.getElementById('contrast').value);
+        const grainAmt = parseInt(document.getElementById('grain').value);
+        const vignetteAmt = parseInt(document.getElementById('vignette').value);
+
+        const contrastFactor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+        const cx = w / 2, cy = h / 2;
+        const maxDist = Math.sqrt(cx * cx + cy * cy);
+
+        for (let i = 0; i < data.length; i += 4) {
+            let r = data[i], g = data[i + 1], b = data[i + 2];
+            let gray;
+
+            switch (currentFilter) {
+                case 'classic':
+                    gray = (r + g + b) / 3;
+                    break;
+                case 'luminosity':
+                    gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    break;
+                case 'high-contrast':
+                    gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    gray = gray > 128 ? Math.min(255, gray * 1.4) : Math.max(0, gray * 0.6);
+                    break;
+                case 'vintage':
+                    gray = 0.35 * r + 0.45 * g + 0.20 * b;
+                    break;
+                case 'noir':
+                    gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    gray = Math.pow(gray / 255, 1.5) * 255;
+                    break;
+                case 'soft':
+                    gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    gray = gray * 0.8 + 40;
+                    break;
+                default:
+                    gray = (r + g + b) / 3;
+            }
+
+            // Brightness
+            gray += brightness;
+
+            // Contrast
+            gray = contrastFactor * (gray - 128) + 128;
+
+            // Grain
+            if (grainAmt > 0) {
+                gray += (Math.random() - 0.5) * grainAmt;
+            }
+
+            // Vignette
+            if (vignetteAmt > 0) {
+                const px = (i / 4) % w;
+                const py = Math.floor((i / 4) / w);
+                const dist = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
+                const vFactor = 1 - (dist / maxDist) * (vignetteAmt / 100);
+                gray *= vFactor;
+            }
+
+            gray = Math.max(0, Math.min(255, gray));
+
+            // Vintage warm tint
+            if (currentFilter === 'vintage') {
+                data[i] = Math.min(255, gray + 12);
+                data[i + 1] = Math.min(255, gray + 6);
+                data[i + 2] = Math.max(0, gray - 8);
+            } else {
+                data[i] = gray;
+                data[i + 1] = gray;
+                data[i + 2] = gray;
+            }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        document.getElementById('downloadBtn').classList.add('show');
+
+        showToast('✅ Filter applied!');
+    }
+
+    // ===== DOWNLOAD =====
+    function toggleDownloadOptions() {
+        document.getElementById('downloadOptions').classList.toggle('show');
+    }
+
+    function selectFormat(el) {
+        document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        selectedFormat = el.dataset.fmt;
+    }
+
+    function downloadImage() {
+        const quality = parseFloat(document.getElementById('qualitySelect').value);
+        const mimeType = selectedFormat === 'jpeg' ? 'image/jpeg' : selectedFormat === 'webp' ? 'image/webp' : 'image/png';
+        const ext = selectedFormat === 'jpeg' ? 'jpg' : selectedFormat;
+
+        bwCanvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${imageFileName}-bw.${ext}`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('✅ Downloaded successfully!');
+        }, mimeType, quality);
+    }
+
+    // ===== TOAST =====
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+</script>
+
+</body>
+</html>
