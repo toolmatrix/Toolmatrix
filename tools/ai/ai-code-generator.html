@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Code Generator</title>
+<script src="https://js.puter.com/v2/"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 50%,#e0f2f1 100%);
+  min-height:100vh;color:#2e7d32;
+}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:#f1f8e9;}
+::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#66bb6a;}
+
+/* ══ HEADER ══ */
+header{
+  background:linear-gradient(90deg,#388e3c,#43a047,#66bb6a);
+  padding:12px 24px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 20px rgba(56,142,60,.3);
+  position:sticky;top:0;z-index:300;flex-wrap:wrap;
+}
+.hdr-icon{
+  width:46px;height:46px;background:rgba(255,255,255,.2);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;border:1.5px solid rgba(255,255,255,.35);flex-shrink:0;
+}
+.hdr-text h1{color:#fff;font-size:20px;font-weight:800;}
+.hdr-text p{color:rgba(255,255,255,.85);font-size:11.5px;margin-top:1px;}
+.hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hdr-btn{
+  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;border-radius:20px;padding:6px 15px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .25s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;
+}
+.hdr-btn:hover{background:rgba(255,255,255,.35);}
+.hdr-btn.primary{background:#fff;color:#2e7d32;}
+.hdr-btn.primary:hover{background:#f1f8e9;}
+.hdr-badge{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:5px 12px;color:#fff;font-size:11.5px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.bdot{width:7px;height:7px;border-radius:50%;background:#69f0ae;animation:bdlink 2s infinite;}
+@keyframes bdlink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ══ LAYOUT ══ */
+.app-layout{display:flex;height:calc(100vh - 58px);}
+
+/* ══ LEFT SIDEBAR ══ */
+.sidebar{
+  width:268px;background:#fff;border-right:1.5px solid #c8e6c9;
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+  box-shadow:2px 0 10px rgba(102,187,106,.1);transition:width .3s;
+}
+.sidebar.collapsed{width:0;}
+.sb-hdr{
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);
+  padding:13px 16px;border-bottom:1.5px solid #c8e6c9;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sb-hdr h3{font-size:13px;font-weight:700;color:#2e7d32;}
+.sb-clear{
+  background:none;border:1.5px solid #ef9a9a;color:#c62828;
+  border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.sb-clear:hover{background:#ffebee;}
+.sb-section{padding:12px 14px;border-bottom:1.5px solid #f1f8e9;flex-shrink:0;}
+.sb-label{
+  font-size:10.5px;font-weight:700;color:#a5d6a7;
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;
+}
+
+/* LANGUAGE GRID */
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.lang-btn{
+  padding:9px 6px;border:1.5px solid #c8e6c9;border-radius:10px;
+  background:#f9fbe7;cursor:pointer;font-size:10.5px;font-weight:700;color:#388e3c;
+  transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-family:inherit;
+}
+.lang-btn .li{font-size:18px;}
+.lang-btn:hover{border-color:#66bb6a;background:#e8f5e9;}
+.lang-btn.active{
+  border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#dcedc8);
+  box-shadow:0 0 0 2px rgba(102,187,106,.2);
+}
+
+/* FRAMEWORK SELECT */
+.fw-select{
+  width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:10px;
+  font-size:12.5px;color:#2e7d32;background:#f9fbe7;outline:none;
+  font-family:inherit;cursor:pointer;transition:all .25s;margin-bottom:8px;
+}
+.fw-select:focus{border-color:#43a047;box-shadow:0 0 0 3px rgba(102,187,106,.15);}
+
+/* TOGGLES */
+.tog-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid #f9fbe7;
+}
+.tog-row:last-child{border-bottom:none;}
+.tog-lbl{font-size:12px;color:#388e3c;font-weight:600;}
+.tog{position:relative;width:36px;height:20px;flex-shrink:0;}
+.tog input{display:none;}
+.tog-sl{
+  position:absolute;inset:0;background:#c8e6c9;border-radius:20px;
+  cursor:pointer;transition:.3s;
+}
+.tog-sl::before{
+  content:'';position:absolute;width:14px;height:14px;background:#fff;
+  border-radius:50%;left:3px;top:3px;transition:.3s;
+  box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+.tog input:checked+.tog-sl{background:linear-gradient(135deg,#66bb6a,#43a047);}
+.tog input:checked+.tog-sl::before{transform:translateX(16px);}
+
+/* HISTORY */
+.history-list{flex:1;overflow-y:auto;padding:10px 12px;}
+.hist-item{
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:10px;
+  padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:all .22s;
+}
+.hist-item:hover{border-color:#66bb6a;background:#e8f5e9;}
+.hist-item.active{border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#dcedc8);}
+.hi-lang{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;
+  background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;margin-bottom:5px;
+}
+.hi-desc{font-size:11.5px;color:#2e7d32;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;}
+.hi-meta{display:flex;justify-content:space-between;align-items:center;}
+.hi-time{font-size:10px;color:#a5d6a7;}
+.hi-del{background:none;border:none;color:#ef9a9a;cursor:pointer;
+  font-size:12px;opacity:0;transition:opacity .2s;}
+.hist-item:hover .hi-del{opacity:1;}
+.hi-del:hover{color:#c62828;}
+.no-hist{text-align:center;padding:24px 10px;color:#a5d6a7;}
+.no-hist .ni{font-size:28px;display:block;margin-bottom:6px;}
+.no-hist p{font-size:11.5px;}
+
+/* ══ MAIN AREA ══ */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* TOP PANE — prompt + settings */
+.top-pane{
+  background:#fff;border-bottom:1.5px solid #c8e6c9;
+  padding:16px 20px;flex-shrink:0;
+  box-shadow:0 2px 10px rgba(102,187,106,.08);
+}
+
+/* PROMPT ROW */
+.prompt-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;}
+.prompt-wrap{
+  flex:1;background:#f9fbe7;border:2px solid #a5d6a7;border-radius:18px;
+  padding:4px 8px 4px 16px;display:flex;align-items:flex-end;gap:8px;
+  transition:all .25s;
+}
+.prompt-wrap:focus-within{
+  border-color:#43a047;background:#fff;
+  box-shadow:0 0 0 4px rgba(102,187,106,.15);
+}
+#promptInput{
+  flex:1;border:none;background:none;outline:none;resize:none;
+  font-size:14px;color:#2e7d32;font-family:inherit;
+  min-height:26px;max-height:110px;padding:10px 0;line-height:1.55;
+}
+#promptInput::placeholder{color:#a5d6a7;}
+.gen-btn{
+  background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;
+  border:none;padding:13px 28px;border-radius:28px;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .3s;font-family:inherit;
+  box-shadow:0 4px 15px rgba(46,125,50,.35);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.gen-btn:hover:not(:disabled){
+  background:linear-gradient(135deg,#388e3c,#1b5e20);
+  transform:translateY(-2px);box-shadow:0 7px 20px rgba(46,125,50,.42);
+}
+.gen-btn:disabled{
+  background:linear-gradient(135deg,#a5d6a7,#c8e6c9);
+  cursor:not-allowed;transform:none;box-shadow:none;
+}
+.gen-btn .spinner{
+  width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .7s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.gen-btn.loading .spinner{display:block;}
+.gen-btn.loading .btn-txt{display:none;}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tb-chip{
+  padding:5px 13px;border:1.5px solid #c8e6c9;border-radius:20px;
+  background:#f9fbe7;color:#388e3c;font-size:11.5px;font-weight:700;
+  cursor:pointer;transition:all .22s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;
+}
+.tb-chip:hover{border-color:#66bb6a;background:#e8f5e9;}
+.tb-chip.active{background:#e8f5e9;border-color:#43a047;}
+.tb-sep{width:1.5px;height:20px;background:#e8f5e9;flex-shrink:0;}
+.tb-right{margin-left:auto;display:flex;gap:7px;}
+.tb-select{
+  padding:6px 12px;border:1.5px solid #a5d6a7;border-radius:10px;
+  font-size:12px;color:#2e7d32;background:#f9fbe7;outline:none;
+  font-family:inherit;cursor:pointer;
+}
+.tb-select:focus{border-color:#43a047;}
+
+/* ══ SPLIT PANE ══ */
+.split-pane{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;
+  overflow:hidden;min-height:0;
+}
+.split-pane.single{grid-template-columns:1fr;}
+
+/* ══ LEFT: CODE EDITOR ══ */
+.editor-pane{
+  display:flex;flex-direction:column;border-right:1.5px solid #c8e6c9;
+  overflow:hidden;
+}
+.pane-hdr{
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);
+  padding:10px 16px;border-bottom:1.5px solid #c8e6c9;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;
+}
+.pane-hdr h3{font-size:13px;font-weight:700;color:#2e7d32;}
+.pane-hdr .ph-sub{font-size:11px;color:#81c784;margin-left:4px;}
+.pane-actions{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;}
+.pa-btn{
+  padding:5px 13px;border-radius:20px;font-size:11.5px;font-weight:700;
+  cursor:pointer;border:1.5px solid;transition:all .22s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;
+}
+.pa-outline{background:#fff;color:#388e3c;border-color:#a5d6a7;}
+.pa-outline:hover{background:#f1f8e9;border-color:#66bb6a;}
+.pa-primary{background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(102,187,106,.3);}
+.pa-primary:hover{background:linear-gradient(135deg,#43a047,#2e7d32);transform:translateY(-1px);}
+.pa-danger{background:#fff;color:#c62828;border-color:#ef9a9a;}
+.pa-danger:hover{background:#ffebee;}
+
+/* CODE AREA */
+.code-wrap{flex:1;overflow:auto;position:relative;background:#0d1117;}
+.code-area{
+  display:flex;min-height:100%;font-family:'Courier New',Consolas,monospace;
+  font-size:13.5px;line-height:1.65;
+}
+.line-nums{
+  background:#161b22;color:#484f58;padding:14px 0;
+  min-width:46px;text-align:right;user-select:none;flex-shrink:0;
+  border-right:1px solid #21262d;
+}
+.line-num{padding:0 12px 0 8px;font-size:12px;}
+.code-content{
+  flex:1;padding:14px 18px;outline:none;white-space:pre;
+  color:#e6edf3;caret-color:#66bb6a;
+  min-height:100%;
+}
+.code-content:empty::before{
+  content:'// Your generated code will appear here...\n// Describe what you need above and click Generate!';
+  color:#484f58;pointer-events:none;
+}
+
+/* SYNTAX COLORS */
+.kw{color:#ff7b72;}      /* keywords */
+.str{color:#a5d6a7;}     /* strings */
+.num{color:#79c0ff;}     /* numbers */
+.cmt{color:#8b949e;font-style:italic;} /* comments */
+.fn{color:#d2a8ff;}      /* functions */
+.cl{color:#ffa657;}      /* class */
+.punc{color:#e6edf3;}    /* punctuation */
+.tag{color:#7ee787;}     /* html tags */
+.attr{color:#79c0ff;}    /* attributes */
+.val{color:#a5d6a7;}     /* values */
+.var{color:#e6edf3;}     /* variables */
+.dec{color:#ffa657;}     /* decorators */
+.builtin{color:#79c0ff;} /* builtins */
+
+/* TYPING CURSOR */
+.typing-cursor::after{
+  content:'▋';color:#66bb6a;animation:tblink .8s infinite;
+}
+@keyframes tblink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ══ RIGHT: PREVIEW / OUTPUT ══ */
+.preview-pane{
+  display:flex;flex-direction:column;overflow:hidden;background:#fff;
+}
+.preview-tabs{
+  display:flex;border-bottom:1.5px solid #c8e6c9;
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);flex-shrink:0;
+}
+.ptab{
+  padding:10px 16px;font-size:12px;font-weight:700;color:#81c784;
+  cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;
+  transition:all .22s;font-family:inherit;
+}
+.ptab.active{color:#2e7d32;border-bottom-color:#43a047;background:#fff;}
+.ptab:hover:not(.active){color:#388e3c;background:rgba(102,187,106,.05);}
+.preview-body{flex:1;overflow:auto;position:relative;}
+
+/* LIVE PREVIEW (iframe) */
+#previewFrame{
+  width:100%;height:100%;border:none;background:#fff;
+}
+
+/* EXPLANATION */
+.explain-body{padding:18px;font-size:13px;line-height:1.7;color:#2e7d32;}
+.explain-body h2,.explain-body h3{color:#1b5e20;margin:12px 0 6px;font-size:14px;}
+.explain-body p{margin-bottom:8px;}
+.explain-body ul,.explain-body ol{padding-left:18px;margin:6px 0;}
+.explain-body li{margin-bottom:4px;}
+.explain-body code{
+  background:#e8f5e9;color:#1b5e20;padding:2px 6px;
+  border-radius:5px;font-family:'Courier New',monospace;font-size:12px;
+  border:1px solid #c8e6c9;
+}
+.explain-body strong{color:#1b5e20;font-weight:700;}
+.explain-body blockquote{
+  border-left:3px solid #66bb6a;padding-left:12px;
+  color:#388e3c;font-style:italic;margin:6px 0;
+}
+
+/* CONSOLE */
+.console-body{
+  background:#0d1117;padding:14px 16px;font-family:'Courier New',monospace;
+  font-size:12.5px;color:#7ee787;line-height:1.7;height:100%;overflow:auto;
+}
+.console-line{margin-bottom:3px;}
+.cl-info{color:#79c0ff;}
+.cl-warn{color:#ffa657;}
+.cl-err{color:#ff7b72;}
+.cl-suc{color:#7ee787;}
+.cl-cmd{color:#e6edf3;}
+
+/* EMPTY STATE */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;padding:30px;color:#a5d6a7;
+}
+.es-icon{font-size:52px;margin-bottom:12px;display:block;}
+.es-title{font-size:16px;font-weight:700;color:#81c784;margin-bottom:5px;}
+.es-sub{font-size:12.5px;line-height:1.6;}
+
+/* ══ PROGRESS ══ */
+.gen-progress{
+  background:#fff;border-bottom:1.5px solid #c8e6c9;
+  padding:12px 20px;display:none;flex-shrink:0;
+}
+.gp-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.gp-icon{font-size:18px;animation:bounce .8s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-4px);}}
+.gp-txt{font-size:13px;font-weight:600;color:#2e7d32;}
+.gp-pct{font-size:12px;color:#81c784;margin-left:auto;font-weight:700;}
+.gp-bar-wrap{background:#e8f5e9;border-radius:20px;height:8px;overflow:hidden;border:1px solid #c8e6c9;}
+.gp-bar{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,#66bb6a,#43a047,#66bb6a);
+  background-size:200% 100%;animation:shimmer 1.4s infinite,grow 8s ease forwards;
+  width:5%;
+}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+@keyframes grow{0%{width:5%;}30%{width:35%;}60%{width:65%;}85%{width:88%;}100%{width:95%;}}
+.gp-steps{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.gp-step{
+  display:flex;align-items:center;gap:5px;font-size:11px;color:#a5d6a7;font-weight:600;
+}
+.gp-step.active{color:#43a047;font-weight:800;}
+.gp-step.done{color:#2e7d32;}
+.gps-dot{width:6px;height:6px;border-radius:50%;background:#c8e6c9;flex-shrink:0;transition:background .3s;}
+.gp-step.active .gps-dot{background:#66bb6a;animation:bdlink 1s infinite;}
+.gp-step.done .gps-dot{background:#43a047;}
+
+/* ══ BOTTOM STATUS BAR ══ */
+.status-bar{
+  background:linear-gradient(90deg,#1b5e20,#2e7d32);
+  padding:5px 18px;display:flex;align-items:center;gap:16px;
+  flex-shrink:0;flex-wrap:wrap;
+}
+.sb-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;color:rgba(255,255,255,.75);font-weight:600;
+}
+.sb-item span{color:#a5d6a7;}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:#69f0ae;}
+
+/* ══ QUICK EXAMPLES ══ */
+.examples-row{
+  display:flex;gap:7px;flex-wrap:wrap;
+  padding:10px 20px;background:#f9fbe7;border-bottom:1.5px solid #c8e6c9;
+  flex-shrink:0;
+}
+.ex-chip{
+  padding:5px 13px;border:1.5px solid #c8e6c9;border-radius:20px;
+  background:#fff;color:#388e3c;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .22s;font-family:inherit;
+  white-space:nowrap;
+}
+.ex-chip:hover{border-color:#43a047;background:#e8f5e9;transform:scale(1.03);}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:22px;right:22px;
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:#fff;padding:11px 19px;border-radius:13px;font-size:13px;font-weight:700;
+  box-shadow:0 5px 20px rgba(46,125,50,.4);
+  transform:translateY(100px);opacity:0;
+  transition:all .4s cubic-bezier(.36,.07,.19,.97);z-index:9999;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ══ MODAL (fullscreen code) ══ */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px);
+}
+.modal.open{display:flex;}
+.modal-inner{
+  background:#0d1117;border-radius:16px;overflow:hidden;
+  width:90vw;max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+  border:1.5px solid #21262d;
+}
+@keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-hdr{
+  background:#161b22;padding:12px 18px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid #21262d;
+}
+.modal-hdr h3{font-size:14px;font-weight:700;color:#e6edf3;flex:1;}
+.modal-body{flex:1;overflow:auto;padding:16px 20px;}
+.modal-body pre{color:#e6edf3;font-family:'Courier New',monospace;font-size:13px;line-height:1.65;white-space:pre-wrap;}
+.modal-close{background:#ef5350;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+@media(max-width:900px){
+  .split-pane{grid-template-columns:1fr;}
+  .preview-pane{display:none;}
+  .split-pane.preview-open .preview-pane{display:flex;}
+  .split-pane.preview-open .editor-pane{display:none;}
+  .sidebar{display:none;}
+  .sidebar.mobile-show{display:flex;position:fixed;z-index:500;height:100%;left:0;}
+}
+@media(max-width:600px){
+  .hdr-right .hdr-btn:not(.primary){display:none;}
+  .examples-row{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hdr-icon">💻</div>
+  <div class="hdr-text">
+    <h1>AI Code Generator</h1>
+    <p>Describe it → AI writes clean, working code instantly</p>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge"><div class="bdot"></div>Puter AI · Free</div>
+    <button class="hdr-btn" onclick="toggleSidebar()">☰ History</button>
+    <button class="hdr-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
+    <button class="hdr-btn" onclick="downloadCode()">⬇️ Download</button>
+    <button class="hdr-btn primary" onclick="clearAll()">🗑️ Clear</button>
+  </div>
+</header>
+
+<div class="app-layout">
+
+  <!-- ══ LEFT SIDEBAR ══ -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-hdr">
+      <h3>📜 Code History</h3>
+      <button class="sb-clear" onclick="clearHistory()">🗑️ Clear</button>
+    </div>
+
+    <!-- LANGUAGE -->
+    <div class="sb-section">
+      <div class="sb-label">💻 Language</div>
+      <div class="lang-grid">
+        <button class="lang-btn active" id="lang-python" onclick="setLang('python')">
+          <span class="li">🐍</span>Python
+        </button>
+        <button class="lang-btn" id="lang-javascript" onclick="setLang('javascript')">
+          <span class="li">⚡</span>JavaScript
+        </button>
+        <button class="lang-btn" id="lang-html" onclick="setLang('html')">
+          <span class="li">🌐</span>HTML
+        </button>
+        <button class="lang-btn" id="lang-css" onclick="setLang('css')">
+          <span class="li">🎨</span>CSS
+        </button>
+        <button class="lang-btn" id="lang-java" onclick="setLang('java')">
+          <span class="li">☕</span>Java
+        </button>
+        <button class="lang-btn" id="lang-cpp" onclick="setLang('cpp')">
+          <span class="li">⚙️</span>C++
+        </button>
+        <button class="lang-btn" id="lang-typescript" onclick="setLang('typescript')">
+          <span class="li">💙</span>TypeScript
+        </button>
+        <button class="lang-btn" id="lang-sql" onclick="setLang('sql')">
+          <span class="li">🗄️</span>SQL
+        </button>
+        <button class="lang-btn" id="lang-php" onclick="setLang('php')">
+          <span class="li">🐘</span>PHP
+        </button>
+        <button class="lang-btn" id="lang-rust" onclick="setLang('rust')">
+          <span class="li">🦀</span>Rust
+        </button>
+        <button class="lang-btn" id="lang-go" onclick="setLang('go')">
+          <span class="li">🐹</span>Go
+        </button>
+        <button class="lang-btn" id="lang-swift" onclick="setLang('swift')">
+          <span class="li">🍎</span>Swift
+        </button>
+      </div>
+    </div>
+
+    <!-- FRAMEWORK -->
+    <div class="sb-section">
+      <div class="sb-label">🧩 Framework / Library</div>
+      <select class="fw-select" id="frameworkSel">
+        <option value="">None (Vanilla)</option>
+        <option value="React">React.js</option>
+        <option value="Vue.js">Vue.js</option>
+        <option value="Angular">Angular</option>
+        <option value="Node.js">Node.js</option>
+        <option value="Express.js">Express.js</option>
+        <option value="Django">Django</option>
+        <option value="Flask">Flask</option>
+        <option value="FastAPI">FastAPI</option>
+        <option value="TailwindCSS">TailwindCSS</option>
+        <option value="Bootstrap">Bootstrap</option>
+        <option value="jQuery">jQuery</option>
+        <option value="Spring Boot">Spring Boot</option>
+        <option value="Laravel">Laravel</option>
+        <option value="Next.js">Next.js</option>
+      </select>
+
+      <div class="sb-label" style="margin-top:8px;">⚙️ Code Options</div>
+      <div class="tog-row">
+        <span class="tog-lbl">💬 Add Comments</span>
+        <label class="tog"><input type="checkbox" id="addComments" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">🔍 Error Handling</span>
+        <label class="tog"><input type="checkbox" id="errorHandling" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">🧪 Include Tests</span>
+        <label class="tog"><input type="checkbox" id="includeTests"/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">📖 Explain Code</span>
+        <label class="tog"><input type="checkbox" id="explainCode" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">✨ Best Practices</span>
+        <label class="tog"><input type="checkbox" id="bestPractices" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">🔄 Stream Output</span>
+        <label class="tog"><input type="checkbox" id="streamOutput" checked/><span class="tog-sl"></span></label>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="history-list" id="histList">
+      <div class="no-hist">
+        <span class="ni">📜</span>
+        <p>No code history yet.<br>Generate your first code!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN AREA ══ -->
+  <div class="main-area">
+
+    <!-- PROMPT + TOOLBAR -->
+    <div class="top-pane">
+      <div class="prompt-row">
+        <div class="prompt-wrap">
+          <textarea id="promptInput" rows="2"
+            placeholder="Describe what code you need... e.g. 'A Python function that sorts a list of dictionaries by key' or 'Login form with validation in HTML/CSS'"
+            onkeydown="if(event.ctrlKey&&event.key==='Enter')generateCode();onInputKey(event)"
+            oninput="onInputChange()"></textarea>
+        </div>
+        <button class="gen-btn" id="genBtn" onclick="generateCode()">
+          <div class="spinner"></div>
+          <span class="btn-txt">💻 Generate Code</span>
+        </button>
+      </div>
+      <div class="toolbar">
+        <div class="tb-chip active" id="tb-complete" onclick="setCodeType(this,'complete')">📦 Complete</div>
+        <div class="tb-chip" id="tb-function" onclick="setCodeType(this,'function')">🔧 Function</div>
+        <div class="tb-chip" id="tb-class" onclick="setCodeType(this,'class')">🏗️ Class</div>
+        <div class="tb-chip" id="tb-api" onclick="setCodeType(this,'api')">🌐 API</div>
+        <div class="tb-chip" id="tb-algorithm" onclick="setCodeType(this,'algorithm')">🧮 Algorithm</div>
+        <div class="tb-chip" id="tb-fix" onclick="setCodeType(this,'fix')">🔨 Fix/Debug</div>
+        <div class="tb-chip" id="tb-optimize" onclick="setCodeType(this,'optimize')">⚡ Optimize</div>
+        <div class="tb-chip" id="tb-convert" onclick="setCodeType(this,'convert')">🔄 Convert</div>
+        <div class="tb-sep"></div>
+        <div class="tb-right">
+          <select class="tb-select" id="modelSel">
+            <option value="gpt-4o">GPT-4o (Best)</option>
+            <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+            <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="deepseek-chat">DeepSeek Chat</option>
+          </select>
+          <div class="tb-chip" id="layoutBtn" onclick="toggleLayout()" title="Toggle Split View">⊞ Split</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK EXAMPLES -->
+    <div class="examples-row" id="examplesRow">
+      <span style="font-size:11px;font-weight:700;color:#a5d6a7;align-self:center;white-space:nowrap;">⚡ Examples:</span>
+      <div class="ex-chip" onclick="useExample(this)">🐍 Python REST API with Flask</div>
+      <div class="ex-chip" onclick="useExample(this)">⚡ JavaScript Todo App</div>
+      <div class="ex-chip" onclick="useExample(this)">🌐 Responsive Landing Page HTML</div>
+      <div class="ex-chip" onclick="useExample(this)">🗄️ SQL User Database Schema</div>
+      <div class="ex-chip" onclick="useExample(this)">⚙️ C++ Binary Search Tree</div>
+      <div class="ex-chip" onclick="useExample(this)">🔐 Python JWT Authentication</div>
+      <div class="ex-chip" onclick="useExample(this)">📊 JavaScript Chart with Canvas</div>
+      <div class="ex-chip" onclick="useExample(this)">🎨 CSS Animated Loading Spinner</div>
+    </div>
+
+    <!-- GENERATION PROGRESS -->
+    <div class="gen-progress" id="genProgress">
+      <div class="gp-row">
+        <span class="gp-icon">💻</span>
+        <span class="gp-txt" id="gpTxt">AI is writing your code...</span>
+        <span class="gp-pct" id="gpPct">0%</span>
+      </div>
+      <div class="gp-bar-wrap"><div class="gp-bar" id="gpBar"></div></div>
+      <div class="gp-steps">
+        <div class="gp-step" id="gps1"><div class="gps-dot"></div>Analyzing Request</div>
+        <div class="gp-step" id="gps2"><div class="gps-dot"></div>Planning Structure</div>
+        <div class="gp-step" id="gps3"><div class="gps-dot"></div>Writing Code</div>
+        <div class="gp-step" id="gps4"><div class="gps-dot"></div>Adding Comments</div>
+        <div class="gp-step" id="gps5"><div class="gps-dot"></div>Finalizing</div>
+      </div>
+    </div>
+
+    <!-- ══ SPLIT PANE ══ -->
+    <div class="split-pane" id="splitPane">
+
+      <!-- EDITOR PANE -->
+      <div class="editor-pane">
+        <div class="pane-hdr">
+          <span id="langIcon">🐍</span>
+          <h3 id="paneTitle">Python</h3>
+          <span class="ph-sub" id="paneSubTitle">— No code yet</span>
+          <div class="pane-actions">
+            <button class="pa-btn pa-outline" onclick="copyCode()">📋 Copy</button>
+            <button class="pa-btn pa-outline" onclick="downloadCode()">⬇️ Download</button>
+            <button class="pa-btn pa-outline" onclick="formatCode()">✨ Format</button>
+            <button class="pa-btn pa-primary" onclick="runCode()">▶ Run</button>
+            <button class="pa-btn pa-danger" onclick="clearCode()">🗑️</button>
+          </div>
+        </div>
+        <div class="code-wrap" id="codeWrap">
+          <div class="code-area">
+            <div class="line-nums" id="lineNums"><div class="line-num">1</div></div>
+            <div class="code-content" id="codeContent" contenteditable="true"
+                 spellcheck="false" onkeyup="updateLineNums();syncCode()"
+                 oninput="updateLineNums();syncCode()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW PANE -->
+      <div class="preview-pane" id="previewPane">
+        <div class="preview-tabs">
+          <button class="ptab active" id="ptab-preview" onclick="switchPreviewTab('preview')">🖥️ Preview</button>
+          <button class="ptab" id="ptab-explain" onclick="switchPreviewTab('explain')">📖 Explanation</button>
+          <button class="ptab" id="ptab-console" onclick="switchPreviewTab('console')">🖥️ Console</button>
+          <button class="ptab" id="ptab-improve" onclick="switchPreviewTab('improve')">🔧 Improve</button>
+        </div>
+        <div class="preview-body" id="previewBody">
+          <div class="empty-state" id="previewEmpty">
+            <span class="es-icon">💡</span>
+            <div class="es-title">Preview & Explanation</div>
+            <div class="es-sub">Generate code to see live preview,<br>explanation & improvement suggestions!</div>
+          </div>
+          <iframe id="previewFrame" style="display:none;"></iframe>
+          <div class="explain-body" id="explainBody" style="display:none;"></div>
+          <div class="console-body" id="consoleBody" style="display:none;"></div>
+          <div class="explain-body" id="improveBody" style="display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <div class="sb-item"><div class="sb-dot"></div>Lang: <span id="sbLang">Python</span></div>
+      <div class="sb-item">Lines: <span id="sbLines">0</span></div>
+      <div class="sb-item">Chars: <span id="sbChars">0</span></div>
+      <div class="sb-item">Words: <span id="sbWords">0</span></div>
+      <div class="sb-item">Type: <span id="sbType">Complete</span></div>
+      <div class="sb-item" style="margin-left:auto;">Model: <span id="sbModel">GPT-4o</span></div>
+      <div class="sb-item">Generated: <span id="sbCount">0</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ FULLSCREEN MODAL ══ -->
+<div class="modal" id="codeModal" onclick="closeModal()">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 id="modalTitle">💻 Full Code View</h3>
+      <button class="pa-btn pa-outline" style="color:#e6edf3;border-color:#21262d;background:#21262d;" onclick="copyCode()">📋 Copy</button>
+      <button class="pa-btn pa-outline" style="color:#e6edf3;border-color:#21262d;background:#21262d;" onclick="downloadCode()">⬇️ Download</button>
+      <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <pre id="modalCode"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let currentLang    = 'python';
+let currentType    = 'complete';
+let currentCode    = '';
+let currentExplain = '';
+let history        = [];
+let genCount       = 0;
+let splitView      = true;
+let stopFlag       = false;
+let lastPrompt     = '';
+
+const LANG_META = {
+  python:     {icon:'🐍', ext:'py',   name:'Python'},
+  javascript: {icon:'⚡', ext:'js',   name:'JavaScript'},
+  html:       {icon:'🌐', ext:'html', name:'HTML'},
+  css:        {icon:'🎨', ext:'css',  name:'CSS'},
+  java:       {icon:'☕', ext:'java', name:'Java'},
+  cpp:        {icon:'⚙️', ext:'cpp',  name:'C++'},
+  typescript: {icon:'💙', ext:'ts',   name:'TypeScript'},
+  sql:        {icon:'🗄️', ext:'sql',  name:'SQL'},
+  php:        {icon:'🐘', ext:'php',  name:'PHP'},
+  rust:       {icon:'🦀', ext:'rs',   name:'Rust'},
+  go:         {icon:'🐹', ext:'go',   name:'Go'},
+  swift:      {icon:'🍎', ext:'swift',name:'Swift'}
+};
+
+/* ══════════════════════════════════════════════
+   GENERATE CODE
+══════════════════════════════════════════════ */
+async function generateCode(){
+  const prompt    = document.getElementById('promptInput').value.trim();
+  if(!prompt){ showToast('⚠️ Please describe what code you need!'); document.getElementById('promptInput').focus(); return; }
+
+  const lang      = currentLang;
+  const framework = document.getElementById('frameworkSel').value;
+  const model     = document.getElementById('modelSel').value;
+  const addCmt    = document.getElementById('addComments').checked;
+  const errHandle = document.getElementById('errorHandling').checked;
+  const incTests  = document.getElementById('includeTests').checked;
+  const explain   = document.getElementById('explainCode').checked;
+  const bestPrac  = document.getElementById('bestPractices').checked;
+  const stream    = document.getElementById('streamOutput').checked;
+  const langName  = LANG_META[lang].name;
+
+  lastPrompt = prompt;
+  stopFlag   = false;
+
+  // Build system prompt
+  const systemPrompt = `You are an expert ${langName} developer. Write clean, working, production-ready code.
+Rules:
+- Write ONLY the code, no markdown fences unless showing the full file
+- ${addCmt ? 'Add clear, helpful comments explaining the code' : 'Minimal comments only'}
+- ${errHandle ? 'Include proper error handling and validation' : 'Keep error handling minimal'}
+- ${bestPrac ? 'Follow best practices and clean code principles' : ''}
+- ${incTests ? 'Include unit tests at the end' : ''}
+- ${framework ? `Use ${framework} framework/library` : 'Use vanilla ' + langName}
+- Code type: ${currentType}
+- Make the code complete, working and well-structured
+After the code, add a section starting with "===EXPLANATION===" and write a clear explanation of how the code works.`;
+
+  const userMsg = `Write ${currentType} code in ${langName}${framework ? ' using ' + framework : ''}:
+${prompt}`;
+
+  setBusy(true);
+  showProgress(true);
+  clearCodeDisplay();
+  consoleLog('info', `⚡ Generating ${langName} code...`);
+
+  const t0 = performance.now();
+  let fullResponse = '';
+  let codeSection  = '';
+  let explainSection = '';
+  let inExplain    = false;
+
+  // progress steps
+  const steps = ['gps1','gps2','gps3','gps4','gps5'];
+  let stepIdx = 0;
+  const stepTimer = setInterval(()=>{
+    if(stepIdx < steps.length){
+      if(stepIdx>0) document.getElementById(steps[stepIdx-1]).className='gp-step done';
+      document.getElementById(steps[stepIdx]).className='gp-step active';
+      stepIdx++;
+    }
+  }, 1400);
+
+  try{
+    if(stream){
+      const resp = await puter.ai.chat(
+        [
+          {role:'system', content: systemPrompt},
+          {role:'user',   content: userMsg}
+        ],
+        {model, stream: true}
+      );
+
+      for await(const chunk of resp){
+        if(stopFlag) break;
+        const delta = chunk?.text || chunk?.choices?.[0]?.delta?.content || '';
+        fullResponse += delta;
+
+        if(fullResponse.includes('===EXPLANATION===')){
+          const parts = fullResponse.split('===EXPLANATION===');
+          codeSection    = cleanCode(parts[0], lang);
+          explainSection = parts[1] || '';
+          if(!inExplain){ inExplain = true; }
+          displayCode(codeSection);
+        } else {
+          codeSection = cleanCode(fullResponse, lang);
+          displayCode(codeSection + '▋');
+        }
+      }
+    } else {
+      const resp = await puter.ai.chat(
+        [
+          {role:'system', content: systemPrompt},
+          {role:'user',   content: userMsg}
+        ],
+        {model}
+      );
+      fullResponse = typeof resp === 'string' ? resp
+        : resp?.message?.content || resp?.choices?.[0]?.message?.content || '';
+    }
+
+    clearInterval(stepTimer);
+    steps.forEach(s => document.getElementById(s).className = 'gp-step done');
+
+    // Split code and explanation
+    if(fullResponse.includes('===EXPLANATION===')){
+      const parts    = fullResponse.split('===EXPLANATION===');
+      codeSection    = cleanCode(parts[0], lang);
+      explainSection = parts[1] || '';
+    } else {
+      codeSection    = cleanCode(fullResponse, lang);
+      explainSection = '';
+    }
+
+    currentCode    = codeSection;
+    currentExplain = explainSection;
+    displayCode(codeSection);
+
+    // Update explanation tab
+    if(explainSection.trim()){
+      document.getElementById('explainBody').innerHTML = renderMarkdownSimple(explainSection.trim());
+    } else {
+      document.getElementById('explainBody').innerHTML = `<p>No explanation available for this generation.</p>`;
+    }
+
+    // Live preview for HTML/CSS
+    if(lang === 'html' || (lang === 'css' && codeSection.includes('<'))){
+      updateLivePreview(codeSection);
+    } else {
+      document.getElementById('previewFrame').style.display = 'none';
+      document.getElementById('previewEmpty').style.display = 'flex';
+      document.getElementById('previewEmpty').innerHTML =
+        `<span class="es-icon">${LANG_META[lang].icon}</span>
+        <div class="es-title">${LANG_META[lang].name} Code Ready!</div>
+        <div class="es-sub">Click <b>▶ Run</b> to execute.<br>Switch to 📖 Explanation tab for details.</div>`;
+    }
+
+    const elapsed = Math.round(performance.now()-t0);
+    const lines   = codeSection.split('\n').length;
+    genCount++;
+
+    // save to history
+    saveHistory(prompt, codeSection, lang, explainSection);
+
+    // update status
+    updateStatusBar();
+    document.getElementById('sbCount').textContent = genCount;
+    document.getElementById('paneSubTitle').textContent = `— ${lines} lines · ${elapsed}ms`;
+
+    showProgress(false);
+    consoleLog('suc', `✅ Generated ${lines} lines in ${elapsed}ms`);
+    showToast(`✅ ${LANG_META[lang].name} code generated! (${lines} lines)`);
+
+    // auto improve suggestion
+    if(document.getElementById('explainCode').checked){
+      setTimeout(()=> generateImprove(codeSection, lang, prompt, model), 800);
+    }
+
+  } catch(err){
+    clearInterval(stepTimer);
+    showProgress(false);
+    const isAuth = err.message&&(err.message.includes('sign')||err.message.includes('auth'));
+    consoleLog('err', '❌ Error: '+(err.message||'Generation failed'));
+    showToast(isAuth ? '🔐 Sign in to Puter first!' : '❌ '+( err.message||'Failed'));
+    if(isAuth) alert('🔐 Puter Sign-in Required!\n\nA popup will appear to sign in.\nCreate a free account — no credit card needed!\nThen come back and generate code.');
+  }
+
+  setBusy(false);
+}
+
+/* ══════════════════════════════════════════════
+   GENERATE IMPROVE SUGGESTIONS
+══════════════════════════════════════════════ */
+async function generateImprove(code, lang, prompt, model){
+  try{
+    const resp = await puter.ai.chat([
+      {role:'system', content:'You are a senior code reviewer. Provide 3-5 specific, actionable improvement suggestions for the given code. Be concise and practical. Format with numbered list.'},
+      {role:'user', content:`Review this ${LANG_META[lang].name} code and suggest improvements:\n\`\`\`\n${code.substring(0,2000)}\n\`\`\``}
+    ], {model: 'gpt-4o-mini'});
+    const txt = typeof resp==='string'?resp:resp?.message?.content||'';
+    document.getElementById('improveBody').innerHTML =
+      `<h2>🔧 Code Improvement Suggestions</h2>${renderMarkdownSimple(txt)}`;
+  } catch{}
+}
+
+/* ══════════════════════════════════════════════
+   DISPLAY CODE (with syntax highlight)
+══════════════════════════════════════════════ */
+function displayCode(code){
+  const highlighted = highlightCode(code, currentLang);
+  const el = document.getElementById('codeContent');
+  el.innerHTML = highlighted;
+  updateLineNums(code);
+  currentCode = code.replace(/▋$/,'');
+}
+
+function clearCodeDisplay(){
+  document.getElementById('codeContent').innerHTML='';
+  document.getElementById('lineNums').innerHTML='<div class="line-num">1</div>';
+  document.getElementById('paneSubTitle').textContent='— Generating...';
+}
+
+/* ══════════════════════════════════════════════
+   SYNTAX HIGHLIGHTER
+══════════════════════════════════════════════ */
+function highlightCode(code, lang){
+  let html = escHtml(code);
+
+  if(lang==='html'){
+    html = html
+      .replace(/(&lt;\/?)([\w-]+)/g,'<span class="tag">$1$2</span>')
+      .replace(/(\s)([\w-]+)(=&quot;)/g,' <span class="attr">$2</span><span class="punc">=</span><span class="val">&quot;</span>')
+      .replace(/(&quot;[^&]*&quot;)/g,'<span class="val">$1</span>')
+      .replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cmt">$1</span>');
+    return html;
+  }
+
+  if(lang==='css'){
+    html = html
+      .replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="cmt">$1</span>')
+      .replace(/([.#]?[\w-]+)\s*\{/g,'<span class="fn">$1</span> {')
+      .replace(/([\w-]+)\s*:/g,'<span class="attr">$1</span>:')
+      .replace(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/g,'<span class="val">$1</span>')
+      .replace(/(&quot;[^&]*&quot;|&#x27;[^&]*&#x27;)/g,'<span class="str">$1</span>');
+    return html;
+  }
+
+  if(lang==='sql'){
+    const kwds = ['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','ON','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','INDEX','PRIMARY','KEY','FOREIGN','REFERENCES','NOT','NULL','UNIQUE','DEFAULT','ORDER','BY','GROUP','HAVING','LIMIT','OFFSET','AS','AND','OR','IN','LIKE','BETWEEN','EXISTS','DISTINCT','COUNT','SUM','AVG','MAX','MIN','IF','THEN','ELSE','END','CASE','WHEN'];
+    kwds.forEach(k=>{ html = html.replace(new RegExp(`\\b(${k})\\b`,'gi'),`<span class="kw">$1</span>`); });
+    html = html
+      .replace(/(--[^\n]*)/g,'<span class="cmt">$1</span>')
+      .replace(/(&quot;[^&]*&quot;|&#x27;[^&]*&#x27;)/g,'<span class="str">$1</span>')
+      .replace(/\b(\d+)\b/g,'<span class="num">$1</span>');
+    return html;
+  }
+
+  if(lang==='python'){
+    html = html
+      .replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>')
+      .replace(/("""[\s\S]*?"""|\'\'\'[\s\S]*?\'\'\')/g,'<span class="str">$1</span>')
+      .replace(/(&quot;[^&\n]*&quot;|&#x27;[^&\n]*&#x27;)/g,'<span class="str">$1</span>')
+      .replace(/\b(def|class|import|from|return|if|elif|else|for|while|in|not|and|or|try|except|finally|with|as|pass|break|continue|raise|yield|lambda|global|nonlocal|del|assert|True|False|None)\b/g,'<span class="kw">$1</span>')
+      .replace(/\b(print|len|range|type|int|str|float|list|dict|tuple|set|bool|input|open|enumerate|zip|map|filter|sorted|reversed|sum|min|max|abs|round)\b/g,'<span class="builtin">$1</span>')
+      .replace(/\b([A-Z][A-Za-z0-9_]*)\b(?=\s*[:(])/g,'<span class="cl">$1</span>')
+      .replace(/\b([a-z_][a-z0-9_]*)\b(?=\s*\()/g,'<span class="fn">$1</span>')
+      .replace(/@([A-Za-z_][A-Za-z0-9_.]*)/g,'<span class="dec">@$1</span>')
+      .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+    return html;
+  }
+
+  if(lang==='javascript'||lang==='typescript'){
+    html = html
+      .replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>')
+      .replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="cmt">$1</span>')
+      .replace(/(`[^`]*`)/g,'<span class="str">$1</span>')
+      .replace(/(&quot;[^&\n]*&quot;|&#x27;[^&\n]*&#x27;)/g,'<span class="str">$1</span>')
+      .replace(/\b(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|class|extends|import|export|default|new|this|typeof|instanceof|try|catch|finally|throw|async|await|of|in|from|=>|null|undefined|true|false|void)\b/g,'<span class="kw">$1</span>')
+      .replace(/\b(console|document|window|Array|Object|String|Number|Boolean|Promise|Math|JSON|Date|Map|Set|Error)\b/g,'<span class="builtin">$1</span>')
+      .replace(/\b([A-Z][A-Za-z0-9_]*)\b/g,'<span class="cl">$1</span>')
+      .replace(/\b([a-z_][a-z0-9_]*)\b(?=\s*\()/g,'<span class="fn">$1</span>')
+      .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+    return html;
+  }
+
+  if(lang==='java'){
+    html = html
+      .replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>')
+      .replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="cmt">$1</span>')
+      .replace(/(&quot;[^&\n]*&quot;)/g,'<span class="str">$1</span>')
+      .replace(/\b(public|private|protected|class|interface|extends|implements|new|return|if|else|for|while|do|switch|case|break|continue|try|catch|finally|throw|throws|import|package|static|final|abstract|void|int|String|boolean|double|float|long|char|byte|short|null|true|false|this|super)\b/g,'<span class="kw">$1</span>')
+      .replace(/\b([A-Z][A-Za-z0-9_]*)\b/g,'<span class="cl">$1</span>')
+      .replace(/\b([a-z_][a-z0-9_]*)\b(?=\s*\()/g,'<span class="fn">$1</span>')
+      .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+    return html;
+  }
+
+  if(lang==='cpp'){
+    html = html
+      .replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>')
+      .replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="cmt">$1</span>')
+      .replace(/(#\w+[^\n]*)/g,'<span class="dec">$1</span>')
+      .replace(/(&quot;[^&\n]*&quot;)/g,'<span class="str">$1</span>')
+      .replace(/\b(int|char|float|double|bool|void|long|short|unsigned|signed|const|static|class|struct|public|private|protected|new|delete|return|if|else|for|while|do|switch|case|break|continue|try|catch|throw|namespace|using|template|typename|auto|nullptr|true|false|this|virtual|override|inline|include|define)\b/g,'<span class="kw">$1</span>')
+      .replace(/\b([A-Z][A-Za-z0-9_]*)\b/g,'<span class="cl">$1</span>')
+      .replace(/\b([a-z_][a-z0-9_]*)\b(?=\s*\()/g,'<span class="fn">$1</span>')
+      .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+    return html;
+  }
+
+  // Generic for other languages
+  html = html
+    .replace(/(\/\/[^\n]*|#[^\n]*|--[^\n]*)/g,'<span class="cmt">$1</span>')
+    .replace(/(&quot;[^&\n]*&quot;|&#x27;[^&\n]*&#x27;|`[^`]*`)/g,'<span class="str">$1</span>')
+    .replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+  return html;
+}
+
+/* ══════════════════════════════════════════════
+   LIVE PREVIEW
+══════════════════════════════════════════════ */
+function updateLivePreview(code){
+  const frame = document.getElementById('previewFrame');
+  const empty = document.getElementById('previewEmpty');
+  const doc   = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(code);
+  doc.close();
+  frame.style.display = 'block';
+  empty.style.display = 'none';
+}
+
+/* ══════════════════════════════════════════════
+   RUN CODE
+══════════════════════════════════════════════ */
+function runCode(){
+  if(!currentCode){ showToast('⚠️ No code to run!'); return; }
+  switchPreviewTab('console');
+
+  if(currentLang === 'html'){
+    updateLivePreview(currentCode);
+    switchPreviewTab('preview');
+    showToast('🖥️ HTML preview updated!');
+    return;
+  }
+
+  if(currentLang === 'javascript'){
+    consoleLog('info','▶ Running JavaScript...');
+    const origLog   = console.log;
+    const origError = console.error;
+    const origWarn  = console.warn;
+    const logs = [];
+    console.log   = (...a)=>{ logs.push({t:'suc', m:a.join(' ')}); origLog(...a); };
+    console.error = (...a)=>{ logs.push({t:'err', m:a.join(' ')}); origError(...a); };
+    console.warn  = (...a)=>{ logs.push({t:'warn',m:a.join(' ')}); origWarn(...a); };
+    try{
+      eval(currentCode);
+      logs.forEach(l=>consoleLog(l.t, l.m));
+      if(!logs.length) consoleLog('suc','✅ Code executed with no output.');
+    } catch(e){
+      consoleLog('err','❌ Runtime Error: '+e.message);
+    }
+    console.log = origLog; console.error = origError; console.warn = origWarn;
+    showToast('▶ JavaScript executed!');
+    return;
+  }
+
+  consoleLog('info', `ℹ️ ${LANG_META[currentLang].name} requires a runtime environment.`);
+  consoleLog('cmd',  '💡 Tip: Copy the code and run it in your local environment.');
+  consoleLog('info', `📝 Language: ${LANG_META[currentLang].name}`);
+  consoleLog('info', `📏 Lines: ${currentCode.split('\n').length}`);
+  showToast('📋 Code ready! Copy and run in your environment.');
+}
+
+/* ══════════════════════════════════════════════
+   CONSOLE LOG
+══════════════════════════════════════════════ */
+function consoleLog(type, msg){
+  const cb  = document.getElementById('consoleBody');
+  const div = document.createElement('div');
+  div.className = 'console-line cl-'+type;
+  div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  cb.appendChild(div);
+  cb.scrollTop = cb.scrollHeight;
+}
+
+/* ══════════════════════════════════════════════
+   LANGUAGE & TYPE SELECTION
+══════════════════════════════════════════════ */
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('lang-'+lang);
+  if(btn) btn.classList.add('active');
+  const meta = LANG_META[lang];
+  document.getElementById('langIcon').textContent  = meta.icon;
+  document.getElementById('paneTitle').textContent = meta.name;
+  document.getElementById('sbLang').textContent    = meta.name;
+  document.getElementById('sbModel').textContent   = document.getElementById('modelSel').value;
+  showToast('💻 Language: '+meta.name);
+}
+
+function setCodeType(el, type){
+  currentType = type;
+  document.querySelectorAll('.tb-chip[id^="tb-"]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sbType').textContent = el.textContent.trim().replace(/[^\w ]/g,'').trim();
+}
+
+/* ══════════════════════════════════════════════
+   QUICK EXAMPLES
+══════════════════════════════════════════════ */
+function useExample(el){
+  const text  = el.textContent.trim();
+  const emoji = text.match(/^[^\w]*/)[0].trim();
+  const desc  = text.replace(/^[^\w]*/,'').trim();
+
+  const langMap = {
+    '🐍':'python','⚡':'javascript','🌐':'html',
+    '🗄️':'sql','⚙️':'cpp','🔐':'python','📊':'javascript','🎨':'css'
+  };
+  const lang = langMap[emoji] || 'python';
+  setLang(lang);
+  document.getElementById('promptInput').value = desc;
+  generateCode();
+}
+
+/* ══════════════════════════════════════════════
+   PREVIEW TABS
+══════════════════════════════════════════════ */
+function switchPreviewTab(tab){
+  ['preview','explain','console','improve'].forEach(t=>{
+    document.getElementById('ptab-'+t).classList.toggle('active',t===tab);
+  });
+  const frame   = document.getElementById('previewFrame');
+  const empty   = document.getElementById('previewEmpty');
+  const explain = document.getElementById('explainBody');
+  const console2= document.getElementById('consoleBody');
+  const improve = document.getElementById('improveBody');
+
+  frame.style.display   = tab==='preview'&&currentLang==='html'&&currentCode?'block':'none';
+  empty.style.display   = tab==='preview'&&!(currentLang==='html'&&currentCode)?'flex':'none';
+  explain.style.display = tab==='explain'?'block':'none';
+  console2.style.display= tab==='console'?'block':'none';
+  improve.style.display = tab==='improve'?'block':'none';
+}
+
+/* ══════════════════════════════════════════════
+   LINE NUMBERS
+══════════════════════════════════════════════ */
+function updateLineNums(code){
+  const raw  = code || document.getElementById('codeContent').innerText || '';
+  const lines= raw.split('\n').length;
+  let html   = '';
+  for(let i=1;i<=lines;i++) html+=`<div class="line-num">${i}</div>`;
+  document.getElementById('lineNums').innerHTML = html || '<div class="line-num">1</div>';
+  document.getElementById('sbLines').textContent = lines;
+  document.getElementById('sbChars').textContent = raw.length;
+  document.getElementById('sbWords').textContent = raw.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function syncCode(){
+  currentCode = document.getElementById('codeContent').innerText||'';
+  updateLineNums();
+}
+
+/* ══════════════════════════════════════════════
+   COPY / DOWNLOAD / FORMAT
+══════════════════════════════════════════════ */
+function copyCode(){
+  if(!currentCode){ showToast('⚠️ No code to copy!'); return; }
+  navigator.clipboard.writeText(currentCode).then(()=>showToast('📋 Code copied to clipboard!'));
+}
+
+function downloadCode(){
+  if(!currentCode){ showToast('⚠️ No code to download!'); return; }
+  const ext  = LANG_META[currentLang].ext;
+  const name = 'generated-code-'+Date.now()+'.'+ext;
+  const blob = new Blob([currentCode],{type:'text/plain'});
+  const a    = Object.assign(document.createElement('a'),{
+    href:URL.createObjectURL(blob), download:name
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('⬇️ Code downloaded as '+name+'!');
+}
+
+function formatCode(){
+  if(!currentCode){ showToast('⚠️ No code to format!'); return; }
+  // basic indent fix
+  const lines = currentCode.split('\n');
+  const formatted = lines.map(l=>l.trimEnd()).join('\n').replace(/\n{3,}/g,'\n\n');
+  currentCode = formatted;
+  displayCode(formatted);
+  showToast('✨ Code formatted!');
+}
+
+/* ══════════════════════════════════════════════
+   CLEAN CODE (strip markdown fences)
+══════════════════════════════════════════════ */
+function cleanCode(raw, lang){
+  if(!raw) return '';
+  let code = raw.trim();
+  // remove ```lang ... ``` fences
+  code = code.replace(/^```[\w]*\n?/,'').replace(/```$/,'').trim();
+  code = code.replace(/^~~~[\w]*\n?/,'').replace(/~~~$/,'').trim();
+  return code;
+}
+
+/* ══════════════════════════════════════════════
+   HISTORY
+══════════════════════════════════════════════ */
+function saveHistory(prompt, code, lang, explain){
+  history.unshift({
+    id: Date.now(),
+    prompt, code, lang, explain,
+    time: new Date().toLocaleTimeString()
+  });
+  renderHistory();
+}
+
+function renderHistory(){
+  const list = document.getElementById('histList');
+  if(!history.length){
+    list.innerHTML=`<div class="no-hist"><span class="ni">📜</span><p>No code history yet.<br>Generate your first code!</p></div>`;
+    return;
+  }
+  list.innerHTML = history.map(h=>`
+    <div class="hist-item" id="hi-${h.id}" onclick="loadHistory(${h.id})">
+      <div class="hi-lang">${LANG_META[h.lang]?.icon||'💻'} ${LANG_META[h.lang]?.name||h.lang}</div>
+      <div class="hi-desc">${escHtml(h.prompt)}</div>
+      <div class="hi-meta">
+        <span class="hi-time">${h.time}</span>
+        <button class="hi-del" onclick="event.stopPropagation();deleteHistory(${h.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadHistory(id){
+  const h = history.find(x=>x.id===id);
+  if(!h) return;
+  setLang(h.lang);
+  currentCode    = h.code;
+  currentExplain = h.explain||'';
+  document.getElementById('promptInput').value = h.prompt;
+  displayCode(h.code);
+  if(h.explain) document.getElementById('explainBody').innerHTML = renderMarkdownSimple(h.explain);
+  if(h.lang==='html') updateLivePreview(h.code);
+  document.querySelectorAll('.hist-item').forEach(el=>el.classList.remove('active'));
+  const el = document.getElementById('hi-'+id);
+  if(el) el.classList.add('active');
+  updateStatusBar();
+  showToast('📜 Code loaded from history!');
+}
+
+function deleteHistory(id){
+  history = history.filter(h=>h.id!==id);
+  renderHistory();
+}
+function clearHistory(){
+  if(!history.length){ showToast('⚠️ History is already empty!'); return; }
+  if(!confirm('Clear all '+history.length+' history items?')) return;
+  history=[];
+  renderHistory();
+  showToast('🗑️ History cleared.');
+}
+
+/* ══════════════════════════════════════════════
+   TOGGLE LAYOUT
+══════════════════════════════════════════════ */
+function toggleLayout(){
+  splitView = !splitView;
+  const sp = document.getElementById('splitPane');
+  sp.classList.toggle('single', !splitView);
+  document.getElementById('previewPane').style.display = splitView?'':'none';
+  document.getElementById('layoutBtn').textContent = splitView?'⊞ Split':'⊟ Single';
+  showToast(splitView?'⊞ Split view enabled':'⊟ Single view enabled');
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+/* ══════════════════════════════════════════════
+   FULLSCREEN MODAL
+══════════════════════════════════════════════ */
+function openFullscreen(){
+  if(!currentCode){ showToast('⚠️ No code to view!'); return; }
+  document.getElementById('modalCode').textContent = currentCode;
+  document.getElementById('modalTitle').textContent = `💻 ${LANG_META[currentLang].name} — ${lastPrompt.substring(0,50)}`;
+  document.getElementById('codeModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('codeModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ══════════════════════════════════════════════
+   CLEAR
+══════════════════════════════════════════════ */
+function clearCode(){
+  currentCode=''; currentExplain='';
+  document.getElementById('codeContent').innerHTML='';
+  document.getElementById('lineNums').innerHTML='<div class="line-num">1</div>';
+  document.getElementById('paneSubTitle').textContent='— No code yet';
+  document.getElementById('previewFrame').style.display='none';
+  document.getElementById('previewEmpty').style.display='flex';
+  document.getElementById('previewEmpty').innerHTML=`<span class="es-icon">💡</span><div class="es-title">Preview & Explanation</div><div class="es-sub">Generate code to see live preview,<br>explanation & improvement suggestions!</div>`;
+  updateStatusBar();
+  showToast('🗑️ Code cleared.');
+}
+function clearAll(){
+  clearCode();
+  document.getElementById('promptInput').value='';
+  showToast('🗑️ All cleared.');
+}
+
+/* ══════════════════════════════════════════════
+   STATUS BAR
+══════════════════════════════════════════════ */
+function updateStatusBar(){
+  const code  = currentCode||'';
+  const lines = code?code.split('\n').length:0;
+  document.getElementById('sbLines').textContent = lines;
+  document.getElementById('sbChars').textContent = code.length;
+  document.getElementById('sbWords').textContent = code.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('sbModel').textContent = document.getElementById('modelSel').value;
+}
+
+document.getElementById('modelSel').addEventListener('change',function(){
+  document.getElementById('sbModel').textContent=this.value;
+});
+
+/* ══════════════════════════════════════════════
+   BUSY STATE
+══════════════════════════════════════════════ */
+function setBusy(busy){
+  const btn = document.getElementById('genBtn');
+  btn.disabled = busy;
+  btn.classList.toggle('loading', busy);
+  if(busy){
+    btn.querySelector('.spinner').style.display='block';
+  } else {
+    btn.querySelector('.spinner').style.display='none';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════════════ */
+function showProgress(show){
+  const pc = document.getElementById('genProgress');
+  pc.style.display = show?'block':'none';
+  if(show){
+    ['gps1','gps2','gps3','gps4','gps5'].forEach(s=>document.getElementById(s).className='gp-step');
+    const bar = document.getElementById('gpBar');
+    bar.style.animation='none'; void bar.offsetWidth;
+    bar.style.animation='shimmer 1.4s infinite, grow 8s ease forwards';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   INPUT EVENTS
+══════════════════════════════════════════════ */
+function onInputKey(e){
+  if(e.key==='Escape') stopFlag=true;
+}
+function onInputChange(){
+  const inp=document.getElementById('promptInput');
+  inp.style.height='auto';
+  inp.style.height=Math.min(inp.scrollHeight,110)+'px';
+}
+
+/* ══════════════════════════════════════════════
+   MARKDOWN (simple)
+══════════════════════════════════════════════ */
+function renderMarkdownSimple(text){
+  let h = escHtml(text);
+  h = h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  h = h.replace(/^# (.+)$/gm,  '<h2>$1</h2>');
+  h = h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h = h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h = h.replace(/^[\*\-] (.+)$/gm,'<li>$1</li>');
+  h = h.replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>');
+  h = h.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+  h = h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h = h.replace(/\n\n/g,'</p><p>');
+  h = h.replace(/\n/g,'<br>');
+  return '<p>'+h+'</p>';
+}
+
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
+function escHtml(str){
+  return String(str||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ══════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='Enter'){ e.preventDefault(); generateCode(); }
+  if(e.ctrlKey&&e.key==='s'){ e.preventDefault(); downloadCode(); }
+  if(e.ctrlKey&&e.key==='k'){ e.preventDefault(); clearAll(); }
+  if(e.key==='Escape'){ closeModal(); stopFlag=true; }
+  if(e.ctrlKey&&e.key==='/'){ e.preventDefault(); toggleSidebar(); }
+});
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+document.getElementById('promptInput').focus();
+consoleLog('info','🚀 AI Code Generator ready!');
+consoleLog('info','💡 Tip: Use Ctrl+Enter to generate code');
+consoleLog('info','🔐 Sign in to Puter for free AI access');
+</script>
+</body>
+</html>
