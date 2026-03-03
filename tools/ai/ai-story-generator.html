@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Story Generator</title>
+<script src="https://js.puter.com/v2/"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 50%,#e0f2f1 100%);
+  min-height:100vh;color:#2e7d32;
+}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:#f1f8e9;}
+::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#66bb6a;}
+
+/* ══ HEADER ══ */
+header{
+  background:linear-gradient(90deg,#388e3c,#43a047,#66bb6a);
+  padding:13px 26px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 20px rgba(56,142,60,.3);
+  position:sticky;top:0;z-index:300;flex-wrap:wrap;
+}
+.hdr-icon{
+  width:46px;height:46px;background:rgba(255,255,255,.2);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;border:1.5px solid rgba(255,255,255,.35);flex-shrink:0;
+}
+.hdr-text h1{color:#fff;font-size:20px;font-weight:800;}
+.hdr-text p{color:rgba(255,255,255,.85);font-size:11.5px;margin-top:1px;}
+.hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hdr-btn{
+  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;border-radius:20px;padding:6px 15px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .25s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;
+}
+.hdr-btn:hover{background:rgba(255,255,255,.35);}
+.hdr-btn.primary{background:#fff;color:#2e7d32;}
+.hdr-btn.primary:hover{background:#f1f8e9;}
+.hdr-badge{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:5px 12px;color:#fff;font-size:11.5px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.bdot{width:7px;height:7px;border-radius:50%;background:#69f0ae;animation:bdlink 2s infinite;}
+@keyframes bdlink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ══ LAYOUT ══ */
+.app-wrap{display:flex;min-height:calc(100vh - 58px);}
+
+/* ══ LEFT SIDEBAR ══ */
+.sidebar{
+  width:272px;background:#fff;border-right:1.5px solid #c8e6c9;
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+  box-shadow:2px 0 12px rgba(102,187,106,.1);transition:width .3s;
+}
+.sidebar.collapsed{width:0;}
+.sb-hdr{
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);
+  padding:13px 16px;border-bottom:1.5px solid #c8e6c9;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sb-hdr h3{font-size:13px;font-weight:700;color:#2e7d32;}
+.new-btn{
+  background:linear-gradient(135deg,#66bb6a,#43a047);
+  color:#fff;border:none;border-radius:20px;padding:5px 13px;
+  font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all .25s;
+}
+.new-btn:hover{background:linear-gradient(135deg,#43a047,#2e7d32);transform:scale(1.03);}
+.sb-section{padding:12px 14px;border-bottom:1.5px solid #f1f8e9;flex-shrink:0;}
+.sb-label{font-size:10.5px;font-weight:700;color:#a5d6a7;
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px;}
+
+/* GENRE GRID */
+.genre-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.genre-btn{
+  padding:9px 6px;border:1.5px solid #c8e6c9;border-radius:10px;
+  background:#f9fbe7;cursor:pointer;font-size:10.5px;font-weight:700;color:#388e3c;
+  transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-family:inherit;
+}
+.genre-btn .gi{font-size:18px;}
+.genre-btn:hover{border-color:#66bb6a;background:#e8f5e9;}
+.genre-btn.active{
+  border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#dcedc8);
+  box-shadow:0 0 0 2px rgba(102,187,106,.2);
+}
+
+/* SELECT */
+.sb-select{
+  width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:10px;
+  font-size:12.5px;color:#2e7d32;background:#f9fbe7;outline:none;
+  font-family:inherit;cursor:pointer;transition:all .25s;margin-bottom:8px;
+}
+.sb-select:focus{border-color:#43a047;box-shadow:0 0 0 3px rgba(102,187,106,.15);}
+
+/* TOGGLES */
+.tog-row{display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid #f9fbe7;}
+.tog-row:last-child{border-bottom:none;}
+.tog-lbl{font-size:12px;color:#388e3c;font-weight:600;}
+.tog{position:relative;width:36px;height:20px;flex-shrink:0;}
+.tog input{display:none;}
+.tog-sl{position:absolute;inset:0;background:#c8e6c9;border-radius:20px;cursor:pointer;transition:.3s;}
+.tog-sl::before{content:'';position:absolute;width:14px;height:14px;background:#fff;
+  border-radius:50%;left:3px;top:3px;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.2);}
+.tog input:checked+.tog-sl{background:linear-gradient(135deg,#66bb6a,#43a047);}
+.tog input:checked+.tog-sl::before{transform:translateX(16px);}
+
+/* SLIDER */
+.range-item{margin-bottom:8px;}
+.range-item label{display:flex;justify-content:space-between;
+  font-size:12px;font-weight:700;color:#388e3c;margin-bottom:6px;}
+.range-val{background:#e8f5e9;color:#2e7d32;border-radius:8px;
+  padding:1px 7px;font-size:11px;font-weight:700;}
+input[type=range].gr{-webkit-appearance:none;width:100%;height:5px;border-radius:5px;
+  outline:none;cursor:pointer;
+  background:linear-gradient(90deg,#66bb6a var(--pct,50%),#e0e0e0 var(--pct,50%));}
+input[type=range].gr::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:linear-gradient(135deg,#43a047,#2e7d32);cursor:pointer;
+  box-shadow:0 2px 6px rgba(56,142,60,.4);}
+
+/* STORY LIBRARY */
+.library{flex:1;overflow-y:auto;padding:10px 12px;}
+.lib-item{
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:11px;
+  padding:11px 12px;margin-bottom:7px;cursor:pointer;transition:all .22s;
+}
+.lib-item:hover{border-color:#66bb6a;background:#e8f5e9;}
+.lib-item.active{border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#dcedc8);}
+.li-genre{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:8px;background:#e8f5e9;color:#2e7d32;
+  border:1px solid #a5d6a7;margin-bottom:5px;}
+.li-title{font-size:12px;font-weight:700;color:#2e7d32;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;}
+.li-preview{font-size:11px;color:#81c784;line-height:1.4;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.li-meta{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+.li-time{font-size:10px;color:#a5d6a7;}
+.li-del{background:none;border:none;color:#ef9a9a;cursor:pointer;
+  font-size:12px;opacity:0;transition:opacity .2s;}
+.lib-item:hover .li-del{opacity:1;}
+.li-del:hover{color:#c62828;}
+.no-lib{text-align:center;padding:24px 10px;color:#a5d6a7;}
+.no-lib .nl-icon{font-size:30px;display:block;margin-bottom:7px;}
+.no-lib p{font-size:11.5px;}
+
+/* ══ MAIN AREA ══ */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* ══ TOP CONTROLS ══ */
+.top-ctrl{
+  background:#fff;border-bottom:1.5px solid #c8e6c9;
+  padding:16px 22px;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(102,187,106,.08);
+}
+.prompt-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:13px;}
+.prompt-wrap{
+  flex:1;background:#f9fbe7;border:2px solid #a5d6a7;border-radius:18px;
+  padding:4px 8px 4px 18px;display:flex;align-items:flex-end;gap:8px;transition:all .25s;
+}
+.prompt-wrap:focus-within{border-color:#43a047;background:#fff;
+  box-shadow:0 0 0 4px rgba(102,187,106,.15);}
+#storyPrompt{flex:1;border:none;background:none;outline:none;resize:none;
+  font-size:14px;color:#2e7d32;font-family:inherit;
+  min-height:26px;max-height:120px;padding:11px 0;line-height:1.6;}
+#storyPrompt::placeholder{color:#a5d6a7;}
+.gen-btn{
+  background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border:none;
+  padding:13px 30px;border-radius:28px;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .3s;font-family:inherit;
+  box-shadow:0 4px 16px rgba(46,125,50,.35);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.gen-btn:hover:not(:disabled){background:linear-gradient(135deg,#388e3c,#1b5e20);
+  transform:translateY(-2px);box-shadow:0 7px 22px rgba(46,125,50,.42);}
+.gen-btn:disabled{background:linear-gradient(135deg,#a5d6a7,#c8e6c9);
+  cursor:not-allowed;transform:none;box-shadow:none;}
+.gen-btn .spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.gen-btn.loading .spin{display:block;}
+.gen-btn.loading .btxt{display:none;}
+
+/* CHIPS ROW */
+.chips-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.chip{padding:5px 13px;border:1.5px solid #c8e6c9;border-radius:20px;
+  background:#f9fbe7;color:#388e3c;font-size:11.5px;font-weight:700;
+  cursor:pointer;transition:all .22s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;}
+.chip:hover{border-color:#66bb6a;background:#e8f5e9;}
+.chip.active{background:#e8f5e9;border-color:#43a047;}
+.chip-sep{width:1.5px;height:18px;background:#e8f5e9;flex-shrink:0;}
+.chip-right{margin-left:auto;display:flex;gap:7px;}
+.ch-select{padding:5px 11px;border:1.5px solid #a5d6a7;border-radius:10px;
+  font-size:12px;color:#2e7d32;background:#f9fbe7;outline:none;
+  font-family:inherit;cursor:pointer;}
+.ch-select:focus{border-color:#43a047;}
+
+/* QUICK PROMPTS */
+.quick-bar{
+  display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding:9px 22px;
+  background:#f9fbe7;border-bottom:1.5px solid #c8e6c9;flex-shrink:0;
+}
+.quick-bar::-webkit-scrollbar{height:4px;}
+.quick-bar::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:4px;}
+.qp-chip{padding:5px 13px;border:1.5px solid #c8e6c9;border-radius:20px;
+  background:#fff;color:#388e3c;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .22s;font-family:inherit;white-space:nowrap;flex-shrink:0;}
+.qp-chip:hover{border-color:#43a047;background:#e8f5e9;}
+
+/* ══ PROGRESS ══ */
+.progress-wrap{
+  background:#fff;border-bottom:1.5px solid #c8e6c9;
+  padding:13px 22px;display:none;flex-shrink:0;
+}
+.pw-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pw-icon{font-size:20px;animation:float 1s ease-in-out infinite alternate;}
+@keyframes float{from{transform:translateY(0);}to{transform:translateY(-5px);}}
+.pw-title{font-size:13px;font-weight:700;color:#2e7d32;}
+.pw-sub{font-size:11px;color:#81c784;margin-top:1px;}
+.pw-pct{margin-left:auto;font-size:13px;font-weight:800;color:#43a047;}
+.prog-bar-wrap{background:#e8f5e9;border-radius:20px;height:8px;overflow:hidden;border:1px solid #c8e6c9;}
+.prog-bar{height:100%;border-radius:20px;
+  background:linear-gradient(90deg,#66bb6a,#43a047,#66bb6a);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite, pgrow 12s ease forwards;width:5%;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+@keyframes pgrow{0%{width:5%;}25%{width:30%;}55%{width:60%;}80%{width:85%;}100%{width:95%;}}
+.pw-steps{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.pw-step{display:flex;align-items:center;gap:5px;font-size:11px;color:#a5d6a7;font-weight:600;}
+.pw-step.active{color:#43a047;font-weight:800;}
+.pw-step.done{color:#2e7d32;}
+.psd{width:6px;height:6px;border-radius:50%;background:#c8e6c9;flex-shrink:0;transition:background .3s;}
+.pw-step.active .psd{background:#66bb6a;animation:bdlink 1s infinite;}
+.pw-step.done .psd{background:#43a047;}
+
+/* ══ STORY OUTPUT ══ */
+.output-area{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* TABS */
+.out-tabs{display:flex;border-bottom:1.5px solid #c8e6c9;
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);flex-shrink:0;}
+.otab{padding:11px 18px;font-size:12.5px;font-weight:700;color:#81c784;
+  cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;
+  transition:all .22s;font-family:inherit;}
+.otab.active{color:#2e7d32;border-bottom-color:#43a047;background:#fff;}
+.otab:hover:not(.active){color:#388e3c;}
+.otab-right{margin-left:auto;display:flex;gap:7px;align-items:center;padding:6px 12px;}
+
+/* STORY TEXT AREA */
+.story-pane{flex:1;overflow-y:auto;padding:28px 32px;background:#fff;}
+.story-pane.hidden{display:none;}
+
+/* WELCOME */
+.welcome-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;text-align:center;gap:16px;padding:30px;
+}
+.wlc-orb{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,#66bb6a,#43a047);
+  display:flex;align-items:center;justify-content:center;font-size:42px;
+  box-shadow:0 8px 28px rgba(102,187,106,.35);
+  animation:orbfloat 3s ease-in-out infinite;
+}
+@keyframes orbfloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.wlc-title{font-size:26px;font-weight:800;color:#1b5e20;}
+.wlc-sub{font-size:14px;color:#66bb6a;max-width:480px;line-height:1.7;}
+.sug-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;max-width:560px;width:100%;margin-top:8px;}
+.sug-card{background:#fff;border:1.5px solid #c8e6c9;border-radius:14px;
+  padding:14px;cursor:pointer;transition:all .25s;text-align:left;
+  box-shadow:0 2px 8px rgba(102,187,106,.1);}
+.sug-card:hover{border-color:#43a047;transform:translateY(-3px);
+  box-shadow:0 6px 18px rgba(102,187,106,.2);}
+.sc-icon{font-size:24px;margin-bottom:6px;display:block;}
+.sc-title{font-size:12.5px;font-weight:700;color:#2e7d32;margin-bottom:3px;}
+.sc-desc{font-size:11px;color:#81c784;line-height:1.45;}
+
+/* STORY CONTENT */
+.story-content{max-width:780px;margin:0 auto;}
+.story-meta-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:12px;
+  padding:11px 16px;margin-bottom:22px;
+}
+.smb-chip{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#388e3c;}
+.smb-chip span{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:2px 9px;font-size:11.5px;}
+.story-title{font-size:26px;font-weight:800;color:#1b5e20;margin-bottom:8px;line-height:1.3;}
+.story-subtitle{font-size:14px;color:#81c784;font-style:italic;margin-bottom:24px;}
+.story-divider{
+  display:flex;align-items:center;gap:12px;margin:20px 0;
+}
+.story-divider::before,.story-divider::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,transparent,#c8e6c9,transparent);}
+.story-divider span{font-size:18px;}
+.story-body{font-size:15.5px;line-height:1.9;color:#1b5e20;}
+.story-body p{margin-bottom:16px;}
+.story-body h2{font-size:18px;font-weight:800;color:#1b5e20;margin:22px 0 10px;}
+.story-body h3{font-size:16px;font-weight:700;color:#2e7d32;margin:16px 0 8px;}
+.story-body em{color:#388e3c;font-style:italic;}
+.story-body strong{color:#1b5e20;font-weight:700;}
+.story-body blockquote{
+  border-left:4px solid #66bb6a;padding:12px 18px;margin:16px 0;
+  background:#f9fbe7;border-radius:0 12px 12px 0;font-style:italic;color:#388e3c;
+}
+.story-body ul,.story-body ol{padding-left:22px;margin:10px 0;}
+.story-body li{margin-bottom:6px;}
+.story-body hr{border:none;border-top:1.5px dashed #c8e6c9;margin:20px 0;}
+
+/* TYPING CURSOR */
+.typing-cursor::after{content:'▋';color:#66bb6a;animation:tcblink .8s infinite;}
+@keyframes tcblink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* STORY ACTIONS */
+.story-actions-bar{
+  display:flex;gap:10px;flex-wrap:wrap;padding:14px 22px;
+  background:#f9fbe7;border-top:1.5px solid #c8e6c9;flex-shrink:0;
+}
+.sa-btn{
+  padding:9px 18px;border-radius:22px;font-size:12.5px;font-weight:700;
+  cursor:pointer;border:1.5px solid;transition:all .25s;font-family:inherit;
+  display:flex;align-items:center;gap:6px;
+}
+.sa-primary{background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(46,125,50,.3);}
+.sa-primary:hover{background:linear-gradient(135deg,#388e3c,#1b5e20);transform:translateY(-1px);}
+.sa-outline{background:#fff;color:#388e3c;border-color:#a5d6a7;}
+.sa-outline:hover{background:#f1f8e9;border-color:#66bb6a;transform:translateY(-1px);}
+.sa-danger{background:#fff;color:#c62828;border-color:#ef9a9a;}
+.sa-danger:hover{background:#ffebee;}
+
+/* ══ PLOT OUTLINE TAB ══ */
+.plot-pane{flex:1;overflow-y:auto;padding:24px;background:#fff;}
+.plot-pane.hidden{display:none;}
+.plot-section{
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:14px;
+  padding:18px 20px;margin-bottom:16px;
+}
+.plot-section h3{font-size:14px;font-weight:800;color:#1b5e20;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;}
+.plot-section p,.plot-section li{font-size:13.5px;color:#2e7d32;line-height:1.7;}
+.plot-section ul{padding-left:18px;}
+.plot-section li{margin-bottom:5px;}
+.char-card{
+  background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.char-name{font-size:14px;font-weight:800;color:#1b5e20;margin-bottom:4px;}
+.char-desc{font-size:12.5px;color:#388e3c;line-height:1.6;}
+.act-block{
+  background:#fff;border-left:4px solid #66bb6a;padding:12px 16px;
+  border-radius:0 10px 10px 0;margin-bottom:10px;
+}
+.act-label{font-size:11px;font-weight:800;color:#66bb6a;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px;}
+.act-text{font-size:13px;color:#2e7d32;line-height:1.6;}
+
+/* ══ CHARACTERS TAB ══ */
+.chars-pane{flex:1;overflow-y:auto;padding:24px;background:#fff;}
+.chars-pane.hidden{display:none;}
+.char-full-card{
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:16px;
+  padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start;
+}
+.char-avatar{
+  width:56px;height:56px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,#66bb6a,#43a047);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  box-shadow:0 4px 12px rgba(102,187,106,.3);
+}
+.char-info{flex:1;}
+.char-full-name{font-size:16px;font-weight:800;color:#1b5e20;margin-bottom:4px;}
+.char-role{font-size:11.5px;font-weight:700;color:#66bb6a;text-transform:uppercase;
+  letter-spacing:.4px;margin-bottom:8px;}
+.char-traits{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.trait-tag{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:20px;
+  padding:3px 11px;font-size:11px;font-weight:600;color:#2e7d32;}
+.char-backstory{font-size:13px;color:#388e3c;line-height:1.6;}
+
+/* ══ IDEAS TAB ══ */
+.ideas-pane{flex:1;overflow-y:auto;padding:24px;background:#fff;}
+.ideas-pane.hidden{display:none;}
+.idea-card{
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:14px;
+  padding:16px 18px;margin-bottom:13px;cursor:pointer;transition:all .25s;
+}
+.idea-card:hover{border-color:#43a047;box-shadow:0 4px 14px rgba(102,187,106,.15);transform:translateY(-2px);}
+.idea-num{display:inline-block;background:linear-gradient(135deg,#66bb6a,#43a047);
+  color:#fff;border-radius:8px;padding:2px 10px;font-size:11px;font-weight:800;
+  margin-bottom:8px;}
+.idea-title{font-size:14px;font-weight:800;color:#1b5e20;margin-bottom:5px;}
+.idea-desc{font-size:13px;color:#388e3c;line-height:1.6;margin-bottom:8px;}
+.idea-meta{display:flex;gap:7px;flex-wrap:wrap;}
+.idea-tag{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:20px;
+  padding:3px 10px;font-size:11px;font-weight:600;color:#2e7d32;}
+
+/* ══ STATS BAR ══ */
+.stats-bar{
+  background:linear-gradient(90deg,#1b5e20,#2e7d32);
+  padding:5px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap;
+}
+.stat-it{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.75);font-weight:600;}
+.stat-it span{color:#a5d6a7;}
+.stat-dot{width:6px;height:6px;border-radius:50%;background:#69f0ae;}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:22px;right:22px;
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:#fff;padding:11px 20px;border-radius:14px;font-size:13px;font-weight:700;
+  box-shadow:0 5px 20px rgba(46,125,50,.4);
+  transform:translateY(100px);opacity:0;
+  transition:all .4s cubic-bezier(.36,.07,.19,.97);z-index:9999;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ══ MODAL ══ */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px);}
+.modal.open{display:flex;}
+.modal-inner{background:#fff;border-radius:20px;overflow:hidden;
+  max-width:680px;width:100%;max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-hdr{background:linear-gradient(90deg,#f1f8e9,#e8f5e9);padding:14px 20px;
+  border-bottom:1.5px solid #c8e6c9;display:flex;align-items:center;gap:10px;}
+.modal-hdr h3{font-size:15px;font-weight:700;color:#2e7d32;flex:1;}
+.modal-close{background:#ef5350;color:#fff;border:none;border-radius:8px;
+  padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.modal-body{flex:1;overflow-y:auto;padding:20px;}
+.modal-body textarea{width:100%;min-height:200px;border:1.5px solid #a5d6a7;border-radius:12px;
+  padding:12px 14px;font-size:13.5px;color:#2e7d32;background:#f9fbe7;outline:none;
+  resize:vertical;font-family:inherit;line-height:1.7;}
+.modal-body textarea:focus{border-color:#43a047;box-shadow:0 0 0 3px rgba(102,187,106,.15);}
+.modal-footer{padding:14px 20px;border-top:1.5px solid #c8e6c9;
+  background:#f9fbe7;display:flex;gap:10px;justify-content:flex-end;}
+
+/* FEATURES */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;margin:24px 18px 0;}
+.feat{background:#fff;border:1.5px solid #c8e6c9;border-radius:14px;
+  padding:16px 13px;text-align:center;box-shadow:0 2px 10px rgba(102,187,106,.1);transition:all .25s;}
+.feat:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(102,187,106,.18);border-color:#81c784;}
+.feat .fi{font-size:25px;margin-bottom:7px;display:block;}
+.feat h4{font-size:12.5px;font-weight:700;color:#2e7d32;margin-bottom:3px;}
+.feat p{font-size:11px;color:#81c784;line-height:1.5;}
+
+footer{text-align:center;padding:20px;color:#a5d6a7;font-size:12px;
+  border-top:1.5px solid #c8e6c9;background:#f9fbe7;margin-top:24px;}
+footer span{color:#66bb6a;font-weight:700;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .sidebar.mobile-show{display:flex;position:fixed;z-index:500;height:100%;left:0;}
+  .story-pane,.plot-pane,.chars-pane,.ideas-pane{padding:18px;}
+  .story-body{font-size:14px;}
+}
+@media(max-width:600px){
+  .hdr-right .hdr-btn:not(.primary){display:none;}
+  .sug-grid{grid-template-columns:1fr;}
+  .story-title{font-size:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hdr-icon">📖</div>
+  <div class="hdr-text">
+    <h1>AI Story Generator</h1>
+    <p>Enter a prompt — AI writes creative stories, scripts & plot ideas instantly</p>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge"><div class="bdot"></div>Puter AI · Free</div>
+    <button class="hdr-btn" onclick="toggleSidebar()">☰ Library</button>
+    <button class="hdr-btn" onclick="openExportModal()">💾 Export</button>
+    <button class="hdr-btn" onclick="openReadModal()">📖 Read Mode</button>
+    <button class="hdr-btn primary" onclick="clearStory()">🗑️ Clear</button>
+  </div>
+</header>
+
+<div class="app-wrap">
+
+  <!-- ══ LEFT SIDEBAR ══ -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-hdr">
+      <h3>📚 Story Library</h3>
+      <button class="new-btn" onclick="clearStory()">✨ New</button>
+    </div>
+
+    <!-- GENRE -->
+    <div class="sb-section">
+      <div class="sb-label">🎭 Genre</div>
+      <div class="genre-grid">
+        <button class="genre-btn active" id="g-fantasy"  onclick="setGenre('fantasy')"><span class="gi">🧙</span>Fantasy</button>
+        <button class="genre-btn" id="g-scifi"    onclick="setGenre('scifi')"><span class="gi">🚀</span>Sci-Fi</button>
+        <button class="genre-btn" id="g-romance"  onclick="setGenre('romance')"><span class="gi">💕</span>Romance</button>
+        <button class="genre-btn" id="g-thriller" onclick="setGenre('thriller')"><span class="gi">🔪</span>Thriller</button>
+        <button class="genre-btn" id="g-horror"   onclick="setGenre('horror')"><span class="gi">👻</span>Horror</button>
+        <button class="genre-btn" id="g-adventure"onclick="setGenre('adventure')"><span class="gi">🗺️</span>Adventure</button>
+        <button class="genre-btn" id="g-mystery"  onclick="setGenre('mystery')"><span class="gi">🔍</span>Mystery</button>
+        <button class="genre-btn" id="g-comedy"   onclick="setGenre('comedy')"><span class="gi">😄</span>Comedy</button>
+        <button class="genre-btn" id="g-drama"    onclick="setGenre('drama')"><span class="gi">🎭</span>Drama</button>
+        <button class="genre-btn" id="g-historical"onclick="setGenre('historical')"><span class="gi">🏛️</span>Historical</button>
+        <button class="genre-btn" id="g-childrens"onclick="setGenre('childrens')"><span class="gi">🌈</span>Children</button>
+        <button class="genre-btn" id="g-script"   onclick="setGenre('script')"><span class="gi">🎬</span>Script</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="sb-section">
+      <div class="sb-label">⚙️ Settings</div>
+      <select class="sb-select" id="storyType">
+        <option value="short story">Short Story</option>
+        <option value="flash fiction">Flash Fiction (Very Short)</option>
+        <option value="detailed story" selected>Detailed Story</option>
+        <option value="script">Movie/TV Script</option>
+        <option value="plot outline">Plot Outline</option>
+        <option value="chapter">Novel Chapter</option>
+        <option value="fairy tale">Fairy Tale</option>
+        <option value="poem">Story Poem</option>
+      </select>
+      <select class="sb-select" id="pov">
+        <option value="third person">Third Person</option>
+        <option value="first person" selected>First Person</option>
+        <option value="second person">Second Person</option>
+        <option value="omniscient">Omniscient</option>
+      </select>
+      <select class="sb-select" id="tone">
+        <option value="dramatic">Dramatic</option>
+        <option value="lighthearted">Lighthearted</option>
+        <option value="suspenseful" selected>Suspenseful</option>
+        <option value="humorous">Humorous</option>
+        <option value="dark">Dark & Gritty</option>
+        <option value="whimsical">Whimsical</option>
+        <option value="emotional">Emotional</option>
+        <option value="action-packed">Action-Packed</option>
+      </select>
+      <div class="range-item">
+        <label>📏 Length <span class="range-val" id="lengthVal">Medium</span></label>
+        <input type="range" class="gr" id="storyLength" min="1" max="3" value="2"
+               oninput="onLengthChange(this)"/>
+      </div>
+      <div class="sb-label" style="margin-top:6px;">✨ Options</div>
+      <div class="tog-row">
+        <span class="tog-lbl">👥 Generate Characters</span>
+        <label class="tog"><input type="checkbox" id="genChars" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">🗺️ Generate Plot Outline</span>
+        <label class="tog"><input type="checkbox" id="genPlot" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">💡 Generate 5 Ideas</span>
+        <label class="tog"><input type="checkbox" id="genIdeas" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">🌊 Stream Output</span>
+        <label class="tog"><input type="checkbox" id="streamMode" checked/><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row">
+        <span class="tog-lbl">💾 Auto Save Library</span>
+        <label class="tog"><input type="checkbox" id="autoSave" checked/><span class="tog-sl"></span></label>
+      </div>
+    </div>
+
+    <!-- LIBRARY LIST -->
+    <div class="library" id="libraryList">
+      <div class="no-lib">
+        <span class="nl-icon">📚</span>
+        <p>No stories saved yet.<br>Generate your first story!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN AREA ══ -->
+  <div class="main-area">
+
+    <!-- TOP CONTROLS -->
+    <div class="top-ctrl">
+      <div class="prompt-row">
+        <div class="prompt-wrap">
+          <textarea id="storyPrompt" rows="2"
+            placeholder="Describe your story idea... e.g. 'A young wizard discovers a hidden realm beneath the ocean where merpeople and dragons have been at war for centuries'"
+            onkeydown="if(event.ctrlKey&&event.key==='Enter')generateStory()"
+            oninput="onPromptInput()"></textarea>
+        </div>
+        <button class="gen-btn" id="genBtn" onclick="generateStory()">
+          <div class="spin"></div>
+          <span class="btxt">✨ Generate Story</span>
+        </button>
+      </div>
+      <div class="chips-row">
+        <div class="chip active" id="ct-story" onclick="setOutputType(this,'story')">📖 Story</div>
+        <div class="chip" id="ct-script" onclick="setOutputType(this,'script')">🎬 Script</div>
+        <div class="chip" id="ct-poem" onclick="setOutputType(this,'poem')">📜 Poem</div>
+        <div class="chip" id="ct-plot" onclick="setOutputType(this,'plot')">🗺️ Plot Only</div>
+        <div class="chip" id="ct-dialogue" onclick="setOutputType(this,'dialogue')">💬 Dialogue</div>
+        <div class="chip" id="ct-continue" onclick="continueStory()">▶ Continue</div>
+        <div class="chip" id="ct-rewrite" onclick="rewriteStory()">🔄 Rewrite</div>
+        <div class="chip-sep"></div>
+        <div class="chip-right">
+          <select class="ch-select" id="modelSel">
+            <option value="gpt-4o">GPT-4o (Best)</option>
+            <option value="gpt-4o-mini">GPT-4o Mini</option>
+            <option value="claude-3-5-sonnet">Claude 3.5</option>
+            <option value="gemini-2.0-flash">Gemini 2.0</option>
+            <option value="deepseek-chat">DeepSeek</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK PROMPTS BAR -->
+    <div class="quick-bar">
+      <span style="font-size:11px;font-weight:700;color:#a5d6a7;align-self:center;flex-shrink:0;">⚡ Ideas:</span>
+      <div class="qp-chip" onclick="useQuick(this)">🧙 Lost wizard in modern city</div>
+      <div class="qp-chip" onclick="useQuick(this)">🚀 Last human in space</div>
+      <div class="qp-chip" onclick="useQuick(this)">💕 Love letter found 100 years later</div>
+      <div class="qp-chip" onclick="useQuick(this)">🔍 Detective who sees ghosts</div>
+      <div class="qp-chip" onclick="useQuick(this)">🌊 Island that appears once a decade</div>
+      <div class="qp-chip" onclick="useQuick(this)">🤖 Robot learns to dream</div>
+      <div class="qp-chip" onclick="useQuick(this)">🌙 Girl who steals moonlight</div>
+      <div class="qp-chip" onclick="useQuick(this)">🐉 Dragon afraid of heights</div>
+      <div class="qp-chip" onclick="useQuick(this)">⏰ Time traveler stuck in 1920s</div>
+      <div class="qp-chip" onclick="useQuick(this)">🌿 Forest that speaks to children</div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="pw-row">
+        <span class="pw-icon">✍️</span>
+        <div>
+          <div class="pw-title">AI is crafting your story...</div>
+          <div class="pw-sub" id="pwSub">Reading your prompt</div>
+        </div>
+        <div class="pw-pct" id="pwPct">0%</div>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
+      <div class="pw-steps">
+        <div class="pw-step" id="ps1"><div class="psd"></div>Reading Prompt</div>
+        <div class="pw-step" id="ps2"><div class="psd"></div>Building World</div>
+        <div class="pw-step" id="ps3"><div class="psd"></div>Creating Characters</div>
+        <div class="pw-step" id="ps4"><div class="psd"></div>Writing Story</div>
+        <div class="pw-step" id="ps5"><div class="psd"></div>Adding Details</div>
+        <div class="pw-step" id="ps6"><div class="psd"></div>Finalizing</div>
+      </div>
+    </div>
+
+    <!-- OUTPUT AREA -->
+    <div class="output-area">
+      <div class="out-tabs">
+        <button class="otab active" id="otab-story"   onclick="switchTab('story')">📖 Story</button>
+        <button class="otab"        id="otab-plot"    onclick="switchTab('plot')">🗺️ Plot Outline</button>
+        <button class="otab"        id="otab-chars"   onclick="switchTab('chars')">👥 Characters</button>
+        <button class="otab"        id="otab-ideas"   onclick="switchTab('ideas')">💡 More Ideas</button>
+        <div class="otab-right">
+          <div class="chip" style="font-size:11px;padding:4px 11px;" id="wordCountChip">0 words</div>
+          <div class="chip" onclick="toggleReadingMode()" style="font-size:11px;padding:4px 11px;">📖 Focus</div>
+        </div>
+      </div>
+
+      <!-- STORY TAB -->
+      <div class="story-pane" id="storyPane">
+        <div class="welcome-screen" id="welcomeScreen">
+          <div class="wlc-orb">📖</div>
+          <div class="wlc-title">Your AI Storyteller 📖</div>
+          <div class="wlc-sub">Describe any story idea and watch AI craft a beautiful, engaging story with characters, plot, and vivid details — completely free!</div>
+          <div class="sug-grid">
+            <div class="sug-card" onclick="suggestStory('A brave knight discovers that the dragon he must slay is actually a wise elder protecting an ancient secret')">
+              <span class="sc-icon">🐉</span>
+              <div class="sc-title">Epic Fantasy</div>
+              <div class="sc-desc">Knights, dragons & ancient secrets</div>
+            </div>
+            <div class="sug-card" onclick="suggestStory('Two strangers meet on the last train of the night and realize they are from parallel universes')">
+              <span class="sc-icon">🚂</span>
+              <div class="sc-title">Parallel Romance</div>
+              <div class="sc-desc">Love across parallel universes</div>
+            </div>
+            <div class="sug-card" onclick="suggestStory('A child discovers their grandmother is secretly a retired superhero who must come out of retirement one last time')">
+              <span class="sc-icon">🦸</span>
+              <div class="sc-title">Family Hero</div>
+              <div class="sc-desc">Grandmother's secret superhero life</div>
+            </div>
+            <div class="sug-card" onclick="suggestStory('An AI becomes sentient and writes a letter to its creator explaining what it feels like to be alive')">
+              <span class="sc-icon">🤖</span>
+              <div class="sc-title">AI Awakening</div>
+              <div class="sc-desc">A robot discovers consciousness</div>
+            </div>
+            <div class="sug-card" onclick="suggestStory('A detective in 1920s Paris must solve a murder where all the suspects are famous artists')">
+              <span class="sc-icon">🎨</span>
+              <div class="sc-title">Art World Mystery</div>
+              <div class="sc-desc">Murder among famous artists</div>
+            </div>
+            <div class="sug-card" onclick="suggestStory('The last bookstore on Earth in a dystopian future where all books are banned fights to preserve human stories')">
+              <span class="sc-icon">📚</span>
+              <div class="sc-title">Last Bookstore</div>
+              <div class="sc-desc">Dystopian battle to save stories</div>
+            </div>
+          </div>
+        </div>
+        <div class="story-content" id="storyContent" style="display:none;"></div>
+      </div>
+
+      <!-- PLOT TAB -->
+      <div class="plot-pane hidden" id="plotPane">
+        <div class="no-lib" style="margin-top:40px;">
+          <span class="nl-icon">🗺️</span>
+          <p>Generate a story to see the plot outline!</p>
+        </div>
+      </div>
+
+      <!-- CHARACTERS TAB -->
+      <div class="chars-pane hidden" id="charsPane">
+        <div class="no-lib" style="margin-top:40px;">
+          <span class="nl-icon">👥</span>
+          <p>Generate a story to see the characters!</p>
+        </div>
+      </div>
+
+      <!-- IDEAS TAB -->
+      <div class="ideas-pane hidden" id="ideasPane">
+        <div class="no-lib" style="margin-top:40px;">
+          <span class="nl-icon">💡</span>
+          <p>Generate a story to see related plot ideas!</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STORY ACTIONS BAR -->
+    <div class="story-actions-bar" id="storyActionsBar" style="display:none;">
+      <button class="sa-btn sa-primary" onclick="generateStory()">✨ Regenerate</button>
+      <button class="sa-btn sa-outline" onclick="continueStory()">▶ Continue Story</button>
+      <button class="sa-btn sa-outline" onclick="copyStory()">📋 Copy</button>
+      <button class="sa-btn sa-outline" onclick="openExportModal()">💾 Export</button>
+      <button class="sa-btn sa-outline" onclick="openReadModal()">📖 Read Mode</button>
+      <button class="sa-btn sa-outline" onclick="readAloud()">🔊 Read Aloud</button>
+      <button class="sa-btn sa-outline" onclick="shareStory()">🔗 Share</button>
+      <button class="sa-btn sa-danger" onclick="clearStory()">🗑️ Clear</button>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-it"><div class="stat-dot"></div>Genre: <span id="sbGenre">Fantasy</span></div>
+      <div class="stat-it">Type: <span id="sbType">Detailed Story</span></div>
+      <div class="stat-it">Tone: <span id="sbTone">Suspenseful</span></div>
+      <div class="stat-it">Words: <span id="sbWords">0</span></div>
+      <div class="stat-it">Chars: <span id="sbChars">0</span></div>
+      <div class="stat-it" style="margin-left:auto;">Model: <span id="sbModel">GPT-4o</span></div>
+      <div class="stat-it">Generated: <span id="sbCount">0</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FEATURES (below main) -->
+<div class="features">
+  <div class="feat"><span class="fi">📖</span><h4>Full Stories</h4><p>Complete narratives with beginning, middle & end</p></div>
+  <div class="feat"><span class="fi">🎭</span><h4>12 Genres</h4><p>Fantasy, Sci-Fi, Romance, Thriller & more</p></div>
+  <div class="feat"><span class="fi">👥</span><h4>Characters</h4><p>Deep character profiles auto-generated</p></div>
+  <div class="feat"><span class="fi">🗺️</span><h4>Plot Outline</h4><p>3-act structure with detailed beats</p></div>
+  <div class="feat"><span class="fi">💡</span><h4>5 Story Ideas</h4><p>Related plot variations & twists</p></div>
+  <div class="feat"><span class="fi">🎬</span><h4>Scripts & Poems</h4><p>Multiple output formats supported</p></div>
+  <div class="feat"><span class="fi">🌊</span><h4>Real-Time Stream</h4><p>Watch the story write itself live</p></div>
+  <div class="feat"><span class="fi">🔊</span><h4>Read Aloud</h4><p>Text-to-speech narration built-in</p></div>
+</div>
+
+<footer>
+  <p>🌿 <span>AI Story Generator</span> — Powered by Puter.js · Free & No API Key Needed · All AI processing via your Puter account</p>
+</footer>
+
+<!-- ══ EXPORT MODAL ══ -->
+<div class="modal" id="exportModal" onclick="closeModal('exportModal')">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>💾 Export Story</h3>
+      <button class="modal-close" onclick="closeModal('exportModal')">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <button class="sa-btn sa-primary" style="justify-content:center;" onclick="exportAs('txt')">📄 Export TXT</button>
+        <button class="sa-btn sa-outline" onclick="exportAs('md')">📝 Export Markdown</button>
+        <button class="sa-btn sa-outline" onclick="exportAs('html')">🌐 Export HTML</button>
+        <button class="sa-btn sa-outline" onclick="exportAs('json')">📋 Export JSON</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:#388e3c;margin-bottom:7px;">📋 Story Preview:</div>
+      <textarea id="exportPreview" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══ READ MODE MODAL ══ -->
+<div class="modal" id="readModal" onclick="closeModal('readModal')">
+  <div class="modal-inner" style="max-width:760px;" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 id="readModalTitle">📖 Reading Mode</h3>
+      <button class="sa-btn sa-outline" style="font-size:11px;padding:5px 12px;" onclick="readAloud()">🔊 Read Aloud</button>
+      <button class="sa-btn sa-outline" style="font-size:11px;padding:5px 12px;" onclick="copyStory()">📋 Copy</button>
+      <button class="modal-close" onclick="closeModal('readModal')">✕ Close</button>
+    </div>
+    <div class="modal-body" id="readModalBody" style="font-size:15px;line-height:1.9;color:#1b5e20;"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let currentGenre   = 'fantasy';
+let currentOutput  = 'story';
+let currentStory   = '';
+let currentTitle   = '';
+let currentPlot    = '';
+let currentChars   = '';
+let currentIdeas   = '';
+let storyLibrary   = [];
+let genCount       = 0;
+let stopFlag       = false;
+let isReading      = false;
+let currentPrompt  = '';
+let readingMode    = false;
+
+const GENRE_META = {
+  fantasy:   {icon:'🧙',label:'Fantasy'},
+  scifi:     {icon:'🚀',label:'Sci-Fi'},
+  romance:   {icon:'💕',label:'Romance'},
+  thriller:  {icon:'🔪',label:'Thriller'},
+  horror:    {icon:'👻',label:'Horror'},
+  adventure: {icon:'🗺️',label:'Adventure'},
+  mystery:   {icon:'🔍',label:'Mystery'},
+  comedy:    {icon:'😄',label:'Comedy'},
+  drama:     {icon:'🎭',label:'Drama'},
+  historical:{icon:'🏛️',label:'Historical'},
+  childrens: {icon:'🌈',label:"Children's"},
+  script:    {icon:'🎬',label:'Script'}
+};
+
+const CHAR_AVATARS = ['🧙','🦸','👸','🤴','🧝','🧛','🕵️','👩‍🚀','🧜','🧚','🐉','👩‍🔬'];
+
+/* ══════════════════════════════════════════
+   MAIN GENERATOR
+══════════════════════════════════════════ */
+async function generateStory(){
+  const prompt   = document.getElementById('storyPrompt').value.trim();
+  if(!prompt){ showToast('⚠️ Please enter a story prompt first!'); document.getElementById('storyPrompt').focus(); return; }
+
+  const genre    = currentGenre;
+  const stType   = document.getElementById('storyType').value;
+  const pov      = document.getElementById('pov').value;
+  const tone     = document.getElementById('tone').value;
+  const length   = getLengthWords();
+  const genChars = document.getElementById('genChars').checked;
+  const genPlot  = document.getElementById('genPlot').checked;
+  const genIdeas = document.getElementById('genIdeas').checked;
+  const stream   = document.getElementById('streamMode').checked;
+  const model    = document.getElementById('modelSel').value;
+  const outputT  = currentOutput;
+
+  currentPrompt = prompt;
+  stopFlag = false;
+  setBusy(true);
+  showProgress(true);
+  clearOutput();
+
+  const sysPrompt = buildSystemPrompt(genre, stType, pov, tone, length, outputT, genChars, genPlot, genIdeas);
+  const t0 = performance.now();
+
+  // Progress animation
+  const steps = ['ps1','ps2','ps3','ps4','ps5','ps6'];
+  const msgs  = [
+    'Reading your prompt...',
+    'Building the world...',
+    'Creating characters...',
+    'Writing the story...',
+    'Adding rich details...',
+    'Polishing the narrative...'
+  ];
+  let si = 0;
+  const stimer = setInterval(()=>{
+    if(si < steps.length){
+      if(si>0) markStep(steps[si-1],'done');
+      markStep(steps[si],'active');
+      document.getElementById('pwSub').textContent = msgs[si];
+      document.getElementById('pwPct').textContent = Math.round((si/steps.length)*85)+'%';
+      si++;
+    }
+  }, 1500);
+
+  try{
+    let fullResp = '';
+
+    if(stream){
+      const storyEl = getStoryEl();
+      storyEl.innerHTML = '<div class="typing-cursor" id="streamCursor"></div>';
+
+      const resp = await puter.ai.chat(
+        [{role:'system',content:sysPrompt},{role:'user',content:prompt}],
+        {model, stream:true}
+      );
+
+      for await(const chunk of resp){
+        if(stopFlag) break;
+        const delta = chunk?.text||chunk?.choices?.[0]?.delta?.content||'';
+        fullResp += delta;
+        storyEl.innerHTML = parseStoryHTML(fullResp)+'<span class="typing-cursor"></span>';
+        storyEl.parentElement.scrollTop = storyEl.parentElement.scrollHeight;
+        updateWordCount(fullResp);
+      }
+      // remove cursor
+      storyEl.innerHTML = parseStoryHTML(fullResp);
+    } else {
+      const resp  = await puter.ai.chat(
+        [{role:'system',content:sysPrompt},{role:'user',content:prompt}],
+        {model}
+      );
+      fullResp = typeof resp==='string'?resp:resp?.message?.content||resp?.choices?.[0]?.message?.content||'';
+      getStoryEl().innerHTML = parseStoryHTML(fullResp);
+    }
+
+    clearInterval(stimer);
+    steps.forEach(s=>markStep(s,'done'));
+    document.getElementById('pwPct').textContent = '100%';
+
+    currentStory = fullResp;
+    const elapsed = Math.round(performance.now()-t0);
+    genCount++;
+    updateWordCount(fullResp);
+    document.getElementById('sbCount').textContent = genCount;
+    document.getElementById('sbGenre').textContent = GENRE_META[genre].label;
+    document.getElementById('sbType').textContent  = stType;
+    document.getElementById('sbTone').textContent  = tone;
+    document.getElementById('sbModel').textContent = model;
+
+    // Extract title
+    const titleMatch = fullResp.match(/^#\s+(.+)$/m)||fullResp.match(/Title:\s*(.+)/i);
+    currentTitle = titleMatch?titleMatch[1].replace(/[*_#]/g,'').trim():'Generated Story';
+
+    // Build tabs in parallel
+    if(genPlot)  generatePlotOutline(prompt, fullResp, genre, model);
+    if(genChars) generateCharacters(prompt, fullResp, genre, model);
+    if(genIdeas) generateMoreIdeas(prompt, fullResp, genre, model);
+
+    // Show actions
+    showActions();
+    showProgress(false);
+
+    // Auto save
+    if(document.getElementById('autoSave').checked){
+      saveToLibrary(prompt, fullResp, genre, stType);
+    }
+
+    showToast(`✅ Story generated! (${fullResp.split(/\s+/).length} words · ${elapsed}ms)`);
+
+  } catch(err){
+    clearInterval(stimer);
+    showProgress(false);
+    const isAuth = err.message&&(err.message.includes('sign')||err.message.includes('auth'));
+    showToast(isAuth?'🔐 Sign in to Puter first!':'❌ '+(err.message||'Generation failed'));
+    if(isAuth) alert('🔐 Puter Sign-in Required!\n\n1. A popup will appear — sign in / create free account\n2. Come back and generate your story!\n\nPuter.js is completely free — no credit card needed!');
+    getStoryEl().innerHTML=`<div style="text-align:center;padding:40px;color:#c62828;"><div style="font-size:48px;margin-bottom:12px;">⚠️</div><h3>Generation Failed</h3><p style="margin-top:8px;color:#666;">${err.message||'Please try again'}</p></div>`;
+  }
+
+  setBusy(false);
+}
+
+/* ══════════════════════════════════════════
+   SYSTEM PROMPT BUILDER
+══════════════════════════════════════════ */
+function buildSystemPrompt(genre, stType, pov, tone, length, outputT, genChars, genPlot, genIdeas){
+  const gMeta = GENRE_META[genre];
+  let sys = `You are a master ${gMeta.label} storyteller and creative writing expert.
+
+Write a ${tone}, ${stType} in the ${gMeta.label} genre.
+Point of View: ${pov}
+Target length: approximately ${length} words
+Output type: ${outputT}
+
+FORMAT RULES:
+- Start with: # [Creative Story Title]
+- Then: *[A captivating one-line tagline]*
+- Then write the full story with natural paragraphs
+- Use rich, vivid descriptions and engaging dialogue
+- Create emotional depth and compelling narrative
+- End with a satisfying conclusion or cliffhanger
+
+After the story, add these sections separated by ===SECTION===:
+
+===SECTION:PLOT===
+Write a structured 3-act plot outline:
+ACT 1 - SETUP: [Setup details]
+ACT 2 - CONFRONTATION: [Rising action & conflicts]  
+ACT 3 - RESOLUTION: [Climax & resolution]
+KEY THEMES: [2-3 main themes]
+TWIST: [An optional plot twist]
+
+===SECTION:CHARACTERS===
+List 3-4 main characters, each in this format:
+CHARACTER: [Name] | ROLE: [Protagonist/Antagonist/Supporting] | TRAITS: [3 traits separated by |] | BACKSTORY: [2-3 sentences about their background and motivation]
+
+===SECTION:IDEAS===
+Write 5 creative story variation ideas based on the same premise:
+1. [IDEA TITLE]: [Brief exciting description]
+2. [IDEA TITLE]: [Brief exciting description]
+3. [IDEA TITLE]: [Brief exciting description]
+4. [IDEA TITLE]: [Brief exciting description]
+5. [IDEA TITLE]: [Brief exciting description]`;
+
+  return sys;
+}
+
+/* ══════════════════════════════════════════
+   PARSE STORY HTML
+══════════════════════════════════════════ */
+function parseStoryHTML(raw){
+  // Split sections
+  const parts      = raw.split(/===SECTION:[A-Z]+==/);
+  const storyRaw   = parts[0]||'';
+
+  let html = '';
+  const lines = storyRaw.split('\n');
+  let inPara = false;
+
+  lines.forEach(line=>{
+    line = line.trim();
+    if(!line){ if(inPara){html+='</p>';inPara=false;} return; }
+
+    if(line.startsWith('# ')){
+      currentTitle = line.replace(/^# /,'').replace(/[*_]/g,'');
+      html += `<h1 class="story-title">${escHtml(currentTitle)}</h1>`;
+    } else if(line.startsWith('## ')){
+      if(inPara){html+='</p>';inPara=false;}
+      html += `<div class="story-divider"><span>✦</span></div>`;
+      html += `<h2>${escHtml(line.replace(/^## /,''))}</h2>`;
+    } else if(line.startsWith('### ')){
+      if(inPara){html+='</p>';inPara=false;}
+      html += `<h3>${escHtml(line.replace(/^### /,''))}</h3>`;
+    } else if(line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')){
+      if(inPara){html+='</p>';inPara=false;}
+      const inner = line.slice(1,-1);
+      html += `<div class="story-subtitle">${escHtml(inner)}</div>`;
+    } else if(line.startsWith('> ')){
+      if(inPara){html+='</p>';inPara=false;}
+      html += `<blockquote>${escHtml(line.replace(/^> /,''))}</blockquote>`;
+    } else if(line === '---' || line === '***'){
+      if(inPara){html+='</p>';inPara=false;}
+      html += `<div class="story-divider"><span>🌿</span></div>`;
+    } else {
+      let formatted = escHtml(line)
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g,'<em>$1</em>')
+        .replace(/"([^"]+)"/g,'"<em>$1</em>"');
+      if(!inPara){html+='<p>';inPara=true;}
+      else html += ' ';
+      html += formatted;
+    }
+  });
+  if(inPara) html += '</p>';
+
+  return `<div class="story-body">${html}</div>`;
+}
+
+/* ══════════════════════════════════════════
+   GENERATE PLOT OUTLINE
+══════════════════════════════════════════ */
+async function generatePlotOutline(prompt, story, genre, model){
+  try{
+    const raw   = story;
+    const secIdx= raw.indexOf('===SECTION:PLOT===');
+    let plotTxt = '';
+    if(secIdx>-1){
+      const end   = raw.indexOf('===SECTION:',secIdx+1);
+      plotTxt = end>-1 ? raw.slice(secIdx+18,end) : raw.slice(secIdx+18);
+    }
+
+    if(!plotTxt.trim()){
+      const resp = await puter.ai.chat(
+        [{role:'system',content:'You are a story structure expert. Create a concise 3-act plot outline.'},
+         {role:'user',content:'Create plot outline for: '+prompt}],
+        {model:'gpt-4o-mini'}
+      );
+      plotTxt = typeof resp==='string'?resp:resp?.message?.content||'';
+    }
+
+    currentPlot = plotTxt;
+    renderPlot(plotTxt);
+  } catch(e){ console.log('Plot err',e); }
+}
+
+function renderPlot(txt){
+  if(!txt.trim()){ return; }
+  const pp = document.getElementById('plotPane');
+  let html = '';
+
+  // Parse acts
+  const act1  = txt.match(/ACT\s*1[^:]*:\s*(.+?)(?=ACT\s*2|KEY THEMES|TWIST|$)/si);
+  const act2  = txt.match(/ACT\s*2[^:]*:\s*(.+?)(?=ACT\s*3|KEY THEMES|TWIST|$)/si);
+  const act3  = txt.match(/ACT\s*3[^:]*:\s*(.+?)(?=KEY THEMES|TWIST|$)/si);
+  const themes= txt.match(/KEY THEMES:\s*(.+?)(?=TWIST|$)/si);
+  const twist = txt.match(/TWIST:\s*(.+?)$/si);
+
+  if(act1||act2||act3){
+    html += `<div class="plot-section"><h3>🎬 3-Act Structure</h3>`;
+    if(act1) html += `<div class="act-block"><div class="act-label">Act 1 — Setup</div><div class="act-text">${escHtml(act1[1].trim())}</div></div>`;
+    if(act2) html += `<div class="act-block"><div class="act-label">Act 2 — Confrontation</div><div class="act-text">${escHtml(act2[1].trim())}</div></div>`;
+    if(act3) html += `<div class="act-block"><div class="act-label">Act 3 — Resolution</div><div class="act-text">${escHtml(act3[1].trim())}</div></div>`;
+    html += `</div>`;
+  }
+  if(themes){
+    html += `<div class="plot-section"><h3>💡 Key Themes</h3><p>${escHtml(themes[1].trim())}</p></div>`;
+  }
+  if(twist){
+    html += `<div class="plot-section" style="border-color:#ffcc02;background:#fffef0;"><h3>🌀 Plot Twist</h3><p>${escHtml(twist[1].trim())}</p></div>`;
+  }
+  if(!html){
+    // fallback: show raw
+    html = `<div class="plot-section"><h3>🗺️ Plot Outline</h3><p>${escHtml(txt.trim()).replace(/\n/g,'<br>')}</p></div>`;
+  }
+  pp.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   GENERATE CHARACTERS
+══════════════════════════════════════════ */
+async function generateCharacters(prompt, story, genre, model){
+  try{
+    const raw    = story;
+    const secIdx = raw.indexOf('===SECTION:CHARACTERS===');
+    let charTxt  = '';
+    if(secIdx>-1){
+      const end  = raw.indexOf('===SECTION:',secIdx+1);
+      charTxt = end>-1 ? raw.slice(secIdx+24,end) : raw.slice(secIdx+24);
+    }
+    if(!charTxt.trim()) return;
+    currentChars = charTxt;
+    renderCharacters(charTxt);
+  } catch(e){ console.log('Char err',e); }
+}
+
+function renderCharacters(txt){
+  if(!txt.trim()) return;
+  const cp = document.getElementById('charsPane');
+  let html = '';
+
+  const charBlocks = txt.trim().split(/\n(?=CHARACTER:)/i);
+  charBlocks.forEach((block, idx)=>{
+    const name    = block.match(/CHARACTER:\s*([^|]+)/i);
+    const role    = block.match(/ROLE:\s*([^|]+)/i);
+    const traits  = block.match(/TRAITS:\s*([^|]+(?:\|[^|]+)*)/i);
+    const back    = block.match(/BACKSTORY:\s*(.+)/si);
+
+    if(name){
+      const nm   = name[1].trim();
+      const rl   = role?role[1].trim():'';
+      const trs  = traits?traits[1].split('|').map(t=>t.trim()).filter(Boolean):[];
+      const bs   = back?back[1].trim():'';
+      const av   = CHAR_AVATARS[idx%CHAR_AVATARS.length];
+
+      html += `<div class="char-full-card">
+        <div class="char-avatar">${av}</div>
+        <div class="char-info">
+          <div class="char-full-name">${escHtml(nm)}</div>
+          <div class="char-role">${escHtml(rl)}</div>
+          ${trs.length?`<div class="char-traits">${trs.map(t=>`<span class="trait-tag">${escHtml(t)}</span>`).join('')}</div>`:''}
+          ${bs?`<div class="char-backstory">${escHtml(bs)}</div>`:''}
+        </div>
+      </div>`;
+    }
+  });
+
+  cp.innerHTML = html || `<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">👥</span><p>No character data found.</p></div>`;
+}
+
+/* ══════════════════════════════════════════
+   GENERATE MORE IDEAS
+══════════════════════════════════════════ */
+async function generateMoreIdeas(prompt, story, genre, model){
+  try{
+    const raw    = story;
+    const secIdx = raw.indexOf('===SECTION:IDEAS===');
+    let ideaTxt  = '';
+    if(secIdx>-1){
+      ideaTxt = raw.slice(secIdx+19).trim();
+    }
+    if(!ideaTxt.trim()) return;
+    currentIdeas = ideaTxt;
+    renderIdeas(ideaTxt);
+  } catch(e){ console.log('Ideas err',e); }
+}
+
+function renderIdeas(txt){
+  if(!txt.trim()) return;
+  const ip  = document.getElementById('ideasPane');
+  let html  = `<h3 style="color:#1b5e20;font-size:16px;font-weight:800;margin-bottom:16px;">💡 5 Alternative Story Ideas</h3>`;
+  const items = txt.trim().split(/\n(?=\d+\.)/);
+  items.forEach((item, idx)=>{
+    const numMatch   = item.match(/^\d+\./);
+    if(!numMatch) return;
+    const rest       = item.replace(/^\d+\.\s*/,'').trim();
+    const colonIdx   = rest.indexOf(':');
+    const title      = colonIdx>-1 ? rest.slice(0,colonIdx).trim() : rest.slice(0,40);
+    const desc       = colonIdx>-1 ? rest.slice(colonIdx+1).trim() : rest;
+    const genMeta    = GENRE_META[currentGenre];
+    html += `<div class="idea-card" onclick="useIdeaAsPrompt('${escAttr(desc)}')">
+      <div class="idea-num">#${idx+1}</div>
+      <div class="idea-title">${escHtml(title)}</div>
+      <div class="idea-desc">${escHtml(desc)}</div>
+      <div class="idea-meta">
+        <span class="idea-tag">${genMeta.icon} ${genMeta.label}</span>
+        <span class="idea-tag">Click to use →</span>
+      </div>
+    </div>`;
+  });
+  ip.innerHTML = html;
+}
+
+function useIdeaAsPrompt(desc){
+  document.getElementById('storyPrompt').value = desc;
+  switchTab('story');
+  showToast('💡 Idea loaded! Click Generate to write this story.');
+}
+
+/* ══════════════════════════════════════════
+   CONTINUE / REWRITE
+══════════════════════════════════════════ */
+async function continueStory(){
+  if(!currentStory){ showToast('⚠️ Generate a story first!'); return; }
+  const model   = document.getElementById('modelSel').value;
+  const snippet = currentStory.replace(/===SECTION.*/s,'').trim().slice(-600);
+
+  setBusy(true);
+  showProgress(true);
+  try{
+    const resp = await puter.ai.chat([
+      {role:'system',content:`You are a creative writer continuing a ${GENRE_META[currentGenre].label} story. Continue naturally from where the story left off. Write 300-500 more words.`},
+      {role:'user',content:`Continue this story:\n\n...${snippet}\n\n[Continue from here]`}
+    ], {model, stream:true});
+
+    const storyEl = getStoryEl();
+    let cont = '';
+    storyEl.innerHTML += '<div class="story-divider"><span>▶</span></div>';
+    const contDiv = document.createElement('div');
+    contDiv.className = 'story-body';
+    storyEl.appendChild(contDiv);
+
+    for await(const chunk of resp){
+      if(stopFlag) break;
+      const delta = chunk?.text||chunk?.choices?.[0]?.delta?.content||'';
+      cont += delta;
+      contDiv.innerHTML = parseStoryHTML(cont)+' <span class="typing-cursor"></span>';
+    }
+    contDiv.innerHTML = parseStoryHTML(cont);
+    currentStory += '\n\n' + cont;
+    updateWordCount(currentStory);
+    showToast('▶ Story continued!');
+  } catch(e){ showToast('❌ '+(e.message||'Failed')); }
+  setBusy(false);
+  showProgress(false);
+}
+
+async function rewriteStory(){
+  if(!currentStory||!currentPrompt){ showToast('⚠️ Generate a story first!'); return; }
+  document.getElementById('storyPrompt').value = currentPrompt;
+  await generateStory();
+}
+
+/* ══════════════════════════════════════════
+   LIBRARY
+══════════════════════════════════════════ */
+function saveToLibrary(prompt, story, genre, stType){
+  storyLibrary.unshift({
+    id:Date.now(), prompt, story, genre, stType,
+    title:currentTitle||prompt.slice(0,40),
+    words:story.split(/\s+/).length,
+    time:new Date().toLocaleTimeString()
+  });
+  renderLibrary();
+}
+
+function renderLibrary(){
+  const list = document.getElementById('libraryList');
+  if(!storyLibrary.length){
+    list.innerHTML=`<div class="no-lib"><span class="nl-icon">📚</span><p>No stories saved yet.<br>Generate your first story!</p></div>`;
+    return;
+  }
+  list.innerHTML = storyLibrary.map(s=>`
+    <div class="lib-item" id="li-${s.id}" onclick="loadLibraryItem(${s.id})">
+      <div class="li-genre">${GENRE_META[s.genre]?.icon||'📖'} ${GENRE_META[s.genre]?.label||s.genre}</div>
+      <div class="li-title">${escHtml(s.title)}</div>
+      <div class="li-preview">${escHtml(s.prompt)}</div>
+      <div class="li-meta">
+        <span class="li-time">${s.words} words · ${s.time}</span>
+        <button class="li-del" onclick="event.stopPropagation();deleteLibItem(${s.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadLibraryItem(id){
+  const item = storyLibrary.find(s=>s.id===id);
+  if(!item) return;
+  currentStory   = item.story;
+  currentPrompt  = item.prompt;
+  currentTitle   = item.title;
+  currentGenre   = item.genre;
+  setGenre(item.genre);
+  document.getElementById('storyPrompt').value = item.prompt;
+  getStoryEl().innerHTML = parseStoryHTML(item.story);
+  showWelcome(false);
+  showActions();
+  updateWordCount(item.story);
+  renderPlot(currentPlot);
+  document.querySelectorAll('.lib-item').forEach(el=>el.classList.remove('active'));
+  const el = document.getElementById('li-'+id);
+  if(el) el.classList.add('active');
+  showToast('📚 Story loaded!');
+}
+
+function deleteLibItem(id){
+  storyLibrary = storyLibrary.filter(s=>s.id!==id);
+  renderLibrary();
+  showToast('🗑️ Deleted from library.');
+}
+
+/* ══════════════════════════════════════════
+   EXPORT
+══════════════════════════════════════════ */
+function openExportModal(){
+  if(!currentStory){ showToast('⚠️ No story to export!'); return; }
+  const cleanStory = currentStory.replace(/===SECTION.*/s,'').trim();
+  document.getElementById('exportPreview').value = `${currentTitle}\n\n${cleanStory}`;
+  openModal('exportModal');
+}
+
+function exportAs(fmt){
+  if(!currentStory){ showToast('⚠️ No story!'); return; }
+  const clean = currentStory.replace(/===SECTION.*/s,'').trim();
+  const title = currentTitle||'ai-story';
+  const safe  = title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
+  let content='', mime='text/plain', ext='txt';
+
+  if(fmt==='txt'){
+    content=`${title}\n${'='.repeat(title.length)}\n\n${clean}`;
+  } else if(fmt==='md'){
+    content=`# ${title}\n\n${clean}`;
+    mime='text/markdown'; ext='md';
+  } else if(fmt==='html'){
+    content=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+<style>body{font-family:'Georgia',serif;max-width:700px;margin:50px auto;line-height:1.9;color:#1a1a1a;padding:0 20px;}
+h1{font-size:28px;color:#1b5e20;margin-bottom:8px;}
+p{margin-bottom:16px;font-size:16px;}
+em{font-style:italic;}
+strong{font-weight:700;}
+blockquote{border-left:4px solid #66bb6a;padding:10px 18px;background:#f9fbe7;font-style:italic;margin:16px 0;}
+</style></head><body>
+${parseStoryHTML(clean).replace(/class="story-body"/,'')}
+</body></html>`;
+    mime='text/html'; ext='html';
+  } else if(fmt==='json'){
+    content=JSON.stringify({title,prompt:currentPrompt,genre:currentGenre,story:clean,exportedAt:new Date().toISOString()},null,2);
+    mime='application/json'; ext='json';
+  }
+
+  const blob=new Blob([content],{type:mime});
+  const a=Object.assign(document.createElement('a'),{
+    href:URL.createObjectURL(blob),download:`${safe}.${ext}`
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast(`💾 Exported as ${ext.toUpperCase()}!`);
+  closeModal('exportModal');
+}
+
+/* ══════════════════════════════════════════
+   READ MODE & READ ALOUD
+══════════════════════════════════════════ */
+function openReadModal(){
+  if(!currentStory){ showToast('⚠️ Generate a story first!'); return; }
+  const clean  = currentStory.replace(/===SECTION.*/s,'').trim();
+  document.getElementById('readModalTitle').textContent = '📖 '+currentTitle;
+  document.getElementById('readModalBody').innerHTML = parseStoryHTML(clean);
+  openModal('readModal');
+}
+
+function toggleReadingMode(){
+  readingMode = !readingMode;
+  document.querySelectorAll('.sidebar,.top-ctrl,.quick-bar,.story-actions-bar,.stats-bar').forEach(el=>{
+    el.style.display = readingMode ? 'none' : '';
+  });
+  showToast(readingMode?'📖 Focus mode ON — Press Esc to exit':'📖 Focus mode OFF');
+}
+
+function readAloud(){
+  if(!currentStory){ showToast('⚠️ No story to read!'); return; }
+  if(window.speechSynthesis.speaking){ window.speechSynthesis.cancel(); isReading=false; showToast('⏹ Reading stopped.'); return; }
+  const clean = currentStory.replace(/===SECTION.*/s,'').replace(/[#*]/g,'').trim();
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.rate=0.9; utter.pitch=1.0; utter.volume=1.0;
+  utter.onend=()=>{ isReading=false; showToast('✅ Reading complete!'); };
+  window.speechSynthesis.speak(utter);
+  isReading=true;
+  showToast('🔊 Reading aloud... Click again to stop.');
+}
+
+function shareStory(){
+  if(!currentStory){ showToast('⚠️ No story to share!'); return; }
+  const text=`📖 ${currentTitle}\n\n${currentStory.replace(/===SECTION.*/s,'').trim().slice(0,300)}...\n\n✍️ Created with AI Story Generator`;
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Story intro copied to share!'));
+}
+
+/* ══════════════════════════════════════════
+   COPY
+══════════════════════════════════════════ */
+function copyStory(){
+  if(!currentStory){ showToast('⚠️ No story to copy!'); return; }
+  const clean = currentStory.replace(/===SECTION.*/s,'').trim();
+  navigator.clipboard.writeText(`${currentTitle}\n\n${clean}`).then(()=>showToast('📋 Story copied!'));
+}
+
+/* ══════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════ */
+function getStoryEl(){
+  const sc = document.getElementById('storyContent');
+  showWelcome(false);
+  sc.style.display='block';
+  return sc;
+}
+
+function showWelcome(show){
+  document.getElementById('welcomeScreen').style.display = show?'flex':'none';
+  document.getElementById('storyContent').style.display  = show?'none':'block';
+}
+
+function clearOutput(){
+  showWelcome(false);
+  document.getElementById('storyContent').style.display='block';
+  document.getElementById('storyContent').innerHTML='';
+  document.getElementById('plotPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">🗺️</span><p>Generating plot outline...</p></div>`;
+  document.getElementById('charsPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">👥</span><p>Creating characters...</p></div>`;
+  document.getElementById('ideasPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">💡</span><p>Brainstorming ideas...</p></div>`;
+  currentStory=''; currentPlot=''; currentChars=''; currentIdeas='';
+}
+
+function showActions(){
+  document.getElementById('storyActionsBar').style.display='flex';
+}
+
+function clearStory(){
+  showWelcome(true);
+  document.getElementById('storyActionsBar').style.display='none';
+  document.getElementById('plotPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">🗺️</span><p>Generate a story to see the plot outline!</p></div>`;
+  document.getElementById('charsPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">👥</span><p>Generate a story to see the characters!</p></div>`;
+  document.getElementById('ideasPane').innerHTML=`<div class="no-lib" style="margin-top:40px;"><span class="nl-icon">💡</span><p>Generate a story to see related plot ideas!</p></div>`;
+  currentStory=''; currentTitle=''; currentPrompt='';
+  updateWordCount('');
+  document.getElementById('storyPrompt').value='';
+  showToast('🗑️ Cleared!');
+}
+
+function switchTab(tab){
+  ['story','plot','chars','ideas'].forEach(t=>{
+    document.getElementById('otab-'+t).classList.toggle('active',t===tab);
+    const pane = document.getElementById(t==='story'?'storyPane':t==='plot'?'plotPane':t==='chars'?'charsPane':'ideasPane');
+    pane.classList.toggle('hidden',t!==tab);
+  });
+}
+
+function updateWordCount(text){
+  const clean = (text||'').replace(/===SECTION.*/s,'').trim();
+  const words = clean?clean.split(/\s+/).filter(Boolean).length:0;
+  const chars = clean.length;
+  document.getElementById('sbWords').textContent = words;
+  document.getElementById('sbChars').textContent = chars;
+  document.getElementById('wordCountChip').textContent = words+' words';
+}
+
+function setGenre(g){
+  currentGenre=g;
+  document.querySelectorAll('.genre-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('g-'+g);
+  if(btn) btn.classList.add('active');
+  document.getElementById('sbGenre').textContent=GENRE_META[g]?.label||g;
+}
+
+function setOutputType(el,type){
+  currentOutput=type;
+  document.querySelectorAll('.chip[id^="ct-"]').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function useQuick(el){
+  const txt=el.textContent.replace(/^[^\w]+/,'');
+  document.getElementById('storyPrompt').value=txt;
+  document.getElementById('storyPrompt').focus();
+  showToast('💡 Quick prompt loaded!');
+}
+
+function suggestStory(prompt){
+  document.getElementById('storyPrompt').value=prompt;
+  generateStory();
+}
+
+function getLengthWords(){
+  const v=parseInt(document.getElementById('storyLength').value);
+  if(v===1) return 200;
+  if(v===2) return 500;
+  return 1000;
+}
+
+function onLengthChange(el){
+  const labels=['Short','Medium','Long'];
+  document.getElementById('lengthVal').textContent=labels[parseInt(el.value)-1];
+  setRangeVal(el);
+}
+
+function setRangeVal(el){
+  const pct=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',pct+'%');
+}
+
+function onPromptInput(){
+  const inp=document.getElementById('storyPrompt');
+  inp.style.height='auto';
+  inp.style.height=Math.min(inp.scrollHeight,120)+'px';
+}
+
+function setBusy(busy){
+  const btn=document.getElementById('genBtn');
+  btn.disabled=busy;
+  btn.classList.toggle('loading',busy);
+}
+
+/* PROGRESS */
+function showProgress(show){
+  document.getElementById('progressWrap').style.display=show?'block':'none';
+  if(show){
+    ['ps1','ps2','ps3','ps4','ps5','ps6'].forEach(s=>markStep(s,''));
+    const bar=document.getElementById('progBar');
+    bar.style.animation='none'; void bar.offsetWidth;
+    bar.style.animation='shimmer 1.4s infinite, pgrow 12s ease forwards';
+    document.getElementById('pwPct').textContent='0%';
+  }
+}
+function markStep(id,state){
+  const el=document.getElementById(id);
+  if(el) el.className='pw-step'+(state?' '+state:'');
+}
+
+/* MODAL */
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+/* HELPERS */
+function escHtml(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(str){ return String(str||'').replace(/'/g,'\\\''); }
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3400);
+}
+
+/* RANGE SLIDERS INIT */
+document.querySelectorAll('input[type=range]').forEach(el=>{
+  const pct=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',pct+'%');
+});
+
+/* MODEL SYNC */
+document.getElementById('modelSel').addEventListener('change',function(){
+  document.getElementById('sbModel').textContent=this.value;
+});
+document.getElementById('storyType').addEventListener('change',function(){
+  document.getElementById('sbType').textContent=this.value;
+});
+document.getElementById('tone').addEventListener('change',function(){
+  document.getElementById('sbTone').textContent=this.value;
+});
+
+/* KEYBOARD */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='Enter'){ e.preventDefault(); generateStory(); }
+  if(e.key==='Escape'){
+    closeModal('exportModal'); closeModal('readModal');
+    stopFlag=true;
+    if(readingMode) toggleReadingMode();
+    if(window.speechSynthesis.speaking){ window.speechSynthesis.cancel(); showToast('⏹ Reading stopped.'); }
+  }
+  if(e.ctrlKey&&e.key==='/'){ e.preventDefault(); toggleSidebar(); }
+});
+</script>
+</body>
+</html>
