@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Background Generator</title>
+<script src="https://js.puter.com/v2/"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 50%,#e0f2f1 100%);
+  min-height:100vh;color:#2e7d32;
+}
+
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:#f1f8e9;}
+::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:#66bb6a;}
+
+/* ══ HEADER ══ */
+header{
+  background:linear-gradient(90deg,#388e3c,#43a047,#66bb6a);
+  padding:13px 26px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 20px rgba(56,142,60,.3);
+  position:sticky;top:0;z-index:300;flex-wrap:wrap;
+}
+.hdr-icon{
+  width:46px;height:46px;background:rgba(255,255,255,.2);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;border:1.5px solid rgba(255,255,255,.35);flex-shrink:0;
+}
+.hdr-text h1{color:#fff;font-size:20px;font-weight:800;}
+.hdr-text p{color:rgba(255,255,255,.85);font-size:11.5px;margin-top:1px;}
+.hdr-right{margin-left:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap;}
+.hdr-btn{
+  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;border-radius:20px;padding:6px 15px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .25s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;
+}
+.hdr-btn:hover{background:rgba(255,255,255,.35);}
+.hdr-btn.primary{background:#fff;color:#2e7d32;}
+.hdr-btn.primary:hover{background:#f1f8e9;}
+.hdr-badge{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:5px 13px;color:#fff;font-size:11.5px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:#69f0ae;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ══ MAIN ══ */
+main{max-width:1200px;margin:0 auto;padding:30px 18px 60px;}
+
+/* ══ HERO ══ */
+.hero{text-align:center;margin-bottom:28px;}
+.hero h2{font-size:27px;font-weight:800;color:#1b5e20;margin-bottom:7px;}
+.hero p{font-size:14px;color:#4caf50;font-weight:500;}
+
+/* ══ STEPS ══ */
+.steps{display:flex;justify-content:center;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+.step{
+  background:#fff;border:1.5px solid #a5d6a7;border-radius:12px;
+  padding:10px 17px;display:flex;align-items:center;gap:9px;
+  font-size:12.5px;color:#388e3c;font-weight:600;
+  box-shadow:0 2px 8px rgba(102,187,106,.12);
+}
+.step-num{
+  width:23px;height:23px;background:linear-gradient(135deg,#66bb6a,#43a047);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:11px;font-weight:700;flex-shrink:0;
+}
+
+/* ══ CARD ══ */
+.card{
+  background:#fff;border-radius:20px;
+  box-shadow:0 6px 28px rgba(102,187,106,.14);
+  border:1.5px solid #c8e6c9;overflow:hidden;margin-bottom:22px;
+}
+.card-hdr{
+  background:linear-gradient(90deg,#f1f8e9,#e8f5e9);
+  padding:14px 22px;border-bottom:1.5px solid #c8e6c9;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.card-hdr .ci{font-size:19px;}
+.card-hdr h3{font-size:15px;font-weight:700;color:#2e7d32;}
+.card-hdr .sub{font-size:11.5px;color:#81c784;margin-left:auto;}
+.card-body{padding:22px;}
+
+/* ══ PROMPT AREA ══ */
+.prompt-wrap{
+  background:#f9fbe7;border:2px solid #a5d6a7;border-radius:16px;
+  padding:6px 8px 6px 18px;display:flex;align-items:flex-end;gap:10px;
+  transition:all .25s;margin-bottom:14px;
+}
+.prompt-wrap:focus-within{
+  border-color:#43a047;background:#fff;
+  box-shadow:0 0 0 4px rgba(102,187,106,.15);
+}
+#promptInput{
+  flex:1;border:none;background:none;outline:none;resize:none;
+  font-size:15px;color:#2e7d32;font-family:inherit;
+  min-height:28px;max-height:120px;padding:12px 0;line-height:1.6;
+}
+#promptInput::placeholder{color:#a5d6a7;}
+.generate-btn{
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:#fff;border:none;padding:13px 28px;border-radius:28px;
+  font-size:14px;font-weight:700;cursor:pointer;transition:all .3s;
+  font-family:inherit;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 15px rgba(46,125,50,.35);flex-shrink:0;white-space:nowrap;
+}
+.generate-btn:hover:not(:disabled){
+  background:linear-gradient(135deg,#388e3c,#1b5e20);
+  transform:translateY(-2px);box-shadow:0 7px 20px rgba(46,125,50,.42);
+}
+.generate-btn:disabled{
+  background:linear-gradient(135deg,#a5d6a7,#c8e6c9);
+  cursor:not-allowed;transform:none;box-shadow:none;
+}
+.generate-btn .btn-spinner{
+  width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .7s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.generate-btn.loading .btn-spinner{display:block;}
+.generate-btn.loading .btn-txt{display:none;}
+
+/* ══ STYLE PRESETS ══ */
+.preset-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;
+  margin-bottom:16px;
+}
+.preset-btn{
+  border:2px solid #c8e6c9;border-radius:12px;padding:10px 8px;
+  cursor:pointer;background:#f9fbe7;transition:all .25s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-family:inherit;
+}
+.preset-btn:hover{border-color:#66bb6a;background:#e8f5e9;transform:translateY(-2px);}
+.preset-btn.active{
+  border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#dcedc8);
+  box-shadow:0 0 0 3px rgba(102,187,106,.2);
+}
+.preset-icon{font-size:24px;}
+.preset-name{font-size:11px;font-weight:700;color:#2e7d32;text-align:center;}
+
+/* ══ QUICK PROMPTS ══ */
+.quick-grid{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;
+}
+.quick-chip{
+  background:#fff;border:1.5px solid #c8e6c9;border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:600;color:#388e3c;
+  cursor:pointer;transition:all .22s;font-family:inherit;
+}
+.quick-chip:hover{border-color:#43a047;background:#e8f5e9;transform:scale(1.03);}
+
+/* ══ SETTINGS GRID ══ */
+.settings-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;margin-bottom:6px;
+}
+.setting-item label{
+  display:flex;justify-content:space-between;
+  font-size:12px;font-weight:700;color:#388e3c;
+  text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px;
+}
+.setting-val{
+  background:linear-gradient(135deg,#66bb6a,#43a047);
+  color:#fff;border-radius:8px;padding:2px 8px;
+  font-size:11px;font-weight:700;min-width:36px;text-align:center;
+}
+.setting-select{
+  width:100%;padding:9px 13px;border:1.5px solid #a5d6a7;border-radius:10px;
+  font-size:13px;color:#2e7d32;background:#f9fbe7;outline:none;
+  font-family:inherit;cursor:pointer;transition:all .25s;
+}
+.setting-select:focus{border-color:#43a047;box-shadow:0 0 0 3px rgba(102,187,106,.15);}
+input[type=range].gr{
+  -webkit-appearance:none;width:100%;height:6px;border-radius:6px;
+  outline:none;cursor:pointer;
+  background:linear-gradient(90deg,#66bb6a var(--pct,50%),#e0e0e0 var(--pct,50%));
+}
+input[type=range].gr::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,#43a047,#2e7d32);cursor:pointer;
+  box-shadow:0 2px 8px rgba(56,142,60,.4);transition:transform .2s;
+}
+input[type=range].gr::-webkit-slider-thumb:hover{transform:scale(1.2);}
+
+/* ══ COLOR PALETTE ══ */
+.palette-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px;}
+.palette-swatch{
+  width:30px;height:30px;border-radius:8px;cursor:pointer;
+  border:2.5px solid transparent;transition:all .2s;flex-shrink:0;
+}
+.palette-swatch:hover,.palette-swatch.active{
+  border-color:#2e7d32;transform:scale(1.15);
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.custom-col{
+  width:30px;height:30px;border-radius:8px;border:2px dashed #a5d6a7;
+  cursor:pointer;overflow:hidden;padding:0;
+}
+.custom-col input{width:100%;height:100%;border:none;cursor:pointer;padding:0;}
+
+/* ══ TOGGLE ROW ══ */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:10px;
+  padding:10px 14px;
+}
+.toggle-row span{font-size:13px;color:#2e7d32;font-weight:600;}
+.tog{position:relative;width:40px;height:22px;flex-shrink:0;}
+.tog input{display:none;}
+.tog-sl{
+  position:absolute;inset:0;background:#c8e6c9;border-radius:22px;
+  cursor:pointer;transition:.3s;
+}
+.tog-sl::before{
+  content:'';position:absolute;width:16px;height:16px;background:#fff;
+  border-radius:50%;left:3px;top:3px;transition:.3s;
+  box-shadow:0 2px 5px rgba(0,0,0,.2);
+}
+.tog input:checked+.tog-sl{background:linear-gradient(135deg,#66bb6a,#43a047);}
+.tog input:checked+.tog-sl::before{transform:translateX(18px);}
+
+/* ══ PROGRESS ══ */
+.progress-card{
+  background:#fff;border:1.5px solid #c8e6c9;border-radius:16px;
+  padding:22px;margin-bottom:22px;display:none;
+  box-shadow:0 4px 18px rgba(102,187,106,.12);
+}
+.progress-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.progress-hdr .ph-icon{font-size:24px;animation:bounce .8s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-6px);}}
+.progress-hdr h3{font-size:15px;font-weight:700;color:#2e7d32;}
+.progress-hdr p{font-size:12px;color:#81c784;}
+.prog-wrap{background:#e8f5e9;border-radius:20px;height:12px;overflow:hidden;border:1px solid #c8e6c9;margin-bottom:10px;}
+.prog-bar{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,#66bb6a,#43a047,#66bb6a);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite,growBar 4s ease forwards;
+  width:0%;
+}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+@keyframes growBar{0%{width:5%;}40%{width:40%;}70%{width:75%;}90%{width:90%;}100%{width:95%;}}
+.prog-steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.prog-step{
+  display:flex;align-items:center;gap:5px;font-size:11.5px;
+  color:#81c784;font-weight:600;transition:color .3s;
+}
+.prog-step.done{color:#2e7d32;}
+.prog-step.current{color:#43a047;font-weight:800;}
+.prog-step .ps-dot{width:7px;height:7px;border-radius:50%;background:#c8e6c9;flex-shrink:0;transition:background .3s;}
+.prog-step.done .ps-dot{background:#43a047;}
+.prog-step.current .ps-dot{background:#66bb6a;animation:blink 1s infinite;}
+
+/* ══ RESULT AREA ══ */
+#resultSection{display:none;}
+
+/* MAIN DISPLAY */
+.result-main{
+  position:relative;border-radius:16px;overflow:hidden;
+  border:2px solid #c8e6c9;margin-bottom:18px;cursor:zoom-in;
+  box-shadow:0 8px 28px rgba(0,0,0,.15);
+  background:repeating-conic-gradient(#e0e0e0 0% 25%,#f5f5f5 0% 50%) 0 0/20px 20px;
+}
+.result-main img{
+  width:100%;display:block;border-radius:14px;
+  animation:fadeIn .6s ease;transition:transform .3s;
+}
+.result-main:hover img{transform:scale(1.01);}
+@keyframes fadeIn{from{opacity:0;transform:scale(.97);}to{opacity:1;transform:scale(1);}}
+.result-overlay{
+  position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.5) 0%,transparent 50%);
+  opacity:0;transition:opacity .3s;border-radius:14px;
+  display:flex;align-items:flex-end;padding:18px;
+}
+.result-main:hover .result-overlay{opacity:1;}
+.overlay-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.ov-btn{
+  background:rgba(255,255,255,.9);border:none;border-radius:20px;
+  padding:8px 16px;font-size:12px;font-weight:700;color:#2e7d32;
+  cursor:pointer;transition:all .25s;font-family:inherit;
+  display:flex;align-items:center;gap:5px;backdrop-filter:blur(6px);
+}
+.ov-btn:hover{background:#fff;transform:translateY(-2px);}
+
+/* INFO BAR */
+.info-bar{
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  background:#f9fbe7;border:1.5px solid #c8e6c9;border-radius:12px;
+  padding:11px 16px;margin-bottom:16px;
+}
+.info-chip{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;color:#388e3c;
+}
+.info-chip .ic{font-size:14px;}
+.info-chip span{
+  background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;
+  padding:2px 9px;font-size:11.5px;color:#2e7d32;
+}
+
+/* ACTION ROW */
+.action-row{display:flex;gap:11px;flex-wrap:wrap;}
+.act-btn{
+  flex:1;min-width:130px;padding:12px 18px;border-radius:28px;
+  font-size:13.5px;font-weight:700;cursor:pointer;border:none;
+  transition:all .3s;display:flex;align-items:center;justify-content:center;
+  gap:8px;font-family:inherit;
+}
+.act-primary{
+  background:linear-gradient(135deg,#43a047,#2e7d32);color:#fff;
+  box-shadow:0 5px 18px rgba(46,125,50,.35);
+}
+.act-primary:hover{background:linear-gradient(135deg,#388e3c,#1b5e20);transform:translateY(-2px);box-shadow:0 8px 22px rgba(46,125,50,.42);}
+.act-secondary{background:#fff;color:#388e3c;border:2px solid #a5d6a7;}
+.act-secondary:hover{background:#f1f8e9;border-color:#66bb6a;transform:translateY(-2px);}
+.act-danger{background:#fff;color:#c62828;border:2px solid #ef9a9a;}
+.act-danger:hover{background:#ffebee;transform:translateY(-2px);}
+
+/* ══ GALLERY ══ */
+.gallery-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.gf-btn{
+  padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;
+  cursor:pointer;border:1.5px solid #c8e6c9;background:#fff;color:#388e3c;
+  transition:all .22s;font-family:inherit;
+}
+.gf-btn:hover,.gf-btn.active{background:#e8f5e9;border-color:#43a047;}
+
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;
+}
+.gallery-item{
+  border-radius:14px;overflow:hidden;border:1.5px solid #c8e6c9;
+  cursor:pointer;transition:all .25s;position:relative;
+  box-shadow:0 3px 12px rgba(102,187,106,.1);
+  background:repeating-conic-gradient(#e0e0e0 0% 25%,#f5f5f5 0% 50%) 0 0/16px 16px;
+}
+.gallery-item:hover{transform:translateY(-4px);box-shadow:0 8px 22px rgba(102,187,106,.2);border-color:#81c784;}
+.gallery-item img{width:100%;height:140px;object-fit:cover;display:block;}
+.gallery-meta{
+  padding:9px 11px;background:#fff;border-top:1px solid #f1f8e9;
+}
+.gm-title{font-size:11.5px;font-weight:700;color:#2e7d32;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;}
+.gm-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.gm-tag{
+  font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:8px;
+  background:#e8f5e9;color:#388e3c;border:1px solid #c8e6c9;
+}
+.gm-actions{
+  position:absolute;top:7px;right:7px;
+  display:flex;gap:5px;opacity:0;transition:opacity .22s;
+}
+.gallery-item:hover .gm-actions{opacity:1;}
+.gma-btn{
+  width:28px;height:28px;border-radius:8px;border:none;
+  background:rgba(255,255,255,.92);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:all .2s;
+}
+.gma-btn:hover{background:#fff;transform:scale(1.1);}
+
+.no-gallery{
+  text-align:center;padding:40px 20px;color:#a5d6a7;
+  grid-column:1/-1;
+}
+.no-gallery .ng-icon{font-size:48px;display:block;margin-bottom:10px;}
+.no-gallery h3{font-size:16px;font-weight:700;color:#81c784;margin-bottom:5px;}
+.no-gallery p{font-size:13px;}
+
+/* ══ FULLSCREEN MODAL ══ */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(8px);
+}
+.modal.open{display:flex;}
+.modal-inner{
+  background:#fff;border-radius:20px;overflow:hidden;
+  max-width:90vw;max-height:92vh;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+  display:flex;flex-direction:column;
+}
+@keyframes popIn{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-img-wrap{flex:1;overflow:hidden;background:#111;display:flex;align-items:center;justify-content:center;min-height:60vh;}
+.modal-img-wrap img{max-width:100%;max-height:75vh;object-fit:contain;display:block;}
+.modal-footer{
+  padding:14px 20px;background:linear-gradient(90deg,#f1f8e9,#e8f5e9);
+  border-top:1.5px solid #c8e6c9;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.modal-title{font-size:13px;font-weight:700;color:#2e7d32;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.modal-close{
+  background:linear-gradient(135deg,#ef5350,#c62828);color:#fff;border:none;
+  border-radius:20px;padding:7px 16px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+}
+
+/* ══ FEATURES ══ */
+.features{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:13px;margin-top:24px;
+}
+.feat{
+  background:#fff;border:1.5px solid #c8e6c9;border-radius:14px;
+  padding:17px 14px;text-align:center;
+  box-shadow:0 2px 10px rgba(102,187,106,.1);transition:all .25s;
+}
+.feat:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(102,187,106,.18);border-color:#81c784;}
+.feat .fi{font-size:26px;margin-bottom:7px;display:block;}
+.feat h4{font-size:13px;font-weight:700;color:#2e7d32;margin-bottom:3px;}
+.feat p{font-size:11px;color:#81c784;line-height:1.5;}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:#fff;padding:12px 20px;border-radius:14px;font-size:13px;font-weight:700;
+  box-shadow:0 5px 20px rgba(46,125,50,.4);
+  transform:translateY(100px);opacity:0;
+  transition:all .4s cubic-bezier(.36,.07,.19,.97);z-index:9999;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ══ FOOTER ══ */
+footer{
+  text-align:center;padding:22px;color:#a5d6a7;font-size:12.5px;
+  border-top:1.5px solid #c8e6c9;background:#f9fbe7;
+}
+footer span{color:#66bb6a;font-weight:700;}
+
+@media(max-width:600px){
+  .hdr-right .hdr-btn:not(.primary){display:none;}
+  .hero h2{font-size:21px;}
+  .settings-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hdr-icon">🎨</div>
+  <div class="hdr-text">
+    <h1>AI Background Generator</h1>
+    <p>Generate stunning wallpapers & textures from any text description</p>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge"><div class="badge-dot"></div>Puter AI · Free</div>
+    <button class="hdr-btn" onclick="clearGallery()">🗑️ Clear Gallery</button>
+    <button class="hdr-btn primary" onclick="scrollToGenerator()">✨ Generate Now</button>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>🖼️ Create Stunning AI Backgrounds</h2>
+    <p>Describe any wallpaper, texture or pattern — AI generates it for you in seconds, completely free!</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div>✍️ Describe It</div>
+    <div class="step"><div class="step-num">2</div>🎨 Pick a Style</div>
+    <div class="step"><div class="step-num">3</div>⚙️ Customize</div>
+    <div class="step"><div class="step-num">4</div>⬇️ Download</div>
+  </div>
+
+  <!-- ══ GENERATOR CARD ══ -->
+  <div class="card" id="generatorCard">
+    <div class="card-hdr">
+      <span class="ci">✨</span>
+      <h3>AI Image Generator</h3>
+      <div class="sub">Powered by Puter.js · Free & Instant</div>
+    </div>
+    <div class="card-body">
+
+      <!-- PROMPT INPUT -->
+      <div style="margin-bottom:6px;font-size:12px;font-weight:700;color:#388e3c;text-transform:uppercase;letter-spacing:.4px;">✍️ Describe Your Background</div>
+      <div class="prompt-wrap">
+        <textarea id="promptInput" rows="2"
+          placeholder="e.g. A dreamy forest at golden hour with misty light rays and bokeh, ultra HD wallpaper..."
+          onkeydown="if(event.key==='Enter'&&event.ctrlKey)generateImage()"></textarea>
+        <button class="generate-btn" id="generateBtn" onclick="generateImage()">
+          <div class="btn-spinner"></div>
+          <span class="btn-txt">🎨 Generate</span>
+        </button>
+      </div>
+
+      <!-- QUICK PROMPTS -->
+      <div style="font-size:11.5px;font-weight:700;color:#81c784;margin-bottom:8px;">⚡ Quick Prompts — Click to Use:</div>
+      <div class="quick-grid" id="quickGrid">
+        <button class="quick-chip" onclick="usePrompt(this)">🌌 Galaxy nebula with purple stars</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌊 Ocean waves at sunset</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌿 Tropical jungle leaves texture</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🏔️ Snowy mountain peaks aurora</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌸 Cherry blossom petals falling</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🔥 Abstract fire and smoke art</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌙 Night city skyline neon lights</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🎆 Colorful geometric pattern</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🪨 Dark marble texture luxury</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌈 Watercolor pastel abstract</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🏜️ Desert sand dunes golden hour</button>
+        <button class="quick-chip" onclick="usePrompt(this)">🌺 Floral pattern vintage style</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ STYLE CARD ══ -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="ci">🎭</span>
+      <h3>Style Presets</h3>
+      <div class="sub">Choose a visual style for your background</div>
+    </div>
+    <div class="card-body">
+      <div class="preset-grid" id="presetGrid">
+        <button class="preset-btn active" data-style="" onclick="setPreset(this,'')">
+          <span class="preset-icon">✨</span><span class="preset-name">Default</span>
+        </button>
+        <button class="preset-btn" data-style="photorealistic, ultra detailed, 8K" onclick="setPreset(this,'photorealistic, ultra detailed, 8K')">
+          <span class="preset-icon">📷</span><span class="preset-name">Photorealistic</span>
+        </button>
+        <button class="preset-btn" data-style="digital art, vibrant colors, trending on artstation" onclick="setPreset(this,'digital art, vibrant colors, trending on artstation')">
+          <span class="preset-icon">🖥️</span><span class="preset-name">Digital Art</span>
+        </button>
+        <button class="preset-btn" data-style="watercolor painting, soft edges, artistic" onclick="setPreset(this,'watercolor painting, soft edges, artistic')">
+          <span class="preset-icon">🎨</span><span class="preset-name">Watercolor</span>
+        </button>
+        <button class="preset-btn" data-style="oil painting, classical art, masterpiece" onclick="setPreset(this,'oil painting, classical art, masterpiece')">
+          <span class="preset-icon">🖼️</span><span class="preset-name">Oil Paint</span>
+        </button>
+        <button class="preset-btn" data-style="anime style, illustration, studio ghibli" onclick="setPreset(this,'anime style, illustration, studio ghibli')">
+          <span class="preset-icon">🌸</span><span class="preset-name">Anime</span>
+        </button>
+        <button class="preset-btn" data-style="cyberpunk, neon lights, futuristic, dark" onclick="setPreset(this,'cyberpunk, neon lights, futuristic, dark')">
+          <span class="preset-icon">🤖</span><span class="preset-name">Cyberpunk</span>
+        </button>
+        <button class="preset-btn" data-style="minimalist, clean, simple, flat design" onclick="setPreset(this,'minimalist, clean, simple, flat design')">
+          <span class="preset-icon">⬜</span><span class="preset-name">Minimal</span>
+        </button>
+        <button class="preset-btn" data-style="vintage, retro, old photograph, film grain" onclick="setPreset(this,'vintage, retro, old photograph, film grain')">
+          <span class="preset-icon">📻</span><span class="preset-name">Vintage</span>
+        </button>
+        <button class="preset-btn" data-style="fantasy art, magical, ethereal, enchanted" onclick="setPreset(this,'fantasy art, magical, ethereal, enchanted')">
+          <span class="preset-icon">🧙</span><span class="preset-name">Fantasy</span>
+        </button>
+        <button class="preset-btn" data-style="abstract art, geometric shapes, bold colors" onclick="setPreset(this,'abstract art, geometric shapes, bold colors')">
+          <span class="preset-icon">🔷</span><span class="preset-name">Abstract</span>
+        </button>
+        <button class="preset-btn" data-style="seamless texture pattern, tileable, surface" onclick="setPreset(this,'seamless texture pattern, tileable, surface')">
+          <span class="preset-icon">🧩</span><span class="preset-name">Texture</span>
+        </button>
+        <button class="preset-btn" data-style="cinematic, dramatic lighting, movie still" onclick="setPreset(this,'cinematic, dramatic lighting, movie still')">
+          <span class="preset-icon">🎬</span><span class="preset-name">Cinematic</span>
+        </button>
+        <button class="preset-btn" data-style="3D render, octane render, volumetric light" onclick="setPreset(this,'3D render, octane render, volumetric light')">
+          <span class="preset-icon">🌐</span><span class="preset-name">3D Render</span>
+        </button>
+        <button class="preset-btn" data-style="dark moody, dramatic shadows, noir" onclick="setPreset(this,'dark moody, dramatic shadows, noir')">
+          <span class="preset-icon">🌑</span><span class="preset-name">Dark Moody</span>
+        </button>
+        <button class="preset-btn" data-style="pastel colors, soft, dreamy, kawaii" onclick="setPreset(this,'pastel colors, soft, dreamy, kawaii')">
+          <span class="preset-icon">🍬</span><span class="preset-name">Pastel</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS CARD ══ -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="ci">⚙️</span>
+      <h3>Generation Settings</h3>
+      <div class="sub">Fine-tune your background output</div>
+    </div>
+    <div class="card-body">
+
+      <div class="settings-grid">
+
+        <!-- RESOLUTION -->
+        <div class="setting-item">
+          <label>📐 Resolution</label>
+          <select class="setting-select" id="resolution">
+            <option value="square">Square (1024×1024)</option>
+            <option value="landscape" selected>Landscape (1792×1024)</option>
+            <option value="portrait">Portrait (1024×1792)</option>
+            <option value="ultrawide">Ultrawide (2048×1024)</option>
+          </select>
+        </div>
+
+        <!-- MODEL -->
+        <div class="setting-item">
+          <label>🧠 AI Model</label>
+          <select class="setting-select" id="aiModel">
+            <option value="dall-e-3" selected>DALL·E 3 (Best)</option>
+            <option value="dall-e-2">DALL·E 2 (Fast)</option>
+          </select>
+        </div>
+
+        <!-- QUALITY -->
+        <div class="setting-item">
+          <label>⭐ Quality</label>
+          <select class="setting-select" id="quality">
+            <option value="standard">Standard</option>
+            <option value="hd" selected>HD (High Detail)</option>
+          </select>
+        </div>
+
+        <!-- VARIATIONS -->
+        <div class="setting-item">
+          <label>🔢 Variations <span class="setting-val" id="variationsVal">1</span></label>
+          <input type="range" class="gr" id="variations" min="1" max="4" value="1"
+                 oninput="onRange(this,'variationsVal')" />
+        </div>
+
+        <!-- NEGATIVE PROMPT -->
+        <div class="setting-item" style="grid-column:1/-1;">
+          <label>🚫 Negative Prompt (things to avoid)</label>
+          <input type="text" id="negativePrompt" style="
+            width:100%;padding:9px 13px;border:1.5px solid #a5d6a7;border-radius:10px;
+            font-size:13px;color:#2e7d32;background:#f9fbe7;outline:none;font-family:inherit;"
+            placeholder="e.g. blur, text, watermark, low quality, people..."
+            onfocus="this.style.borderColor='#43a047';this.style.boxShadow='0 0 0 3px rgba(102,187,106,.15)'"
+            onblur="this.style.borderColor='#a5d6a7';this.style.boxShadow='none'" />
+        </div>
+
+      </div>
+
+      <!-- COLOR MOOD -->
+      <div style="margin-top:14px;">
+        <div style="font-size:12px;font-weight:700;color:#388e3c;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">🎨 Color Mood</div>
+        <div class="palette-row" id="colorMoodGrid">
+          <div class="palette-swatch active" style="background:#FFD700;" data-mood="" title="Default" onclick="setMood(this,'')"></div>
+          <div class="palette-swatch" style="background:#FF6B6B;" data-mood="warm red tones" title="Warm Red" onclick="setMood(this,'warm red tones')"></div>
+          <div class="palette-swatch" style="background:#FF8C42;" data-mood="warm orange sunset" title="Warm Orange" onclick="setMood(this,'warm orange sunset')"></div>
+          <div class="palette-swatch" style="background:#FFE66D;" data-mood="golden yellow tones" title="Golden" onclick="setMood(this,'golden yellow tones')"></div>
+          <div class="palette-swatch" style="background:#6BCB77;" data-mood="lush green nature" title="Green" onclick="setMood(this,'lush green nature')"></div>
+          <div class="palette-swatch" style="background:#4D96FF;" data-mood="cool blue ocean" title="Blue Ocean" onclick="setMood(this,'cool blue ocean')"></div>
+          <div class="palette-swatch" style="background:#845EC2;" data-mood="deep purple galaxy" title="Purple" onclick="setMood(this,'deep purple galaxy')"></div>
+          <div class="palette-swatch" style="background:#F72585;" data-mood="vivid pink neon" title="Neon Pink" onclick="setMood(this,'vivid pink neon')"></div>
+          <div class="palette-swatch" style="background:#3D405B;" data-mood="dark navy midnight" title="Dark Navy" onclick="setMood(this,'dark navy midnight')"></div>
+          <div class="palette-swatch" style="background:#F5F5F5;border:1.5px solid #ccc;" data-mood="white minimal clean" title="White" onclick="setMood(this,'white minimal clean')"></div>
+          <div class="palette-swatch" style="background:linear-gradient(135deg,#FF6B6B,#845EC2);" data-mood="vibrant gradient colorful" title="Gradient" onclick="setMood(this,'vibrant gradient colorful')"></div>
+          <div class="custom-col" title="Custom Color"><input type="color" value="#43a047" onchange="setCustomMood(this.value)"/></div>
+        </div>
+      </div>
+
+      <!-- TOGGLES -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+        <div class="toggle-row">
+          <span>🔞 Safe Mode</span>
+          <label class="tog"><input type="checkbox" id="safeMode" checked/><span class="tog-sl"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>🔁 Auto Enhance Prompt</span>
+          <label class="tog"><input type="checkbox" id="enhancePrompt" checked/><span class="tog-sl"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>💾 Auto Save to Gallery</span>
+          <label class="tog"><input type="checkbox" id="autoSave" checked/><span class="tog-sl"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>📋 Show Prompt on Image</span>
+          <label class="tog"><input type="checkbox" id="showPrompt"/><span class="tog-sl"></span></label>
+        </div>
+      </div>
+
+      <!-- GENERATE BIG BUTTON -->
+      <div style="text-align:center;margin-top:22px;">
+        <button class="generate-btn" id="generateBtn2" onclick="generateImage()"
+          style="padding:16px 52px;font-size:16px;border-radius:40px;">
+          <div class="btn-spinner"></div>
+          <span class="btn-txt">✨ Generate Background Now</span>
+        </button>
+        <div style="font-size:11.5px;color:#a5d6a7;margin-top:9px;">
+          <kbd style="background:#f1f8e9;border:1px solid #c8e6c9;border-radius:4px;padding:1px 6px;font-size:10px;color:#388e3c;">Ctrl+Enter</kbd> Quick Generate
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROGRESS ══ -->
+  <div class="progress-card" id="progressCard">
+    <div class="progress-hdr">
+      <span class="ph-icon">🎨</span>
+      <div>
+        <h3>Creating Your Background...</h3>
+        <p id="progressMsg">AI is processing your prompt</p>
+      </div>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+    <div class="prog-steps">
+      <div class="prog-step" id="ps1"><div class="ps-dot"></div>Reading Prompt</div>
+      <div class="prog-step" id="ps2"><div class="ps-dot"></div>Enhancing Description</div>
+      <div class="prog-step" id="ps3"><div class="ps-dot"></div>Generating Image</div>
+      <div class="prog-step" id="ps4"><div class="ps-dot"></div>Processing Details</div>
+      <div class="prog-step" id="ps5"><div class="ps-dot"></div>Finalizing</div>
+    </div>
+  </div>
+
+  <!-- ══ RESULT SECTION ══ -->
+  <div id="resultSection">
+    <div class="card">
+      <div class="card-hdr">
+        <span class="ci">🖼️</span>
+        <h3>Generated Background</h3>
+        <div class="sub" id="resultSubLbl">Ready to download!</div>
+      </div>
+      <div class="card-body">
+
+        <!-- INFO BAR -->
+        <div class="info-bar" id="resultInfoBar">
+          <div class="info-chip"><span class="ic">📐</span>Size: <span id="infoRes">—</span></div>
+          <div class="info-chip"><span class="ic">🎭</span>Style: <span id="infoStyle">—</span></div>
+          <div class="info-chip"><span class="ic">🧠</span>Model: <span id="infoModel">—</span></div>
+          <div class="info-chip"><span class="ic">⏱️</span>Time: <span id="infoTime">—</span></div>
+        </div>
+
+        <!-- MAIN IMAGE DISPLAY -->
+        <div class="result-main" id="resultMain" onclick="openModal()">
+          <img id="resultImg" src="" alt="Generated Background" />
+          <div class="result-overlay">
+            <div class="overlay-actions">
+              <button class="ov-btn" onclick="event.stopPropagation();downloadImg()">⬇️ Download</button>
+              <button class="ov-btn" onclick="event.stopPropagation();openModal()">🔍 Fullscreen</button>
+              <button class="ov-btn" onclick="event.stopPropagation();copyImgToClipboard()">📋 Copy</button>
+              <button class="ov-btn" onclick="event.stopPropagation();setAsWallpaper()">🖥️ Use as Wallpaper</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTION ROW -->
+        <div class="action-row">
+          <button class="act-btn act-primary" onclick="downloadImg()">⬇️ Download Full Quality</button>
+          <button class="act-btn act-secondary" onclick="generateImage()">🔄 Regenerate</button>
+          <button class="act-btn act-secondary" onclick="addToGallery()">🖼️ Save to Gallery</button>
+          <button class="act-btn act-secondary" onclick="openModal()">🔍 Fullscreen View</button>
+          <button class="act-btn act-danger" onclick="clearResult()">🗑️ Clear</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GALLERY ══ -->
+  <div class="card">
+    <div class="card-hdr">
+      <span class="ci">🖼️</span>
+      <h3>My Gallery</h3>
+      <div class="sub" id="galleryCountLbl">0 images saved</div>
+    </div>
+    <div class="card-body">
+      <div class="gallery-filter">
+        <button class="gf-btn active" data-gf="all" onclick="filterGallery('all')">🌐 All</button>
+        <button class="gf-btn" data-gf="photorealistic" onclick="filterGallery('photorealistic')">📷 Photo</button>
+        <button class="gf-btn" data-gf="digital art" onclick="filterGallery('digital art')">🖥️ Digital</button>
+        <button class="gf-btn" data-gf="abstract" onclick="filterGallery('abstract')">🔷 Abstract</button>
+        <button class="gf-btn" data-gf="fantasy" onclick="filterGallery('fantasy')">🧙 Fantasy</button>
+        <button class="gf-btn" data-gf="texture" onclick="filterGallery('texture')">🧩 Texture</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <div class="no-gallery">
+          <span class="ng-icon">🖼️</span>
+          <h3>Gallery is Empty</h3>
+          <p>Generate backgrounds and they'll appear here automatically!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feat"><span class="fi">🤖</span><h4>AI Powered</h4><p>DALL·E 3 for stunning results</p></div>
+    <div class="feat"><span class="fi">🎨</span><h4>16 Style Presets</h4><p>Photorealistic to anime & more</p></div>
+    <div class="feat"><span class="fi">📐</span><h4>Multiple Sizes</h4><p>Square, landscape & portrait</p></div>
+    <div class="feat"><span class="fi">🔁</span><h4>Prompt Enhancer</h4><p>Auto-improve your descriptions</p></div>
+    <div class="feat"><span class="fi">🖼️</span><h4>Auto Gallery</h4><p>All generations saved locally</p></div>
+    <div class="feat"><span class="fi">⬇️</span><h4>Free Download</h4><p>Full quality PNG download</p></div>
+    <div class="feat"><span class="fi">🌈</span><h4>Color Moods</h4><p>Control the color palette</p></div>
+    <div class="feat"><span class="fi">🆓</span><h4>100% Free</h4><p>No API key, no credit card</p></div>
+  </div>
+
+</main>
+
+<!-- ══ FULLSCREEN MODAL ══ -->
+<div class="modal" id="imgModal" onclick="closeModal()">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <div class="modal-img-wrap">
+      <img id="modalImg" src="" alt="Fullscreen Background" />
+    </div>
+    <div class="modal-footer">
+      <span class="modal-title" id="modalTitle">Generated Background</span>
+      <button class="act-btn act-secondary" style="flex:none;padding:8px 16px;font-size:12px;" onclick="downloadImg()">⬇️ Download</button>
+      <button class="act-btn act-secondary" style="flex:none;padding:8px 16px;font-size:12px;" onclick="copyImgToClipboard()">📋 Copy</button>
+      <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p>🌿 <span>AI Background Generator</span> — Powered by Puter.js · Free & No API Key Required</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let selectedStyle   = '';
+let selectedMood    = '';
+let gallery         = [];
+let currentImgUrl   = '';
+let currentPrompt   = '';
+let galleryFilter   = 'all';
+let generationCount = 0;
+
+const RESOLUTION_MAP = {
+  square:     {w:1024,h:1024,  label:'1024×1024',  size:'1024x1024'},
+  landscape:  {w:1792,h:1024,  label:'1792×1024',  size:'1792x1024'},
+  portrait:   {w:1024,h:1792,  label:'1024×1792',  size:'1024x1792'},
+  ultrawide:  {w:1792,h:1024,  label:'1792×1024',  size:'1792x1024'}
+};
+
+/* ══════════════════════════════════════════
+   GENERATE IMAGE
+══════════════════════════════════════════ */
+async function generateImage(){
+  const rawPrompt = document.getElementById('promptInput').value.trim();
+  if(!rawPrompt){ showToast('⚠️ Please describe your background first!'); document.getElementById('promptInput').focus(); return; }
+
+  const enhance   = document.getElementById('enhancePrompt').checked;
+  const negPrompt = document.getElementById('negativePrompt').value.trim();
+  const resKey    = document.getElementById('resolution').value;
+  const model     = document.getElementById('aiModel').value;
+  const quality   = document.getElementById('quality').value;
+  const variations= parseInt(document.getElementById('variations').value)||1;
+  const resData   = RESOLUTION_MAP[resKey] || RESOLUTION_MAP.landscape;
+
+  // Build final prompt
+  let finalPrompt = rawPrompt;
+  if(selectedStyle) finalPrompt += `, ${selectedStyle}`;
+  if(selectedMood)  finalPrompt += `, ${selectedMood} color palette`;
+  if(enhance)       finalPrompt += `, wallpaper background, high quality, detailed, professional`;
+  if(negPrompt)     finalPrompt += `. Avoid: ${negPrompt}`;
+
+  currentPrompt = rawPrompt;
+  setBusy(true);
+  showProgress(true);
+  document.getElementById('resultSection').style.display='none';
+
+  const t0 = performance.now();
+
+  // Progress animation steps
+  const steps = ['ps1','ps2','ps3','ps4','ps5'];
+  const msgs  = [
+    '📖 Reading your prompt...',
+    '✨ Enhancing description...',
+    '🎨 AI is painting your image...',
+    '🔍 Adding fine details...',
+    '✅ Almost ready...'
+  ];
+  let stepIdx = 0;
+  const stepTimer = setInterval(()=>{
+    if(stepIdx < steps.length){
+      if(stepIdx>0) document.getElementById(steps[stepIdx-1]).className='prog-step done';
+      document.getElementById(steps[stepIdx]).className='prog-step current';
+      document.getElementById('progressMsg').textContent = msgs[stepIdx];
+      stepIdx++;
+    }
+  }, 1200);
+
+  try{
+    // Generate variations
+    const jobs = [];
+    for(let i=0;i<variations;i++){
+      jobs.push(
+        puter.ai.txt2img(finalPrompt, false)
+      );
+    }
+
+    const results = await Promise.allSettled(jobs);
+    clearInterval(stepTimer);
+
+    // Mark all steps done
+    steps.forEach(s=>document.getElementById(s).className='prog-step done');
+
+    const elapsed = Math.round(performance.now()-t0);
+    generationCount++;
+
+    let successCount = 0;
+    let firstUrl = '';
+
+    results.forEach((r, idx)=>{
+      if(r.status==='fulfilled'){
+        const imgEl = r.value;
+        const url   = imgEl.src || (imgEl instanceof HTMLImageElement ? imgEl.src : String(imgEl));
+
+        if(!firstUrl) firstUrl = url;
+        successCount++;
+
+        // auto save
+        if(document.getElementById('autoSave').checked){
+          addToGalleryData(url, rawPrompt, selectedStyle, resData.label);
+        }
+      }
+    });
+
+    if(!firstUrl) throw new Error('Image generation failed. Please try again.');
+
+    currentImgUrl = firstUrl;
+
+    // Show result
+    const resImg = document.getElementById('resultImg');
+    resImg.src = firstUrl;
+    resImg.onload = ()=>{
+      showProgress(false);
+      document.getElementById('resultSection').style.display='block';
+      document.getElementById('resultSection').scrollIntoView({behavior:'smooth',block:'start'});
+
+      // Update info bar
+      document.getElementById('infoRes').textContent   = resData.label;
+      document.getElementById('infoStyle').textContent = selectedStyle ? selectedStyle.split(',')[0] : 'Default';
+      document.getElementById('infoModel').textContent = model==='dall-e-3'?'DALL·E 3':'DALL·E 2';
+      document.getElementById('infoTime').textContent  = elapsed+'ms';
+      document.getElementById('resultSubLbl').textContent = `✅ ${successCount} image${successCount>1?'s':''} generated!`;
+      document.getElementById('modalImg').src = firstUrl;
+      document.getElementById('modalTitle').textContent = rawPrompt;
+
+      renderGallery();
+      showToast('✅ Background generated in '+elapsed+'ms!');
+    };
+
+  } catch(err){
+    clearInterval(stepTimer);
+    showProgress(false);
+    const isAuth = err.message&&(err.message.includes('sign in')||err.message.includes('auth')||err.message.includes('login'));
+    showToast(isAuth ? '🔐 Please sign in to Puter first!' : '❌ '+( err.message||'Generation failed. Try again.'));
+    if(isAuth) alert('🔐 To use the AI image generator:\n\n1. A Puter sign-in popup will appear\n2. Create a free account or log in\n3. Come back and generate!\n\nPuter.js uses YOUR Puter account — completely free!');
+  }
+
+  setBusy(false);
+}
+
+/* ══════════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════════ */
+function showProgress(show){
+  const pc = document.getElementById('progressCard');
+  pc.style.display = show?'block':'none';
+  if(show){
+    // reset steps
+    ['ps1','ps2','ps3','ps4','ps5'].forEach(s=>{
+      document.getElementById(s).className='prog-step';
+    });
+    // restart bar animation
+    const bar = document.getElementById('progBar');
+    bar.style.animation='none';
+    void bar.offsetWidth;
+    bar.style.animation='shimmer 1.5s infinite, growBar 12s ease forwards';
+    document.getElementById('progressMsg').textContent='AI is processing your prompt...';
+    pc.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+/* ══════════════════════════════════════════
+   BUSY STATE
+══════════════════════════════════════════ */
+function setBusy(busy){
+  ['generateBtn','generateBtn2'].forEach(id=>{
+    const btn = document.getElementById(id);
+    if(!btn) return;
+    btn.disabled = busy;
+    btn.classList.toggle('loading', busy);
+  });
+}
+
+/* ══════════════════════════════════════════
+   PRESETS & MOOD
+══════════════════════════════════════════ */
+function setPreset(el, style){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedStyle = style;
+}
+function setMood(el, mood){
+  document.querySelectorAll('#colorMoodGrid .palette-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  selectedMood = mood;
+}
+function setCustomMood(hexColor){
+  selectedMood = `${hexColor} color tones`;
+  document.querySelectorAll('#colorMoodGrid .palette-swatch').forEach(s=>s.classList.remove('active'));
+  showToast('🎨 Custom color mood set!');
+}
+
+/* ══════════════════════════════════════════
+   QUICK PROMPTS
+══════════════════════════════════════════ */
+function usePrompt(el){
+  const txt = el.textContent.replace(/^[^\s]+\s/,'');
+  document.getElementById('promptInput').value = txt;
+  document.getElementById('promptInput').focus();
+  scrollToGenerator();
+  showToast('✍️ Prompt loaded!');
+}
+
+/* ══════════════════════════════════════════
+   GALLERY
+══════════════════════════════════════════ */
+function addToGalleryData(url, prompt, style, res){
+  gallery.unshift({
+    id: Date.now(),
+    url, prompt, style: style||'Default',
+    res: res||'—',
+    time: new Date().toLocaleTimeString()
+  });
+  renderGallery();
+  document.getElementById('galleryCountLbl').textContent = gallery.length+' image'+(gallery.length!==1?'s':'')+' saved';
+}
+
+function addToGallery(){
+  if(!currentImgUrl){ showToast('⚠️ No image to save!'); return; }
+  addToGalleryData(currentImgUrl, currentPrompt, selectedStyle, document.getElementById('infoRes').textContent);
+  showToast('🖼️ Saved to gallery!');
+}
+
+function renderGallery(){
+  const grid = document.getElementById('galleryGrid');
+  let data = gallery;
+  if(galleryFilter !== 'all'){
+    data = gallery.filter(g=> g.style.toLowerCase().includes(galleryFilter));
+  }
+  if(data.length===0){
+    grid.innerHTML=`<div class="no-gallery"><span class="ng-icon">🖼️</span><h3>${galleryFilter!=='all'?'No '+galleryFilter+' images':'Gallery is Empty'}</h3><p>${galleryFilter!=='all'?'Try a different filter':'Generate backgrounds and they\'ll appear here!'}</p></div>`;
+    return;
+  }
+  grid.innerHTML = data.map(item=>`
+    <div class="gallery-item" id="gi-${item.id}">
+      <img src="${item.url}" alt="${escHtml(item.prompt)}" loading="lazy"
+           onclick="viewGalleryItem(${item.id})" />
+      <div class="gm-actions">
+        <button class="gma-btn" onclick="event.stopPropagation();downloadGalleryItem(${item.id})" title="Download">⬇️</button>
+        <button class="gma-btn" onclick="event.stopPropagation();deleteGalleryItem(${item.id})" title="Delete">🗑️</button>
+        <button class="gma-btn" onclick="event.stopPropagation();viewGalleryItem(${item.id})" title="View">🔍</button>
+      </div>
+      <div class="gallery-meta">
+        <div class="gm-title" title="${escHtml(item.prompt)}">${escHtml(item.prompt)}</div>
+        <div class="gm-tags">
+          <span class="gm-tag">${escHtml(item.style.split(',')[0])}</span>
+          <span class="gm-tag">${item.res}</span>
+          <span class="gm-tag">${item.time}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('galleryCountLbl').textContent = gallery.length+' image'+(gallery.length!==1?'s':'')+' saved';
+}
+
+function filterGallery(filter){
+  galleryFilter = filter;
+  document.querySelectorAll('.gf-btn').forEach(b=>b.classList.toggle('active', b.dataset.gf===filter));
+  renderGallery();
+}
+
+function viewGalleryItem(id){
+  const item = gallery.find(g=>g.id===id);
+  if(!item) return;
+  document.getElementById('modalImg').src   = item.url;
+  document.getElementById('modalTitle').textContent = item.prompt;
+  currentImgUrl = item.url;
+  openModal();
+}
+
+function downloadGalleryItem(id){
+  const item = gallery.find(g=>g.id===id);
+  if(!item) return;
+  currentImgUrl = item.url;
+  currentPrompt = item.prompt;
+  downloadImg();
+}
+
+function deleteGalleryItem(id){
+  gallery = gallery.filter(g=>g.id!==id);
+  renderGallery();
+  showToast('🗑️ Removed from gallery.');
+}
+
+function clearGallery(){
+  if(!gallery.length){ showToast('⚠️ Gallery is already empty!'); return; }
+  if(!confirm('Clear all '+gallery.length+' images from gallery?')) return;
+  gallery=[];
+  renderGallery();
+  showToast('🗑️ Gallery cleared.');
+}
+
+/* ══════════════════════════════════════════
+   DOWNLOAD
+══════════════════════════════════════════ */
+function downloadImg(){
+  if(!currentImgUrl){ showToast('⚠️ No image to download!'); return; }
+  const a = Object.assign(document.createElement('a'),{
+    href: currentImgUrl,
+    download: 'ai-background-'+(currentPrompt.substring(0,30).replace(/[^a-z0-9]/gi,'-'))+'-'+Date.now()+'.png',
+    target: '_blank'
+  });
+  a.click();
+  showToast('⬇️ Downloading your background!');
+}
+
+/* ══════════════════════════════════════════
+   COPY TO CLIPBOARD
+══════════════════════════════════════════ */
+async function copyImgToClipboard(){
+  if(!currentImgUrl){ showToast('⚠️ No image to copy!'); return; }
+  try{
+    const res  = await fetch(currentImgUrl);
+    const blob = await res.blob();
+    await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    showToast('📋 Image copied to clipboard!');
+  } catch{
+    showToast('⚠️ Copy not supported. Try downloading instead.');
+  }
+}
+
+/* ══════════════════════════════════════════
+   USE AS WALLPAPER HINT
+══════════════════════════════════════════ */
+function setAsWallpaper(){
+  downloadImg();
+  showToast('💡 Download done! Right-click the file → Set as Desktop Wallpaper');
+}
+
+/* ══════════════════════════════════════════
+   CLEAR RESULT
+══════════════════════════════════════════ */
+function clearResult(){
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('resultImg').src='';
+  currentImgUrl='';
+  showToast('🗑️ Result cleared.');
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+function openModal(){
+  if(!currentImgUrl) return;
+  document.getElementById('imgModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('imgModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+  if(e.ctrlKey&&e.key==='Enter') generateImage();
+});
+
+/* ══════════════════════════════════════════
+   RANGE SLIDER
+══════════════════════════════════════════ */
+function onRange(el, valId){
+  document.getElementById(valId).textContent = el.value;
+  const pct=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',pct+'%');
+}
+document.querySelectorAll('input[type=range]').forEach(el=>{
+  const pct=((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct',pct+'%');
+});
+
+/* ══════════════════════════════════════════
+   SCROLL TO GENERATOR
+══════════════════════════════════════════ */
+function scrollToGenerator(){
+  document.getElementById('generatorCard').scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>document.getElementById('promptInput').focus(),400);
+}
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+function escHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
