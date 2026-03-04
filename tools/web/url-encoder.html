@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>URL Encoder / Decoder</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;--card:#ffffff;
+  --primary:#2e9e55;--primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;--accent:#57c97a;
+  --border:#b2e8c2;--text:#1a3a24;--text-muted:#5a8c6a;
+  --danger:#e53e3e;--danger-bg:#fff5f5;
+  --warning:#d69e2e;--warning-bg:#fffff0;
+  --blue:#3182ce;--blue-bg:#ebf8ff;
+  --purple:#805ad5;--purple-bg:#f3e8ff;
+  --orange:#c05621;--orange-bg:#fff8f0;
+  --shadow:0 4px 32px rgba(46,158,85,0.12);
+  --shadow-sm:0 2px 14px rgba(46,158,85,0.08);
+  --radius:18px;--radius-sm:12px;
+  --tr:all 0.2s ease;
+}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+/* ══════════════════════
+   HEADER
+══════════════════════ */
+header{
+  background:linear-gradient(135deg,#0d3d1f 0%,#1a6635 30%,#2e9e55 70%,#57c97a 100%);
+  padding:50px 24px 66px;text-align:center;position:relative;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 12% 55%,rgba(255,255,255,0.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 88% 12%,rgba(255,255,255,0.06) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 95%,rgba(0,0,0,0.09) 0%,transparent 55%);
+}
+.hc{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:hcf 7s ease-in-out infinite;}
+.hc1{width:240px;height:240px;top:-80px;left:-60px;animation-delay:0s;}
+.hc2{width:150px;height:150px;bottom:-40px;right:80px;animation-delay:2.5s;}
+.hc3{width:80px;height:80px;top:20px;right:280px;animation-delay:5s;}
+.hc4{width:110px;height:110px;top:70px;left:220px;animation-delay:1.5s;}
+.hc5{width:60px;height:60px;bottom:30px;left:380px;animation-delay:3.5s;}
+@keyframes hcf{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(4deg)}}
+header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:58px;background:var(--bg);clip-path:ellipse(62% 100% at 50% 100%);}
+.h-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.28);border-radius:99px;padding:7px 22px;margin-bottom:18px;font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.95);backdrop-filter:blur(10px);letter-spacing:.5px;}
+.h-icon-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
+.h-icon-box{width:70px;height:70px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.25);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.15);}
+header h1{color:#fff;font-size:2.7rem;font-weight:900;letter-spacing:-1.2px;text-shadow:0 2px 16px rgba(0,0,0,0.18);margin-bottom:10px;}
+header p{color:rgba(255,255,255,0.82);font-size:1.02rem;}
+.h-tags{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.htag{padding:5px 14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:99px;font-size:0.76rem;font-weight:700;color:rgba(255,255,255,0.85);}
+
+/* ══════════════════════
+   MAIN
+══════════════════════ */
+main{max-width:1100px;margin:0 auto;padding:34px 20px 90px;}
+
+/* ══════════════════════
+   CARD
+══════════════════════ */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;margin-bottom:22px;}
+.card-header{padding:16px 24px;border-bottom:1.5px solid var(--border);background:linear-gradient(135deg,var(--primary-light),rgba(255,255,255,0.6));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.card-title{font-size:1rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:9px;}
+.card-badge{padding:4px 12px;background:var(--primary);color:#fff;border-radius:99px;font-size:0.72rem;font-weight:800;letter-spacing:.3px;}
+.card-body{padding:24px;}
+
+/* ══════════════════════
+   MODE TABS
+══════════════════════ */
+.mode-bar{display:flex;background:var(--bg);border-radius:14px;padding:5px;border:1.5px solid var(--border);margin-bottom:24px;}
+.mode-btn{flex:1;padding:12px 16px;border-radius:10px;border:none;background:none;font-size:0.9rem;font-weight:800;color:var(--text-muted);cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;}
+.mode-btn.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 3px 14px rgba(46,158,85,0.3);}
+.mode-btn:hover:not(.active){background:var(--primary-light);color:var(--primary-dark);}
+
+/* ══════════════════════
+   ENCODE TYPE TABS
+══════════════════════ */
+.enc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.enc-tab{padding:8px 18px;border-radius:99px;border:2px solid var(--border);background:#fff;color:var(--text-muted);font-size:0.82rem;font-weight:700;cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:6px;}
+.enc-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 3px 12px rgba(46,158,85,0.25);}
+.enc-tab:hover:not(.active){background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ══════════════════════
+   IO LAYOUT
+══════════════════════ */
+.io-layout{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin-bottom:18px;}
+@media(max-width:800px){.io-layout{grid-template-columns:1fr;}}
+
+.io-pane{display:flex;flex-direction:column;gap:10px;}
+.io-label{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.io-label-txt{font-size:0.88rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:7px;}
+.io-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.io-btn{padding:6px 13px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:0.76rem;font-weight:700;color:var(--text-muted);cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:4px;}
+.io-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+.io-btn.danger:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+
+.io-textarea{
+  width:100%;min-height:200px;padding:16px;resize:vertical;
+  border:2px solid var(--border);border-radius:12px;
+  font-size:0.9rem;color:var(--text);background:var(--bg);
+  font-family:'Fira Code','Courier New',monospace;
+  line-height:1.7;outline:none;transition:var(--tr);
+}
+.io-textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,158,85,0.1);background:#fff;}
+.io-textarea::placeholder{color:var(--text-muted);font-family:inherit;}
+.io-textarea.output{background:#f8fdf9;cursor:default;}
+.io-info{display:flex;gap:8px;flex-wrap:wrap;}
+.io-badge{padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;background:var(--primary-light);color:var(--primary-dark);border:1px solid var(--border);}
+
+/* SWAP BUTTON */
+.swap-col{display:flex;align-items:center;justify-content:center;padding-top:40px;}
+@media(max-width:800px){.swap-col{padding-top:0;}}
+.swap-btn{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;font-size:1.4rem;cursor:pointer;
+  box-shadow:0 4px 16px rgba(46,158,85,0.32);
+  transition:var(--tr);display:flex;align-items:center;justify-content:center;
+}
+.swap-btn:hover{transform:rotate(180deg) scale(1.1);box-shadow:0 8px 24px rgba(46,158,85,0.4);}
+
+/* ══════════════════════
+   ACTION ROW
+══════════════════════ */
+.action-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+.act-btn{padding:13px 28px;border-radius:12px;border:none;font-size:0.92rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;transition:var(--tr);white-space:nowrap;}
+.ab-encode{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 16px rgba(46,158,85,0.3);}
+.ab-encode:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,158,85,0.38);}
+.ab-decode{background:linear-gradient(135deg,var(--blue),#1a56db);color:#fff;box-shadow:0 4px 16px rgba(49,130,206,0.3);}
+.ab-decode:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(49,130,206,0.38);}
+.ab-both{background:linear-gradient(135deg,var(--purple),#6b46c1);color:#fff;box-shadow:0 4px 16px rgba(128,90,213,0.3);}
+.ab-both:hover{transform:translateY(-2px);}
+.ab-clear{background:var(--bg);color:var(--text-muted);border:2px solid var(--border);}
+.ab-clear:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger);}
+.ab-copy{background:var(--bg);color:var(--text-muted);border:2px solid var(--border);}
+.ab-copy:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ══════════════════════
+   DIFF / HIGHLIGHT
+══════════════════════ */
+.diff-view{display:none;margin-top:14px;}
+.diff-view.show{display:block;}
+.diff-inner{
+  background:#0d1a0f;border-radius:12px;padding:18px;
+  font-family:'Fira Code','Courier New',monospace;font-size:0.85rem;
+  line-height:1.9;overflow-x:auto;border:1.5px solid #2d4a2d;
+  max-height:260px;overflow-y:auto;
+}
+.dv-plain{color:#86efac;}
+.dv-encoded{color:#fde68a;background:rgba(253,230,138,0.12);border-radius:3px;padding:0 2px;}
+.dv-percent{color:#f0abfc;}
+.dv-char{color:#93c5fd;}
+.dv-special{color:#fb923c;}
+
+/* ══════════════════════
+   STATS GRID
+══════════════════════ */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px;display:none;}
+.stats-grid.show{display:grid;}
+.stat-card{background:var(--card);border-radius:14px;padding:18px 14px;text-align:center;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);transition:var(--tr);}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.stat-icon{font-size:1.5rem;margin-bottom:7px;}
+.stat-val{font-size:1.6rem;font-weight:900;color:var(--primary-dark);line-height:1;margin-bottom:4px;}
+.stat-lbl{font-size:0.73rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;}
+
+/* ══════════════════════
+   CHAR TABLE
+══════════════════════ */
+.char-search-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.char-search{flex:1;min-width:180px;padding:10px 16px;border:2px solid var(--border);border-radius:10px;font-size:0.88rem;color:var(--text);background:var(--bg);outline:none;font-family:inherit;transition:var(--tr);}
+.char-search:focus{border-color:var(--primary);background:#fff;}
+.char-filter-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.cf-btn{padding:7px 14px;border-radius:99px;border:1.5px solid var(--border);background:#fff;font-size:0.78rem;font-weight:700;color:var(--text-muted);cursor:pointer;transition:var(--tr);}
+.cf-btn.active,.cf-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;max-height:360px;overflow-y:auto;padding-right:4px;}
+.char-grid::-webkit-scrollbar{width:5px;}
+.char-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.char-item{
+  display:flex;align-items:center;gap:10px;padding:10px 13px;
+  background:var(--bg);border:1.5px solid var(--border);border-radius:10px;
+  cursor:pointer;transition:var(--tr);font-size:0.82rem;
+}
+.char-item:hover{background:var(--primary-light);border-color:var(--primary);transform:translateY(-1px);}
+.ci-char{font-size:1.2rem;font-weight:900;color:var(--primary-dark);width:24px;text-align:center;flex-shrink:0;font-family:'Fira Code',monospace;}
+.ci-info{flex:1;}
+.ci-encoded{font-family:'Fira Code',monospace;font-size:0.8rem;font-weight:700;color:var(--blue);margin-bottom:1px;}
+.ci-name{font-size:0.72rem;color:var(--text-muted);}
+.ci-cat{padding:2px 7px;border-radius:99px;font-size:0.68rem;font-weight:700;flex-shrink:0;}
+.cat-space{background:#d4f5e0;color:#1f7a40;}
+.cat-special{background:#fee2e2;color:#c53030;}
+.cat-unicode{background:#e9d8fd;color:#6b46c1;}
+.cat-reserved{background:#fef3c7;color:#92400e;}
+.cat-unsafe{background:#ffe4e6;color:#be123c;}
+.cat-alpha{background:#dbeafe;color:#1d4ed8;}
+
+/* ══════════════════════
+   BATCH TOOL
+══════════════════════ */
+.batch-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.batch-layout{grid-template-columns:1fr;}}
+.batch-area{width:100%;min-height:180px;padding:14px 16px;resize:vertical;border:2px solid var(--border);border-radius:12px;font-size:0.85rem;color:var(--text);background:var(--bg);font-family:'Fira Code','Courier New',monospace;line-height:1.7;outline:none;transition:var(--tr);}
+.batch-area:focus{border-color:var(--primary);background:#fff;}
+.batch-area::placeholder{color:var(--text-muted);}
+
+/* ══════════════════════
+   URL PARSER
+══════════════════════ */
+.parser-input-row{display:flex;gap:10px;margin-bottom:18px;}
+.parser-input{flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:12px;font-size:0.92rem;color:var(--text);background:var(--bg);outline:none;font-family:inherit;transition:var(--tr);}
+.parser-input:focus{border-color:var(--primary);background:#fff;}
+.parser-input::placeholder{color:var(--text-muted);}
+.parse-btn{padding:14px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:12px;font-size:0.92rem;font-weight:800;cursor:pointer;transition:var(--tr);white-space:nowrap;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(46,158,85,0.28);}
+.parse-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(46,158,85,0.36);}
+
+.url-parts{display:flex;flex-direction:column;gap:10px;}
+.url-part{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;background:var(--bg);border:1.5px solid var(--border);border-radius:11px;transition:var(--tr);}
+.url-part:hover{background:var(--primary-light);border-color:var(--primary);}
+.up-label{font-size:0.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;min-width:90px;padding-top:2px;flex-shrink:0;}
+.up-value{font-family:'Fira Code','Courier New',monospace;font-size:0.85rem;font-weight:700;color:var(--text);flex:1;word-break:break-all;}
+.up-copy{background:none;border:none;font-size:0.85rem;color:var(--text-muted);padding:2px 7px;border-radius:6px;cursor:pointer;transition:var(--tr);flex-shrink:0;}
+.up-copy:hover{background:var(--primary-light);color:var(--primary-dark);}
+
+.query-params-table{width:100%;border-collapse:collapse;font-size:0.83rem;margin-top:12px;}
+.query-params-table th{background:var(--primary-light);padding:9px 14px;text-align:left;font-weight:800;color:var(--primary-dark);border-bottom:2px solid var(--border);}
+.query-params-table td{padding:9px 14px;border-bottom:1px solid #eaf7ee;vertical-align:middle;}
+.query-params-table tr:last-child td{border-bottom:none;}
+.query-params-table tr:hover td{background:#f5fdf7;}
+.qp-key{font-family:'Fira Code',monospace;font-weight:700;color:var(--blue);}
+.qp-val{font-family:'Fira Code',monospace;color:var(--text-muted);}
+
+/* ══════════════════════
+   QUICK SAMPLES
+══════════════════════ */
+.samples-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.sample-item{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:11px;
+  padding:13px 16px;cursor:pointer;transition:var(--tr);
+}
+.sample-item:hover{background:var(--primary-light);border-color:var(--primary);transform:translateY(-1px);}
+.si-label{font-size:0.78rem;font-weight:800;color:var(--text-muted);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.si-text{font-family:'Fira Code',monospace;font-size:0.8rem;color:var(--text);word-break:break-all;line-height:1.5;}
+
+/* ══════════════════════
+   HISTORY
+══════════════════════ */
+.history-list{display:flex;flex-direction:column;gap:8px;}
+.history-item{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--bg);border:1.5px solid var(--border);border-radius:11px;cursor:pointer;transition:var(--tr);}
+.history-item:hover{background:var(--primary-light);border-color:var(--primary);}
+.hi-type{padding:3px 9px;border-radius:99px;font-size:0.72rem;font-weight:800;}
+.hi-encode{background:var(--primary-light);color:var(--primary-dark);}
+.hi-decode{background:#dbeafe;color:#1d4ed8;}
+.hi-text{flex:1;font-family:'Fira Code',monospace;font-size:0.82rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hi-time{font-size:0.74rem;color:var(--text-muted);white-space:nowrap;}
+.hi-del{background:none;border:none;font-size:0.85rem;color:var(--text-muted);cursor:pointer;padding:3px 7px;border-radius:5px;transition:var(--tr);}
+.hi-del:hover{background:var(--danger-bg);color:var(--danger);}
+.no-history{text-align:center;padding:28px;color:var(--text-muted);font-weight:600;font-size:0.88rem;}
+
+/* ══════════════════════
+   COMPARE SECTION
+══════════════════════ */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:700px){.compare-grid{grid-template-columns:1fr;}}
+.compare-col{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;}
+.compare-col-title{font-size:0.8rem;font-weight:800;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.compare-val{font-family:'Fira Code',monospace;font-size:0.82rem;color:var(--text);word-break:break-all;line-height:1.7;min-height:60px;}
+.compare-size{font-size:0.74rem;font-weight:700;margin-top:8px;color:var(--text-muted);}
+
+/* ══════════════════════
+   TOAST
+══════════════════════ */
+.toast{position:fixed;bottom:28px;right:28px;padding:14px 20px;border-radius:12px;font-size:0.88rem;font-weight:700;color:#fff;box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateX(120%);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);z-index:9999;display:flex;align-items:center;gap:9px;max-width:360px;}
+.toast.show{transform:translateX(0);opacity:1;}
+.t-success{background:linear-gradient(135deg,var(--primary),var(--primary-dark));}
+.t-error{background:linear-gradient(135deg,#e53e3e,#c53030);}
+.t-info{background:linear-gradient(135deg,#3182ce,#1a56db);}
+
+/* ══════════════════════
+   FOOTER
+══════════════════════ */
+footer{background:var(--card);border-top:1.5px solid var(--border);padding:26px;text-align:center;color:var(--text-muted);font-size:0.82rem;}
+
+@media(max-width:600px){
+  header h1{font-size:2rem;}
+  .mode-btn{font-size:0.8rem;padding:10px 10px;}
+  .act-btn{padding:11px 18px;font-size:0.85rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hc hc1"></div><div class="hc hc2"></div>
+  <div class="hc hc3"></div><div class="hc hc4"></div><div class="hc hc5"></div>
+  <div class="h-pill">🔗 Percent Encoding / Decoding Tool</div>
+  <div class="h-icon-row">
+    <div class="h-icon-box">🔒</div>
+    <div class="h-icon-box" style="font-size:1.8rem;">🔗</div>
+    <div class="h-icon-box">🔓</div>
+  </div>
+  <h1>URL Encoder / Decoder</h1>
+  <p>Encode special characters & decode percent-encoded URLs instantly</p>
+  <div class="h-tags">
+    <span class="htag">🔒 Encode URL</span>
+    <span class="htag">🔓 Decode URL</span>
+    <span class="htag">🔗 Parse URL</span>
+    <span class="htag">📦 Batch Process</span>
+    <span class="htag">🔢 Base64</span>
+    <span class="htag">📊 Char Reference</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══════════════════════════════
+       MAIN ENCODER / DECODER CARD
+  ═══════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">⚡ URL Encoder & Decoder</span>
+      <span class="card-badge" id="mainBadge">ENCODER</span>
+    </div>
+    <div class="card-body">
+
+      <!-- MODE BAR -->
+      <div class="mode-bar">
+        <button class="mode-btn active" onclick="setMainMode('encode',this)">🔒 Encode</button>
+        <button class="mode-btn" onclick="setMainMode('decode',this)">🔓 Decode</button>
+        <button class="mode-btn" onclick="setMainMode('both',this)">🔄 Both</button>
+        <button class="mode-btn" onclick="setMainMode('parse',this)">🔗 Parse URL</button>
+        <button class="mode-btn" onclick="setMainMode('batch',this)">📦 Batch</button>
+        <button class="mode-btn" onclick="setMainMode('base64',this)">🔢 Base64</button>
+      </div>
+
+      <!-- ── ENCODE / DECODE / BOTH VIEW ── -->
+      <div id="view-main">
+
+        <!-- ENCODE TYPE TABS -->
+        <div class="enc-tabs" id="encTypeTabs">
+          <button class="enc-tab active" data-type="component" onclick="setEncType(this)">🔗 encodeURIComponent</button>
+          <button class="enc-tab" data-type="uri" onclick="setEncType(this)">🌐 encodeURI</button>
+          <button class="enc-tab" data-type="full" onclick="setEncType(this)">⚡ Full Encode</button>
+          <button class="enc-tab" data-type="form" onclick="setEncType(this)">📝 Form Data (+spaces)</button>
+        </div>
+
+        <!-- IO LAYOUT -->
+        <div class="io-layout">
+          <!-- INPUT -->
+          <div class="io-pane">
+            <div class="io-label">
+              <span class="io-label-txt">📥 Input</span>
+              <div class="io-actions">
+                <button class="io-btn" onclick="pasteInput()">📋 Paste</button>
+                <button class="io-btn" onclick="loadSampleInput()">📄 Sample</button>
+                <button class="io-btn danger" onclick="clearInput()">🗑️</button>
+              </div>
+            </div>
+            <textarea class="io-textarea" id="inputText"
+              placeholder="Type or paste your URL / text here...&#10;&#10;Example: https://example.com/search?q=hello world&lang=en"
+              oninput="onInputChange()" spellcheck="false"></textarea>
+            <div class="io-info">
+              <span class="io-badge" id="inputLen">0 chars</span>
+              <span class="io-badge" id="inputBytes">0 bytes</span>
+            </div>
+          </div>
+
+          <!-- SWAP BUTTON -->
+          <div class="swap-col">
+            <button class="swap-btn" onclick="swapIO()" title="Swap Input ↔ Output">⇄</button>
+          </div>
+
+          <!-- OUTPUT -->
+          <div class="io-pane">
+            <div class="io-label">
+              <span class="io-label-txt" id="outputLabel">📤 Encoded Output</span>
+              <div class="io-actions">
+                <button class="io-btn" onclick="copyOutput()">📋 Copy</button>
+                <button class="io-btn" onclick="downloadOutput()">⬇️ Save</button>
+                <button class="io-btn" onclick="openInTab()">🔗 Open</button>
+              </div>
+            </div>
+            <textarea class="io-textarea output" id="outputText"
+              placeholder="Result will appear here..." readonly spellcheck="false"></textarea>
+            <div class="io-info">
+              <span class="io-badge" id="outputLen">0 chars</span>
+              <span class="io-badge" id="outputBytes">0 bytes</span>
+              <span class="io-badge" id="diffBadge" style="display:none;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTION ROW -->
+        <div class="action-row">
+          <button class="act-btn ab-encode" id="encodeBtn" onclick="doEncode()">🔒 Encode</button>
+          <button class="act-btn ab-decode" id="decodeBtn" onclick="doDecode()">🔓 Decode</button>
+          <button class="act-btn ab-clear" onclick="clearAll()">🗑️ Clear</button>
+          <button class="act-btn ab-copy" onclick="copyOutput()">📋 Copy Output</button>
+        </div>
+
+        <!-- DIFF HIGHLIGHT VIEW -->
+        <div class="diff-view" id="diffView">
+          <div style="font-size:0.82rem;font-weight:800;color:var(--primary-dark);margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+            🔍 Character-by-Character Breakdown
+            <span style="padding:2px 9px;background:var(--primary-light);border-radius:99px;font-size:0.72rem;color:var(--primary-dark);border:1px solid var(--border);" id="encCountBadge"></span>
+          </div>
+          <div class="diff-inner" id="diffInner"></div>
+          <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:5px;font-size:0.76rem;font-weight:700;"><span style="width:12px;height:12px;background:rgba(253,230,138,0.3);border:1.5px solid #fde68a;border-radius:3px;"></span>Encoded chars</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:0.76rem;font-weight:700;"><span style="width:12px;height:12px;background:rgba(147,197,253,0.2);border:1.5px solid #93c5fd;border-radius:3px;"></span>Plain chars</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:0.76rem;font-weight:700;"><span style="width:12px;height:12px;background:rgba(240,171,252,0.2);border:1.5px solid #f0abfc;border-radius:3px;"></span>Percent sign</span>
+          </div>
+        </div>
+
+        <!-- COMPARE VIEW -->
+        <div id="compareView" style="margin-top:16px;display:none;">
+          <div style="font-size:0.82rem;font-weight:800;color:var(--primary-dark);margin-bottom:10px;">📊 Comparison</div>
+          <div class="compare-grid">
+            <div class="compare-col">
+              <div class="compare-col-title">📝 Original</div>
+              <div class="compare-val" id="cmpOrig">—</div>
+              <div class="compare-size" id="cmpOrigSize"></div>
+            </div>
+            <div class="compare-col">
+              <div class="compare-col-title">🔒 Encoded</div>
+              <div class="compare-val" id="cmpEncoded">—</div>
+              <div class="compare-size" id="cmpEncodedSize"></div>
+            </div>
+            <div class="compare-col">
+              <div class="compare-col-title">🔓 Decoded</div>
+              <div class="compare-val" id="cmpDecoded">—</div>
+              <div class="compare-size" id="cmpDecodedSize"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── PARSE URL VIEW ── -->
+      <div id="view-parse" style="display:none;">
+        <div class="parser-input-row">
+          <input type="url" class="parser-input" id="parseInput"
+            placeholder="https://example.com/path?name=John&age=25&city=New%20York#section"
+            spellcheck="false"/>
+          <button class="parse-btn" onclick="parseURL()">🔗 Parse URL</button>
+        </div>
+        <div class="url-parts" id="urlParts">
+          <div style="text-align:center;padding:30px;color:var(--text-muted);font-weight:600;">
+            🔗 Enter a URL above and click Parse to see all components
+          </div>
+        </div>
+        <div id="queryParamsWrap" style="display:none;margin-top:16px;">
+          <div style="font-size:0.88rem;font-weight:800;color:var(--primary-dark);margin-bottom:10px;">📋 Query Parameters</div>
+          <table class="query-params-table"><thead><tr><th>#</th><th>Parameter</th><th>Value (Encoded)</th><th>Value (Decoded)</th><th></th></tr></thead><tbody id="queryParamsBody"></tbody></table>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;" id="parseActions" style="display:none;">
+          <button class="act-btn ab-encode" style="padding:10px 18px;font-size:0.84rem;" onclick="encodeParseInput()">🔒 Encode This URL</button>
+          <button class="act-btn ab-decode" style="padding:10px 18px;font-size:0.84rem;" onclick="decodeParseInput()">🔓 Decode This URL</button>
+          <button class="act-btn ab-copy" style="padding:10px 18px;font-size:0.84rem;" onclick="copyParseResult()">📋 Copy Parsed</button>
+        </div>
+      </div>
+
+      <!-- ── BATCH VIEW ── -->
+      <div id="view-batch" style="display:none;">
+        <div style="margin-bottom:14px;">
+          <div class="enc-tabs">
+            <button class="enc-tab active" data-btype="component" onclick="setBatchType(this)">🔗 encodeURIComponent</button>
+            <button class="enc-tab" data-btype="uri" onclick="setBatchType(this)">🌐 encodeURI</button>
+            <button class="enc-tab" data-btype="decode" onclick="setBatchType(this)">🔓 Decode All</button>
+          </div>
+        </div>
+        <div class="batch-layout">
+          <div>
+            <div style="font-size:0.84rem;font-weight:800;color:var(--primary-dark);margin-bottom:8px;">📥 Input URLs (one per line)</div>
+            <textarea class="batch-area" id="batchInput"
+              placeholder="https://example.com/search?q=hello world&#10;https://site.org/path/to page?name=John Doe&#10;user@email.com&#10;https://api.com/data?key=abc&val=1 2 3"></textarea>
+          </div>
+          <div>
+            <div style="font-size:0.84rem;font-weight:800;color:var(--primary-dark);margin-bottom:8px;">📤 Output (processed)</div>
+            <textarea class="batch-area output" id="batchOutput" readonly
+              placeholder="Processed results will appear here..."></textarea>
+          </div>
+        </div>
+        <div class="action-row" style="margin-top:14px;">
+          <button class="act-btn ab-encode" onclick="processBatch()">⚡ Process Batch</button>
+          <button class="act-btn ab-copy" onclick="copyBatch()">📋 Copy All</button>
+          <button class="act-btn ab-clear" onclick="clearBatch()">🗑️ Clear</button>
+        </div>
+      </div>
+
+      <!-- ── BASE64 VIEW ── -->
+      <div id="view-base64" style="display:none;">
+        <div class="enc-tabs">
+          <button class="enc-tab active" data-b64="encode" onclick="setB64Mode(this)">🔒 Encode to Base64</button>
+          <button class="enc-tab" data-b64="decode" onclick="setB64Mode(this)">🔓 Decode from Base64</button>
+          <button class="enc-tab" data-b64="url" onclick="setB64Mode(this)">🔗 Base64 URL-Safe</button>
+        </div>
+        <div class="io-layout" style="margin-top:16px;">
+          <div class="io-pane">
+            <div class="io-label">
+              <span class="io-label-txt">📥 Input</span>
+              <div class="io-actions">
+                <button class="io-btn" onclick="document.getElementById('b64Input').value='';updateB64()">🗑️</button>
+              </div>
+            </div>
+            <textarea class="io-textarea" id="b64Input"
+              placeholder="Enter text to encode or Base64 to decode..." oninput="updateB64()" spellcheck="false"></textarea>
+          </div>
+          <div class="swap-col"><button class="swap-btn" onclick="swapB64()">⇄</button></div>
+          <div class="io-pane">
+            <div class="io-label">
+              <span class="io-label-txt" id="b64OutLabel">📤 Base64 Output</span>
+              <div class="io-actions">
+                <button class="io-btn" onclick="copyB64()">📋 Copy</button>
+              </div>
+            </div>
+            <textarea class="io-textarea output" id="b64Output" readonly placeholder="Base64 output..." spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div class="action-row" style="margin-top:14px;">
+          <button class="act-btn ab-encode" onclick="updateB64()">⚡ Convert</button>
+          <button class="act-btn ab-copy" onclick="copyB64()">📋 Copy</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-icon">📏</div><div class="stat-val" id="st-origLen">0</div><div class="stat-lbl">Original Length</div></div>
+    <div class="stat-card"><div class="stat-icon">🔒</div><div class="stat-val" id="st-encLen">0</div><div class="stat-lbl">Encoded Length</div></div>
+    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" id="st-growth">0%</div><div class="stat-lbl">Size Increase</div></div>
+    <div class="stat-card"><div class="stat-icon">🔢</div><div class="stat-val" id="st-encChars">0</div><div class="stat-lbl">Chars Encoded</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="st-plainChars">0</div><div class="stat-lbl">Plain Chars</div></div>
+    <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-val" id="st-percent">0</div><div class="stat-lbl">% Sequences</div></div>
+  </div>
+
+  <!-- QUICK SAMPLES -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📚 Quick Sample Inputs</span>
+      <span class="card-badge">EXAMPLES</span>
+    </div>
+    <div class="card-body">
+      <div class="samples-grid" id="samplesGrid"></div>
+    </div>
+  </div>
+
+  <!-- CHARACTER REFERENCE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">🔢 URL Character Reference</span>
+      <span class="card-badge" id="charRefCount">0 characters</span>
+    </div>
+    <div class="card-body">
+      <div class="char-search-row">
+        <input class="char-search" id="charSearch" placeholder="🔍 Search character or encoding..." oninput="filterChars()"/>
+        <div class="char-filter-btns">
+          <button class="cf-btn active" data-cat="all" onclick="filterCharCat(this)">All</button>
+          <button class="cf-btn" data-cat="special" onclick="filterCharCat(this)">🔴 Special</button>
+          <button class="cf-btn" data-cat="reserved" onclick="filterCharCat(this)">🟡 Reserved</button>
+          <button class="cf-btn" data-cat="space" onclick="filterCharCat(this)">⬜ Space</button>
+          <button class="cf-btn" data-cat="unsafe" onclick="filterCharCat(this)">🟠 Unsafe</button>
+          <button class="cf-btn" data-cat="unicode" onclick="filterCharCat(this)">🟣 Unicode</button>
+        </div>
+      </div>
+      <div class="char-grid" id="charGrid"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card" id="historyCard" style="display:none;">
+    <div class="card-header">
+      <span class="card-title">🕒 Recent History</span>
+      <button style="padding:5px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:0.76rem;font-weight:700;color:var(--text-muted);cursor:pointer;" onclick="clearHistory()">🗑️ Clear All</button>
+    </div>
+    <div class="card-body" style="padding:16px 20px;">
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>🌿 URL Encoder / Decoder &nbsp;|&nbsp; Supports encodeURIComponent · encodeURI · Full Encode · Form Data · Base64 &nbsp;|&nbsp; Built with ❤️</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+const $ = id => document.getElementById(id);
+let mainMode     = 'encode';
+let encType      = 'component';
+let batchType    = 'component';
+let b64Mode      = 'encode';
+let history_     = JSON.parse(localStorage.getItem('urlEncHistory')||'[]');
+let charCatFilter= 'all';
+let parseResult  = {};
+
+/* ══════════════════════════════
+   CHARACTER REFERENCE DATA
+══════════════════════════════ */
+const CHAR_DATA = [
+  // Spaces
+  {char:' ',  encoded:'%20', also:'+', name:'Space',            cat:'space'},
+  {char:'\t', encoded:'%09', name:'Tab',                        cat:'space'},
+  {char:'\n', encoded:'%0A', name:'New Line',                   cat:'space'},
+  {char:'\r', encoded:'%0D', name:'Carriage Return',            cat:'space'},
+  // Special / Punctuation
+  {char:'!',  encoded:'%21', name:'Exclamation Mark',           cat:'special'},
+  {char:'"',  encoded:'%22', name:'Double Quote',               cat:'special'},
+  {char:'#',  encoded:'%23', name:'Hash / Fragment',            cat:'reserved'},
+  {char:'$',  encoded:'%24', name:'Dollar Sign',                cat:'reserved'},
+  {char:'%',  encoded:'%25', name:'Percent Sign',               cat:'special'},
+  {char:'&',  encoded:'%26', name:'Ampersand (param sep)',       cat:'reserved'},
+  {char:"'",  encoded:'%27', name:"Single Quote / Apostrophe", cat:'special'},
+  {char:'(',  encoded:'%28', name:'Open Parenthesis',           cat:'special'},
+  {char:')',  encoded:'%29', name:'Close Parenthesis',          cat:'special'},
+  {char:'*',  encoded:'%2A', name:'Asterisk',                   cat:'special'},
+  {char:'+',  encoded:'%2B', name:'Plus Sign (space in forms)', cat:'reserved'},
+  {char:',',  encoded:'%2C', name:'Comma',                      cat:'reserved'},
+  {char:'/',  encoded:'%2F', name:'Forward Slash (path sep)',   cat:'reserved'},
+  {char:':',  encoded:'%3A', name:'Colon',                      cat:'reserved'},
+  {char:';',  encoded:'%3B', name:'Semicolon',                  cat:'reserved'},
+  {char:'<',  encoded:'%3C', name:'Less Than',                  cat:'unsafe'},
+  {char:'=',  encoded:'%3D', name:'Equals Sign',                cat:'reserved'},
+  {char:'>',  encoded:'%3E', name:'Greater Than',               cat:'unsafe'},
+  {char:'?',  encoded:'%3F', name:'Question Mark (query start)',cat:'reserved'},
+  {char:'@',  encoded:'%40', name:'At Sign',                    cat:'reserved'},
+  {char:'[',  encoded:'%5B', name:'Open Square Bracket',        cat:'unsafe'},
+  {char:'\\', encoded:'%5C', name:'Backslash',                  cat:'unsafe'},
+  {char:']',  encoded:'%5D', name:'Close Square Bracket',       cat:'unsafe'},
+  {char:'^',  encoded:'%5E', name:'Caret',                      cat:'unsafe'},
+  {char:'`',  encoded:'%60', name:'Backtick / Grave Accent',    cat:'unsafe'},
+  {char:'{',  encoded:'%7B', name:'Open Curly Brace',           cat:'unsafe'},
+  {char:'|',  encoded:'%7C', name:'Pipe / Vertical Bar',        cat:'unsafe'},
+  {char:'}',  encoded:'%7D', name:'Close Curly Brace',          cat:'unsafe'},
+  {char:'~',  encoded:'%7E', name:'Tilde',                      cat:'special'},
+  // Unicode
+  {char:'©',  encoded:'%C2%A9', name:'Copyright Sign',          cat:'unicode'},
+  {char:'®',  encoded:'%C2%AE', name:'Registered Sign',         cat:'unicode'},
+  {char:'™',  encoded:'%E2%84%A2',name:'Trade Mark Sign',       cat:'unicode'},
+  {char:'€',  encoded:'%E2%82%AC',name:'Euro Sign',             cat:'unicode'},
+  {char:'£',  encoded:'%C2%A3', name:'Pound Sign',              cat:'unicode'},
+  {char:'¥',  encoded:'%C2%A5', name:'Yen Sign',                cat:'unicode'},
+  {char:'°',  encoded:'%C2%B0', name:'Degree Sign',             cat:'unicode'},
+  {char:'→',  encoded:'%E2%86%92',name:'Right Arrow',           cat:'unicode'},
+  {char:'✓',  encoded:'%E2%9C%93',name:'Check Mark',            cat:'unicode'},
+  {char:'★',  encoded:'%E2%98%85',name:'Black Star',            cat:'unicode'},
+  {char:'♥',  encoded:'%E2%99%A5',name:'Heart Suit',            cat:'unicode'},
+  {char:'ñ',  encoded:'%C3%B1',  name:'Latin Small Letter N Tilde',cat:'unicode'},
+  {char:'é',  encoded:'%C3%A9',  name:'Latin Small Letter E Acute',cat:'unicode'},
+  {char:'ü',  encoded:'%C3%BC',  name:'Latin Small Letter U Umlaut',cat:'unicode'},
+  {char:'中', encoded:'%E4%B8%AD',name:'Chinese Character (middle)',cat:'unicode'},
+  {char:'🌿', encoded:'%F0%9F%8C%BF',name:'Herb Emoji',         cat:'unicode'},
+];
+
+/* ══════════════════════════════
+   QUICK SAMPLES
+══════════════════════════════ */
+const SAMPLES = [
+  {icon:'🔍',label:'Search Query',text:'https://example.com/search?q=hello world & language=en US'},
+  {icon:'📧',label:'Email in URL',text:'mailto:user name@example.com?subject=Hello World!&body=Dear John,\nHow are you?'},
+  {icon:'🔐',label:'Auth Token',text:'https://api.example.com/auth?token=abc123!@#$%^&*()_+'},
+  {icon:'📍',label:'Location Query',text:'https://maps.example.com/?q=New York, USA&lat=40.7128&lng=-74.0060'},
+  {icon:'🌐',label:'Unicode URL',text:'https://example.com/search?q=日本語&category=テクノロジー'},
+  {icon:'📦',label:'JSON in URL',text:'https://api.com/data?filter={"name":"John","age":30,"city":"New York"}'},
+  {icon:'🔗',label:'Encoded URL',text:'https%3A%2F%2Fexample.com%2Fpath%3Fname%3DJohn%20Doe%26age%3D25'},
+  {icon:'💼',label:'Form Data',text:'first name=John Doe&email=john@example.com&message=Hello & Goodbye!'},
+  {icon:'🎨',label:'CSS Color',text:'https://design.com/palette?color=%232e9e55&bg=%23f0faf2&text=%231a3a24'},
+  {icon:'📱',label:'Deep Link',text:'myapp://open?screen=home&user=John Smith&redirect=https://example.com/page?id=1'},
+  {icon:'🔒',label:'Password in URL',text:'https://user:p@ss!w#rd@example.com/secure?token=abc&key=123'},
+  {icon:'📝',label:'Percent Encoded',text:'name%3DJohn%20Doe%26age%3D25%26city%3DNew%20York%26email%3Djohn%40example.com'},
+];
+
+/* ══════════════════════════════
+   HELPERS
+══════════════════════════════ */
+function showToast(msg,type='success'){
+  const t=$('toast');
+  t.textContent=msg;t.className=`toast t-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function formatBytes(n){if(!n)return'0 B';if(n<1024)return n+' B';return(n/1024).toFixed(1)+' KB';}
+function timeAgo(ts){const d=Date.now()-ts;if(d<60000)return Math.floor(d/1000)+'s ago';if(d<3600000)return Math.floor(d/60000)+'m ago';return Math.floor(d/3600000)+'h ago';}
+
+/* ══════════════════════════════
+   MODE SWITCHING
+══════════════════════════════ */
+function setMainMode(mode, btn){
+  mainMode=mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['view-main','view-parse','view-batch','view-base64'].forEach(id=>$(id).style.display='none');
+  const viewMap={encode:'main',decode:'main',both:'main',parse:'parse',batch:'batch',base64:'base64'};
+  $('view-'+viewMap[mode]).style.display='';
+  $('mainBadge').textContent={encode:'ENCODER',decode:'DECODER',both:'BOTH',parse:'URL PARSER',batch:'BATCH',base64:'BASE64'}[mode];
+  $('encTypeTabs').style.display=(mode==='encode'||mode==='decode'||mode==='both')?'':'none';
+  $('outputLabel').textContent=mode==='decode'?'📤 Decoded Output':'📤 Encoded Output';
+  if(mode==='decode'){$('encodeBtn').style.display='none';$('decodeBtn').style.display='';}
+  else if(mode==='encode'){$('encodeBtn').style.display='';$('decodeBtn').style.display='none';}
+  else if(mode==='both'){$('encodeBtn').style.display='';$('decodeBtn').style.display='';}
+  updateInfo();
+}
+
+/* ══════════════════════════════
+   ENCODE TYPE
+══════════════════════════════ */
+function setEncType(btn){
+  encType=btn.dataset.type;
+  document.querySelectorAll('#encTypeTabs .enc-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if($('inputText').value.trim()) doEncode();
+}
+
+function setBatchType(btn){
+  batchType=btn.dataset.btype;
+  document.querySelectorAll('.enc-tabs .enc-tab[data-btype]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setB64Mode(btn){
+  b64Mode=btn.dataset.b64;
+  document.querySelectorAll('.enc-tabs .enc-tab[data-b64]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  $('b64OutLabel').textContent=b64Mode==='decode'?'📤 Decoded Text':'📤 Base64 Output';
+  updateB64();
+}
+
+/* ══════════════════════════════
+   ENCODE FUNCTIONS
+══════════════════════════════ */
+function encodeText(text,type){
+  try{
+    if(type==='component') return encodeURIComponent(text);
+    if(type==='uri')       return encodeURI(text);
+    if(type==='full')      return text.split('').map(c=>encodeURIComponent(c)).join('');
+    if(type==='form')      return text.replace(/ /g,'+').split('').map(c=>{
+      if(c==='+') return'+';
+      try{const e=encodeURIComponent(c);return e===c?c:e;}catch{return c;}
+    }).join('');
+    return encodeURIComponent(text);
+  } catch(e){ return 'Error: '+e.message; }
+}
+
+function decodeText(text){
+  try{
+    // Try full decoding
+    let result=text;
+    // Handle + as space (form data)
+    const withPlus=text.replace(/\+/g,' ');
+    result=decodeURIComponent(text);
+    return result;
+  } catch(e){
+    try{ return decodeURIComponent(text.replace(/\+/g,' ')); }
+    catch(e2){
+      // Partial decode: replace valid sequences only
+      return text.replace(/%[0-9A-Fa-f]{2}/g, m=>{
+        try{return decodeURIComponent(m);}catch{return m;}
+      });
+    }
+  }
+}
+
+/* ══════════════════════════════
+   MAIN ENCODE / DECODE
+══════════════════════════════ */
+function doEncode(){
+  const input=$('inputText').value;
+  if(!input){showToast('⚠️ Please enter some text to encode!','error');return;}
+  const output=encodeText(input,encType);
+  $('outputText').value=output;
+  updateInfo();
+  updateStats(input,output,'encode');
+  renderDiffView(input,output,'encode');
+  if(mainMode==='both') renderCompare(input,output,decodeText(output));
+  saveHistory('encode',input,output);
+  showToast('🔒 Encoded successfully!','success');
+}
+
+function doDecode(){
+  const input=$('inputText').value;
+  if(!input){showToast('⚠️ Please enter encoded text to decode!','error');return;}
+  const output=decodeText(input);
+  $('outputText').value=output;
+  updateInfo();
+  updateStats(input,output,'decode');
+  renderDiffView(input,output,'decode');
+  if(mainMode==='both') renderCompare(output,encodeText(output,encType),output);
+  saveHistory('decode',input,output);
+  showToast('🔓 Decoded successfully!','success');
+}
+
+/* ══════════════════════════════
+   AUTO PROCESS ON INPUT
+══════════════════════════════ */
+function onInputChange(){
+  updateInfo();
+  if(mainMode==='encode') doEncode();
+  else if(mainMode==='decode') doDecode();
+}
+
+function updateInfo(){
+  const inp=$('inputText').value;
+  const out=$('outputText').value;
+  $('inputLen').textContent=inp.length+' chars';
+  $('inputBytes').textContent=new Blob([inp]).size+' bytes';
+  $('outputLen').textContent=out.length+' chars';
+  $('outputBytes').textContent=new Blob([out]).size+' bytes';
+  if(inp&&out&&inp!==out){
+    const diff=out.length-inp.length;
+    const badge=$('diffBadge');
+    badge.style.display='';
+    badge.textContent=(diff>0?'+':'')+diff+' chars';
+    badge.style.background=diff>0?'#fee2e2':diff<0?'#d4f5e0':'#e2e8f0';
+    badge.style.color=diff>0?'#c53030':diff<0?'#1f7a40':'#718096';
+  } else { $('diffBadge').style.display='none'; }
+}
+
+/* ══════════════════════════════
+   DIFF VIEW (CHARACTER BREAKDOWN)
+══════════════════════════════ */
+function renderDiffView(input,output,type){
+  if(!input||!output||input===output){$('diffView').classList.remove('show');return;}
+  $('diffView').classList.add('show');
+  let html='';let encCount=0;
+  if(type==='encode'){
+    let i=0,j=0;
+    while(j<output.length){
+      if(output[j]==='%'){
+        const seq=output.slice(j,j+3);
+        try{
+          const orig=decodeURIComponent(seq);
+          html+=`<span class="dv-encoded" title="${escH(orig)} → ${seq}">${escH(seq)}</span>`;
+          encCount++;j+=3;i++;
+        } catch{html+=`<span class="dv-percent">${escH(output[j])}</span>`;j++;}
+      } else if(output[j]==='+'){
+        html+=`<span class="dv-encoded" title="space → +">${escH(output[j])}</span>`;j++;i++;
+      } else {
+        if(output[j]==='\n') html+=`<span class="dv-char">↵\n</span>`;
+        else html+=`<span class="dv-char" title="${escH(output[j])}">${escH(output[j])}</span>`;
+        j++;i++;
+      }
+    }
+  } else {
+    // Decode view: show original encoded sequences
+    const reg=/%[0-9A-Fa-f]{2}(?:%[0-9A-Fa-f]{2})*/g;
+    let last=0;let m;
+    while((m=reg.exec(input))!==null){
+      if(m.index>last) html+=`<span class="dv-char">${escH(input.slice(last,m.index))}</span>`;
+      try{
+        const decoded=decodeURIComponent(m[0]);
+        html+=`<span class="dv-encoded" title="${escH(m[0])} → ${escH(decoded)}">${escH(decoded)}</span>`;
+        encCount++;
+      } catch{html+=`<span class="dv-percent">${escH(m[0])}</span>`;}
+      last=m.index+m[0].length;
+    }
+    if(last<input.length) html+=`<span class="dv-char">${escH(input.slice(last))}</span>`;
+  }
+  $('diffInner').innerHTML=html||'<span style="color:#4a7a54">No changes</span>';
+  $('encCountBadge').textContent=encCount+(type==='encode'?' encoded':' decoded')+' sequences';
+}
+
+/* ══════════════════════════════
+   COMPARE VIEW
+══════════════════════════════ */
+function renderCompare(orig,encoded,decoded){
+  $('compareView').style.display='block';
+  $('cmpOrig').textContent=orig||'—';
+  $('cmpEncoded').textContent=encoded||'—';
+  $('cmpDecoded').textContent=decoded||'—';
+  $('cmpOrigSize').textContent=orig?`${orig.length} chars · ${new Blob([orig]).size} bytes`:'';
+  $('cmpEncodedSize').textContent=encoded?`${encoded.length} chars · ${new Blob([encoded]).size} bytes`:'';
+  $('cmpDecodedSize').textContent=decoded?`${decoded.length} chars · ${new Blob([decoded]).size} bytes`:'';
+}
+
+/* ══════════════════════════════
+   STATS
+══════════════════════════════ */
+function updateStats(input,output,type){
+  $('statsGrid').classList.add('show');
+  const origLen=input.length;
+  const encLen=output.length;
+  const growth=origLen>0?Math.round(((encLen-origLen)/origLen)*100):0;
+  let encChars=0,plainChars=0,percentSeqs=0;
+  if(type==='encode'){
+    const reg=/%[0-9A-Fa-f]{2}(?:%[0-9A-Fa-f]{2})*/g;
+    percentSeqs=(output.match(reg)||[]).length;
+    encChars=percentSeqs;
+    plainChars=origLen-encChars;
+  } else {
+    const reg=/%[0-9A-Fa-f]{2}(?:%[0-9A-Fa-f]{2})*/g;
+    percentSeqs=(input.match(reg)||[]).length;
+    encChars=percentSeqs;
+    plainChars=input.replace(/%[0-9A-Fa-f]{2}/g,'').length;
+  }
+  $('st-origLen').textContent=origLen;
+  $('st-encLen').textContent=encLen;
+  $('st-growth').textContent=(growth>=0?'+':'')+growth+'%';
+  $('st-encChars').textContent=encChars;
+  $('st-plainChars').textContent=plainChars;
+  $('st-percent').textContent=percentSeqs;
+}
+
+/* ══════════════════════════════
+   PARSE URL
+══════════════════════════════ */
+function parseURL(){
+  const raw=$('parseInput').value.trim();
+  if(!raw){showToast('⚠️ Please enter a URL to parse!','error');return;}
+  let url;
+  try{
+    url=new URL(raw.startsWith('http')?raw:'https://'+raw);
+  } catch(e){
+    showToast('⚠️ Invalid URL format!','error');return;
+  }
+  const parts=[
+    {label:'Full URL',      val:url.href},
+    {label:'Protocol',      val:url.protocol},
+    {label:'Hostname',      val:url.hostname},
+    {label:'Port',          val:url.port||'(default)'},
+    {label:'Origin',        val:url.origin},
+    {label:'Pathname',      val:url.pathname},
+    {label:'Search (raw)',  val:url.search||'(none)'},
+    {label:'Hash',          val:url.hash||'(none)'},
+    {label:'Username',      val:url.username||'(none)'},
+    {label:'Password',      val:url.password||'(none)'},
+    {label:'Host',          val:url.host},
+  ];
+  $('urlParts').innerHTML=parts.map(p=>`
+    <div class="url-part">
+      <span class="up-label">${escH(p.label)}</span>
+      <span class="up-value">${escH(p.val)}</span>
+      <button class="up-copy" onclick="copyText('${escH(p.val).replace(/'/g,"\\'")}')" title="Copy">📋</button>
+    </div>`).join('');
+
+  // Query params
+  const params=[...url.searchParams.entries()];
+  if(params.length>0){
+    $('queryParamsWrap').style.display='block';
+    $('queryParamsBody').innerHTML=params.map((p,i)=>`
+      <tr>
+        <td style="color:var(--text-muted);font-weight:700;">${i+1}</td>
+        <td class="qp-key">${escH(p[0])}</td>
+        <td class="qp-val">${escH(url.search.match(new RegExp('[?&]'+escRegex(p[0])+'=([^&]*)'))?.[1]||p[1])}</td>
+        <td style="color:var(--primary-dark);font-weight:700;font-family:'Fira Code',monospace;">${escH(p[1])}</td>
+        <td><button class="up-copy" onclick="copyText('${escH(p[1]).replace(/'/g,"\\'")}')">📋</button></td>
+      </tr>`).join('');
+  } else $('queryParamsWrap').style.display='none';
+
+  $('parseActions').style.display='flex';
+  parseResult={url,raw};
+  showToast('🔗 URL parsed successfully!','success');
+}
+
+function escRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+
+function encodeParseInput(){
+  $('inputText').value=$('parseInput').value;
+  setMainMode('encode',document.querySelectorAll('.mode-btn')[0]);
+  doEncode();
+  showToast('🔒 Encoded!','success');
+}
+
+function decodeParseInput(){
+  $('inputText').value=$('parseInput').value;
+  setMainMode('decode',document.querySelectorAll('.mode-btn')[1]);
+  doDecode();
+  showToast('🔓 Decoded!','success');
+}
+
+function copyParseResult(){
+  if(!parseResult.url) return;
+  const text=Object.entries({
+    'URL':parseResult.url.href,
+    'Protocol':parseResult.url.protocol,
+    'Host':parseResult.url.host,
+    'Path':parseResult.url.pathname,
+    'Query':parseResult.url.search,
+    'Hash':parseResult.url.hash,
+  }).map(([k,v])=>`${k}: ${v||'(none)'}`).join('\n');
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied parsed result!','success'));
+}
+
+/* ══════════════════════════════
+   BATCH PROCESSING
+══════════════════════════════ */
+function processBatch(){
+  const lines=$('batchInput').value.split('\n').filter(l=>l.trim());
+  if(!lines.length){showToast('⚠️ Please enter URLs to process!','error');return;}
+  const results=lines.map(line=>{
+    const l=line.trim();
+    if(!l) return '';
+    if(batchType==='decode') return decodeText(l);
+    return encodeText(l,batchType==='uri'?'uri':'component');
+  });
+  $('batchOutput').value=results.join('\n');
+  showToast(`⚡ Processed ${lines.length} URLs!`,'success');
+}
+
+function copyBatch(){
+  const text=$('batchOutput').value;
+  if(!text){showToast('⚠️ Nothing to copy!','error');return;}
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!','success'));
+}
+
+function clearBatch(){
+  $('batchInput').value='';$('batchOutput').value='';
+}
+
+/* ══════════════════════════════
+   BASE64
+══════════════════════════════ */
+function updateB64(){
+  const input=$('b64Input').value;
+  if(!input){$('b64Output').value='';return;}
+  try{
+    let result;
+    if(b64Mode==='encode'){
+      result=btoa(unescape(encodeURIComponent(input)));
+    } else if(b64Mode==='decode'){
+      result=decodeURIComponent(escape(atob(input.replace(/-/g,'+').replace(/_/g,'/'))));
+    } else {
+      // URL-safe base64
+      result=btoa(unescape(encodeURIComponent(input))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+    }
+    $('b64Output').value=result;
+  } catch(e){
+    $('b64Output').value='Error: Invalid input for '+(b64Mode==='decode'?'Base64 decoding':'encoding');
+  }
+}
+
+function copyB64(){
+  const text=$('b64Output').value;
+  if(!text){showToast('⚠️ Nothing to copy!','error');return;}
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!','success'));
+}
+
+function swapB64(){
+  const inp=$('b64Input').value;
+  const out=$('b64Output').value;
+  $('b64Input').value=out;
+  updateB64();
+  showToast('⇄ Swapped!','info');
+}
+
+/* ══════════════════════════════
+   IO OPERATIONS
+══════════════════════════════ */
+async function pasteInput(){
+  try{
+    const text=await navigator.clipboard.readText();
+    $('inputText').value=text;
+    onInputChange();
+    showToast('📋 Pasted from clipboard!','success');
+  } catch{showToast('⚠️ Clipboard access denied.','error');}
+}
+
+function loadSampleInput(){
+  const samples=['https://example.com/search?q=hello world&lang=en','https://example.com/path?name=John Doe&email=john@example.com'];
+  $('inputText').value=samples[Math.floor(Math.random()*samples.length)];
+  onInputChange();
+  showToast('📄 Sample loaded!','info');
+}
+
+function clearInput(){
+  $('inputText').value='';
+  $('outputText').value='';
+  $('diffView').classList.remove('show');
+  $('compareView').style.display='none';
+  $('statsGrid').classList.remove('show');
+  updateInfo();
+}
+
+function clearAll(){ clearInput(); }
+
+function copyOutput(){
+  const text=$('outputText').value;
+  if(!text){showToast('⚠️ Nothing to copy!','error');return;}
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied to clipboard!','success'))
+    .catch(()=>showToast('Copy failed!','error'));
+}
+
+function downloadOutput(){
+  const text=$('outputText').value;
+  if(!text){showToast('⚠️ Nothing to download!','error');return;}
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+  a.download=`url-${mainMode}d.txt`;a.click();
+  showToast('⬇️ Downloaded!','success');
+}
+
+function openInTab(){
+  const text=$('outputText').value.trim();
+  if(!text){showToast('⚠️ Nothing to open!','error');return;}
+  if(text.startsWith('http')||text.startsWith('https')){window.open(text,'_blank');}
+  else showToast('⚠️ Output is not a valid URL!','error');
+}
+
+function swapIO(){
+  const inp=$('inputText').value;
+  const out=$('outputText').value;
+  $('inputText').value=out;
+  $('outputText').value=inp;
+  updateInfo();
+  showToast('⇄ Input & Output swapped!','info');
+}
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(()=>showToast(`📋 Copied: ${text.substring(0,40)}${text.length>40?'...':''}`,'success'));
+}
+
+/* ══════════════════════════════
+   HISTORY
+══════════════════════════════ */
+function saveHistory(type,input,output){
+  history_=history_.filter(h=>h.input!==input);
+  history_.unshift({type,input,output,ts:Date.now()});
+  history_=history_.slice(0,20);
+  localStorage.setItem('urlEncHistory',JSON.stringify(history_));
+  renderHistory();
+}
+
+function renderHistory(){
+  const card=$('historyCard');
+  if(!history_.length){card.style.display='none';return;}
+  card.style.display='block';
+  $('historyList').innerHTML=history_.map((h,i)=>`
+    <div class="history-item" onclick="loadHistory(${i})">
+      <span class="hi-type hi-${h.type}">${h.type==='encode'?'🔒 ENC':'🔓 DEC'}</span>
+      <span class="hi-text" title="${escH(h.input)}">${escH(h.input)}</span>
+      <span class="hi-time">${timeAgo(h.ts)}</span>
+      <button class="hi-del" onclick="event.stopPropagation();deleteHistory(${i})">🗑️</button>
+    </div>`).join('');
+}
+
+function loadHistory(i){
+  $('inputText').value=history_[i].input;
+  if(history_[i].type==='decode') setMainMode('decode',document.querySelectorAll('.mode-btn')[1]);
+  else setMainMode('encode',document.querySelectorAll('.mode-btn')[0]);
+  onInputChange();
+  showToast('📂 Loaded from history!','info');
+}
+
+function deleteHistory(i){
+  history_.splice(i,1);
+  localStorage.setItem('urlEncHistory',JSON.stringify(history_));
+  renderHistory();
+}
+
+function clearHistory(){
+  history_=[];
+  localStorage.removeItem('urlEncHistory');
+  renderHistory();
+  showToast('🗑️ History cleared!','info');
+}
+
+/* ══════════════════════════════
+   SAMPLE GRID
+══════════════════════════════ */
+function renderSamples(){
+  $('samplesGrid').innerHTML=SAMPLES.map((s,i)=>`
+    <div class="sample-item" onclick="loadSample(${i})">
+      <div class="si-label">${s.icon} ${escH(s.label)}</div>
+      <div class="si-text">${escH(s.text.substring(0,80))}${s.text.length>80?'...':''}</div>
+    </div>`).join('');
+}
+
+function loadSample(i){
+  $('inputText').value=SAMPLES[i].text;
+  if(mainMode==='parse'){$('parseInput').value=SAMPLES[i].text;parseURL();}
+  else{onInputChange();}
+  showToast(`✅ Loaded: ${SAMPLES[i].label}`,'success');
+}
+
+/* ══════════════════════════════
+   CHAR REFERENCE
+══════════════════════════════ */
+const catLabels={space:'cat-space',special:'cat-special',reserved:'cat-reserved',unsafe:'cat-unsafe',unicode:'cat-unicode',alpha:'cat-alpha'};
+
+function renderChars(data){
+  $('charRefCount').textContent=data.length+' characters';
+  $('charGrid').innerHTML=data.map(c=>`
+    <div class="char-item" onclick="insertChar('${escH(c.char).replace(/'/g,"\\'")}')" title="Click to insert">
+      <div class="ci-char">${escH(c.char)===' '?'·':escH(c.char)}</div>
+      <div class="ci-info">
+        <div class="ci-encoded">${escH(c.encoded)}</div>
+        <div class="ci-name">${escH(c.name)}</div>
+      </div>
+      <span class="ci-cat ${catLabels[c.cat]||'cat-alpha'}">${c.cat}</span>
+    </div>`).join('');
+}
+
+function filterChars(){
+  const q=$('charSearch').value.toLowerCase();
+  let data=CHAR_DATA.filter(c=>
+    (catCatFilter==='all'||c.cat===charCatFilter)&&
+    (c.char.includes(q)||c.encoded.toLowerCase().includes(q)||c.name.toLowerCase().includes(q))
+  );
+  renderChars(data);
+}
+
+let catCatFilter='all';
+function filterCharCat(btn){
+  charCatFilter=btn.dataset.cat;
+  catCatFilter=charCatFilter;
+  document.querySelectorAll('.cf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filterChars();
+}
+
+function insertChar(char){
+  const ta=$('inputText');
+  const start=ta.selectionStart,end=ta.selectionEnd;
+  ta.value=ta.value.slice(0,start)+char+ta.value.slice(end);
+  ta.selectionStart=ta.selectionEnd=start+char.length;
+  ta.focus();
+  onInputChange();
+  showToast(`✅ Inserted: ${char}`,'success');
+}
+
+/* ══════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey){
+    if(e.key==='Enter'){e.preventDefault();if(mainMode==='decode')doDecode();else doEncode();}
+    if(e.key==='d'){e.preventDefault();doDecode();}
+    if(e.key==='e'){e.preventDefault();doEncode();}
+  }
+});
+
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
+renderSamples();
+renderChars(CHAR_DATA);
+renderHistory();
+updateInfo();
+</script>
+</body>
+</html>
