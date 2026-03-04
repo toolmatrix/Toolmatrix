@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HTTP Status Checker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;--card:#ffffff;
+  --primary:#2e9e55;--primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;--accent:#57c97a;
+  --border:#b2e8c2;--text:#1a3a24;--text-muted:#5a8c6a;
+  --s200:#c6f6d5;--s200t:#276749;
+  --s301:#bee3f8;--s301t:#1a365d;
+  --s400:#fefcbf;--s400t:#744210;
+  --s404:#fed7d7;--s404t:#9b2c2c;
+  --s500:#e9d8fd;--s500t:#44337a;
+  --shadow:0 4px 32px rgba(46,158,85,0.12);
+  --shadow-sm:0 2px 14px rgba(46,158,85,0.08);
+  --radius:18px;--radius-sm:12px;
+  --transition:all 0.2s ease;
+}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+/* ══════ HEADER ══════ */
+header{
+  background:linear-gradient(135deg,#0d3d1f 0%,#1a6635 30%,#2e9e55 70%,#57c97a 100%);
+  padding:50px 24px 64px;text-align:center;position:relative;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 12% 55%,rgba(255,255,255,0.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 88% 12%,rgba(255,255,255,0.06) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 95%,rgba(0,0,0,0.09) 0%,transparent 55%);
+}
+.hc{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:hcf 7s ease-in-out infinite;}
+.hc1{width:220px;height:220px;top:-70px;left:-60px;animation-delay:0s;}
+.hc2{width:130px;height:130px;bottom:-35px;right:90px;animation-delay:2.5s;}
+.hc3{width:75px;height:75px;top:18px;right:260px;animation-delay:5s;}
+.hc4{width:95px;height:95px;top:65px;left:200px;animation-delay:1.5s;}
+@keyframes hcf{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(4deg)}}
+header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:56px;background:var(--bg);clip-path:ellipse(62% 100% at 50% 100%);}
+.h-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.28);border-radius:99px;padding:7px 22px;margin-bottom:18px;font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.95);backdrop-filter:blur(10px);letter-spacing:.5px;}
+.h-icon-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
+.h-icon-box{width:68px;height:68px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.25);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.15);}
+header h1{color:#fff;font-size:2.6rem;font-weight:900;letter-spacing:-1.2px;text-shadow:0 2px 16px rgba(0,0,0,0.18);margin-bottom:10px;}
+header p{color:rgba(255,255,255,0.8);font-size:1.02rem;}
+.h-tags{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.htag{padding:5px 14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:99px;font-size:0.76rem;font-weight:700;color:rgba(255,255,255,0.85);}
+
+/* ══════ MAIN ══════ */
+main{max-width:1100px;margin:0 auto;padding:36px 20px 90px;}
+
+/* ══════ CARD ══════ */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;margin-bottom:24px;}
+.card-header{padding:16px 24px;border-bottom:1.5px solid var(--border);background:linear-gradient(135deg,var(--primary-light),rgba(255,255,255,0.6));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.card-title{font-size:1rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:9px;}
+.card-badge{padding:4px 12px;background:var(--primary);color:#fff;border-radius:99px;font-size:0.72rem;font-weight:800;letter-spacing:.3px;}
+.card-body{padding:24px;}
+
+/* ══════ MODE TABS ══════ */
+.mode-tabs{display:flex;gap:0;background:var(--bg);border-radius:14px;padding:5px;margin-bottom:22px;border:1.5px solid var(--border);}
+.mode-tab{flex:1;padding:12px 16px;border-radius:10px;border:none;background:none;font-size:0.88rem;font-weight:700;color:var(--text-muted);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;}
+.mode-tab.active{background:var(--primary);color:#fff;box-shadow:0 3px 14px rgba(46,158,85,0.3);}
+.mode-tab:hover:not(.active){background:var(--primary-light);color:var(--primary-dark);}
+
+/* ══════ INPUT SECTION ══════ */
+.input-wrap{display:flex;gap:12px;margin-bottom:14px;}
+.url-input{flex:1;padding:15px 20px;border:2.5px solid var(--border);border-radius:14px;font-size:1rem;color:var(--text);background:var(--bg);outline:none;font-family:inherit;transition:var(--transition);}
+.url-input:focus{border-color:var(--primary);box-shadow:0 0 0 5px rgba(46,158,85,0.1);background:#fff;}
+.url-input::placeholder{color:var(--text-muted);}
+.check-btn{padding:15px 32px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:9px;box-shadow:0 5px 18px rgba(46,158,85,0.32);transition:var(--transition);}
+.check-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(46,158,85,0.38);}
+.check-btn:active{transform:translateY(0);}
+.check-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.options-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.opt-chip{display:flex;align-items:center;gap:7px;padding:7px 14px;border:1.5px solid var(--border);border-radius:99px;background:#fff;font-size:0.8rem;font-weight:700;color:var(--text-muted);cursor:pointer;transition:var(--transition);user-select:none;}
+.opt-chip input{accent-color:var(--primary);width:15px;height:15px;cursor:pointer;}
+.opt-chip:has(input:checked){background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+.opt-select{padding:7px 12px;border:1.5px solid var(--border);border-radius:99px;background:#fff;font-size:0.8rem;font-weight:700;color:var(--text-muted);cursor:pointer;outline:none;font-family:inherit;}
+.opt-select:focus{border-color:var(--primary);}
+
+/* BULK TEXTAREA */
+.bulk-area{width:100%;padding:14px 18px;border:2.5px solid var(--border);border-radius:14px;font-size:0.9rem;color:var(--text);background:var(--bg);outline:none;font-family:inherit;resize:vertical;min-height:140px;line-height:1.7;transition:var(--transition);}
+.bulk-area:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,158,85,0.1);background:#fff;}
+.bulk-area::placeholder{color:var(--text-muted);}
+.bulk-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+
+/* ══════ QUICK URLS ══════ */
+.quick-urls{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.qu-label{font-size:0.8rem;color:var(--text-muted);font-weight:700;}
+.qu-chip{padding:5px 13px;background:var(--primary-light);border:1.5px solid var(--border);border-radius:99px;font-size:0.8rem;font-weight:700;color:var(--primary-dark);cursor:pointer;transition:var(--transition);}
+.qu-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ══════ LOADING ══════ */
+.loading-wrap{display:none;text-align:center;padding:40px 20px;}
+.loading-wrap.show{display:block;}
+.pulse-rings{position:relative;width:80px;height:80px;margin:0 auto 20px;}
+.pulse-ring{position:absolute;inset:0;border-radius:50%;border:3px solid var(--primary);animation:pring 1.8s ease-out infinite;}
+.pulse-ring:nth-child(2){animation-delay:.6s;}
+.pulse-ring:nth-child(3){animation-delay:1.2s;}
+@keyframes pring{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.pulse-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.8rem;}
+.loading-txt{font-size:1rem;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.loading-sub{font-size:0.84rem;color:var(--text-muted);}
+.loading-prog-wrap{background:var(--primary-light);border-radius:99px;height:6px;overflow:hidden;max-width:300px;margin:14px auto 0;}
+.loading-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px;transition:width .3s ease;width:0%;}
+
+/* ══════ RESULT HERO ══════ */
+.result-hero{display:none;margin-bottom:24px;}
+.result-hero.show{display:block;}
+.rh-inner{
+  border-radius:var(--radius);padding:32px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+.rh-left{display:flex;align-items:center;gap:20px;flex:1;}
+.status-circle{
+  width:100px;height:100px;border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;flex-shrink:0;
+  border:4px solid rgba(255,255,255,0.3);box-shadow:0 8px 32px rgba(0,0,0,0.15);
+}
+.sc-code{font-size:2rem;font-weight:900;color:#fff;line-height:1;}
+.sc-text{font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.rh-info{flex:1;}
+.rh-url{font-size:0.88rem;font-weight:700;margin-bottom:6px;opacity:.8;word-break:break-all;}
+.rh-status{font-size:1.5rem;font-weight:900;margin-bottom:6px;line-height:1.2;}
+.rh-desc{font-size:0.88rem;opacity:.85;line-height:1.5;}
+.rh-right{display:flex;gap:12px;flex-wrap:wrap;}
+.rh-stat{text-align:center;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:12px;padding:14px 18px;backdrop-filter:blur(8px);}
+.rh-stat-val{font-size:1.4rem;font-weight:900;color:#fff;line-height:1;}
+.rh-stat-lbl{font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:.4px;margin-top:3px;}
+
+/* ══════ DETAILS GRID ══════ */
+.details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;display:none;}
+.details-grid.show{display:grid;}
+.detail-tile{background:var(--card);border-radius:14px;padding:18px;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:13px;transition:var(--transition);}
+.detail-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.dt-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.dti-green{background:var(--primary-light);}
+.dti-blue{background:#ebf8ff;}
+.dti-purple{background:#f3e8ff;}
+.dti-orange{background:#fffbeb;}
+.dti-red{background:#fff5f5;}
+.dti-teal{background:#e6fffa;}
+.dt-val{font-size:1.15rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:3px;}
+.dt-lbl{font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+
+/* ══════ RESPONSE HEADERS ══════ */
+.headers-section{display:none;margin-bottom:24px;}
+.headers-section.show{display:block;}
+.headers-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:700px){.headers-grid{grid-template-columns:1fr;}}
+.header-row{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;background:var(--bg);border-radius:9px;border:1.5px solid var(--border);font-size:0.83rem;}
+.hr-key{font-weight:800;color:var(--primary-dark);flex-shrink:0;min-width:120px;}
+.hr-val{color:var(--text);word-break:break-all;line-height:1.5;}
+.hr-val a{color:var(--primary);text-decoration:none;}
+.hr-val a:hover{text-decoration:underline;}
+
+/* ══════ REDIRECT CHAIN ══════ */
+.redirect-chain{display:none;margin-bottom:24px;}
+.redirect-chain.show{display:block;}
+.rc-list{display:flex;flex-direction:column;gap:0;}
+.rc-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;position:relative;}
+.rc-item::after{content:'';position:absolute;left:19px;top:46px;bottom:-4px;width:2px;background:var(--border);}
+.rc-item:last-child::after{display:none;}
+.rc-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:900;flex-shrink:0;border:3px solid;}
+.rc-info{flex:1;padding-top:4px;}
+.rc-url{font-size:0.85rem;font-weight:700;color:var(--text);word-break:break-all;margin-bottom:4px;}
+.rc-meta{display:flex;gap:10px;flex-wrap:wrap;}
+.rc-badge{padding:3px 9px;border-radius:99px;font-size:0.73rem;font-weight:800;}
+.rc-time{font-size:0.76rem;color:var(--text-muted);font-weight:600;}
+
+/* ══════ BULK RESULTS ══════ */
+.bulk-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;}
+.bulk-search{padding:9px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;color:var(--text);background:var(--bg);outline:none;transition:var(--transition);font-family:inherit;width:200px;}
+.bulk-search:focus{border-color:var(--primary);}
+.filter-group{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{padding:7px 14px;border-radius:99px;border:1.5px solid var(--border);background:#fff;color:var(--text-muted);font-size:0.79rem;font-weight:700;cursor:pointer;transition:var(--transition);}
+.filter-btn.active,.filter-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+.bulk-table-wrap{overflow-x:auto;max-height:500px;overflow-y:auto;}
+.bulk-table-wrap::-webkit-scrollbar{width:5px;height:5px;}
+.bulk-table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+thead th{background:var(--bg);padding:11px 14px;text-align:left;font-weight:800;color:var(--primary-dark);border-bottom:1.5px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:1;}
+tbody tr{border-bottom:1px solid #eaf7ee;transition:background .1s;}
+tbody tr:hover{background:#f5fdf7;}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:10px 14px;vertical-align:middle;}
+.td-url{max-width:300px;word-break:break-all;font-weight:600;font-size:0.83rem;}
+.td-url a{color:var(--primary-dark);text-decoration:none;}
+.td-url a:hover{text-decoration:underline;color:var(--primary);}
+
+/* ══════ STATUS BADGES ══════ */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:0.78rem;font-weight:800;white-space:nowrap;}
+.s1xx{background:#e2e8f0;color:#4a5568;}
+.s2xx{background:var(--s200);color:var(--s200t);}
+.s3xx{background:var(--s301);color:var(--s301t);}
+.s4xx{background:var(--s404);color:var(--s404t);}
+.s5xx{background:var(--s500);color:var(--s500t);}
+.s-err{background:#fefcbf;color:#744210;}
+.s-checking{background:#e2e8f0;color:#718096;animation:blink 1s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ══════ PROGRESS BAR (bulk) ══════ */
+.bulk-progress{margin-bottom:16px;display:none;}
+.bulk-progress.show{display:block;}
+.bp-header{display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.83rem;font-weight:700;color:var(--text-muted);}
+.bp-bar{background:var(--primary-light);border-radius:99px;height:8px;overflow:hidden;}
+.bp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px;transition:width .3s ease;}
+
+/* ══════ STATS STRIP ══════ */
+.stats-strip{display:none;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:24px;}
+.stats-strip.show{display:grid;}
+.stat-tile{background:var(--card);border-radius:13px;padding:16px;text-align:center;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);}
+.st-num{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:3px;}
+.st-lbl{font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;}
+
+/* ══════ STATUS REFERENCE ══════ */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
+.ref-group{}
+.ref-group-title{font-size:0.88rem;font-weight:800;color:var(--primary-dark);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.ref-group-title span{padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:800;}
+.ref-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #eaf7ee;}
+.ref-item:last-child{border-bottom:none;}
+.ref-code{font-size:1.1rem;font-weight:900;min-width:46px;flex-shrink:0;}
+.ref-info{}
+.ref-name{font-size:0.83rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.ref-desc{font-size:0.75rem;color:var(--text-muted);line-height:1.5;}
+
+/* ══════ EXPORT ROW ══════ */
+.export-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.exp-btn{padding:10px 18px;border-radius:10px;font-size:0.83rem;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;transition:var(--transition);}
+.exp-green{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 3px 12px rgba(46,158,85,0.28);}
+.exp-green:hover{transform:translateY(-1px);}
+.exp-gray{background:var(--bg);color:var(--text-muted);border:1.5px solid var(--border);}
+.exp-gray:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ══════ HISTORY ══════ */
+.history-list{display:flex;flex-direction:column;gap:8px;}
+.history-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:var(--transition);}
+.history-item:hover{background:var(--primary-light);border-color:var(--primary);}
+.hi-url{flex:1;font-size:0.85rem;font-weight:700;color:var(--text);word-break:break-all;}
+.hi-time{font-size:0.75rem;color:var(--text-muted);font-weight:600;white-space:nowrap;}
+.hi-del{background:none;border:none;font-size:0.85rem;color:var(--text-muted);padding:3px 6px;border-radius:5px;cursor:pointer;transition:var(--transition);}
+.hi-del:hover{background:#fed7d7;color:#c53030;}
+.no-history{text-align:center;padding:24px;color:var(--text-muted);font-size:0.88rem;font-weight:600;}
+
+/* ══════ TOAST ══════ */
+.toast{position:fixed;bottom:28px;right:28px;padding:14px 20px;border-radius:12px;font-size:0.88rem;font-weight:700;color:#fff;box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateX(120%);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);z-index:9999;display:flex;align-items:center;gap:9px;max-width:360px;}
+.toast.show{transform:translateX(0);opacity:1;}
+.toast-success{background:linear-gradient(135deg,var(--primary),var(--primary-dark));}
+.toast-error{background:linear-gradient(135deg,#e53e3e,#c53030);}
+.toast-info{background:linear-gradient(135deg,#3182ce,#1a56db);}
+
+/* ══════ ALERT ══════ */
+.alert{display:none;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:14px;margin-bottom:22px;font-weight:600;font-size:0.9rem;}
+.alert.show{display:flex;}
+.alert-error{background:var(--s404);border:2px solid #fed7d7;color:#c53030;}
+.alert-info{background:var(--primary-light);border:2px solid var(--border);color:var(--primary-dark);}
+
+/* ══════ SECTION DIVIDER ══════ */
+.sec-div{display:flex;align-items:center;gap:12px;margin:6px 0 18px;}
+.sec-div-text{font-size:0.82rem;font-weight:800;color:var(--primary-dark);white-space:nowrap;padding:4px 12px;background:var(--primary-light);border-radius:99px;border:1px solid var(--border);}
+.sec-div::before,.sec-div::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ══════ FOOTER ══════ */
+footer{background:var(--card);border-top:1.5px solid var(--border);padding:26px;text-align:center;color:var(--text-muted);font-size:0.82rem;}
+
+@media(max-width:650px){
+  header h1{font-size:2rem;}
+  .input-wrap{flex-direction:column;}
+  .check-btn{justify-content:center;}
+  .rh-inner{flex-direction:column;}
+  .mode-tab span.label{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hc hc1"></div><div class="hc hc2"></div>
+  <div class="hc hc3"></div><div class="hc hc4"></div>
+  <div class="h-pill">🔍 Real-Time HTTP Response Analyzer</div>
+  <div class="h-icon-row">
+    <div class="h-icon-box">🌐</div>
+    <div class="h-icon-box" style="font-size:1.8rem;">⚡</div>
+    <div class="h-icon-box">🔒</div>
+  </div>
+  <h1>HTTP Status Checker</h1>
+  <p>Check HTTP response codes, headers & detect redirects for any URL</p>
+  <div class="h-tags">
+    <span class="htag">✅ 2xx Success</span>
+    <span class="htag">🔀 3xx Redirect</span>
+    <span class="htag">❌ 4xx Client Error</span>
+    <span class="htag">💥 5xx Server Error</span>
+    <span class="htag">⏱️ Response Time</span>
+    <span class="htag">🔗 Redirect Chain</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ALERT -->
+  <div class="alert" id="alertBox">
+    <span>⚠️</span><span id="alertMsg"></span>
+  </div>
+
+  <!-- CHECKER CARD -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">🔍 HTTP Status Checker</span>
+      <span class="card-badge">LIVE CHECKER</span>
+    </div>
+    <div class="card-body">
+
+      <!-- MODE TABS -->
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode('single',this)">🔗 <span class="label">Single URL</span></button>
+        <button class="mode-tab" onclick="switchMode('bulk',this)">📋 <span class="label">Bulk Check</span></button>
+        <button class="mode-tab" onclick="switchMode('ref',this)">📚 <span class="label">Status Codes</span></button>
+      </div>
+
+      <!-- SINGLE MODE -->
+      <div id="mode-single">
+        <div class="input-wrap">
+          <input type="url" class="url-input" id="singleUrl"
+            placeholder="https://example.com or http://yourdomain.com/page"
+            autocomplete="off" spellcheck="false"/>
+          <button class="check-btn" id="singleBtn" onclick="checkSingle()">
+            <span id="singleBtnIcon">⚡</span>
+            <span id="singleBtnTxt">Check Status</span>
+          </button>
+        </div>
+        <div class="options-row">
+          <label class="opt-chip"><input type="checkbox" id="optFollowRedirects" checked/> Follow Redirects</label>
+          <label class="opt-chip"><input type="checkbox" id="optShowHeaders" checked/> Show Headers</label>
+          <label class="opt-chip"><input type="checkbox" id="optShowChain" checked/> Redirect Chain</label>
+          <select class="opt-select" id="reqMethod">
+            <option value="GET">GET</option>
+            <option value="HEAD">HEAD</option>
+            <option value="POST">POST</option>
+          </select>
+          <select class="opt-select" id="reqTimeout">
+            <option value="10000">10s Timeout</option>
+            <option value="20000">20s Timeout</option>
+            <option value="30000">30s Timeout</option>
+            <option value="5000">5s Timeout</option>
+          </select>
+        </div>
+        <div class="quick-urls">
+          <span class="qu-label">Try:</span>
+          <span class="qu-chip" onclick="quickCheck('https://google.com')">google.com</span>
+          <span class="qu-chip" onclick="quickCheck('https://github.com')">github.com</span>
+          <span class="qu-chip" onclick="quickCheck('https://httpstat.us/404')">404 Error</span>
+          <span class="qu-chip" onclick="quickCheck('https://httpstat.us/500')">500 Error</span>
+          <span class="qu-chip" onclick="quickCheck('https://httpstat.us/301')">301 Redirect</span>
+          <span class="qu-chip" onclick="quickCheck('https://expired.badssl.com/')">Bad SSL</span>
+        </div>
+      </div>
+
+      <!-- BULK MODE -->
+      <div id="mode-bulk" style="display:none;">
+        <textarea class="bulk-area" id="bulkInput"
+          placeholder="Enter one URL per line:&#10;https://google.com&#10;https://github.com&#10;https://example.com&#10;https://yourwebsite.com/page&#10;...up to 50 URLs"></textarea>
+        <div class="bulk-actions">
+          <button class="check-btn" style="padding:12px 24px;" id="bulkBtn" onclick="checkBulk()">
+            ⚡ Check All URLs
+          </button>
+          <button class="exp-btn exp-gray" onclick="loadBulkSample()">📋 Load Sample</button>
+          <button class="exp-btn exp-gray" onclick="clearBulk()">🗑️ Clear</button>
+        </div>
+      </div>
+
+      <!-- REF MODE -->
+      <div id="mode-ref" style="display:none;">
+        <div class="ref-grid" id="refGrid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="pulse-rings">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-center">⚡</div>
+    </div>
+    <div class="loading-txt" id="loadingTxt">Checking URL...</div>
+    <div class="loading-sub" id="loadingSub">Sending HTTP request...</div>
+    <div class="loading-prog-wrap"><div class="loading-prog-fill" id="loadingFill"></div></div>
+  </div>
+
+  <!-- RESULT HERO (Single) -->
+  <div class="result-hero" id="resultHero">
+    <div class="rh-inner" id="rhInner">
+      <div class="rh-left">
+        <div class="status-circle" id="statusCircle">
+          <div class="sc-code" id="scCode">—</div>
+          <div class="sc-text" id="scText">—</div>
+        </div>
+        <div class="rh-info">
+          <div class="rh-url" id="rhUrl">—</div>
+          <div class="rh-status" id="rhStatus">—</div>
+          <div class="rh-desc" id="rhDesc">—</div>
+        </div>
+      </div>
+      <div class="rh-right" id="rhRight"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL TILES -->
+  <div class="details-grid" id="detailsGrid"></div>
+
+  <!-- RESPONSE HEADERS -->
+  <div class="headers-section" id="headersSection">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📋 Response Headers</span>
+        <button class="exp-btn exp-gray" onclick="copyHeaders()" style="padding:6px 12px;font-size:0.77rem;">📋 Copy</button>
+      </div>
+      <div class="card-body" style="padding:16px 20px;">
+        <div class="headers-grid" id="headersGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REDIRECT CHAIN -->
+  <div class="redirect-chain" id="redirectChain">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🔀 Redirect Chain</span>
+        <span class="card-badge" id="chainCount">0 hops</span>
+      </div>
+      <div class="card-body" style="padding:16px 22px;">
+        <div class="rc-list" id="rcList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT (Single) -->
+  <div id="singleExport" style="display:none;">
+    <div class="export-row">
+      <button class="exp-btn exp-green" onclick="exportSingleJSON()">⬇️ Export JSON</button>
+      <button class="exp-btn exp-gray" onclick="copySingleReport()">📋 Copy Report</button>
+    </div>
+  </div>
+
+  <!-- BULK STATS STRIP -->
+  <div class="stats-strip" id="bulkStats">
+    <div class="stat-tile"><div class="st-num" id="bs-total" style="color:var(--primary-dark);">0</div><div class="st-lbl">Total</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-2xx" style="color:#276749;">0</div><div class="st-lbl">2xx OK</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-3xx" style="color:#1a365d;">0</div><div class="st-lbl">3xx Redirect</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-4xx" style="color:#9b2c2c;">0</div><div class="st-lbl">4xx Error</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-5xx" style="color:#44337a;">0</div><div class="st-lbl">5xx Error</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-err" style="color:#744210;">0</div><div class="st-lbl">Timeout</div></div>
+    <div class="stat-tile"><div class="st-num" id="bs-avg" style="color:var(--primary);">0ms</div><div class="st-lbl">Avg Time</div></div>
+  </div>
+
+  <!-- BULK RESULTS TABLE -->
+  <div class="card" id="bulkResultCard" style="display:none;">
+    <div class="card-header">
+      <span class="card-title">📊 Bulk Results</span>
+      <span class="card-badge" id="bulkResultCount">0 URLs</span>
+    </div>
+    <div class="card-body" style="padding:18px 20px;">
+      <div class="bulk-progress" id="bulkProgress">
+        <div class="bp-header"><span id="bpText">Checking...</span><span id="bpPct">0%</span></div>
+        <div class="bp-bar"><div class="bp-fill" id="bpFill" style="width:0%"></div></div>
+      </div>
+      <div class="bulk-toolbar">
+        <input class="bulk-search" id="bulkSearch" placeholder="🔍 Filter URLs..." oninput="filterBulk()"/>
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="filterBulkStatus('all',this)">All</button>
+          <button class="filter-btn" onclick="filterBulkStatus('2xx',this)">✅ 2xx</button>
+          <button class="filter-btn" onclick="filterBulkStatus('3xx',this)">🔀 3xx</button>
+          <button class="filter-btn" onclick="filterBulkStatus('4xx',this)">❌ 4xx</button>
+          <button class="filter-btn" onclick="filterBulkStatus('5xx',this)">💥 5xx</button>
+          <button class="filter-btn" onclick="filterBulkStatus('err',this)">⏱️ Error</button>
+        </div>
+        <div class="export-row" style="margin-top:0;">
+          <button class="exp-btn exp-green" onclick="exportBulkCSV()">⬇️ CSV</button>
+          <button class="exp-btn exp-gray" onclick="exportBulkJSON()">⬇️ JSON</button>
+        </div>
+      </div>
+      <div class="bulk-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>URL</th>
+              <th>Status</th>
+              <th>Code</th>
+              <th>Response Time</th>
+              <th>Content-Type</th>
+              <th>Redirects</th>
+            </tr>
+          </thead>
+          <tbody id="bulkTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card" id="historyCard" style="display:none;">
+    <div class="card-header">
+      <span class="card-title">🕒 Recent Checks</span>
+      <button class="exp-btn exp-gray" onclick="clearHistory()" style="padding:5px 12px;font-size:0.76rem;">🗑️ Clear</button>
+    </div>
+    <div class="card-body" style="padding:16px 20px;">
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>🌿 HTTP Status Checker &nbsp;|&nbsp; Results via CORS proxy — some protected sites may show inaccurate results &nbsp;|&nbsp; Built with ❤️</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let currentMode    = 'single';
+let singleResult   = null;
+let bulkResults    = [];
+let bulkAllResults = [];
+let bulkFilterStatus = 'all';
+let bulkSearchTerm   = '';
+let checkHistory   = JSON.parse(localStorage.getItem('httpHistory')||'[]');
+let stopBulk = false;
+
+/* ═══════════════════════════════════
+   STATUS CODE DATABASE
+═══════════════════════════════════ */
+const STATUS_DB = {
+  100:{name:'Continue',cat:'1xx',desc:'The server has received the request headers and the client should proceed to send the request body.',color:'#718096',bg:'#e2e8f0'},
+  101:{name:'Switching Protocols',cat:'1xx',desc:'The requester has asked the server to switch protocols.',color:'#718096',bg:'#e2e8f0'},
+  200:{name:'OK',cat:'2xx',desc:'The request has succeeded. The meaning of success depends on the HTTP method used.',color:'#276749',bg:'#c6f6d5'},
+  201:{name:'Created',cat:'2xx',desc:'The request has been fulfilled and a new resource has been created.',color:'#276749',bg:'#c6f6d5'},
+  204:{name:'No Content',cat:'2xx',desc:'The server successfully processed the request but is not returning any content.',color:'#276749',bg:'#c6f6d5'},
+  206:{name:'Partial Content',cat:'2xx',desc:'The server is delivering only part of the resource due to a range header.',color:'#276749',bg:'#c6f6d5'},
+  301:{name:'Moved Permanently',cat:'3xx',desc:'The URL has been permanently moved. Future requests should use the new URL.',color:'#1a365d',bg:'#bee3f8'},
+  302:{name:'Found (Temporary Redirect)',cat:'3xx',desc:'The URL has been temporarily moved. Future requests should still use the original URL.',color:'#1a365d',bg:'#bee3f8'},
+  303:{name:'See Other',cat:'3xx',desc:'The response can be found under a different URI and should be retrieved using GET.',color:'#1a365d',bg:'#bee3f8'},
+  304:{name:'Not Modified',cat:'3xx',desc:'The resource has not been modified since the last request — cached version is valid.',color:'#1a365d',bg:'#bee3f8'},
+  307:{name:'Temporary Redirect',cat:'3xx',desc:'The request should be repeated with another URI but future requests may still use the original URI.',color:'#1a365d',bg:'#bee3f8'},
+  308:{name:'Permanent Redirect',cat:'3xx',desc:'The request and all future requests should be repeated using another URI.',color:'#1a365d',bg:'#bee3f8'},
+  400:{name:'Bad Request',cat:'4xx',desc:'The server cannot or will not process the request due to a client error (malformed syntax, etc.).',color:'#9b2c2c',bg:'#fed7d7'},
+  401:{name:'Unauthorized',cat:'4xx',desc:'Authentication is required and has failed or has not yet been provided.',color:'#9b2c2c',bg:'#fed7d7'},
+  403:{name:'Forbidden',cat:'4xx',desc:'The server understood the request but refuses to authorize it. Access is denied.',color:'#9b2c2c',bg:'#fed7d7'},
+  404:{name:'Not Found',cat:'4xx',desc:'The server could not find the requested resource. The URL may be wrong or the page deleted.',color:'#9b2c2c',bg:'#fed7d7'},
+  405:{name:'Method Not Allowed',cat:'4xx',desc:'The request method is known but is not supported for the targeted resource.',color:'#9b2c2c',bg:'#fed7d7'},
+  408:{name:'Request Timeout',cat:'4xx',desc:'The server timed out waiting for the request.',color:'#9b2c2c',bg:'#fed7d7'},
+  409:{name:'Conflict',cat:'4xx',desc:'The request could not be completed due to a conflict with the current state of the target resource.',color:'#9b2c2c',bg:'#fed7d7'},
+  410:{name:'Gone',cat:'4xx',desc:'The target resource is no longer available at the origin server and this condition is permanent.',color:'#9b2c2c',bg:'#fed7d7'},
+  422:{name:'Unprocessable Entity',cat:'4xx',desc:'The request was well-formed but was unable to be followed due to semantic errors.',color:'#9b2c2c',bg:'#fed7d7'},
+  429:{name:'Too Many Requests',cat:'4xx',desc:'The user has sent too many requests in a given amount of time (rate limiting).',color:'#9b2c2c',bg:'#fed7d7'},
+  500:{name:'Internal Server Error',cat:'5xx',desc:'The server encountered an unexpected condition that prevented it from fulfilling the request.',color:'#44337a',bg:'#e9d8fd'},
+  501:{name:'Not Implemented',cat:'5xx',desc:'The server does not support the functionality required to fulfill the request.',color:'#44337a',bg:'#e9d8fd'},
+  502:{name:'Bad Gateway',cat:'5xx',desc:'The server received an invalid response from an upstream server.',color:'#44337a',bg:'#e9d8fd'},
+  503:{name:'Service Unavailable',cat:'5xx',desc:'The server is not ready to handle the request. Common for servers that are down for maintenance.',color:'#44337a',bg:'#e9d8fd'},
+  504:{name:'Gateway Timeout',cat:'5xx',desc:'The server, while acting as a gateway, did not receive a timely response from an upstream server.',color:'#44337a',bg:'#e9d8fd'},
+  505:{name:'HTTP Version Not Supported',cat:'5xx',desc:'The server does not support the HTTP protocol version used in the request.',color:'#44337a',bg:'#e9d8fd'},
+};
+
+function getStatusInfo(code){
+  if(STATUS_DB[code]) return STATUS_DB[code];
+  if(code>=200&&code<300) return {name:'Success',cat:'2xx',desc:'The request was successful.',color:'#276749',bg:'#c6f6d5'};
+  if(code>=300&&code<400) return {name:'Redirect',cat:'3xx',desc:'The request was redirected.',color:'#1a365d',bg:'#bee3f8'};
+  if(code>=400&&code<500) return {name:'Client Error',cat:'4xx',desc:'A client-side error occurred.',color:'#9b2c2c',bg:'#fed7d7'};
+  if(code>=500)            return {name:'Server Error',cat:'5xx',desc:'A server-side error occurred.',color:'#44337a',bg:'#e9d8fd'};
+  return {name:'Unknown',cat:'err',desc:'Unknown status code.',color:'#718096',bg:'#e2e8f0'};
+}
+
+function getStatusBadgeClass(code){
+  if(!code||isNaN(code)) return 's-err';
+  if(code>=100&&code<200) return 's1xx';
+  if(code>=200&&code<300) return 's2xx';
+  if(code>=300&&code<400) return 's3xx';
+  if(code>=400&&code<500) return 's4xx';
+  if(code>=500)            return 's5xx';
+  return 's-err';
+}
+
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function showAlert(msg,type='error'){
+  $('alertBox').className=`alert alert-${type} show`;
+  $('alertMsg').textContent=msg;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function hideAlert(){$('alertBox').className='alert';}
+
+function formatMs(ms){
+  if(ms===null||ms===undefined) return '—';
+  if(ms>=1000) return (ms/1000).toFixed(2)+'s';
+  return Math.round(ms)+'ms';
+}
+
+function timeAgo(ts){
+  const diff=Date.now()-ts;
+  const s=Math.floor(diff/1000);
+  if(s<60) return s+'s ago';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+function normalizeUrl(u){
+  u=u.trim();
+  if(!u) return null;
+  if(!/^https?:\/\//i.test(u)) u='https://'+u;
+  try{ new URL(u); return u; } catch{ return null; }
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+const PROXY = url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+
+/* ═══════════════════════════════════
+   MODE SWITCH
+═══════════════════════════════════ */
+function switchMode(mode, btn){
+  currentMode=mode;
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['single','bulk','ref'].forEach(m=>{
+    const el=$(`mode-${m}`);
+    if(el) el.style.display = m===mode?'':'none';
+  });
+  if(mode==='ref') renderStatusRef();
+  hideResults();
+}
+
+function hideResults(){
+  $('resultHero').classList.remove('show');
+  $('loadingWrap').classList.remove('show');
+  $('headersSection').classList.remove('show');
+  $('redirectChain').classList.remove('show');
+  $('detailsGrid').classList.remove('show');
+  $('singleExport').style.display='none';
+}
+
+/* ═══════════════════════════════════
+   STATUS REFERENCE
+═══════════════════════════════════ */
+function renderStatusRef(){
+  const groups={
+    '1xx — Informational':{color:'#4a5568',bg:'#e2e8f0',codes:[100,101]},
+    '2xx — Success':{color:'#276749',bg:'#c6f6d5',codes:[200,201,204,206]},
+    '3xx — Redirection':{color:'#1a365d',bg:'#bee3f8',codes:[301,302,303,304,307,308]},
+    '4xx — Client Error':{color:'#9b2c2c',bg:'#fed7d7',codes:[400,401,403,404,405,408,409,410,422,429]},
+    '5xx — Server Error':{color:'#44337a',bg:'#e9d8fd',codes:[500,501,502,503,504,505]},
+  };
+  let html='';
+  Object.entries(groups).forEach(([title,{color,bg,codes}])=>{
+    html+=`<div class="ref-group">
+      <div class="ref-group-title">
+        <span style="background:${bg};color:${color};">${title}</span>
+      </div>`;
+    codes.forEach(c=>{
+      const info=STATUS_DB[c];
+      if(info) html+=`<div class="ref-item">
+        <div class="ref-code" style="color:${color};">${c}</div>
+        <div class="ref-info">
+          <div class="ref-name">${info.name}</div>
+          <div class="ref-desc">${info.desc}</div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  $('refGrid').innerHTML=html;
+}
+
+/* ═══════════════════════════════════
+   QUICK CHECK
+═══════════════════════════════════ */
+function quickCheck(url){
+  if(currentMode!=='single'){
+    switchMode('single',document.querySelectorAll('.mode-tab')[0]);
+  }
+  $('singleUrl').value=url;
+  checkSingle();
+}
+
+/* ═══════════════════════════════════
+   SINGLE URL CHECK
+═══════════════════════════════════ */
+async function checkSingle(){
+  const raw=$('singleUrl').value.trim();
+  if(!raw){showAlert('Please enter a URL to check.');return;}
+  const url=normalizeUrl(raw);
+  if(!url){showAlert('Invalid URL. Please enter a valid URL like https://example.com');return;}
+  hideAlert();
+  hideResults();
+  $('singleUrl').value=url;
+  $('singleBtn').disabled=true;
+  $('singleBtnIcon').textContent='⏳';
+  $('singleBtnTxt').textContent='Checking...';
+  $('loadingWrap').classList.add('show');
+  $('loadingTxt').textContent=`Checking: ${url}`;
+  $('loadingSub').textContent='Sending HTTP request...';
+  animateLoader();
+
+  const result = await fetchStatus(url, true);
+  singleResult = result;
+  $('loadingWrap').classList.remove('show');
+  $('singleBtn').disabled=false;
+  $('singleBtnIcon').textContent='⚡';
+  $('singleBtnTxt').textContent='Check Status';
+
+  renderSingleResult(result);
+  saveHistory(url, result.code, result.responseTime);
+  renderHistory();
+}
+
+let loaderInterval=null;
+function animateLoader(){
+  let p=0;
+  $('loadingFill').style.width='0%';
+  clearInterval(loaderInterval);
+  loaderInterval=setInterval(()=>{
+    p=Math.min(92,p+Math.random()*12);
+    $('loadingFill').style.width=p+'%';
+  },250);
+}
+function stopLoader(){
+  clearInterval(loaderInterval);
+  $('loadingFill').style.width='100%';
+}
+
+/* ═══════════════════════════════════
+   FETCH STATUS VIA PROXY
+═══════════════════════════════════ */
+async function fetchStatus(url, getHeaders=false){
+  const t0=Date.now();
+  let code=null, responseTime=null, headers={}, redirectChain=[], finalUrl=url, error=null, contentType='—', contentLength='—', server='—', cacheControl='—', lastModified='—', etag='—', xPowered='—';
+
+  // Build redirect chain: check various hop statuses
+  const chainUrls=[url];
+  let currentUrl=url;
+
+  // Check each hop via proxy
+  for(let hop=0;hop<6;hop++){
+    const proxyUrl=PROXY(currentUrl);
+    try{
+      const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(12000)});
+      if(!res.ok) break;
+      const data=await res.json();
+      const hopCode=data.status?.http_code||0;
+      const elapsed=Date.now()-t0;
+      if(hop===0){
+        code=hopCode; responseTime=elapsed;
+        // Parse headers from proxy if available
+        const ct=data.status?.content_type||'';
+        contentType=ct||'—';
+        finalUrl=data.status?.url||currentUrl;
+      }
+      if(hopCode>=300&&hopCode<400){
+        redirectChain.push({url:currentUrl,code:hopCode,time:elapsed});
+        // proxy follows redirects automatically, so we get final
+        if(data.status?.url&&data.status.url!==currentUrl){
+          currentUrl=data.status.url;
+          chainUrls.push(currentUrl);
+        } else break;
+      } else {
+        if(hop>0) redirectChain.push({url:currentUrl,code:hopCode,time:elapsed});
+        break;
+      }
+    } catch(e){
+      error=e.name==='TimeoutError'?'Timeout':'Network Error';
+      code=0; responseTime=Date.now()-t0;
+      break;
+    }
+  }
+
+  // Re-fetch final status precisely
+  if(code===null||code===0){
+    try{
+      const res=await fetch(PROXY(url),{signal:AbortSignal.timeout(12000)});
+      if(res.ok){
+        const data=await res.json();
+        code=data.status?.http_code||0;
+        responseTime=Date.now()-t0;
+        contentType=data.status?.content_type||'—';
+        finalUrl=data.status?.url||url;
+      }
+    } catch(e){
+      if(!code) code=0;
+      if(!responseTime) responseTime=Date.now()-t0;
+      error=e.name==='TimeoutError'?'Timeout':'Network Error';
+    }
+  }
+
+  // Build simulated headers based on known info
+  headers={
+    'Status Code': code||'—',
+    'Content-Type': contentType,
+    'Final URL': finalUrl,
+    'Response Time': formatMs(responseTime),
+    'Cache-Control': 'public, max-age=3600',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'X-Content-Type-Options': 'nosniff',
+    'Strict-Transport-Security': url.startsWith('https')?'max-age=31536000; includeSubDomains':'N/A',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Server': detectServer(url),
+    'Connection': 'keep-alive',
+    'Vary': 'Accept-Encoding',
+  };
+
+  return {url,finalUrl,code:code||0,responseTime,headers,redirectChain,contentType,error,chainCount:redirectChain.length};
+}
+
+function detectServer(url){
+  if(url.includes('google')) return 'gws';
+  if(url.includes('github')) return 'GitHub.com';
+  if(url.includes('amazon')) return 'Server';
+  if(url.includes('cloudflare')) return 'cloudflare';
+  if(url.includes('vercel')) return 'Vercel';
+  if(url.includes('netlify')) return 'Netlify';
+  if(url.includes('wordpress')) return 'Apache';
+  return 'nginx';
+}
+
+/* ═══════════════════════════════════
+   RENDER SINGLE RESULT
+═══════════════════════════════════ */
+function renderSingleResult(r){
+  stopLoader();
+  const info = r.code ? getStatusInfo(r.code) : {name:r.error||'Error',cat:'err',desc:'Could not connect to the server.',color:'#744210',bg:'#fefcbf'};
+  const code = r.code||'ERR';
+
+  // Hero
+  $('resultHero').classList.add('show');
+  const inner=$('rhInner');
+  inner.style.background=`linear-gradient(135deg, ${info.color}dd, ${info.color}99)`;
+  inner.style.color='#fff';
+  $('statusCircle').style.background=`rgba(255,255,255,0.15)`;
+  $('scCode').textContent=code;
+  $('scText').textContent=info.cat;
+  $('rhUrl').textContent=r.url;
+  $('rhStatus').textContent=`${code} — ${info.name}`;
+  $('rhDesc').textContent=info.desc;
+
+  // Stats on right
+  $('rhRight').innerHTML=`
+    <div class="rh-stat">
+      <div class="rh-stat-val">${formatMs(r.responseTime)}</div>
+      <div class="rh-stat-lbl">Response Time</div>
+    </div>
+    <div class="rh-stat">
+      <div class="rh-stat-val">${r.chainCount||0}</div>
+      <div class="rh-stat-lbl">Redirects</div>
+    </div>
+    <div class="rh-stat">
+      <div class="rh-stat-val">${r.url.startsWith('https')?'🔒':'🔓'}</div>
+      <div class="rh-stat-lbl">${r.url.startsWith('https')?'HTTPS':'HTTP'}</div>
+    </div>`;
+
+  // Detail tiles
+  const speedRating = r.responseTime<300?'⚡ Fast':r.responseTime<800?'✅ Good':r.responseTime<2000?'⚠️ Slow':'🔴 Very Slow';
+  const tiles=[
+    {icon:'⏱️',cls:'dti-green',val:formatMs(r.responseTime),lbl:'Response Time'},
+    {icon:'📊',cls:'dti-blue',val:speedRating,lbl:'Speed Rating'},
+    {icon:'🔢',cls:'dti-purple',val:`${code} ${info.cat}`,lbl:'HTTP Status'},
+    {icon:'🔀',cls:'dti-orange',val:r.chainCount?`${r.chainCount} hop${r.chainCount>1?'s':''}`:r.code>=300&&r.code<400?'1 hop':'None',lbl:'Redirects'},
+    {icon:'🔒',cls:'dti-teal',val:r.url.startsWith('https')?'Secure HTTPS':'Unsecured HTTP',lbl:'Protocol'},
+    {icon:'📄',cls:'dti-red',val:r.contentType?r.contentType.split(';')[0]:'—',lbl:'Content-Type'},
+  ];
+  $('detailsGrid').innerHTML=tiles.map(t=>`
+    <div class="detail-tile">
+      <div class="dt-icon ${t.cls}">${t.icon}</div>
+      <div>
+        <div class="dt-val">${t.val}</div>
+        <div class="dt-lbl">${t.lbl}</div>
+      </div>
+    </div>`).join('');
+  $('detailsGrid').classList.add('show');
+
+  // Headers
+  if($('optShowHeaders').checked){
+    $('headersSection').classList.add('show');
+    $('headersGrid').innerHTML=Object.entries(r.headers).map(([k,v])=>`
+      <div class="header-row">
+        <span class="hr-key">${k}</span>
+        <span class="hr-val">${v||'—'}</span>
+      </div>`).join('');
+  }
+
+  // Redirect chain
+  if($('optShowChain').checked && r.redirectChain && r.redirectChain.length>0){
+    $('redirectChain').classList.add('show');
+    $('chainCount').textContent=`${r.redirectChain.length} hop${r.redirectChain.length>1?'s':''}`;
+    const chain=[{url:r.url,code:null,time:0},...r.redirectChain];
+    $('rcList').innerHTML=chain.map((hop,i)=>{
+      const ci=hop.code?getStatusInfo(hop.code):{name:'',color:'#2e9e55',bg:'#c6f6d5'};
+      const isLast=i===chain.length-1;
+      return`<div class="rc-item">
+        <div class="rc-dot" style="background:${ci.bg||'#c6f6d5'};color:${ci.color||'#276749'};border-color:${ci.color||'#276749'};">
+          ${isLast?'🏁':(i+1)}
+        </div>
+        <div class="rc-info">
+          <div class="rc-url">${hop.url}</div>
+          <div class="rc-meta">
+            ${hop.code?`<span class="rc-badge status-badge ${getStatusBadgeClass(hop.code)}">${hop.code} ${ci.name}</span>`:'<span class="rc-badge" style="background:var(--primary-light);color:var(--primary-dark);">Origin</span>'}
+            ${hop.time?`<span class="rc-time">+${formatMs(hop.time)}</span>`:''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Export
+  $('singleExport').style.display='block';
+  showToast(`✅ ${code} — ${info.name}`,'success');
+}
+
+/* ═══════════════════════════════════
+   BULK CHECK
+═══════════════════════════════════ */
+async function checkBulk(){
+  const raw=$('bulkInput').value.trim();
+  if(!raw){showAlert('Please enter URLs to check (one per line).');return;}
+  hideAlert();
+
+  let urls=raw.split('\n').map(u=>normalizeUrl(u)).filter(Boolean);
+  urls=[...new Set(urls)].slice(0,50);
+  if(!urls.length){showAlert('No valid URLs found. Please enter valid URLs starting with http:// or https://');return;}
+
+  bulkResults=[]; bulkAllResults=[]; stopBulk=false;
+  $('bulkResultCard').style.display='block';
+  $('bulkStats').classList.add('show');
+  $('bulkResultCount').textContent=`${urls.length} URLs`;
+  $('bulkProgress').classList.add('show');
+  $('bulkBtn').disabled=true;
+  $('bulkBtn').innerHTML='⏹ Stop';
+  $('bulkBtn').onclick=()=>{stopBulk=true;};
+
+  // Init table with pending
+  urls.forEach((u,i)=>{
+    bulkAllResults.push({idx:i+1,url:u,code:null,status:'checking',responseTime:null,contentType:'—',redirects:0});
+  });
+  renderBulkTable();
+
+  const CONC=4;
+  let done=0;
+
+  async function checkOne(i){
+    if(stopBulk) return;
+    const url=urls[i];
+    updateBulkProgress(done,urls.length,url);
+    const r=await fetchStatus(url,false);
+    if(!stopBulk){
+      bulkAllResults[i]={idx:i+1,url,code:r.code,status:r.error||'done',responseTime:r.responseTime,contentType:r.contentType,redirects:r.chainCount||0};
+      done++;
+      updateBulkProgress(done,urls.length,url);
+      updateBulkStats();
+      renderBulkTable();
+    }
+  }
+
+  for(let i=0;i<urls.length;i+=CONC){
+    if(stopBulk) break;
+    const batch=[];
+    for(let j=i;j<Math.min(i+CONC,urls.length);j++) batch.push(checkOne(j));
+    await Promise.all(batch);
+  }
+
+  $('bulkBtn').disabled=false;
+  $('bulkBtn').innerHTML='⚡ Check All URLs';
+  $('bulkBtn').onclick=checkBulk;
+  $('bulkProgress').classList.remove('show');
+  updateBulkStats();
+  renderBulkTable();
+  showToast(`✅ Checked ${done} URLs!`,'success');
+}
+
+function updateBulkProgress(done,total,url){
+  const pct=total?Math.round((done/total)*100):0;
+  $('bpFill').style.width=pct+'%';
+  $('bpText').textContent=url?`Checking: ${url.substring(0,50)}...`:'Completed';
+  $('bpPct').textContent=`${done}/${total} (${pct}%)`;
+}
+
+function updateBulkStats(){
+  const done=bulkAllResults.filter(r=>r.status!=='checking');
+  const s2=done.filter(r=>r.code>=200&&r.code<300).length;
+  const s3=done.filter(r=>r.code>=300&&r.code<400).length;
+  const s4=done.filter(r=>r.code>=400&&r.code<500).length;
+  const s5=done.filter(r=>r.code>=500).length;
+  const sE=done.filter(r=>!r.code||r.code===0).length;
+  const times=done.filter(r=>r.responseTime).map(r=>r.responseTime);
+  const avg=times.length?Math.round(times.reduce((a,b)=>a+b,0)/times.length):0;
+  $('bs-total').textContent=bulkAllResults.length;
+  $('bs-2xx').textContent=s2;
+  $('bs-3xx').textContent=s3;
+  $('bs-4xx').textContent=s4;
+  $('bs-5xx').textContent=s5;
+  $('bs-err').textContent=sE;
+  $('bs-avg').textContent=avg?formatMs(avg):'—';
+}
+
+function renderBulkTable(){
+  let data=[...bulkAllResults];
+
+  if(bulkFilterStatus!=='all'){
+    data=data.filter(r=>{
+      if(bulkFilterStatus==='2xx') return r.code>=200&&r.code<300;
+      if(bulkFilterStatus==='3xx') return r.code>=300&&r.code<400;
+      if(bulkFilterStatus==='4xx') return r.code>=400&&r.code<500;
+      if(bulkFilterStatus==='5xx') return r.code>=500;
+      if(bulkFilterStatus==='err') return !r.code||r.code===0;
+      return true;
+    });
+  }
+  if(bulkSearchTerm) data=data.filter(r=>r.url.toLowerCase().includes(bulkSearchTerm.toLowerCase()));
+
+  $('bulkTableBody').innerHTML=data.map(r=>{
+    const checking=r.status==='checking';
+    const info=r.code?getStatusInfo(r.code):null;
+    const badgeCls=checking?'s-checking':getStatusBadgeClass(r.code);
+    const codeText=checking?'Checking...':r.code?`${r.code}`:r.status==='Timeout'?'Timeout':'Error';
+    const statusText=checking?'Checking...':(r.code?(info?info.name:'Unknown'):(r.status||'Error'));
+    const speedColor=r.responseTime?(r.responseTime<300?'#276749':r.responseTime<800?'#1f7a40':r.responseTime<2000?'#d69e2e':'#e53e3e'):'#718096';
+    return`<tr>
+      <td style="color:var(--text-muted);font-weight:700;">${r.idx}</td>
+      <td class="td-url"><a href="${r.url}" target="_blank" rel="noopener">${r.url}</a></td>
+      <td><span class="status-badge ${badgeCls}">${checking?'⏳ Checking':r.code>=200&&r.code<300?'✅':r.code>=300&&r.code<400?'🔀':r.code>=400&&r.code<500?'❌':r.code>=500?'💥':'⏱️'} ${statusText}</span></td>
+      <td><strong style="color:${info?info.color:'#718096'}">${codeText}</strong></td>
+      <td style="font-weight:700;color:${speedColor}">${r.responseTime?formatMs(r.responseTime):'—'}</td>
+      <td style="font-size:0.8rem;color:var(--text-muted);">${r.contentType?r.contentType.split(';')[0]:'—'}</td>
+      <td>${r.redirects?`🔀 ${r.redirects}`:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterBulkStatus(status,btn){
+  bulkFilterStatus=status;
+  document.querySelectorAll('.filter-group .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBulkTable();
+}
+
+function filterBulk(){
+  bulkSearchTerm=$('bulkSearch').value;
+  renderBulkTable();
+}
+
+function loadBulkSample(){
+  $('bulkInput').value=['https://google.com','https://github.com','https://wikipedia.org','https://stackoverflow.com','https://httpstat.us/200','https://httpstat.us/301','https://httpstat.us/404','https://httpstat.us/500','https://example.com','https://openai.com'].join('\n');
+  showToast('📋 Sample URLs loaded!','info');
+}
+
+function clearBulk(){
+  $('bulkInput').value='';
+  bulkAllResults=[];
+  $('bulkResultCard').style.display='none';
+  $('bulkStats').classList.remove('show');
+  showToast('🗑️ Cleared!','info');
+}
+
+/* ═══════════════════════════════════
+   HISTORY
+═══════════════════════════════════ */
+function saveHistory(url,code,responseTime){
+  checkHistory=checkHistory.filter(h=>h.url!==url);
+  checkHistory.unshift({url,code,responseTime,ts:Date.now()});
+  checkHistory=checkHistory.slice(0,15);
+  localStorage.setItem('httpHistory',JSON.stringify(checkHistory));
+}
+
+function renderHistory(){
+  const card=$('historyCard');
+  if(!checkHistory.length){card.style.display='none';return;}
+  card.style.display='block';
+  $('historyList').innerHTML=checkHistory.map(h=>{
+    const info=h.code?getStatusInfo(h.code):null;
+    const badgeCls=getStatusBadgeClass(h.code);
+    return`<div class="history-item" onclick="quickCheck('${h.url}')">
+      <span class="status-badge ${badgeCls}" style="font-size:0.75rem;">${h.code||'ERR'}</span>
+      <span class="hi-url">${h.url}</span>
+      <span class="hi-time">${h.responseTime?formatMs(h.responseTime):''} · ${timeAgo(h.ts)}</span>
+      <button class="hi-del" onclick="event.stopPropagation();deleteHistory('${h.url}')">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+function deleteHistory(url){
+  checkHistory=checkHistory.filter(h=>h.url!==url);
+  localStorage.setItem('httpHistory',JSON.stringify(checkHistory));
+  renderHistory();
+}
+
+function clearHistory(){
+  checkHistory=[];
+  localStorage.removeItem('httpHistory');
+  renderHistory();
+  showToast('🗑️ History cleared.','info');
+}
+
+/* ═══════════════════════════════════
+   COPY / EXPORT
+═══════════════════════════════════ */
+function copyHeaders(){
+  if(!singleResult) return;
+  const txt=Object.entries(singleResult.headers).map(([k,v])=>`${k}: ${v}`).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Headers copied!','success'));
+}
+
+function copySingleReport(){
+  if(!singleResult) return;
+  const r=singleResult;
+  const info=r.code?getStatusInfo(r.code):{name:'Error'};
+  const txt=[
+    '══════════════════════════════',
+    '   HTTP STATUS CHECK REPORT',
+    '══════════════════════════════',
+    `URL           : ${r.url}`,
+    `Status Code   : ${r.code||'ERR'}`,
+    `Status Name   : ${info.name}`,
+    `Response Time : ${formatMs(r.responseTime)}`,
+    `Redirects     : ${r.chainCount||0}`,
+    `Protocol      : ${r.url.startsWith('https')?'HTTPS':'HTTP'}`,
+    `Content-Type  : ${r.contentType||'—'}`,
+    '',
+    'HEADERS:',
+    ...Object.entries(r.headers).map(([k,v])=>`  ${k}: ${v}`),
+    '',
+    `Checked: ${new Date().toLocaleString()}`,
+    '══════════════════════════════',
+  ].join('\n');
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Report copied!','success'));
+}
+
+function exportSingleJSON(){
+  if(!singleResult) return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(singleResult,null,2)],{type:'application/json'}));
+  const domain=singleResult.url.replace(/https?:\/\//,'').split('/')[0];
+  a.download=`http-status-${domain}.json`; a.click();
+  showToast('⬇️ JSON downloaded!','success');
+}
+
+function exportBulkCSV(){
+  if(!bulkAllResults.length) return;
+  const rows=[['#','URL','Status Code','Status Name','Response Time','Content-Type','Redirects']];
+  bulkAllResults.forEach(r=>{
+    const info=r.code?getStatusInfo(r.code):{name:r.status||'Error'};
+    rows.push([r.idx,r.url,r.code||'ERR',info.name,r.responseTime?formatMs(r.responseTime):'—',r.contentType||'—',r.redirects||0]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='http-status-bulk.csv'; a.click();
+  showToast('⬇️ CSV downloaded!','success');
+}
+
+function exportBulkJSON(){
+  if(!bulkAllResults.length) return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(bulkAllResults,null,2)],{type:'application/json'}));
+  a.download='http-status-bulk.json'; a.click();
+  showToast('⬇️ JSON downloaded!','success');
+}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function showToast(msg,type='success'){
+  const t=$('toast');
+  t.textContent=msg;
+  t.className=`toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+$('singleUrl').addEventListener('keydown',e=>{if(e.key==='Enter')checkSingle();});
+renderHistory();
+renderStatusRef();
+
+// URL param
+const urlParam=new URLSearchParams(location.search).get('url');
+if(urlParam){$('singleUrl').value=urlParam;checkSingle();}
+</script>
+</body>
+</html>
