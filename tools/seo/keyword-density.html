@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Keyword Density Checker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;
+  --card:#ffffff;
+  --primary:#2e9e55;
+  --primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;
+  --accent:#57c97a;
+  --border:#b2e8c2;
+  --text:#1a3a24;
+  --text-muted:#5a8c6a;
+  --danger:#e53e3e;
+  --danger-bg:#fff5f5;
+  --warning:#d69e2e;
+  --warning-bg:#fffff0;
+  --success:#2e9e55;
+  --shadow:0 4px 28px rgba(46,158,85,0.11);
+  --shadow-sm:0 2px 12px rgba(46,158,85,0.08);
+  --radius:16px;
+  --radius-sm:10px;
+}
+
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);min-height:100vh;}
+
+/* ══════════ HEADER ══════════ */
+header{
+  background:linear-gradient(135deg,#155e30 0%,#2e9e55 55%,#57c97a 100%);
+  padding:44px 24px 50px;text-align:center;position:relative;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 40%,rgba(255,255,255,0.08) 0%,transparent 55%),
+    radial-gradient(ellipse at 85% 20%,rgba(255,255,255,0.06) 0%,transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E");
+}
+header::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:48px;
+  background:var(--bg);clip-path:ellipse(58% 100% at 50% 100%);
+}
+.header-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);
+  border-radius:99px;padding:6px 18px;margin-bottom:16px;
+  font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.92);
+  backdrop-filter:blur(8px);letter-spacing:.3px;
+}
+header h1{
+  color:#fff;font-size:2.5rem;font-weight:900;
+  letter-spacing:-1px;text-shadow:0 2px 14px rgba(0,0,0,0.15);
+  margin-bottom:10px;
+}
+header p{color:rgba(255,255,255,0.82);font-size:1.02rem;}
+
+/* ══════════ MAIN ══════════ */
+main{max-width:1080px;margin:0 auto;padding:32px 20px 80px;}
+
+/* ══════════ ALERT ══════════ */
+.alert{
+  display:none;align-items:center;gap:10px;padding:14px 18px;
+  border-radius:12px;margin-bottom:22px;font-weight:600;font-size:0.9rem;
+}
+.alert.show{display:flex;}
+.alert-error{background:var(--danger-bg);border:1.5px solid #fed7d7;color:#c53030;}
+.alert-info{background:var(--primary-light);border:1.5px solid var(--border);color:var(--primary-dark);}
+
+/* ══════════ TWO-COL LAYOUT ══════════ */
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}}
+
+/* ══════════ CARDS ══════════ */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;
+}
+.card-header{
+  padding:16px 22px;border-bottom:1.5px solid var(--border);
+  background:linear-gradient(135deg,var(--primary-light),rgba(255,255,255,0.6));
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.card-title{font-size:1rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:8px;}
+.card-body{padding:20px 22px;}
+
+/* ══════════ TEXTAREA ══════════ */
+.content-area{
+  width:100%;min-height:300px;padding:16px;resize:vertical;
+  border:2px solid var(--border);border-radius:12px;font-size:0.92rem;
+  color:var(--text);background:var(--bg);font-family:inherit;line-height:1.7;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.content-area:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,158,85,0.11);}
+.content-area::placeholder{color:var(--text-muted);}
+.char-count{font-size:0.78rem;color:var(--text-muted);margin-top:8px;text-align:right;font-weight:600;}
+
+/* ══════════ OPTIONS ══════════ */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:480px){.options-grid{grid-template-columns:1fr;}}
+.option-box{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 14px;
+}
+.option-box label{font-size:0.82rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:7px;}
+.option-box input[type=number],
+.option-box select{
+  width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:0.88rem;color:var(--text);background:#fff;outline:none;
+  transition:border-color .2s;font-family:inherit;
+}
+.option-box input[type=number]:focus,
+.option-box select:focus{border-color:var(--primary);}
+
+.toggle-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+.toggle-chip{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;
+  border:1.5px solid var(--border);border-radius:99px;background:#fff;
+  font-size:0.82rem;font-weight:700;color:var(--text-muted);cursor:pointer;
+  transition:all .15s;user-select:none;
+}
+.toggle-chip input{accent-color:var(--primary);width:15px;height:15px;cursor:pointer;}
+.toggle-chip:has(input:checked){background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ══════════ KEYWORD INPUT ══════════ */
+.kw-input-wrap{display:flex;gap:10px;margin-bottom:12px;}
+.kw-input{
+  flex:1;padding:11px 16px;border:2px solid var(--border);border-radius:10px;
+  font-size:0.9rem;color:var(--text);background:var(--bg);outline:none;
+  transition:border-color .2s,box-shadow .2s;font-family:inherit;
+}
+.kw-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,158,85,0.1);}
+.kw-input::placeholder{color:var(--text-muted);}
+.add-kw-btn{
+  padding:11px 18px;background:var(--primary);color:#fff;border:none;
+  border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;
+  transition:background .15s,transform .15s;white-space:nowrap;
+}
+.add-kw-btn:hover{background:var(--primary-dark);transform:translateY(-1px);}
+
+.kw-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:36px;}
+.kw-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;background:var(--primary-light);
+  border:1.5px solid var(--border);border-radius:99px;
+  font-size:0.82rem;font-weight:700;color:var(--primary-dark);
+}
+.kw-tag button{
+  background:none;border:none;cursor:pointer;font-size:1rem;
+  color:var(--text-muted);padding:0;line-height:1;transition:color .15s;
+}
+.kw-tag button:hover{color:var(--danger);}
+.kw-hint{font-size:0.78rem;color:var(--text-muted);font-style:italic;}
+
+/* ══════════ ACTION BUTTONS ══════════ */
+.action-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-analyze{
+  flex:1;padding:15px 24px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  box-shadow:0 4px 16px rgba(46,158,85,0.3);transition:transform .15s,box-shadow .15s;
+}
+.btn-analyze:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,158,85,0.36);}
+.btn-analyze:active{transform:translateY(0);}
+.btn-clear{
+  padding:15px 20px;background:var(--bg);color:var(--text-muted);
+  border:2px solid var(--border);border-radius:12px;font-size:0.92rem;font-weight:700;
+  cursor:pointer;transition:all .15s;
+}
+.btn-clear:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ══════════ QUICK STATS ══════════ */
+.stats-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:14px;margin-bottom:22px;
+  display:none;
+}
+.stats-strip.show{display:grid;}
+.stat-tile{
+  background:var(--card);border-radius:14px;padding:18px 16px;text-align:center;
+  border:1.5px solid var(--border);box-shadow:var(--shadow-sm);
+  transition:transform .15s;
+}
+.stat-tile:hover{transform:translateY(-2px);}
+.stat-tile-num{font-size:1.9rem;font-weight:900;color:var(--primary-dark);line-height:1;margin-bottom:4px;}
+.stat-tile-lbl{font-size:0.78rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.stat-tile-icon{font-size:1.4rem;margin-bottom:6px;}
+
+/* ══════════ RESULTS LAYOUT ══════════ */
+.results-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;display:none;}
+.results-layout.show{display:grid;}
+@media(max-width:768px){.results-layout{grid-template-columns:1fr;}}
+
+/* ══════════ TABLE ══════════ */
+.table-wrap{overflow-x:auto;max-height:440px;overflow-y:auto;}
+.table-wrap::-webkit-scrollbar{width:6px;height:6px;}
+.table-wrap::-webkit-scrollbar-track{background:var(--bg);}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+thead th{
+  background:var(--bg);padding:11px 14px;text-align:left;
+  font-weight:800;color:var(--primary-dark);border-bottom:1.5px solid var(--border);
+  white-space:nowrap;position:sticky;top:0;z-index:1;
+}
+thead th.sortable{cursor:pointer;user-select:none;}
+thead th.sortable:hover{color:var(--primary);}
+.sort-icon{margin-left:4px;opacity:.5;}
+.sort-icon.active{opacity:1;color:var(--primary);}
+tbody tr{border-bottom:1px solid #eaf7ee;transition:background .1s;}
+tbody tr:hover{background:#f5fdf7;}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:10px 14px;vertical-align:middle;}
+.td-word{font-weight:700;color:var(--text);}
+.td-count{font-weight:800;color:var(--primary-dark);}
+.td-density{font-weight:700;}
+
+.density-bar-cell{min-width:100px;}
+.density-bar-wrap{background:var(--primary-light);border-radius:99px;height:8px;overflow:hidden;}
+.density-bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.bar-optimal{background:linear-gradient(90deg,#48bb78,#2e9e55);}
+.bar-high{background:linear-gradient(90deg,#f6ad55,#d69e2e);}
+.bar-overstuffed{background:linear-gradient(90deg,#fc8181,#e53e3e);}
+.bar-low{background:linear-gradient(90deg,#90cdf4,#3182ce);}
+
+.density-badge{
+  display:inline-block;padding:2px 9px;border-radius:99px;
+  font-size:0.72rem;font-weight:800;
+}
+.badge-optimal{background:#c6f6d5;color:#276749;}
+.badge-high{background:#fefcbf;color:#744210;}
+.badge-overstuffed{background:#fed7d7;color:#9b2c2c;}
+.badge-low{background:#bee3f8;color:#1a365d;}
+
+/* ══════════ FILTER / TOOLBAR ══════════ */
+.toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
+}
+.filter-input{
+  padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:0.84rem;color:var(--text);background:var(--bg);outline:none;
+  transition:border-color .2s;font-family:inherit;width:170px;
+}
+.filter-input:focus{border-color:var(--primary);}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.ftab{
+  padding:6px 13px;border-radius:99px;border:1.5px solid var(--border);
+  background:#fff;color:var(--text-muted);font-size:0.79rem;font-weight:700;
+  cursor:pointer;transition:all .13s;
+}
+.ftab.active,.ftab:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+.export-btns{display:flex;gap:7px;}
+.exp-btn{
+  padding:7px 13px;background:var(--primary);color:#fff;border:none;
+  border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;
+  transition:background .15s;display:flex;align-items:center;gap:5px;
+}
+.exp-btn:hover{background:var(--primary-dark);}
+
+/* ══════════ CHART ══════════ */
+.chart-section{margin-bottom:22px;display:none;}
+.chart-section.show{display:block;}
+.chart-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;}
+
+.chart-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border);}
+.ctab{
+  flex:1;padding:12px;text-align:center;font-size:0.82rem;font-weight:700;
+  color:var(--text-muted);cursor:pointer;transition:all .13s;
+  border-bottom:3px solid transparent;
+}
+.ctab.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light);}
+.ctab:hover:not(.active){background:#f5fdf7;}
+
+.chart-area{padding:22px;min-height:280px;display:none;}
+.chart-area.show{display:block;}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px;}
+.bc-row{display:flex;align-items:center;gap:12px;}
+.bc-label{width:130px;font-size:0.81rem;font-weight:700;color:var(--text);text-align:right;flex-shrink:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bc-bar-wrap{flex:1;background:var(--primary-light);border-radius:99px;height:26px;overflow:hidden;position:relative;}
+.bc-bar{height:100%;border-radius:99px;display:flex;align-items:center;padding:0 10px;
+  transition:width .8s cubic-bezier(.4,0,.2,1);min-width:30px;}
+.bc-bar span{font-size:0.75rem;font-weight:800;color:#fff;white-space:nowrap;}
+.bc-meta{width:70px;flex-shrink:0;font-size:0.8rem;font-weight:700;color:var(--text-muted);text-align:right;}
+
+/* PIE CHART */
+.pie-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:center;}
+#pieCanvas{border-radius:50%;flex-shrink:0;}
+.pie-legend{display:flex;flex-direction:column;gap:8px;}
+.pie-legend-item{display:flex;align-items:center;gap:8px;font-size:0.81rem;font-weight:600;color:var(--text);}
+.pie-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.pie-pct{font-weight:800;color:var(--primary-dark);}
+
+/* PHRASE TABLE */
+.phrase-section{margin-bottom:22px;display:none;}
+.phrase-section.show{display:block;}
+
+/* HIGHLIGHTED TEXT */
+.highlight-section{margin-bottom:22px;display:none;}
+.highlight-section.show{display:block;}
+.highlight-box{
+  background:var(--bg);border:1.5px solid var(--border);border-radius:12px;
+  padding:18px;font-size:0.9rem;line-height:1.9;color:var(--text);
+  max-height:300px;overflow-y:auto;word-break:break-word;
+}
+.highlight-box::-webkit-scrollbar{width:6px;}
+.highlight-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.hw1{background:#bbf7d0;border-radius:4px;padding:1px 3px;font-weight:700;}
+.hw2{background:#bfdbfe;border-radius:4px;padding:1px 3px;font-weight:700;}
+.hw3{background:#fde68a;border-radius:4px;padding:1px 3px;font-weight:700;}
+.hw4{background:#fca5a5;border-radius:4px;padding:1px 3px;font-weight:700;}
+.hw5{background:#d9f99d;border-radius:4px;padding:1px 3px;font-weight:700;}
+
+/* SEO METER */
+.seo-meter-section{margin-bottom:22px;display:none;}
+.seo-meter-section.show{display:block;}
+.seo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.seo-card{
+  background:var(--card);border-radius:14px;padding:20px;
+  border:1.5px solid var(--border);box-shadow:var(--shadow-sm);
+}
+.seo-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.seo-icon{font-size:1.4rem;}
+.seo-score-num{font-size:1.6rem;font-weight:900;}
+.seo-label{font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:8px;}
+.seo-bar-wrap{background:#e8f5ee;border-radius:99px;height:7px;overflow:hidden;margin-bottom:8px;}
+.seo-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.seo-tip{font-size:0.76rem;color:var(--text-muted);line-height:1.5;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.empty-state .es-icon{font-size:56px;margin-bottom:14px;}
+.empty-state h3{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:6px;}
+.empty-state p{font-size:0.88rem;}
+
+/* STOPWORDS TAG CLOUD */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag-cloud span{
+  padding:3px 10px;background:var(--primary-light);border:1px solid var(--border);
+  border-radius:99px;font-size:0.75rem;font-weight:600;color:var(--text-muted);
+}
+
+/* FOOTER */
+footer{
+  background:var(--card);border-top:1px solid var(--border);
+  padding:22px;text-align:center;color:var(--text-muted);font-size:0.82rem;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-pill">🔬 Advanced Content Analyzer</div>
+  <h1>📊 Keyword Density Checker</h1>
+  <p>Analyze keyword frequency, density &amp; SEO optimization in any content</p>
+</header>
+
+<main>
+
+  <!-- ALERT -->
+  <div class="alert" id="alertBox">
+    <span>⚠️</span><span id="alertMsg"></span>
+  </div>
+
+  <!-- INPUT LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT: CONTENT INPUT -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📝 Content Input</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="loadSample()" style="padding:5px 13px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:0.78rem;font-weight:700;color:var(--text-muted);cursor:pointer;">📋 Sample Text</button>
+          <button onclick="pasteFromClipboard()" style="padding:5px 13px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:0.78rem;font-weight:700;color:var(--text-muted);cursor:pointer;">📎 Paste</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <textarea class="content-area" id="contentArea"
+          placeholder="Paste or type your content here... (minimum 50 words recommended for accurate analysis)"></textarea>
+        <div class="char-count" id="charCount">0 characters · 0 words</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: OPTIONS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">⚙️ Analysis Options</span>
+      </div>
+      <div class="card-body">
+
+        <!-- TOGGLE OPTIONS -->
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text-muted);margin-bottom:8px;">Analysis Settings</div>
+        <div class="toggle-row">
+          <label class="toggle-chip">
+            <input type="checkbox" id="optStopwords" checked> Ignore Stopwords
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="optCase"> Case Sensitive
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="optPhrases" checked> 2-Word Phrases
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="opt3Phrases"> 3-Word Phrases
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="optHighlight" checked> Highlight Keywords
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="optNumbers"> Include Numbers
+          </label>
+        </div>
+
+        <!-- NUMERIC OPTIONS -->
+        <div class="options-grid">
+          <div class="option-box">
+            <label>📏 Min. Word Length</label>
+            <input type="number" id="minLen" value="3" min="1" max="10"/>
+          </div>
+          <div class="option-box">
+            <label>🔢 Top Results (N)</label>
+            <input type="number" id="topN" value="30" min="5" max="100"/>
+          </div>
+          <div class="option-box">
+            <label>🎯 Ideal Density Range</label>
+            <select id="densityRange">
+              <option value="1-3">1% – 3% (Recommended)</option>
+              <option value="0.5-2">0.5% – 2% (Conservative)</option>
+              <option value="2-5">2% – 5% (Aggressive)</option>
+            </select>
+          </div>
+          <div class="option-box">
+            <label>📊 Sort Results By</label>
+            <select id="sortBy">
+              <option value="count">Frequency (Count)</option>
+              <option value="density">Density %</option>
+              <option value="alpha">Alphabetical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TARGET KEYWORDS -->
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text-muted);margin-bottom:8px;">🎯 Target Keywords (Optional)</div>
+        <div class="kw-input-wrap">
+          <input class="kw-input" id="kwInput" placeholder="Add keyword to track..." />
+          <button class="add-kw-btn" onclick="addKeyword()">+ Add</button>
+        </div>
+        <div class="kw-tags" id="kwTags"></div>
+        <div class="kw-hint">Track specific keywords and get dedicated density reports</div>
+
+        <div style="margin-top:18px;">
+          <div class="action-row">
+            <button class="btn-analyze" onclick="analyze()">🔍 Analyze Content</button>
+            <button class="btn-clear" onclick="clearAll()">🗑️ Clear</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK STATS STRIP -->
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-tile">
+      <div class="stat-tile-icon">📝</div>
+      <div class="stat-tile-num" id="stWords">0</div>
+      <div class="stat-tile-lbl">Total Words</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🔤</div>
+      <div class="stat-tile-num" id="stChars">0</div>
+      <div class="stat-tile-lbl">Characters</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">📖</div>
+      <div class="stat-tile-num" id="stSentences">0</div>
+      <div class="stat-tile-lbl">Sentences</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🔑</div>
+      <div class="stat-tile-num" id="stUnique">0</div>
+      <div class="stat-tile-lbl">Unique Words</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">📊</div>
+      <div class="stat-tile-num" id="stAvgDensity">0%</div>
+      <div class="stat-tile-lbl">Avg Density</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">⏱️</div>
+      <div class="stat-tile-num" id="stReadTime">0 min</div>
+      <div class="stat-tile-lbl">Read Time</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🏆</div>
+      <div class="stat-tile-num" id="stTopKw">—</div>
+      <div class="stat-tile-lbl">Top Keyword</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🎯</div>
+      <div class="stat-tile-num" id="stSeoScore">—</div>
+      <div class="stat-tile-lbl">SEO Score</div>
+    </div>
+  </div>
+
+  <!-- SEO METER -->
+  <div class="seo-meter-section" id="seoMeterSection">
+    <div class="card-title" style="margin-bottom:14px;">🎯 SEO Keyword Analysis</div>
+    <div class="seo-grid" id="seoGrid"></div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-section" id="chartSection">
+    <div class="chart-card">
+      <div class="card-header">
+        <span class="card-title">📈 Visualization</span>
+        <div class="export-btns">
+          <button class="exp-btn" onclick="exportCSV()">⬇️ CSV</button>
+          <button class="exp-btn" onclick="exportTXT()">⬇️ TXT</button>
+          <button class="exp-btn" onclick="exportJSON()">⬇️ JSON</button>
+        </div>
+      </div>
+      <div class="chart-tabs">
+        <div class="ctab active" onclick="switchChart('bar',this)">📊 Bar Chart</div>
+        <div class="ctab" onclick="switchChart('pie',this)">🥧 Pie Chart</div>
+        <div class="ctab" onclick="switchChart('table',this)">📋 Full Table</div>
+      </div>
+
+      <!-- BAR CHART -->
+      <div class="chart-area show" id="chartBar">
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+
+      <!-- PIE CHART -->
+      <div class="chart-area" id="chartPie">
+        <div class="pie-wrap">
+          <canvas id="pieCanvas" width="220" height="220"></canvas>
+          <div class="pie-legend" id="pieLegend"></div>
+        </div>
+      </div>
+
+      <!-- FULL TABLE -->
+      <div class="chart-area" id="chartTable">
+        <div class="toolbar" style="margin-bottom:14px;">
+          <input class="filter-input" id="filterInput" placeholder="🔍 Filter keywords..." oninput="filterTable()"/>
+          <div class="filter-tabs">
+            <button class="ftab active" onclick="filterByStatus('all',this)">All</button>
+            <button class="ftab" onclick="filterByStatus('optimal',this)">🟢 Optimal</button>
+            <button class="ftab" onclick="filterByStatus('high',this)">🟡 High</button>
+            <button class="ftab" onclick="filterByStatus('overstuffed',this)">🔴 Stuffed</button>
+            <button class="ftab" onclick="filterByStatus('low',this)">🔵 Low</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="kwTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th class="sortable" onclick="sortTable('word')">Keyword <span class="sort-icon" id="sWord">↕</span></th>
+                <th class="sortable" onclick="sortTable('count')">Count <span class="sort-icon active" id="sCount">↓</span></th>
+                <th class="sortable" onclick="sortTable('density')">Density <span class="sort-icon" id="sDensity">↕</span></th>
+                <th>Status</th>
+                <th>Frequency Bar</th>
+              </tr>
+            </thead>
+            <tbody id="kwTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULTS LAYOUT: PHRASES + HIGHLIGHT -->
+  <div class="results-layout" id="resultsLayout">
+
+    <!-- 2-WORD PHRASES -->
+    <div class="card" id="phrasesCard">
+      <div class="card-header">
+        <span class="card-title">🔗 Top Phrases</span>
+        <div class="filter-tabs" id="phraseTabsOuter" style="gap:5px;">
+          <button class="ftab active" onclick="showPhrases(2,this)">2-Word</button>
+          <button class="ftab" onclick="showPhrases(3,this)">3-Word</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:14px 16px;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Phrase</th>
+                <th>Count</th>
+                <th>Density</th>
+              </tr>
+            </thead>
+            <tbody id="phraseBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIGHLIGHTED TEXT -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">✨ Highlighted Content</span>
+        <span style="font-size:0.78rem;color:var(--text-muted);font-weight:600;">Top 5 keywords colored</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;" id="highlightLegend"></div>
+        <div class="highlight-box" id="highlightBox"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TARGET KEYWORD REPORT -->
+  <div class="card" id="targetCard" style="display:none;margin-bottom:22px;">
+    <div class="card-header">
+      <span class="card-title">🎯 Target Keyword Report</span>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Keyword</th>
+              <th>Count</th>
+              <th>Density</th>
+              <th>Status</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody id="targetBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>🌿 Keyword Density Checker &nbsp;|&nbsp; Built with ❤️ &nbsp;|&nbsp; For best SEO results, aim for 1%–3% keyword density</footer>
+
+<script>
+/* ════════════════════════════
+   STOPWORDS
+════════════════════════════ */
+const STOPWORDS = new Set([
+  'a','an','the','and','or','but','in','on','at','to','for','of','with',
+  'by','from','is','are','was','were','be','been','being','have','has','had',
+  'do','does','did','will','would','could','should','may','might','shall',
+  'can','need','dare','used','ought','this','that','these','those','it',
+  'its','i','you','he','she','we','they','me','him','her','us','them',
+  'my','your','his','our','their','what','which','who','whom','when',
+  'where','why','how','all','each','every','both','few','more','most',
+  'other','some','such','no','not','only','same','so','than','too','very',
+  'just','as','if','then','up','out','about','into','through','during',
+  'before','after','above','below','between','any','am','also','there',
+  'here','now','s','t','re','ve','ll','d','m','don','doesn','didn',
+  'isn','aren','wasn','weren','won','can','couldn'
+]);
+
+/* ════════════════════════════
+   PIE COLORS
+════════════════════════════ */
+const PIE_COLORS = [
+  '#2e9e55','#57c97a','#3182ce','#805ad5','#d69e2e',
+  '#e53e3e','#38b2ac','#ed64a6','#667eea','#f6ad55',
+  '#48bb78','#63b3ed','#b794f4','#f6e05e','#fc8181',
+];
+
+/* ════════════════════════════
+   STATE
+════════════════════════════ */
+let analysisData    = [];
+let phrases2        = [];
+let phrases3        = [];
+let targetKeywords  = [];
+let totalWords      = 0;
+let currentSort     = {col:'count', dir:'desc'};
+let currentFilter   = 'all';
+let currentSearch   = '';
+let currentPhrase   = 2;
+let activeChart     = 'bar';
+
+const $ = id => document.getElementById(id);
+
+/* ════════════════════════════
+   CHAR COUNT LIVE
+════════════════════════════ */
+$('contentArea').addEventListener('input', () => {
+  const txt = $('contentArea').value;
+  const words = countWords(txt);
+  $('charCount').textContent = `${txt.length.toLocaleString()} characters · ${words.toLocaleString()} words`;
+});
+
+function countWords(txt){
+  return txt.trim() === '' ? 0 : txt.trim().split(/\s+/).filter(w=>w.length>0).length;
+}
+
+/* ════════════════════════════
+   KEYWORD TAGS
+════════════════════════════ */
+function addKeyword(){
+  const v = $('kwInput').value.trim().toLowerCase();
+  if(!v){ return; }
+  if(targetKeywords.includes(v)){ $('kwInput').value=''; return; }
+  targetKeywords.push(v);
+  renderTags();
+  $('kwInput').value = '';
+}
+$('kwInput').addEventListener('keydown', e => { if(e.key==='Enter') addKeyword(); });
+
+function removeKw(kw){
+  targetKeywords = targetKeywords.filter(k => k !== kw);
+  renderTags();
+}
+function renderTags(){
+  $('kwTags').innerHTML = targetKeywords.map(k =>
+    `<div class="kw-tag">${k} <button onclick="removeKw('${k}')">×</button></div>`
+  ).join('');
+}
+
+/* ════════════════════════════
+   ALERT
+════════════════════════════ */
+function showAlert(msg,type='error'){
+  $('alertBox').className=`alert alert-${type} show`;
+  $('alertMsg').textContent=msg;
+}
+function hideAlert(){ $('alertBox').className='alert'; }
+
+/* ════════════════════════════
+   SAMPLE TEXT
+════════════════════════════ */
+function loadSample(){
+  $('contentArea').value = `Search engine optimization is the process of improving your website to increase its visibility in search engines. SEO involves both technical and content strategies to help search engines understand what your website is about. Keyword research is a fundamental part of SEO strategy, as keywords help you understand what users are searching for online.
+
+Content marketing is another essential component of digital marketing. By creating high-quality content that targets relevant keywords, you can attract more organic traffic to your website. Quality content should provide value to the reader while naturally incorporating target keywords with appropriate keyword density.
+
+Website speed and mobile optimization also play a crucial role in SEO rankings. Search engines prioritize websites that load quickly and offer a great mobile experience. Technical SEO ensures that search engine crawlers can efficiently index your website content.
+
+Link building remains an important aspect of SEO. Quality backlinks from authoritative websites signal to search engines that your content is trustworthy and valuable. A strong link building strategy combined with excellent content creates a powerful SEO foundation for long-term organic growth.`;
+  const txt = $('contentArea').value;
+  const words = countWords(txt);
+  $('charCount').textContent = `${txt.length.toLocaleString()} characters · ${words.toLocaleString()} words`;
+}
+
+async function pasteFromClipboard(){
+  try {
+    const text = await navigator.clipboard.readText();
+    $('contentArea').value = text;
+    const words = countWords(text);
+    $('charCount').textContent = `${text.length.toLocaleString()} characters · ${words.toLocaleString()} words`;
+  } catch { showAlert('Clipboard access denied. Please paste manually.','error'); }
+}
+
+/* ════════════════════════════
+   CLEAR
+════════════════════════════ */
+function clearAll(){
+  $('contentArea').value='';
+  $('charCount').textContent='0 characters · 0 words';
+  analysisData=[];phrases2=[];phrases3=[];
+  hideAlert();
+  ['statsStrip','chartSection','resultsLayout','seoMeterSection'].forEach(id=>{
+    $(id).classList.remove('show');
+  });
+  $('targetCard').style.display='none';
+}
+
+/* ════════════════════════════
+   MAIN ANALYZE
+════════════════════════════ */
+function analyze(){
+  const raw = $('contentArea').value.trim();
+  if(!raw){ showAlert('Please enter some content to analyze.'); return; }
+  if(countWords(raw) < 5){ showAlert('Please enter at least 5 words for meaningful analysis.'); return; }
+  hideAlert();
+
+  const caseSensitive  = $('optCase').checked;
+  const ignoreStop     = $('optStopwords').checked;
+  const inclNumbers    = $('optNumbers').checked;
+  const minLen         = parseInt($('minLen').value)||3;
+  const topN           = parseInt($('topN').value)||30;
+  const doPhrases2     = $('optPhrases').checked;
+  const doPhrases3     = $('opt3Phrases').checked;
+  const doHighlight    = $('optHighlight').checked;
+
+  // Clean & tokenize
+  const sentences = raw.split(/[.!?]+/).filter(s=>s.trim().length>0);
+  const text = caseSensitive ? raw : raw.toLowerCase();
+  const tokens = text
+    .replace(/[^a-zA-Z0-9\s'-]/g,' ')
+    .split(/\s+/)
+    .filter(w => {
+      if(!w || w.length < minLen) return false;
+      if(!inclNumbers && /^\d+$/.test(w)) return false;
+      if(ignoreStop && STOPWORDS.has(w.toLowerCase())) return false;
+      return true;
+    });
+
+  totalWords = raw.trim().split(/\s+/).filter(w=>w.length>0).length;
+  const allTokens = raw.toLowerCase().split(/\s+/).filter(w=>w.length>0);
+
+  // Count frequencies
+  const freq = {};
+  tokens.forEach(w => { freq[w] = (freq[w]||0)+1; });
+
+  // Build result array
+  const sortKey = $('sortBy').value;
+  let results = Object.entries(freq).map(([w,c])=>({
+    word: w, count: c, density: parseFloat(((c/totalWords)*100).toFixed(2))
+  }));
+
+  if(sortKey==='count')      results.sort((a,b)=>b.count-a.count);
+  else if(sortKey==='density') results.sort((a,b)=>b.density-a.density);
+  else results.sort((a,b)=>a.word.localeCompare(b.word));
+
+  results = results.slice(0, topN);
+  analysisData = results;
+
+  // Phrases
+  if(doPhrases2) phrases2 = buildPhrases(allTokens, 2, ignoreStop, 15);
+  if(doPhrases3) phrases3 = buildPhrases(allTokens, 3, ignoreStop, 15);
+
+  // Stats
+  const uniqueWords = Object.keys(freq).length;
+  const avgDensity  = results.length ? (results.reduce((s,r)=>s+r.density,0)/results.length).toFixed(2) : 0;
+  const readTime    = Math.ceil(totalWords/200);
+  const topKw       = results[0]?.word || '—';
+  const seoScore    = calcSeoScore(results, totalWords);
+
+  $('stWords').textContent     = totalWords.toLocaleString();
+  $('stChars').textContent     = raw.length.toLocaleString();
+  $('stSentences').textContent = sentences.length;
+  $('stUnique').textContent    = uniqueWords.toLocaleString();
+  $('stAvgDensity').textContent= avgDensity+'%';
+  $('stReadTime').textContent  = readTime+' min';
+  $('stTopKw').textContent     = topKw;
+  $('stSeoScore').textContent  = seoScore+'/100';
+  $('statsStrip').classList.add('show');
+
+  // SEO Meter
+  renderSeoMeter(results, totalWords, seoScore, raw);
+
+  // Charts
+  renderBarChart(results.slice(0,15));
+  renderPieChart(results.slice(0,10));
+  renderTable();
+  $('chartSection').classList.add('show');
+
+  // Phrases
+  showPhrases(2, document.querySelector('#phraseTabsOuter .ftab'));
+
+  // Highlight
+  if(doHighlight) renderHighlight(raw, results.slice(0,5));
+  else $('highlightBox').innerHTML = '<span style="color:var(--text-muted)">Highlighting disabled in options.</span>';
+
+  $('resultsLayout').classList.add('show');
+
+  // Target keywords
+  if(targetKeywords.length>0) renderTargetReport(results);
+  else $('targetCard').style.display='none';
+
+  // Scroll
+  setTimeout(()=>$('statsStrip').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ════════════════════════════
+   PHRASES
+════════════════════════════ */
+function buildPhrases(tokens, n, ignoreStop, limit){
+  const freq={};
+  for(let i=0;i<=tokens.length-n;i++){
+    const phrase=[];
+    let skip=false;
+    for(let j=0;j<n;j++){
+      const w=tokens[i+j].replace(/[^a-z0-9]/g,'');
+      if(!w||w.length<2){ skip=true;break; }
+      phrase.push(w);
+    }
+    if(skip) continue;
+    const key=phrase.join(' ');
+    freq[key]=(freq[key]||0)+1;
+  }
+  return Object.entries(freq)
+    .map(([p,c])=>({phrase:p,count:c,density:parseFloat(((c/totalWords)*100).toFixed(2))}))
+    .sort((a,b)=>b.count-a.count)
+    .slice(0,limit);
+}
+
+function showPhrases(n, btn){
+  currentPhrase=n;
+  document.querySelectorAll('#phraseTabsOuter .ftab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const data = n===2 ? phrases2 : phrases3;
+  const tbody=$('phraseBody');
+  if(!data||data.length===0){
+    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px;">
+      No ${n}-word phrases found. Enable "${n===2?'2':'3'}-Word Phrases" in options.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=data.map((p,i)=>`
+    <tr>
+      <td style="color:var(--text-muted);font-weight:700;">${i+1}</td>
+      <td class="td-word">${p.phrase}</td>
+      <td class="td-count">${p.count}</td>
+      <td>${p.density}%</td>
+    </tr>`).join('');
+}
+
+/* ════════════════════════════
+   SEO SCORE
+════════════════════════════ */
+function calcSeoScore(results, total){
+  let score=60;
+  const [dlo,dhi] = getDensityRange();
+  const topDensity = results[0]?.density||0;
+  if(topDensity>=dlo && topDensity<=dhi) score+=20;
+  else if(topDensity>dhi) score-=10;
+  if(total>=300) score+=10;
+  if(total>=800) score+=5;
+  if(results.length>=15) score+=5;
+  return Math.min(100,Math.max(0,score));
+}
+
+function getDensityRange(){
+  const v = $('densityRange').value;
+  const [lo,hi]=v.split('-').map(Number);
+  return [lo,hi];
+}
+
+/* ════════════════════════════
+   DENSITY STATUS
+════════════════════════════ */
+function getDensityStatus(density){
+  const [lo,hi]=getDensityRange();
+  if(density>=lo&&density<=hi) return {label:'Optimal',cls:'badge-optimal',bar:'bar-optimal',status:'optimal'};
+  if(density>hi&&density<=hi*2) return {label:'High',cls:'badge-high',bar:'bar-high',status:'high'};
+  if(density>hi*2) return {label:'Stuffed',cls:'badge-overstuffed',bar:'bar-overstuffed',status:'overstuffed'};
+  return {label:'Low',cls:'badge-low',bar:'bar-low',status:'low'};
+}
+
+/* ════════════════════════════
+   SEO METER
+════════════════════════════ */
+function renderSeoMeter(results, total, seoScore, raw){
+  const [dlo,dhi]=getDensityRange();
+  const topKw=results[0];
+  const topDensity=topKw?.density||0;
+  const wordsScore=Math.min(100,Math.round((total/1000)*100));
+  const diversityScore=Math.min(100,Math.round((results.length/50)*100));
+  const densityOk=topDensity>=dlo&&topDensity<=dhi;
+
+  const cards=[
+    {icon:'📝',label:'Content Length',score:wordsScore,
+     tip:`${total} words. ${total<300?'Add more content (300+ words recommended).':total>=800?'Great length for SEO!':'Good, aim for 800+ words.'}`,
+     color:'#2e9e55'},
+    {icon:'🎯',label:'Keyword Density',score:densityOk?95:topDensity>dhi?55:40,
+     tip:`Top keyword density: ${topDensity}%. Ideal range: ${dlo}%–${dhi}%. ${densityOk?'✅ Within ideal range!':topDensity>dhi?'⚠️ Reduce keyword repetition.':'📉 Add more keyword occurrences.'}`,
+     color:densityOk?'#2e9e55':topDensity>dhi?'#d69e2e':'#3182ce'},
+    {icon:'🌈',label:'Keyword Diversity',score:diversityScore,
+     tip:`${results.length} unique keywords found. ${results.length>=20?'Good diversity!':'Add more varied vocabulary.'}`,
+     color:'#805ad5'},
+    {icon:'⭐',label:'Overall SEO Score',score:seoScore,
+     tip:`${seoScore>=80?'Excellent! Your content is well-optimized.':seoScore>=60?'Good. Minor improvements needed.':'Needs work. Improve content length and keyword usage.'}`,
+     color:seoScore>=80?'#2e9e55':seoScore>=60?'#d69e2e':'#e53e3e'},
+  ];
+
+  $('seoGrid').innerHTML=cards.map(c=>`
+    <div class="seo-card">
+      <div class="seo-card-top">
+        <span class="seo-icon">${c.icon}</span>
+        <span class="seo-score-num" style="color:${c.color};">${c.score}</span>
+      </div>
+      <div class="seo-label">${c.label}</div>
+      <div class="seo-bar-wrap">
+        <div class="seo-bar-fill" style="width:${c.score}%;background:${c.color};"></div>
+      </div>
+      <div class="seo-tip">${c.tip}</div>
+    </div>`).join('');
+
+  $('seoMeterSection').classList.add('show');
+}
+
+/* ════════════════════════════
+   BAR CHART
+════════════════════════════ */
+function renderBarChart(data){
+  if(!data.length){ $('barChart').innerHTML=''; return; }
+  const max=data[0].count;
+  $('barChart').innerHTML=data.map((r,i)=>{
+    const pct=Math.max(4,Math.round((r.count/max)*100));
+    const st=getDensityStatus(r.density);
+    const col=PIE_COLORS[i%PIE_COLORS.length];
+    return`<div class="bc-row">
+      <div class="bc-label" title="${r.word}">${r.word}</div>
+      <div class="bc-bar-wrap">
+        <div class="bc-bar" style="width:${pct}%;background:linear-gradient(90deg,${col},${col}cc);">
+          <span>${r.count}×</span>
+        </div>
+      </div>
+      <div class="bc-meta">${r.density}%</div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════
+   PIE CHART (Canvas)
+════════════════════════════ */
+function renderPieChart(data){
+  if(!data.length) return;
+  const canvas=$('pieCanvas');
+  const ctx=canvas.getContext('2d');
+  const total=data.reduce((s,r)=>s+r.count,0);
+  let startAngle=-Math.PI/2;
+  const cx=110,cy=110,r=90;
+
+  ctx.clearRect(0,0,220,220);
+
+  data.forEach((item,i)=>{
+    const slice=(item.count/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,startAngle,startAngle+slice);
+    ctx.closePath();
+    ctx.fillStyle=PIE_COLORS[i%PIE_COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    startAngle+=slice;
+  });
+
+  // Center hole (donut)
+  ctx.beginPath();ctx.arc(cx,cy,45,0,Math.PI*2);
+  ctx.fillStyle='#fff';ctx.fill();
+  ctx.fillStyle=PIE_COLORS[0];ctx.font='bold 13px Segoe UI';
+  ctx.textAlign='center';ctx.fillText('Top 10',cx,cy-4);
+  ctx.fillStyle='#5a8c6a';ctx.font='11px Segoe UI';
+  ctx.fillText('Keywords',cx,cy+12);
+
+  $('pieLegend').innerHTML=data.map((r,i)=>`
+    <div class="pie-legend-item">
+      <div class="pie-dot" style="background:${PIE_COLORS[i%PIE_COLORS.length]};"></div>
+      <span>${r.word}</span>
+      <span class="pie-pct">${((r.count/total)*100).toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+/* ════════════════════════════
+   FULL TABLE
+════════════════════════════ */
+function renderTable(){
+  let data=[...analysisData];
+
+  // Sort
+  const {col,dir}=currentSort;
+  data.sort((a,b)=>{
+    let av=a[col],bv=b[col];
+    if(typeof av==='string') return dir==='asc'?av.localeCompare(bv):bv.localeCompare(av);
+    return dir==='asc'?av-bv:bv-av;
+  });
+
+  // Filter by status
+  if(currentFilter!=='all') data=data.filter(r=>getDensityStatus(r.density).status===currentFilter);
+
+  // Filter by search
+  if(currentSearch) data=data.filter(r=>r.word.includes(currentSearch.toLowerCase()));
+
+  const max=analysisData[0]?.count||1;
+
+  $('kwTableBody').innerHTML=data.length===0
+    ? `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">No keywords match the current filter.</td></tr>`
+    : data.map((r,i)=>{
+        const st=getDensityStatus(r.density);
+        const pct=Math.round((r.count/max)*100);
+        return`<tr>
+          <td style="color:var(--text-muted);font-weight:700;">${i+1}</td>
+          <td class="td-word">${r.word}</td>
+          <td class="td-count">${r.count}</td>
+          <td class="td-density" style="color:var(--primary-dark);">${r.density}%</td>
+          <td><span class="density-badge ${st.cls}">${st.label}</span></td>
+          <td class="density-bar-cell">
+            <div class="density-bar-wrap">
+              <div class="density-bar-fill ${st.bar}" style="width:${pct}%"></div>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+}
+
+function sortTable(col){
+  if(currentSort.col===col) currentSort.dir=currentSort.dir==='desc'?'asc':'desc';
+  else { currentSort.col=col; currentSort.dir='desc'; }
+  ['sWord','sCount','sDensity'].forEach(id=>{ $(id).textContent='↕'; $(id).classList.remove('active'); });
+  const iconMap={word:'sWord',count:'sCount',density:'sDensity'};
+  const ic=$(iconMap[col]);
+  ic.textContent=currentSort.dir==='desc'?'↓':'↑';
+  ic.classList.add('active');
+  renderTable();
+}
+
+function filterByStatus(status,btn){
+  currentFilter=status;
+  document.querySelectorAll('.filter-tabs .ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function filterTable(){
+  currentSearch=$('filterInput').value.trim();
+  renderTable();
+}
+
+/* ════════════════════════════
+   HIGHLIGHTED TEXT
+════════════════════════════ */
+const HL_CLASSES=['hw1','hw2','hw3','hw4','hw5'];
+const HL_COLORS=['#bbf7d0','#bfdbfe','#fde68a','#fca5a5','#d9f99d'];
+const HL_TEXT_COLORS=['#166534','#1e40af','#78350f','#991b1b','#365314'];
+
+function renderHighlight(raw, topWords){
+  if(!topWords.length){ $('highlightBox').innerHTML=''; return; }
+
+  const words=topWords.map(r=>r.word);
+  const pattern=new RegExp(`\\b(${words.map(w=>escapeRegex(w)).join('|')})\\b`,'gi');
+
+  const highlighted=raw.replace(pattern,(match)=>{
+    const idx=words.findIndex(w=>w.toLowerCase()===match.toLowerCase());
+    if(idx===-1) return match;
+    return`<span class="${HL_CLASSES[idx]}">${match}</span>`;
+  });
+
+  $('highlightBox').innerHTML=highlighted.replace(/\n/g,'<br>');
+
+  // Legend
+  $('highlightLegend').innerHTML=topWords.map((r,i)=>`
+    <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+      border-radius:99px;font-size:0.78rem;font-weight:700;
+      background:${HL_COLORS[i]};color:${HL_TEXT_COLORS[i]};">
+      ${r.word} (${r.count}×)
+    </span>`).join('');
+}
+
+function escapeRegex(str){ return str.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+/* ════════════════════════════
+   TARGET KEYWORD REPORT
+════════════════════════════ */
+function renderTargetReport(results){
+  $('targetCard').style.display='block';
+  const lookup={};
+  results.forEach(r=>{ lookup[r.word]=r; });
+
+  $('targetBody').innerHTML=targetKeywords.map(kw=>{
+    const found=lookup[kw];
+    const count=found?.count||0;
+    const density=found?.density||0;
+    const st=getDensityStatus(density);
+    const [dlo,dhi]=getDensityRange();
+    let reco='';
+    if(!found||count===0) reco='❌ Not found. Add this keyword to your content.';
+    else if(density<dlo) reco=`📈 Density too low (${density}%). Increase usage.`;
+    else if(density>dhi*2) reco=`⚠️ Keyword stuffing detected (${density}%). Reduce usage.`;
+    else if(density>dhi) reco=`🟡 Slightly high (${density}%). Consider reducing.`;
+    else reco=`✅ Perfect density (${density}%). Keep it up!`;
+
+    return`<tr>
+      <td class="td-word">${kw}</td>
+      <td class="td-count">${count}</td>
+      <td>${density}%</td>
+      <td><span class="density-badge ${found?st.cls:'badge-overstuffed'}">${found?st.label:'Not Found'}</span></td>
+      <td style="font-size:0.83rem;">${reco}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ════════════════════════════
+   CHART SWITCHER
+════════════════════════════ */
+function switchChart(type, btn){
+  activeChart=type;
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['chartBar','chartPie','chartTable'].forEach(id=>$(id).classList.remove('show'));
+  if(type==='bar') $('chartBar').classList.add('show');
+  else if(type==='pie') $('chartPie').classList.add('show');
+  else $('chartTable').classList.add('show');
+}
+
+/* ════════════════════════════
+   EXPORT
+════════════════════════════ */
+function exportCSV(){
+  if(!analysisData.length) return;
+  const rows=[['#','Keyword','Count','Density%','Status']];
+  analysisData.forEach((r,i)=>{
+    rows.push([i+1,r.word,r.count,r.density,getDensityStatus(r.density).label]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  download('keyword_density.csv',csv,'text/csv');
+}
+function exportTXT(){
+  if(!analysisData.length) return;
+  const lines=['KEYWORD DENSITY REPORT','='.repeat(40),''];
+  analysisData.forEach((r,i)=>{
+    lines.push(`${i+1}. ${r.word} — Count: ${r.count} — Density: ${r.density}% — ${getDensityStatus(r.density).label}`);
+  });
+  download('keyword_density.txt',lines.join('\n'),'text/plain');
+}
+function exportJSON(){
+  if(!analysisData.length) return;
+  const data={totalWords,keywords:analysisData.map(r=>({...r,status:getDensityStatus(r.density).label}))};
+  download('keyword_density.json',JSON.stringify(data,null,2),'application/json');
+}
+function download(name,content,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;a.click();
+}
+
+/* ════════════════════════════
+   ENTER KEY
+════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='Enter') analyze();
+});
+</script>
+</body>
+</html>
