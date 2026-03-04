@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Open Graph Generator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;
+  --card:#ffffff;
+  --primary:#2e9e55;
+  --primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;
+  --accent:#57c97a;
+  --border:#b2e8c2;
+  --text:#1a3a24;
+  --text-muted:#5a8c6a;
+  --danger:#e53e3e;
+  --danger-bg:#fff5f5;
+  --warning:#d69e2e;
+  --warning-bg:#fffff0;
+  --shadow:0 4px 32px rgba(46,158,85,0.12);
+  --shadow-sm:0 2px 14px rgba(46,158,85,0.08);
+  --radius:18px;
+  --radius-sm:12px;
+  --transition: all 0.2s ease;
+}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+header{
+  background:linear-gradient(135deg,#0d3d1f 0%,#1a6635 30%,#2e9e55 70%,#57c97a 100%);
+  padding:52px 24px 64px;text-align:center;position:relative;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 50%,rgba(255,255,255,0.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 15%,rgba(255,255,255,0.06) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 90%,rgba(0,0,0,0.1) 0%,transparent 55%);
+}
+.hc{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:hcfloat 7s ease-in-out infinite;}
+.hc1{width:200px;height:200px;top:-60px;left:-50px;animation-delay:0s;}
+.hc2{width:120px;height:120px;bottom:-30px;right:100px;animation-delay:2.5s;}
+.hc3{width:70px;height:70px;top:20px;right:240px;animation-delay:5s;}
+.hc4{width:90px;height:90px;top:60px;left:180px;animation-delay:1.5s;}
+@keyframes hcfloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(5deg)}}
+header::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:56px;background:var(--bg);clip-path:ellipse(62% 100% at 50% 100%);}
+.header-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.28);border-radius:99px;padding:7px 22px;margin-bottom:18px;font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.95);backdrop-filter:blur(10px);letter-spacing:.5px;}
+.header-icon-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
+.header-icon-box{width:70px;height:70px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.25);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.15);}
+header h1{color:#fff;font-size:2.6rem;font-weight:900;letter-spacing:-1.2px;text-shadow:0 2px 16px rgba(0,0,0,0.18);margin-bottom:10px;}
+header p{color:rgba(255,255,255,0.8);font-size:1.02rem;}
+.header-tags{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.htag{padding:5px 14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:99px;font-size:0.76rem;font-weight:700;color:rgba(255,255,255,0.85);}
+
+/* ══════════════════════════════
+   LAYOUT
+══════════════════════════════ */
+main{max-width:1200px;margin:0 auto;padding:36px 20px 90px;}
+.main-grid{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start;}
+@media(max-width:1000px){.main-grid{grid-template-columns:1fr;}}
+
+/* ══════════════════════════════
+   CARDS
+══════════════════════════════ */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;margin-bottom:22px;}
+.card-header{padding:16px 24px;border-bottom:1.5px solid var(--border);background:linear-gradient(135deg,var(--primary-light),rgba(255,255,255,0.6));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.card-title{font-size:1rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:9px;}
+.card-badge{padding:4px 12px;background:var(--primary);color:#fff;border-radius:99px;font-size:0.72rem;font-weight:800;letter-spacing:.3px;}
+.card-body{padding:24px;}
+
+/* ══════════════════════════════
+   FORM ELEMENTS
+══════════════════════════════ */
+.form-section{margin-bottom:24px;}
+.section-divider{display:flex;align-items:center;gap:12px;margin:20px 0 18px;}
+.section-divider span{font-size:0.82rem;font-weight:800;color:var(--primary-dark);white-space:nowrap;padding:4px 12px;background:var(--primary-light);border-radius:99px;border:1px solid var(--border);}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group{margin-bottom:14px;}
+.form-group.full{grid-column:1/-1;}
+label{display:flex;align-items:center;gap:7px;font-size:0.83rem;font-weight:800;color:var(--primary-dark);margin-bottom:7px;}
+.lbl-badge{padding:2px 8px;border-radius:99px;font-size:0.7rem;font-weight:700;}
+.lbl-required{background:#fed7d7;color:#c53030;}
+.lbl-optional{background:#e9d8fd;color:#44337a;}
+.lbl-og{background:#c6f6d5;color:#276749;}
+.lbl-tw{background:#bee3f8;color:#1a365d;}
+.lbl-dc{background:#fefcbf;color:#744210;}
+
+input[type=text],input[type=url],input[type=number],textarea,select{
+  width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:10px;
+  font-size:0.9rem;color:var(--text);background:var(--bg);outline:none;
+  font-family:inherit;transition:var(--transition);
+}
+input[type=text]:focus,input[type=url]:focus,input[type=number]:focus,textarea:focus,select:focus{
+  border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,158,85,0.1);background:#fff;
+}
+input::placeholder,textarea::placeholder{color:var(--text-muted);}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+select{cursor:pointer;}
+.input-hint{font-size:0.74rem;color:var(--text-muted);margin-top:5px;font-weight:600;line-height:1.5;}
+.char-limit{font-size:0.73rem;font-weight:700;margin-top:4px;text-align:right;}
+.cl-good{color:var(--primary);}
+.cl-warn{color:var(--warning);}
+.cl-bad{color:var(--danger);}
+
+/* COLOR PICKER */
+.color-row{display:flex;gap:10px;align-items:center;}
+.color-row input[type=color]{width:48px;height:40px;padding:2px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;}
+.color-row input[type=text]{flex:1;}
+
+/* IMAGE UPLOAD */
+.img-upload-area{
+  border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;
+  cursor:pointer;transition:var(--transition);background:var(--bg);position:relative;
+}
+.img-upload-area:hover{border-color:var(--primary);background:var(--primary-light);}
+.img-upload-area.dragover{border-color:var(--primary);background:var(--primary-light);transform:scale(1.01);}
+.img-upload-icon{font-size:2rem;margin-bottom:8px;}
+.img-upload-text{font-size:0.85rem;font-weight:700;color:var(--primary-dark);margin-bottom:4px;}
+.img-upload-sub{font-size:0.76rem;color:var(--text-muted);}
+.img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.img-preview-wrap{display:none;position:relative;}
+.img-preview-wrap.show{display:block;}
+.img-preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1.5px solid var(--border);}
+.img-remove{position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid var(--border);border-radius:99px;padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--danger);cursor:pointer;transition:all .13s;}
+.img-remove:hover{background:var(--danger);color:#fff;}
+.img-info{display:none;margin-top:8px;font-size:0.78rem;color:var(--text-muted);font-weight:600;}
+.img-info.show{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+/* ══════════════════════════════
+   TABS
+══════════════════════════════ */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:22px;overflow-x:auto;}
+.tab-btn{padding:12px 20px;font-size:0.85rem;font-weight:700;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;transition:var(--transition);white-space:nowrap;display:flex;align-items:center;gap:7px;}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-light);}
+.tab-btn:hover:not(.active){color:var(--primary-dark);background:#f5fdf7;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* ══════════════════════════════
+   PREVIEW CARDS (Social)
+══════════════════════════════ */
+.preview-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.prev-tab{padding:7px 16px;border-radius:99px;border:2px solid var(--border);background:#fff;color:var(--text-muted);font-size:0.8rem;font-weight:700;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:6px;}
+.prev-tab.active,.prev-tab:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* Facebook Preview */
+.fb-preview{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #dadde1;font-family:Helvetica,Arial,sans-serif;max-width:500px;}
+.fb-img{width:100%;height:262px;object-fit:cover;background:linear-gradient(135deg,var(--primary-light),#e8f5ee);display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--border);}
+.fb-img img{width:100%;height:100%;object-fit:cover;}
+.fb-content{padding:12px;background:#f2f3f5;border-top:1px solid #dadde1;}
+.fb-site{font-size:0.72rem;color:#606770;text-transform:uppercase;margin-bottom:4px;font-weight:600;}
+.fb-title{font-size:1rem;font-weight:700;color:#1d2129;margin-bottom:3px;line-height:1.3;}
+.fb-desc{font-size:0.85rem;color:#606770;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* Twitter Preview */
+.tw-preview{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #cfd9de;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:500px;}
+.tw-img{width:100%;height:250px;object-fit:cover;background:linear-gradient(135deg,#e8f4fd,#cce4f7);display:flex;align-items:center;justify-content:center;font-size:3rem;color:#8ec5e6;}
+.tw-img img{width:100%;height:100%;object-fit:cover;}
+.tw-content{padding:12px;}
+.tw-site{font-size:0.8rem;color:#536471;margin-bottom:3px;}
+.tw-title{font-size:0.95rem;font-weight:700;color:#0f1419;margin-bottom:3px;line-height:1.3;}
+.tw-desc{font-size:0.85rem;color:#536471;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* LinkedIn Preview */
+.li-preview{background:#fff;border-radius:4px;overflow:hidden;border:1px solid #e0dfdc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:500px;}
+.li-img{width:100%;height:260px;object-fit:cover;background:linear-gradient(135deg,#e8f3fb,#cce4f5);display:flex;align-items:center;justify-content:center;font-size:3rem;color:#7bb5d8;}
+.li-img img{width:100%;height:100%;object-fit:cover;}
+.li-content{padding:14px;border-top:1px solid #e0dfdc;}
+.li-title{font-size:0.95rem;font-weight:700;color:#000000e0;margin-bottom:3px;line-height:1.3;}
+.li-site{font-size:0.8rem;color:#00000099;}
+
+/* WhatsApp Preview */
+.wa-preview{background:#e5ddd5;border-radius:10px;padding:12px;font-family:'Segoe UI',sans-serif;max-width:400px;}
+.wa-bubble{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.15);}
+.wa-img{width:100%;height:200px;object-fit:cover;background:linear-gradient(135deg,#e0f7e9,#c8f5d5);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.wa-img img{width:100%;height:100%;object-fit:cover;}
+.wa-content{padding:10px 12px;}
+.wa-site{font-size:0.72rem;color:#25d366;font-weight:700;margin-bottom:3px;}
+.wa-title{font-size:0.9rem;font-weight:700;color:#111;margin-bottom:3px;line-height:1.3;}
+.wa-desc{font-size:0.8rem;color:#667781;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ══════════════════════════════
+   CODE OUTPUT
+══════════════════════════════ */
+.code-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.code-label{font-size:0.85rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:7px;}
+.code-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.code-btn{padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:5px;transition:var(--transition);}
+.cb-copy{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 3px 10px rgba(46,158,85,0.28);}
+.cb-copy:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(46,158,85,0.35);}
+.cb-dl{background:var(--bg);color:var(--text-muted);border:1.5px solid var(--border);}
+.cb-dl:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+.cb-clear{background:#fff5f5;color:#c53030;border:1.5px solid #fed7d7;}
+.cb-clear:hover{background:#c53030;color:#fff;}
+.code-wrap{position:relative;}
+pre{
+  background:#0d1117;color:#e6edf3;border-radius:12px;padding:20px;
+  font-size:0.82rem;line-height:1.8;overflow-x:auto;font-family:'Fira Code','Courier New',monospace;
+  border:1.5px solid #30363d;max-height:420px;overflow-y:auto;
+}
+pre::-webkit-scrollbar{width:5px;height:5px;}
+pre::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px;}
+.line-tag{color:#7ee787;}
+.line-attr{color:#79c0ff;}
+.line-val{color:#a5d6ff;}
+.line-str{color:#f2cc60;}
+.line-comment{color:#8b949e;font-style:italic;}
+
+/* ══════════════════════════════
+   VALIDATION
+══════════════════════════════ */
+.validation-box{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:22px;}
+.v-item{display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid #eaf7ee;}
+.v-item:last-child{border-bottom:none;}
+.v-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.v-text{flex:1;}
+.v-title{font-size:0.83rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.v-desc{font-size:0.77rem;color:var(--text-muted);line-height:1.5;}
+.v-ok .v-title{color:#276749;}
+.v-warn .v-title{color:#92400e;}
+.v-err .v-title{color:#9b2c2c;}
+
+/* ══════════════════════════════
+   SCORE METER
+══════════════════════════════ */
+.score-section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);padding:24px;margin-bottom:22px;text-align:center;}
+.score-ring-wrap{position:relative;width:120px;height:120px;margin:0 auto 16px;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.sr-track{fill:none;stroke:var(--primary-light);stroke-width:10;}
+.sr-fill{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);}
+.sr-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sr-num{font-size:1.8rem;font-weight:900;color:var(--primary-dark);line-height:1;}
+.sr-lbl{font-size:0.7rem;font-weight:700;color:var(--text-muted);}
+.score-title{font-size:0.95rem;font-weight:800;color:var(--text);margin-bottom:4px;}
+.score-sub{font-size:0.8rem;color:var(--text-muted);}
+.score-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.sb-item{background:var(--bg);border-radius:9px;padding:10px 12px;border:1px solid var(--border);}
+.sb-label{font-size:0.74rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;}
+.sb-bar-wrap{background:var(--primary-light);border-radius:99px;height:6px;overflow:hidden;}
+.sb-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--primary));transition:width .8s ease;}
+.sb-val{font-size:0.72rem;font-weight:700;color:var(--primary-dark);margin-top:4px;}
+
+/* ══════════════════════════════
+   TEMPLATES
+══════════════════════════════ */
+.templates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.tpl-card{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:var(--transition);text-align:center;}
+.tpl-card:hover{background:var(--primary-light);border-color:var(--primary);transform:translateY(-2px);}
+.tpl-icon{font-size:2rem;margin-bottom:8px;}
+.tpl-name{font-size:0.83rem;font-weight:800;color:var(--text);margin-bottom:3px;}
+.tpl-desc{font-size:0.74rem;color:var(--text-muted);}
+
+/* ══════════════════════════════
+   GENERATE BUTTON
+══════════════════════════════ */
+.generate-btn{
+  width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;border-radius:14px;font-size:1.05rem;font-weight:900;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 6px 20px rgba(46,158,85,0.32);transition:var(--transition);
+  letter-spacing:.2px;margin-top:8px;
+}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(46,158,85,0.4);}
+.generate-btn:active{transform:translateY(0);}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  padding:14px 20px;border-radius:12px;
+  font-size:0.88rem;font-weight:700;color:#fff;
+  box-shadow:0 8px 28px rgba(0,0,0,0.18);
+  transform:translateX(120%);opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  z-index:9999;display:flex;align-items:center;gap:9px;max-width:360px;
+}
+.toast.show{transform:translateX(0);opacity:1;}
+.toast-success{background:linear-gradient(135deg,var(--primary),var(--primary-dark));}
+.toast-error{background:linear-gradient(135deg,#e53e3e,#c53030);}
+.toast-info{background:linear-gradient(135deg,#3182ce,#1a56db);}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer{background:var(--card);border-top:1.5px solid var(--border);padding:26px;text-align:center;color:var(--text-muted);font-size:0.82rem;}
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media(max-width:768px){
+  header h1{font-size:2rem;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .score-bars{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .tab-btn{padding:10px 14px;font-size:0.8rem;}
+  pre{font-size:0.76rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hc hc1"></div><div class="hc hc2"></div>
+  <div class="hc hc3"></div><div class="hc hc4"></div>
+  <div class="header-pill">🚀 Social Media Meta Tag Generator</div>
+  <div class="header-icon-row">
+    <div class="header-icon-box">📊</div>
+    <div class="header-icon-box" style="font-size:2.2rem;">🔗</div>
+    <div class="header-icon-box">🌐</div>
+  </div>
+  <h1>Open Graph Generator</h1>
+  <p>Generate perfect Open Graph meta tags for social sharing &amp; SEO</p>
+  <div class="header-tags">
+    <span class="htag">📘 Facebook</span>
+    <span class="htag">🐦 Twitter Cards</span>
+    <span class="htag">💼 LinkedIn</span>
+    <span class="htag">💬 WhatsApp</span>
+    <span class="htag">📌 Pinterest</span>
+    <span class="htag">🔍 SEO</span>
+  </div>
+</header>
+
+<main>
+<div class="main-grid">
+
+  <!-- ════ LEFT: FORM ════ -->
+  <div>
+
+    <!-- TEMPLATES -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">⚡ Quick Templates</span>
+        <span class="card-badge">PRESETS</span>
+      </div>
+      <div class="card-body">
+        <div class="templates-grid" id="templatesGrid"></div>
+      </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">⚙️ Configure Meta Tags</span>
+        <span class="card-badge">EDITOR</span>
+      </div>
+      <div class="card-body">
+
+        <!-- TAB NAV -->
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchTab('basic',this)">📋 Basic</button>
+          <button class="tab-btn" onclick="switchTab('og',this)">📘 Open Graph</button>
+          <button class="tab-btn" onclick="switchTab('twitter',this)">🐦 Twitter</button>
+          <button class="tab-btn" onclick="switchTab('advanced',this)">⚙️ Advanced</button>
+          <button class="tab-btn" onclick="switchTab('article',this)">📰 Article</button>
+        </div>
+
+        <!-- BASIC TAB -->
+        <div class="tab-pane active" id="tab-basic">
+          <div class="form-group">
+            <label>🌐 Page URL <span class="lbl-badge lbl-required">Required</span></label>
+            <input type="url" id="pageUrl" placeholder="https://yourwebsite.com/page" oninput="liveUpdate()"/>
+            <div class="input-hint">The canonical URL of your page. Always use absolute URL.</div>
+          </div>
+          <div class="form-group">
+            <label>📝 Page Title <span class="lbl-badge lbl-required">Required</span></label>
+            <input type="text" id="pageTitle" placeholder="Your Amazing Page Title" maxlength="90" oninput="updateCount(this,60,90);liveUpdate()"/>
+            <div class="char-limit" id="cl-pageTitle">0 / 60</div>
+            <div class="input-hint">Recommended 50–60 characters for optimal display.</div>
+          </div>
+          <div class="form-group">
+            <label>📄 Meta Description <span class="lbl-badge lbl-required">Required</span></label>
+            <textarea id="pageDesc" placeholder="A compelling description of your page content for social sharing and search engines..." maxlength="200" oninput="updateCount(this,155,200);liveUpdate()"></textarea>
+            <div class="char-limit" id="cl-pageDesc">0 / 155</div>
+            <div class="input-hint">Recommended 150–160 characters. This appears in social previews.</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🔤 Site Name <span class="lbl-badge lbl-optional">Optional</span></label>
+              <input type="text" id="siteName" placeholder="My Awesome Website" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>🌍 Locale <span class="lbl-badge lbl-optional">Optional</span></label>
+              <select id="locale" onchange="liveUpdate()">
+                <option value="en_US">en_US — English (US)</option>
+                <option value="en_GB">en_GB — English (UK)</option>
+                <option value="fr_FR">fr_FR — French</option>
+                <option value="de_DE">de_DE — German</option>
+                <option value="es_ES">es_ES — Spanish</option>
+                <option value="it_IT">it_IT — Italian</option>
+                <option value="pt_BR">pt_BR — Portuguese (BR)</option>
+                <option value="ja_JP">ja_JP — Japanese</option>
+                <option value="zh_CN">zh_CN — Chinese (Simplified)</option>
+                <option value="ar_AR">ar_AR — Arabic</option>
+                <option value="ur_PK">ur_PK — Urdu</option>
+                <option value="hi_IN">hi_IN — Hindi</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>🖼️ OG Image <span class="lbl-badge lbl-required">Required</span></label>
+            <div class="img-upload-area" id="imgUploadArea">
+              <input type="file" accept="image/*" onchange="handleImageUpload(this)" id="imgFileInput"/>
+              <div id="imgUploadPlaceholder">
+                <div class="img-upload-icon">🖼️</div>
+                <div class="img-upload-text">Drag & Drop or Click to Upload Image</div>
+                <div class="img-upload-sub">Recommended: 1200×630px · JPG, PNG, WebP · Max 8MB</div>
+              </div>
+              <div class="img-preview-wrap" id="imgPreviewWrap">
+                <img class="img-preview" id="imgPreview" src="" alt="Preview"/>
+                <button class="img-remove" onclick="removeImage(event)">✕ Remove</button>
+              </div>
+            </div>
+            <div class="img-info" id="imgInfo"></div>
+            <div style="margin-top:10px;">
+              <label style="margin-bottom:6px;">Or enter image URL directly:</label>
+              <input type="url" id="ogImage" placeholder="https://yoursite.com/og-image.jpg" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-row" style="margin-top:10px;">
+              <div class="form-group">
+                <label>↔️ Image Width</label>
+                <input type="number" id="ogImageWidth" placeholder="1200" value="1200" oninput="liveUpdate()"/>
+              </div>
+              <div class="form-group">
+                <label>↕️ Image Height</label>
+                <input type="number" id="ogImageHeight" placeholder="630" value="630" oninput="liveUpdate()"/>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+              <label>📝 Image Alt Text</label>
+              <input type="text" id="ogImageAlt" placeholder="Descriptive alt text for the OG image" oninput="liveUpdate()"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- OG TAB -->
+        <div class="tab-pane" id="tab-og">
+          <div class="form-group">
+            <label>📦 OG Type <span class="lbl-badge lbl-og">OG</span></label>
+            <select id="ogType" onchange="toggleArticleTab();liveUpdate()">
+              <option value="website">website — General Website</option>
+              <option value="article">article — Blog Post / News Article</option>
+              <option value="product">product — Product Page</option>
+              <option value="video.movie">video.movie — Movie / Video</option>
+              <option value="music.song">music.song — Music / Song</option>
+              <option value="book">book — Book</option>
+              <option value="profile">profile — Person / Profile</option>
+            </select>
+            <div class="input-hint">Defines how your content should be represented on social platforms.</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🏷️ OG Title Override <span class="lbl-badge lbl-og">OG</span></label>
+              <input type="text" id="ogTitle" placeholder="Leave blank to use page title" oninput="liveUpdate()"/>
+              <div class="input-hint">Override the page title specifically for OG.</div>
+            </div>
+            <div class="form-group">
+              <label>📄 OG Desc Override <span class="lbl-badge lbl-og">OG</span></label>
+              <input type="text" id="ogDesc" placeholder="Leave blank to use meta description" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="section-divider"><span>Facebook App</span></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>📘 Facebook App ID <span class="lbl-badge lbl-optional">Optional</span></label>
+              <input type="text" id="fbAppId" placeholder="123456789012345" oninput="liveUpdate()"/>
+              <div class="input-hint">Required for Facebook Insights analytics.</div>
+            </div>
+            <div class="form-group">
+              <label>📘 FB Admin ID <span class="lbl-badge lbl-optional">Optional</span></label>
+              <input type="text" id="fbAdminId" placeholder="your_facebook_user_id" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="section-divider"><span>Video / Audio (Optional)</span></div>
+          <div class="form-group">
+            <label>🎬 Video URL <span class="lbl-badge lbl-optional">Optional</span></label>
+            <input type="url" id="ogVideo" placeholder="https://yoursite.com/video.mp4" oninput="liveUpdate()"/>
+          </div>
+          <div class="form-group">
+            <label>🎵 Audio URL <span class="lbl-badge lbl-optional">Optional</span></label>
+            <input type="url" id="ogAudio" placeholder="https://yoursite.com/audio.mp3" oninput="liveUpdate()"/>
+          </div>
+          <div class="form-group">
+            <label>🔒 Content Restriction <span class="lbl-badge lbl-optional">Optional</span></label>
+            <select id="ageRestrict" onchange="liveUpdate()">
+              <option value="">None</option>
+              <option value="18+">18+ Adults Only</option>
+              <option value="13+">13+ Teenagers</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TWITTER TAB -->
+        <div class="tab-pane" id="tab-twitter">
+          <div class="form-group">
+            <label>🐦 Twitter Card Type <span class="lbl-badge lbl-tw">Twitter</span></label>
+            <select id="twCard" onchange="liveUpdate()">
+              <option value="summary_large_image">summary_large_image — Large Image Card (Recommended)</option>
+              <option value="summary">summary — Small Summary Card</option>
+              <option value="app">app — App Install Card</option>
+              <option value="player">player — Video Player Card</option>
+            </select>
+            <div class="input-hint">summary_large_image gives the best visual impact on Twitter/X.</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>👤 Twitter Site Handle <span class="lbl-badge lbl-tw">Twitter</span></label>
+              <input type="text" id="twSite" placeholder="@yourwebsite" oninput="liveUpdate()"/>
+              <div class="input-hint">Twitter @username for the website.</div>
+            </div>
+            <div class="form-group">
+              <label>✍️ Twitter Creator <span class="lbl-badge lbl-tw">Twitter</span></label>
+              <input type="text" id="twCreator" placeholder="@author_handle" oninput="liveUpdate()"/>
+              <div class="input-hint">Author's Twitter @username.</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🏷️ Twitter Title Override</label>
+              <input type="text" id="twTitle" placeholder="Leave blank to use page title" maxlength="70" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>📄 Twitter Desc Override</label>
+              <input type="text" id="twDesc" placeholder="Leave blank to use meta description" maxlength="200" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>🖼️ Twitter Image Override</label>
+            <input type="url" id="twImage" placeholder="Leave blank to use OG image" oninput="liveUpdate()"/>
+            <div class="input-hint">Minimum 144×144px. Max 4096×4096px. Less than 5MB.</div>
+          </div>
+          <div class="section-divider"><span>App Card (if type = app)</span></div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>📱 iPhone App ID</label>
+              <input type="text" id="twIphoneId" placeholder="App Store ID" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>📱 iPad App ID</label>
+              <input type="text" id="twIpadId" placeholder="App Store ID" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>🤖 Android App ID</label>
+              <input type="text" id="twAndroidId" placeholder="Package Name" oninput="liveUpdate()"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADVANCED TAB -->
+        <div class="tab-pane" id="tab-advanced">
+          <div class="section-divider"><span>SEO Meta Tags</span></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🔍 Meta Keywords</label>
+              <input type="text" id="metaKeywords" placeholder="seo, keywords, comma, separated" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>🤖 Robots</label>
+              <select id="metaRobots" onchange="liveUpdate()">
+                <option value="index, follow">index, follow (Default)</option>
+                <option value="noindex, follow">noindex, follow</option>
+                <option value="index, nofollow">index, nofollow</option>
+                <option value="noindex, nofollow">noindex, nofollow</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>✍️ Author Name</label>
+              <input type="text" id="metaAuthor" placeholder="Author or Company Name" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>©️ Copyright</label>
+              <input type="text" id="metaCopyright" placeholder="© 2025 Company Name" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>🔗 Canonical URL</label>
+            <input type="url" id="metaCanonical" placeholder="https://yoursite.com/canonical-page" oninput="liveUpdate()"/>
+            <div class="input-hint">Helps avoid duplicate content issues.</div>
+          </div>
+          <div class="section-divider"><span>Theme & PWA</span></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🎨 Theme Color</label>
+              <div class="color-row">
+                <input type="color" id="themeColorPicker" value="#2e9e55" oninput="syncColor()"/>
+                <input type="text" id="themeColor" value="#2e9e55" placeholder="#2e9e55" oninput="liveUpdate()"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>🎨 MS Tile Color</label>
+              <div class="color-row">
+                <input type="color" id="tileColorPicker" value="#2e9e55" oninput="syncTileColor()"/>
+                <input type="text" id="tileColor" value="#2e9e55" placeholder="#2e9e55" oninput="liveUpdate()"/>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>🖼️ Apple Touch Icon URL</label>
+              <input type="url" id="appleIcon" placeholder="https://yoursite.com/apple-touch-icon.png" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>⚙️ Viewport</label>
+              <select id="viewport" onchange="liveUpdate()">
+                <option value="width=device-width, initial-scale=1">Standard Responsive</option>
+                <option value="width=device-width, initial-scale=1, maximum-scale=1">No Zoom</option>
+                <option value="width=1200">Fixed 1200px</option>
+              </select>
+            </div>
+          </div>
+          <div class="section-divider"><span>Pinterest & Schema</span></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>📌 Pinterest Domain Verify</label>
+              <input type="text" id="pinterestVerify" placeholder="Pinterest verification code" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>🔍 Google Site Verify</label>
+              <input type="text" id="googleVerify" placeholder="Google verification code" oninput="liveUpdate()"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ARTICLE TAB -->
+        <div class="tab-pane" id="tab-article">
+          <div style="padding:12px 16px;background:var(--warning-bg);border:1.5px solid #fef08a;border-radius:10px;font-size:0.83rem;font-weight:600;color:#92400e;margin-bottom:20px;">
+            💡 Article tags are used when OG Type is set to "article". Switch to the OG tab to change the type.
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>📅 Published Time</label>
+              <input type="text" id="artPublished" placeholder="2025-01-15T10:30:00Z" oninput="liveUpdate()"/>
+              <div class="input-hint">ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ</div>
+            </div>
+            <div class="form-group">
+              <label>🔄 Modified Time</label>
+              <input type="text" id="artModified" placeholder="2025-06-01T14:00:00Z" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>⏳ Expiration Time</label>
+              <input type="text" id="artExpiry" placeholder="2026-01-15T00:00:00Z" oninput="liveUpdate()"/>
+            </div>
+            <div class="form-group">
+              <label>✍️ Article Author URL</label>
+              <input type="url" id="artAuthor" placeholder="https://yoursite.com/author/name" oninput="liveUpdate()"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>📂 Article Section</label>
+            <input type="text" id="artSection" placeholder="Technology, Travel, Finance..." oninput="liveUpdate()"/>
+          </div>
+          <div class="form-group">
+            <label>🏷️ Article Tags (comma separated)</label>
+            <input type="text" id="artTags" placeholder="seo, marketing, web development" oninput="liveUpdate()"/>
+            <div class="input-hint">Multiple tags can be added, each generates a separate meta tag.</div>
+          </div>
+          <div class="section-divider"><span>Schema.org JSON-LD (Article)</span></div>
+          <div class="form-group">
+            <label><input type="checkbox" id="includeSchema" onchange="liveUpdate()" style="width:auto;margin-right:6px;accent-color:var(--primary);"/> Include Schema.org JSON-LD</label>
+            <div class="input-hint">Adds structured data for rich search results.</div>
+          </div>
+        </div>
+
+        <button class="generate-btn" onclick="generateTags()">
+          ✨ Generate Open Graph Meta Tags
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════ RIGHT: PREVIEW + OUTPUT ════ -->
+  <div>
+
+    <!-- OG SCORE -->
+    <div class="score-section" id="scoreSection">
+      <div class="score-ring-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="sr-track" cx="60" cy="60" r="45"/>
+          <circle class="sr-fill" id="srFill" cx="60" cy="60" r="45" stroke="#2e9e55"/>
+        </svg>
+        <div class="sr-center">
+          <div class="sr-num" id="srNum">0</div>
+          <div class="sr-lbl">OG SCORE</div>
+        </div>
+      </div>
+      <div class="score-title" id="scoreTitleText">Fill in your details</div>
+      <div class="score-sub" id="scoreSubText">Complete all required fields for best score</div>
+      <div class="score-bars">
+        <div class="sb-item">
+          <div class="sb-label">Basic Info</div>
+          <div class="sb-bar-wrap"><div class="sb-bar-fill" id="sb1" style="width:0%"></div></div>
+          <div class="sb-val" id="sbv1">0%</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-label">Social Meta</div>
+          <div class="sb-bar-wrap"><div class="sb-bar-fill" id="sb2" style="width:0%"></div></div>
+          <div class="sb-val" id="sbv2">0%</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-label">Twitter Tags</div>
+          <div class="sb-bar-wrap"><div class="sb-bar-fill" id="sb3" style="width:0%"></div></div>
+          <div class="sb-val" id="sbv3">0%</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-label">Advanced</div>
+          <div class="sb-bar-wrap"><div class="sb-bar-fill" id="sb4" style="width:0%"></div></div>
+          <div class="sb-val" id="sbv4">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VALIDATION -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">✅ Tag Validation</span>
+      </div>
+      <div class="validation-box" id="validationBox">
+        <div class="v-item v-err">
+          <span class="v-icon">⭕</span>
+          <div class="v-text">
+            <div class="v-title">Page URL missing</div>
+            <div class="v-desc">Add a canonical URL for your page.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL PREVIEW -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">👁️ Social Preview</span>
+        <span class="card-badge">LIVE</span>
+      </div>
+      <div class="card-body">
+        <div class="preview-tabs">
+          <button class="prev-tab active" onclick="switchPreview('facebook',this)">📘 Facebook</button>
+          <button class="prev-tab" onclick="switchPreview('twitter',this)">🐦 Twitter</button>
+          <button class="prev-tab" onclick="switchPreview('linkedin',this)">💼 LinkedIn</button>
+          <button class="prev-tab" onclick="switchPreview('whatsapp',this)">💬 WhatsApp</button>
+        </div>
+        <div id="previewArea"></div>
+      </div>
+    </div>
+
+    <!-- CODE OUTPUT -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">💻 Generated Code</span>
+        <span class="card-badge">HTML</span>
+      </div>
+      <div class="card-body">
+        <div class="code-toolbar">
+          <div class="code-label">📋 Copy &amp; paste inside &lt;head&gt; tag</div>
+          <div class="code-actions">
+            <button class="code-btn cb-copy" onclick="copyCode()">📋 Copy All</button>
+            <button class="code-btn cb-dl" onclick="downloadCode()">⬇️ Download</button>
+            <button class="code-btn cb-clear" onclick="clearAll()">🗑️ Reset</button>
+          </div>
+        </div>
+        <div class="code-wrap">
+          <pre id="codeOutput"><span class="line-comment">&lt;!-- Generate your Open Graph tags above --&gt;</span>
+<span class="line-comment">&lt;!-- Fill in the form and click Generate --&gt;</span></pre>
+        </div>
+        <div style="margin-top:14px;padding:12px 16px;background:var(--primary-light);border-radius:10px;border:1px solid var(--border);">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--primary-dark);margin-bottom:4px;">📌 How to use:</div>
+          <div style="font-size:0.76rem;color:var(--text-muted);line-height:1.7;">1. Fill in all the fields in the form<br>2. Click "Generate Open Graph Meta Tags"<br>3. Copy the generated code<br>4. Paste it inside your HTML <code style="background:#e8f5ee;padding:1px 5px;border-radius:4px;">&lt;head&gt;</code> tag</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</main>
+
+<footer>🌿 Open Graph Generator &nbsp;|&nbsp; Perfect meta tags for Facebook, Twitter, LinkedIn & more &nbsp;|&nbsp; Built with ❤️</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let currentPreview = 'facebook';
+let uploadedImageDataUrl = '';
+
+/* ════════════════════════════════
+   TEMPLATES
+════════════════════════════════ */
+const TEMPLATES = [
+  {icon:'🌐',name:'Website',desc:'General website',data:{ogType:'website',pageTitle:'My Awesome Website',pageDesc:'Welcome to my awesome website. Discover great content and resources.', siteName:'My Website'}},
+  {icon:'📰',name:'Blog Post',desc:'Article / post',data:{ogType:'article',pageTitle:'10 Tips for Better SEO in 2025',pageDesc:'Discover the top 10 SEO strategies to boost your website traffic in 2025.',siteName:'My Blog',artSection:'Technology',artTags:'seo, tips, digital marketing'}},
+  {icon:'🛍️',name:'Product',desc:'E-commerce page',data:{ogType:'product',pageTitle:'Premium Green Wireless Headphones',pageDesc:'Experience crystal-clear sound with our premium wireless headphones. Free shipping.',siteName:'ShopGreen'}},
+  {icon:'🎬',name:'Video',desc:'Video content',data:{ogType:'video.movie',pageTitle:'How to Build a Website — Full Tutorial',pageDesc:'Watch our complete step-by-step guide to building a professional website from scratch.',siteName:'TechTube',twCard:'player'}},
+  {icon:'🏢',name:'Business',desc:'Company page',data:{ogType:'website',pageTitle:'GreenTech Solutions — Software Development',pageDesc:'We build cutting-edge software solutions for businesses of all sizes. Get a free consultation today.',siteName:'GreenTech Solutions',metaAuthor:'GreenTech Team'}},
+  {icon:'📱',name:'App Page',desc:'Mobile app',data:{ogType:'website',pageTitle:'GreenApp — Download Now',pageDesc:'Manage your life smarter with GreenApp. Available on iOS and Android. 4.9★ rating.',siteName:'GreenApp',twCard:'app'}},
+];
+
+function renderTemplates(){
+  $('templatesGrid').innerHTML = TEMPLATES.map((t,i)=>`
+    <div class="tpl-card" onclick="applyTemplate(${i})">
+      <div class="tpl-icon">${t.icon}</div>
+      <div class="tpl-name">${t.name}</div>
+      <div class="tpl-desc">${t.desc}</div>
+    </div>`).join('');
+}
+
+function applyTemplate(i){
+  const d = TEMPLATES[i].data;
+  Object.entries(d).forEach(([k,v])=>{
+    const el = $(k);
+    if(el){ el.value=v; if(el.tagName==='TEXTAREA') el.value=v; }
+  });
+  // Update char counts
+  updateCount($('pageTitle'),60,90);
+  updateCount($('pageDesc'),155,200);
+  liveUpdate();
+  switchTab('basic', document.querySelector('.tab-btn.active'));
+  showToast('✅ Template applied!','success');
+}
+
+/* ════════════════════════════════
+   TABS
+════════════════════════════════ */
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  $('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleArticleTab(){
+  // Visual cue only
+}
+
+/* ════════════════════════════════
+   CHAR COUNT
+════════════════════════════════ */
+function updateCount(el, good, max){
+  const len = el.value.length;
+  const id = 'cl-'+el.id;
+  const cl = $(id);
+  if(!cl) return;
+  cl.textContent = `${len} / ${good}`;
+  cl.className = 'char-limit ' + (len<=good?'cl-good':len<=max?'cl-warn':'cl-bad');
+}
+
+/* ════════════════════════════════
+   COLOR SYNC
+════════════════════════════════ */
+function syncColor(){
+  $('themeColor').value = $('themeColorPicker').value;
+  liveUpdate();
+}
+function syncTileColor(){
+  $('tileColor').value = $('tileColorPicker').value;
+  liveUpdate();
+}
+
+/* ════════════════════════════════
+   IMAGE UPLOAD
+════════════════════════════════ */
+const uploadArea = document.getElementById('imgUploadArea');
+uploadArea.addEventListener('dragover', e=>{e.preventDefault();uploadArea.classList.add('dragover');});
+uploadArea.addEventListener('dragleave', ()=>uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', e=>{
+  e.preventDefault();uploadArea.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')) processImageFile(file);
+});
+
+function handleImageUpload(input){
+  if(input.files[0]) processImageFile(input.files[0]);
+}
+
+function processImageFile(file){
+  if(file.size > 8*1024*1024){ showToast('⚠️ Image too large! Max 8MB.','error'); return; }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    uploadedImageDataUrl = e.target.result;
+    $('imgPreview').src = uploadedImageDataUrl;
+    $('imgPreviewWrap').classList.add('show');
+    $('imgUploadPlaceholder').style.display='none';
+    const info=$('imgInfo'); info.classList.add('show');
+    info.innerHTML=`<span>📄 ${file.name}</span><span>📦 ${(file.size/1024).toFixed(1)} KB</span><span>🖼️ ${file.type}</span>`;
+    // Set as OG image URL (data URL for preview only)
+    if(!$('ogImage').value) $('ogImage').placeholder='Using uploaded image (data URL)';
+    liveUpdate();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage(e){
+  e.preventDefault(); e.stopPropagation();
+  uploadedImageDataUrl='';
+  $('imgPreview').src='';
+  $('imgPreviewWrap').classList.remove('show');
+  $('imgUploadPlaceholder').style.display='';
+  $('imgInfo').classList.remove('show');
+  $('imgFileInput').value='';
+  liveUpdate();
+}
+
+/* ════════════════════════════════
+   GET VALUES
+════════════════════════════════ */
+function getVal(id){ const el=$(id); return el?el.value.trim():''; }
+function getImageSrc(){ return uploadedImageDataUrl || getVal('ogImage'); }
+
+/* ════════════════════════════════
+   LIVE UPDATE
+════════════════════════════════ */
+function liveUpdate(){
+  updateScore();
+  updateValidation();
+  renderPreview();
+}
+
+/* ════════════════════════════════
+   SCORE
+════════════════════════════════ */
+function updateScore(){
+  const checks = {
+    basic:[
+      !!getVal('pageUrl'),!!getVal('pageTitle'),!!getVal('pageDesc'),
+      !!getImageSrc(),!!getVal('siteName'),!!getVal('locale'),
+    ],
+    social:[
+      !!getVal('ogType'),!!getVal('ogImage')||!!uploadedImageDataUrl,
+      !!getVal('ogImageWidth'),!!getVal('ogImageAlt'),
+    ],
+    twitter:[
+      !!getVal('twCard'),!!getVal('twSite'),!!getVal('twCreator'),
+    ],
+    advanced:[
+      !!getVal('themeColor'),!!getVal('metaRobots'),!!getVal('metaAuthor'),!!getVal('metaCanonical'),
+    ],
+  };
+  const s1=Math.round(checks.basic.filter(Boolean).length/checks.basic.length*100);
+  const s2=Math.round(checks.social.filter(Boolean).length/checks.social.length*100);
+  const s3=Math.round(checks.twitter.filter(Boolean).length/checks.twitter.length*100);
+  const s4=Math.round(checks.advanced.filter(Boolean).length/checks.advanced.length*100);
+  const total=Math.round((s1*.35)+(s2*.30)+(s3*.20)+(s4*.15));
+
+  $('srNum').textContent=total;
+  const off=283-(283*(total/100));
+  $('srFill').style.strokeDashoffset=off;
+  const col=total>=80?'#2e9e55':total>=50?'#d69e2e':'#e53e3e';
+  $('srFill').style.stroke=col;
+  $('srNum').style.color=col;
+  $('scoreTitleText').textContent=total>=80?'🏆 Excellent OG Setup!':total>=50?'✅ Good — Keep improving':'🔧 Needs more details';
+  $('scoreSubText').textContent=total>=80?'Your page is optimized for social sharing':total>=50?'Add more fields for better social presence':'Complete required fields for best results';
+
+  [['sb1','sbv1',s1],['sb2','sbv2',s2],['sb3','sbv3',s3],['sb4','sbv4',s4]].forEach(([bar,val,s])=>{
+    $(bar).style.width=s+'%';
+    $(val).textContent=s+'%';
+  });
+}
+
+/* ════════════════════════════════
+   VALIDATION
+════════════════════════════════ */
+function updateValidation(){
+  const items=[];
+  const url=getVal('pageUrl'), title=getVal('pageTitle'), desc=getVal('pageDesc'), img=getImageSrc();
+  const titleLen=title.length, descLen=desc.length;
+
+  if(!url) items.push({type:'err',title:'Page URL is missing',desc:'Required for og:url. Add your canonical page URL.'});
+  else items.push({type:'ok',title:'Page URL ✓',desc:'og:url is set correctly.'});
+
+  if(!title) items.push({type:'err',title:'Page title is missing',desc:'Required for og:title and title tag.'});
+  else if(titleLen<10) items.push({type:'warn',title:`Title too short (${titleLen} chars)`,desc:'Aim for 50–60 characters for best display.'});
+  else if(titleLen>60) items.push({type:'warn',title:`Title too long (${titleLen} chars)`,desc:'May be truncated. Keep under 60 characters.'});
+  else items.push({type:'ok',title:`Title length is perfect (${titleLen} chars) ✓`,desc:'Great! Within the recommended 50–60 character range.'});
+
+  if(!desc) items.push({type:'err',title:'Description is missing',desc:'Required for og:description and meta description.'});
+  else if(descLen<80) items.push({type:'warn',title:`Description too short (${descLen} chars)`,desc:'Aim for 150–160 characters for best SEO.'});
+  else if(descLen>160) items.push({type:'warn',title:`Description too long (${descLen} chars)`,desc:'May be truncated. Keep under 160 characters.'});
+  else items.push({type:'ok',title:`Description is perfect (${descLen} chars) ✓`,desc:'Within the recommended 150–160 character range.'});
+
+  if(!img) items.push({type:'err',title:'OG image is missing',desc:'Highly recommended. Use 1200×630px for best results.'});
+  else {
+    const w=getVal('ogImageWidth'), h=getVal('ogImageHeight');
+    if(w&&h&&(parseInt(w)<200||parseInt(h)<200)) items.push({type:'warn',title:'Image may be too small',desc:'Recommended minimum: 600×315px. Ideal: 1200×630px.'});
+    else items.push({type:'ok',title:'OG Image is set ✓',desc:`Image configured. ${w&&h?`Size: ${w}×${h}px.`:''}`});
+  }
+
+  if(!getVal('twCard')) items.push({type:'warn',title:'Twitter Card type not set',desc:'Add twitter:card for better Twitter/X appearance.'});
+  else items.push({type:'ok',title:'Twitter Card is configured ✓',desc:`Using ${getVal('twCard')} card type.`});
+
+  if(!getVal('siteName')) items.push({type:'warn',title:'Site name missing',desc:'Add og:site_name for brand recognition on Facebook.'});
+
+  const classMap={ok:'v-ok',warn:'v-warn',err:'v-err'};
+  const iconMap={ok:'✅',warn:'⚠️',err:'❌'};
+  $('validationBox').innerHTML=items.map(it=>`
+    <div class="v-item ${classMap[it.type]}">
+      <span class="v-icon">${iconMap[it.type]}</span>
+      <div class="v-text">
+        <div class="v-title">${it.title}</div>
+        <div class="v-desc">${it.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════
+   SOCIAL PREVIEW
+════════════════════════════════ */
+function switchPreview(type, btn){
+  currentPreview=type;
+  document.querySelectorAll('.prev-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPreview();
+}
+
+function renderPreview(){
+  const title = getVal('ogTitle')||getVal('pageTitle')||'Your Page Title';
+  const desc  = getVal('ogDesc')||getVal('pageDesc')||'Your page description will appear here on social media platforms.';
+  const imgSrc= getImageSrc();
+  const url   = getVal('pageUrl')||'https://yourwebsite.com';
+  const site  = getVal('siteName')||'yourwebsite.com';
+  let domain='';
+  try{domain=new URL(url.startsWith('http')?url:'https://'+url).hostname;}catch{domain=url||'yourwebsite.com';}
+
+  const imgHtml = imgSrc
+    ? `<img src="${imgSrc}" onerror="this.parentElement.innerHTML='🖼️'" style="width:100%;height:100%;object-fit:cover;"/>`
+    : '🖼️';
+
+  const previews = {
+    facebook:`<div class="fb-preview">
+      <div class="fb-img">${imgHtml}</div>
+      <div class="fb-content">
+        <div class="fb-site">${domain.toUpperCase()}</div>
+        <div class="fb-title">${escH(title)}</div>
+        <div class="fb-desc">${escH(desc)}</div>
+      </div>
+    </div>`,
+    twitter:`<div class="tw-preview">
+      <div class="tw-img">${imgHtml}</div>
+      <div class="tw-content">
+        <div class="tw-title">${escH(getVal('twTitle')||title)}</div>
+        <div class="tw-desc">${escH(getVal('twDesc')||desc)}</div>
+        <div class="tw-site">🔗 ${domain}</div>
+      </div>
+    </div>`,
+    linkedin:`<div class="li-preview">
+      <div class="li-img">${imgHtml}</div>
+      <div class="li-content">
+        <div class="li-title">${escH(title)}</div>
+        <div class="li-site">🌐 ${domain}</div>
+      </div>
+    </div>`,
+    whatsapp:`<div class="wa-preview">
+      <div class="wa-bubble">
+        <div class="wa-img">${imgHtml}</div>
+        <div class="wa-content">
+          <div class="wa-site">${domain}</div>
+          <div class="wa-title">${escH(title)}</div>
+          <div class="wa-desc">${escH(desc)}</div>
+        </div>
+      </div>
+    </div>`,
+  };
+  $('previewArea').innerHTML = previews[currentPreview];
+}
+
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ════════════════════════════════
+   GENERATE META TAGS
+════════════════════════════════ */
+function generateTags(){
+  const url       = getVal('pageUrl');
+  const title     = getVal('pageTitle');
+  const desc      = getVal('pageDesc');
+
+  if(!url||!title||!desc){
+    showToast('⚠️ Please fill in URL, Title & Description!','error');
+    switchTab('basic',document.querySelectorAll('.tab-btn')[0]);
+    return;
+  }
+
+  const lines = [];
+  const add = (line)=>lines.push(line);
+  const meta = (name,content)=>content?`  <meta name="${name}" content="${esc(content)}"/>`:null;
+  const prop = (property,content)=>content?`  <meta property="${property}" content="${esc(content)}"/>`:null;
+  const link = (rel,href)=>href?`  <link rel="${rel}" href="${esc(href)}"/>`:null;
+
+  function esc(s){ return String(s||'').replace(/"/g,'&quot;'); }
+  function L(s){ if(s) lines.push(s); }
+
+  // ── BASIC ──
+  add(`  <!-- ═══════════════════════════════════════`);
+  add(`       PRIMARY META TAGS`);
+  add(`  ═══════════════════════════════════════ -->`);
+  L(`  <title>${title}</title>`);
+  L(meta('title', title));
+  L(meta('description', getVal('pageDesc')));
+  if(getVal('metaKeywords')) L(meta('keywords', getVal('metaKeywords')));
+  if(getVal('metaAuthor'))   L(meta('author', getVal('metaAuthor')));
+  if(getVal('metaCopyright'))L(meta('copyright', getVal('metaCopyright')));
+  L(meta('robots', getVal('metaRobots')||'index, follow'));
+  L(meta('viewport', getVal('viewport')||'width=device-width, initial-scale=1'));
+  if(getVal('metaCanonical'))L(link('canonical', getVal('metaCanonical')));
+  if(getVal('themeColor'))   L(meta('theme-color', getVal('themeColor')));
+  if(getVal('tileColor'))    L(meta('msapplication-TileColor', getVal('tileColor')));
+  if(getVal('appleIcon'))    L(link('apple-touch-icon', getVal('appleIcon')));
+  if(getVal('googleVerify')) L(meta('google-site-verification', getVal('googleVerify')));
+  if(getVal('pinterestVerify')) L(meta('p:domain_verify', getVal('pinterestVerify')));
+
+  // ── OPEN GRAPH ──
+  lines.push('');
+  add(`  <!-- ═══════════════════════════════════════`);
+  add(`       OPEN GRAPH / FACEBOOK META TAGS`);
+  add(`  ═══════════════════════════════════════ -->`);
+  L(prop('og:type',      getVal('ogType')||'website'));
+  L(prop('og:url',       url));
+  L(prop('og:title',     getVal('ogTitle')||title));
+  L(prop('og:description',getVal('ogDesc')||desc));
+  L(prop('og:site_name', getVal('siteName')));
+  L(prop('og:locale',    getVal('locale')||'en_US'));
+
+  const imgUrl = getVal('ogImage') || (uploadedImageDataUrl&&uploadedImageDataUrl.startsWith('http')?uploadedImageDataUrl:'');
+  if(imgUrl){
+    L(prop('og:image',          imgUrl));
+    L(prop('og:image:secure_url',imgUrl.replace('http://','https://')));
+    if(getVal('ogImageWidth'))  L(prop('og:image:width',  getVal('ogImageWidth')));
+    if(getVal('ogImageHeight')) L(prop('og:image:height', getVal('ogImageHeight')));
+    if(getVal('ogImageAlt'))    L(prop('og:image:alt',    getVal('ogImageAlt')));
+    L(prop('og:image:type','image/jpeg'));
+  }
+
+  if(getVal('ogVideo')){ L(prop('og:video',getVal('ogVideo'))); L(prop('og:video:type','video/mp4')); }
+  if(getVal('ogAudio')){ L(prop('og:audio',getVal('ogAudio'))); }
+  if(getVal('fbAppId'))  L(prop('fb:app_id',   getVal('fbAppId')));
+  if(getVal('fbAdminId'))L(prop('fb:admins',   getVal('fbAdminId')));
+  if(getVal('ageRestrict'))L(prop('og:restrictions:age',getVal('ageRestrict')));
+
+  // ── ARTICLE ──
+  if(getVal('ogType')==='article'){
+    lines.push('');
+    add(`  <!-- ═══════════════════════════════════════`);
+    add(`       ARTICLE TAGS`);
+    add(`  ═══════════════════════════════════════ -->`);
+    if(getVal('artPublished')) L(prop('article:published_time',getVal('artPublished')));
+    if(getVal('artModified'))  L(prop('article:modified_time', getVal('artModified')));
+    if(getVal('artExpiry'))    L(prop('article:expiration_time',getVal('artExpiry')));
+    if(getVal('artAuthor'))    L(prop('article:author',        getVal('artAuthor')));
+    if(getVal('artSection'))   L(prop('article:section',       getVal('artSection')));
+    if(getVal('artTags')){
+      getVal('artTags').split(',').map(t=>t.trim()).filter(Boolean).forEach(tag=>{
+        L(prop('article:tag', tag));
+      });
+    }
+  }
+
+  // ── TWITTER ──
+  lines.push('');
+  add(`  <!-- ═══════════════════════════════════════`);
+  add(`       TWITTER / X CARD META TAGS`);
+  add(`  ═══════════════════════════════════════ -->`);
+  L(meta('twitter:card',        getVal('twCard')||'summary_large_image'));
+  L(meta('twitter:title',       getVal('twTitle')||title));
+  L(meta('twitter:description', getVal('twDesc')||desc));
+  if(getVal('twSite'))    L(meta('twitter:site',    getVal('twSite')));
+  if(getVal('twCreator')) L(meta('twitter:creator', getVal('twCreator')));
+  const twImg = getVal('twImage')||imgUrl;
+  if(twImg)               L(meta('twitter:image',   twImg));
+  if(getVal('ogImageAlt'))L(meta('twitter:image:alt',getVal('ogImageAlt')));
+  if(getVal('twCard')==='app'){
+    if(getVal('twIphoneId'))  L(meta('twitter:app:id:iphone',  getVal('twIphoneId')));
+    if(getVal('twIpadId'))    L(meta('twitter:app:id:ipad',    getVal('twIpadId')));
+    if(getVal('twAndroidId')) L(meta('twitter:app:id:googleplay',getVal('twAndroidId')));
+  }
+
+  // ── SCHEMA ──
+  if($('includeSchema')&&$('includeSchema').checked){
+    lines.push('');
+    add(`  <!-- ═══════════════════════════════════════`);
+    add(`       SCHEMA.ORG JSON-LD`);
+    add(`  ═══════════════════════════════════════ -->`);
+    const schema={
+      '@context':'https://schema.org',
+      '@type': getVal('ogType')==='article'?'Article':'WebPage',
+      'url':url,'name':title,'description':desc,
+    };
+    if(imgUrl) schema.image=imgUrl;
+    if(getVal('metaAuthor')) schema.author={'@type':'Person','name':getVal('metaAuthor')};
+    if(getVal('artPublished')) schema.datePublished=getVal('artPublished');
+    if(getVal('artModified'))  schema.dateModified=getVal('artModified');
+    if(getVal('siteName')) schema.publisher={'@type':'Organization','name':getVal('siteName')};
+    lines.push(`  <script type="application/ld+json">`);
+    lines.push(`  ${JSON.stringify(schema,null,4).split('\n').join('\n  ')}`);
+    lines.push(`  <\/script>`);
+  }
+
+  // Render with syntax highlighting
+  const highlighted = lines.map(line=>{
+    if(line.trim().startsWith('<!--') || line.trim().startsWith('//'))
+      return `<span class="line-comment">${escHtml(line)}</span>`;
+    if(line.includes('</title>') || (line.includes('<title>') && !line.includes('meta')))
+      return line.replace(/(<title>)(.*?)(<\/title>)/,
+        (_,a,b,c)=>`<span class="line-tag">${a}</span><span class="line-str">${escHtml(b)}</span><span class="line-tag">${c}</span>`);
+    if(line.includes('application/ld+json') || line.includes('<script') || line.includes('<\/script'))
+      return `<span class="line-tag">${escHtml(line)}</span>`;
+    if(line.trim().startsWith('{') || line.trim().startsWith('"') || line.trim().startsWith('}'))
+      return `<span class="line-str">${escHtml(line)}</span>`;
+    return line
+      .replace(/(&lt;\/?)(meta|link|title)(\s)/g,'<span class="line-tag">$1$2</span>$3')
+      .replace(/(name|property|rel|content|href|charset)=/g,'<span class="line-attr">$1</span>=')
+      .replace(/="([^"]*)"/g,'=<span class="line-val">"<span class="line-str">$1</span>"</span>');
+  }).join('\n');
+
+  $('codeOutput').innerHTML = highlighted;
+  showToast('✅ Meta tags generated successfully!','success');
+  $('codeOutput').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ════════════════════════════════
+   COPY / DOWNLOAD
+════════════════════════════════ */
+function getPlainCode(){
+  return $('codeOutput').innerText||$('codeOutput').textContent;
+}
+
+function copyCode(){
+  const text = getPlainCode();
+  if(text.includes('Generate your Open Graph')){ showToast('⚠️ Generate tags first!','error'); return; }
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Code copied to clipboard!','success'))
+    .catch(()=>showToast('Copy failed. Please select and copy manually.','error'));
+}
+
+function downloadCode(){
+  const text = getPlainCode();
+  if(text.includes('Generate your Open Graph')){ showToast('⚠️ Generate tags first!','error'); return; }
+  const domain = getVal('pageUrl').replace(/https?:\/\//,'').split('/')[0]||'og-tags';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/html'}));
+  a.download=`og-tags-${domain}.html`; a.click();
+  showToast('⬇️ File downloaded!','success');
+}
+
+function clearAll(){
+  const inputs = document.querySelectorAll('input[type=text],input[type=url],input[type=number],textarea');
+  inputs.forEach(el=>{
+    if(el.id==='ogImageWidth') el.value='1200';
+    else if(el.id==='ogImageHeight') el.value='630';
+    else if(el.id==='themeColor'||el.id==='tileColor') el.value='#2e9e55';
+    else el.value='';
+  });
+  document.querySelectorAll('select').forEach(el=>{el.selectedIndex=0;});
+  removeImage({preventDefault:()=>{},stopPropagation:()=>{}});
+  $('codeOutput').innerHTML=`<span class="line-comment">&lt;!-- Generate your Open Graph tags above --&gt;</span>
+<span class="line-comment">&lt;!-- Fill in the form and click Generate --&gt;</span>`;
+  liveUpdate();
+  showToast('🗑️ All fields cleared.','info');
+}
+
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+function showToast(msg, type='success'){
+  const t=$('toast');
+  t.textContent=msg;
+  t.className=`toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+renderTemplates();
+liveUpdate();
+$('domainInput') && $('domainInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkDomain();});
+</script>
+</body>
+</html>
