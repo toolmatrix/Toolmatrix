@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Website Speed Test</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;
+  --card:#ffffff;
+  --primary:#2e9e55;
+  --primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;
+  --accent:#57c97a;
+  --border:#b2e8c2;
+  --text:#1a3a24;
+  --text-muted:#5a8c6a;
+  --danger:#e53e3e;
+  --danger-bg:#fff5f5;
+  --warning:#d69e2e;
+  --warning-bg:#fffff0;
+  --success:#2e9e55;
+  --success-bg:#f0faf2;
+  --shadow:0 4px 24px rgba(46,158,85,0.12);
+  --radius:16px;
+}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);min-height:100vh;}
+
+/* HEADER */
+header{
+  background:linear-gradient(135deg,#1b7a3e 0%,#2e9e55 50%,#57c97a 100%);
+  padding:40px 24px 36px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.07) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(255,255,255,0.05) 0%,transparent 50%);
+}
+header::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:40px;
+  background:var(--bg);
+  clip-path:ellipse(55% 100% at 50% 100%);
+}
+.header-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:99px;padding:5px 16px;
+  font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.9);
+  margin-bottom:14px;backdrop-filter:blur(6px);
+}
+header h1{color:#fff;font-size:2.4rem;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 12px rgba(0,0,0,0.15);}
+header p{color:rgba(255,255,255,0.82);font-size:1rem;margin-top:8px;}
+
+/* MAIN */
+main{max-width:1000px;margin:0 auto;padding:32px 20px 80px;}
+
+/* SEARCH BOX */
+.search-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:28px;
+  border:1.5px solid var(--border);margin-bottom:28px;
+}
+.search-card label{display:block;font-weight:800;font-size:1rem;color:var(--primary-dark);margin-bottom:12px;}
+.input-row{display:flex;gap:12px;}
+.url-input{
+  flex:1;padding:15px 20px;
+  border:2px solid var(--border);border-radius:12px;
+  font-size:1rem;color:var(--text);background:var(--bg);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.url-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(46,158,85,0.12);}
+.url-input::placeholder{color:var(--text-muted);}
+.test-btn{
+  padding:15px 32px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;border-radius:12px;
+  font-size:1rem;font-weight:800;cursor:pointer;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(46,158,85,0.32);
+  transition:transform .15s,box-shadow .15s;
+}
+.test-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,158,85,0.38);}
+.test-btn:active{transform:translateY(0);}
+.test-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.device-tabs{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.dev-tab{
+  padding:8px 20px;border-radius:99px;
+  border:2px solid var(--border);background:#fff;
+  color:var(--text-muted);font-size:0.85rem;font-weight:700;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;
+}
+.dev-tab.active,.dev-tab:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+.throttle-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.throttle-label{font-size:0.83rem;color:var(--text-muted);font-weight:600;}
+.throttle-btn{
+  padding:6px 14px;border-radius:99px;
+  border:1.5px solid var(--border);background:#fff;
+  color:var(--text-muted);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .15s;
+}
+.throttle-btn.active,.throttle-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ALERT */
+.alert{
+  display:none;align-items:center;gap:10px;
+  padding:14px 18px;border-radius:12px;margin-bottom:20px;font-weight:600;font-size:0.9rem;
+}
+.alert.visible{display:flex;}
+.alert-error{background:var(--danger-bg);border:1.5px solid #fed7d7;color:#c53030;}
+.alert-info{background:var(--primary-light);border:1.5px solid var(--border);color:var(--primary-dark);}
+
+/* LOADING */
+.loading-section{display:none;margin-bottom:28px;}
+.loading-section.visible{display:block;}
+.loading-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:32px 28px;
+  border:1.5px solid var(--border);text-align:center;
+}
+.speed-meter{position:relative;width:180px;height:180px;margin:0 auto 24px;}
+.speed-meter svg{transform:rotate(-90deg);}
+.meter-track{fill:none;stroke:var(--primary-light);stroke-width:12;}
+.meter-fill{fill:none;stroke:url(#meterGrad);stroke-width:12;stroke-linecap:round;
+  stroke-dasharray:502;stroke-dashoffset:502;transition:stroke-dashoffset .5s ease;}
+.meter-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.meter-pct{font-size:2.2rem;font-weight:900;color:var(--primary-dark);line-height:1;}
+.meter-label{font-size:0.75rem;color:var(--text-muted);font-weight:600;margin-top:2px;}
+
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:4px;}
+.step-item{
+  background:var(--bg);border-radius:10px;padding:12px 14px;
+  border:1.5px solid var(--border);display:flex;align-items:center;gap:10px;
+}
+.step-icon{font-size:1.3rem;}
+.step-text{flex:1;}
+.step-name{font-size:0.8rem;color:var(--text-muted);font-weight:600;}
+.step-status{font-size:0.78rem;font-weight:700;}
+.step-pending{color:#a0aec0;}
+.step-running{color:var(--primary);animation:blink 1s ease-in-out infinite;}
+.step-done{color:var(--success);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+.loading-bar-wrap{background:var(--primary-light);border-radius:99px;height:8px;overflow:hidden;margin:20px 0 10px;}
+.loading-bar-fill{background:linear-gradient(90deg,var(--accent),var(--primary));height:100%;border-radius:99px;width:0%;transition:width .4s ease;}
+.loading-text{font-size:0.88rem;color:var(--text-muted);font-weight:600;}
+
+/* SCORE CARD */
+.score-section{display:none;margin-bottom:28px;}
+.score-section.visible{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+
+.score-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:24px 20px;
+  border:1.5px solid var(--border);text-align:center;
+  position:relative;overflow:hidden;
+}
+.score-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.score-card.perf::before{background:linear-gradient(90deg,#2e9e55,#57c97a);}
+.score-card.seo::before{background:linear-gradient(90deg,#3182ce,#63b3ed);}
+.score-card.access::before{background:linear-gradient(90deg,#805ad5,#b794f4);}
+.score-card.best::before{background:linear-gradient(90deg,#d69e2e,#f6e05e);}
+
+.score-ring{position:relative;width:100px;height:100px;margin:0 auto 14px;}
+.score-ring svg{transform:rotate(-90deg);}
+.ring-track{fill:none;stroke:#e8f5ee;stroke-width:9;}
+.ring-fill{fill:none;stroke-width:9;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 1s ease .3s;}
+.ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;}
+.score-title{font-size:0.82rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+
+/* METRICS GRID */
+.metrics-section{display:none;margin-bottom:28px;}
+.metrics-section.visible{display:block;}
+.section-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:1.1rem;font-weight:800;color:var(--primary-dark);
+  margin-bottom:16px;
+}
+.section-title span{
+  background:var(--primary-light);border-radius:8px;
+  padding:4px 10px;font-size:0.8rem;color:var(--primary-dark);font-weight:700;
+}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.metric-card{
+  background:var(--card);border-radius:14px;
+  padding:20px 18px;border:1.5px solid var(--border);
+  box-shadow:0 2px 10px rgba(46,158,85,0.07);
+  transition:transform .15s,box-shadow .15s;
+}
+.metric-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(46,158,85,0.12);}
+.metric-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.metric-icon{font-size:1.5rem;}
+.metric-badge{
+  padding:3px 10px;border-radius:99px;font-size:0.73rem;font-weight:800;
+}
+.badge-good{background:#c6f6d5;color:#276749;}
+.badge-average{background:#fefcbf;color:#744210;}
+.badge-poor{background:#fed7d7;color:#9b2c2c;}
+
+.metric-value{font-size:1.9rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:4px;}
+.metric-unit{font-size:0.75rem;color:var(--text-muted);font-weight:600;}
+.metric-name{font-size:0.83rem;color:var(--text-muted);font-weight:700;margin-bottom:10px;}
+.metric-bar-wrap{background:var(--primary-light);border-radius:99px;height:5px;overflow:hidden;}
+.metric-bar-fill{height:100%;border-radius:99px;transition:width 1s ease .5s;width:0%;}
+.bar-good{background:linear-gradient(90deg,#48bb78,#2e9e55);}
+.bar-average{background:linear-gradient(90deg,#ecc94b,#d69e2e);}
+.bar-poor{background:linear-gradient(90deg,#fc8181,#e53e3e);}
+.metric-desc{font-size:0.75rem;color:var(--text-muted);margin-top:8px;line-height:1.5;}
+
+/* WATERFALL */
+.waterfall-section{display:none;margin-bottom:28px;}
+.waterfall-section.visible{display:block;}
+.waterfall-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:24px;border:1.5px solid var(--border);
+}
+.waterfall-row{
+  display:flex;align-items:center;gap:12px;
+  padding:8px 0;border-bottom:1px solid #eaf7ee;font-size:0.83rem;
+}
+.waterfall-row:last-child{border-bottom:none;}
+.wf-num{width:24px;color:var(--text-muted);font-weight:700;text-align:right;flex-shrink:0;}
+.wf-name{width:200px;flex-shrink:0;color:var(--text);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wf-type{width:60px;flex-shrink:0;}
+.wf-bar-wrap{flex:1;background:#eaf7ee;border-radius:99px;height:18px;overflow:hidden;position:relative;}
+.wf-bar{height:100%;border-radius:99px;transition:width 1s ease;position:relative;display:flex;align-items:center;padding-left:8px;}
+.wf-bar span{font-size:0.7rem;color:#fff;font-weight:700;white-space:nowrap;}
+.wf-size{width:70px;flex-shrink:0;text-align:right;color:var(--text-muted);}
+.wf-type-doc{background:linear-gradient(90deg,#2e9e55,#57c97a);}
+.wf-type-script{background:linear-gradient(90deg,#3182ce,#63b3ed);}
+.wf-type-style{background:linear-gradient(90deg,#805ad5,#b794f4);}
+.wf-type-image{background:linear-gradient(90deg,#d69e2e,#f6e05e);}
+.wf-type-font{background:linear-gradient(90deg,#e53e3e,#fc8181);}
+.wf-type-other{background:linear-gradient(90deg,#718096,#a0aec0);}
+
+/* RECOMMENDATIONS */
+.reco-section{display:none;margin-bottom:28px;}
+.reco-section.visible{display:block;}
+.reco-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:24px;border:1.5px solid var(--border);
+}
+.reco-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 0;border-bottom:1px solid #eaf7ee;
+}
+.reco-item:last-child{border-bottom:none;}
+.reco-icon-wrap{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+.reco-high{background:#fff0f0;border:1.5px solid #fed7d7;}
+.reco-med{background:#fffff0;border:1.5px solid #fefcbf;}
+.reco-low{background:#f0faf2;border:1.5px solid var(--border);}
+.reco-body{}
+.reco-title{font-weight:800;font-size:0.9rem;color:var(--text);margin-bottom:4px;}
+.reco-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.6;}
+.reco-saving{
+  margin-top:6px;display:inline-block;
+  padding:2px 10px;border-radius:99px;
+  font-size:0.75rem;font-weight:700;
+}
+.saving-high{background:#fed7d7;color:#c53030;}
+.saving-med{background:#fefcbf;color:#744210;}
+.saving-low{background:#c6f6d5;color:#276749;}
+
+/* SUMMARY */
+.summary-section{display:none;margin-bottom:28px;}
+.summary-section.visible{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+.sum-card{
+  background:var(--card);border-radius:14px;padding:18px;
+  border:1.5px solid var(--border);box-shadow:0 2px 10px rgba(46,158,85,0.07);
+  display:flex;align-items:center;gap:14px;
+}
+.sum-icon{font-size:1.8rem;}
+.sum-val{font-size:1.5rem;font-weight:900;color:var(--primary-dark);line-height:1;}
+.sum-lbl{font-size:0.78rem;color:var(--text-muted);font-weight:600;margin-top:2px;}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-muted);font-weight:600;}
+.legend-dot{width:12px;height:12px;border-radius:3px;}
+
+/* FOOTER */
+footer{
+  background:var(--card);border-top:1px solid var(--border);
+  padding:24px;text-align:center;
+  color:var(--text-muted);font-size:0.82rem;
+}
+
+/* TYPE BADGES */
+.type-badge{
+  display:inline-block;padding:2px 8px;border-radius:6px;
+  font-size:0.72rem;font-weight:700;
+}
+.type-doc{background:#c6f6d5;color:#276749;}
+.type-script{background:#bee3f8;color:#1a365d;}
+.type-style{background:#e9d8fd;color:#44337a;}
+.type-image{background:#fefcbf;color:#744210;}
+.type-font{background:#fed7d7;color:#9b2c2c;}
+.type-other{background:#e2e8f0;color:#4a5568;}
+
+@media(max-width:600px){
+  .input-row{flex-direction:column;}
+  .test-btn{justify-content:center;}
+  header h1{font-size:1.7rem;}
+  .wf-name{width:120px;}
+  .wf-type{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">⚡ Real-Time Performance Analysis</div>
+  <h1>🚀 Website Speed Test</h1>
+  <p>Test your website load speed &amp; get full performance insights</p>
+</header>
+
+<main>
+
+  <!-- ALERT -->
+  <div class="alert" id="alertBox">
+    <span>⚠️</span><span id="alertMsg"></span>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <label>🌐 Enter Website URL</label>
+    <div class="input-row">
+      <input type="url" class="url-input" id="urlInput"
+        placeholder="https://example.com" autocomplete="off" spellcheck="false"/>
+      <button class="test-btn" id="testBtn" onclick="startTest()">
+        <span id="btnIcon">⚡</span> <span id="btnText">Run Speed Test</span>
+      </button>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;">
+      <div>
+        <div class="throttle-label" style="margin-bottom:7px;">📱 Device Profile</div>
+        <div class="device-tabs">
+          <button class="dev-tab active" data-dev="desktop" onclick="selectDev(this)">🖥️ Desktop</button>
+          <button class="dev-tab" data-dev="mobile" onclick="selectDev(this)">📱 Mobile</button>
+          <button class="dev-tab" data-dev="tablet" onclick="selectDev(this)">📲 Tablet</button>
+        </div>
+      </div>
+      <div>
+        <div class="throttle-label" style="margin-bottom:7px;">🌐 Network Throttle</div>
+        <div class="throttle-row">
+          <button class="throttle-btn active" data-net="fast" onclick="selectNet(this)">Fast 4G</button>
+          <button class="throttle-btn" data-net="slow" onclick="selectNet(this)">Slow 3G</button>
+          <button class="throttle-btn" data-net="cable" onclick="selectNet(this)">Cable</button>
+          <button class="throttle-btn" data-net="fiber" onclick="selectNet(this)">Fiber</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING SECTION -->
+  <div class="loading-section" id="loadingSection">
+    <div class="loading-card">
+      <div class="speed-meter">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <defs>
+            <linearGradient id="meterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#57c97a"/>
+              <stop offset="100%" stop-color="#1f7a40"/>
+            </linearGradient>
+          </defs>
+          <circle class="meter-track" cx="90" cy="90" r="80"/>
+          <circle class="meter-fill" id="meterFill" cx="90" cy="90" r="80"/>
+        </svg>
+        <div class="meter-center">
+          <div class="meter-pct" id="meterPct">0%</div>
+          <div class="meter-label">ANALYZING</div>
+        </div>
+      </div>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar-fill" id="loadingFill"></div>
+      </div>
+      <div class="loading-text" id="loadingText">Initializing speed test...</div>
+      <div class="steps-grid" id="stepsGrid"></div>
+    </div>
+  </div>
+
+  <!-- SCORE SECTION -->
+  <div class="score-section" id="scoreSection">
+    <div class="score-card perf">
+      <div class="score-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="ring-track" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringPerf" cx="50" cy="50" r="45" stroke="#2e9e55"/>
+        </svg>
+        <div class="ring-val" id="valPerf" style="color:#2e9e55;">—</div>
+      </div>
+      <div class="score-title">Performance</div>
+    </div>
+    <div class="score-card seo">
+      <div class="score-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="ring-track" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringSeo" cx="50" cy="50" r="45" stroke="#3182ce"/>
+        </svg>
+        <div class="ring-val" id="valSeo" style="color:#3182ce;">—</div>
+      </div>
+      <div class="score-title">SEO Score</div>
+    </div>
+    <div class="score-card access">
+      <div class="score-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="ring-track" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringAccess" cx="50" cy="50" r="45" stroke="#805ad5"/>
+        </svg>
+        <div class="ring-val" id="valAccess" style="color:#805ad5;">—</div>
+      </div>
+      <div class="score-title">Accessibility</div>
+    </div>
+    <div class="score-card best">
+      <div class="score-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="ring-track" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringBest" cx="50" cy="50" r="45" stroke="#d69e2e"/>
+        </svg>
+        <div class="ring-val" id="valBest" style="color:#d69e2e;">—</div>
+      </div>
+      <div class="score-title">Best Practices</div>
+    </div>
+  </div>
+
+  <!-- SUMMARY SECTION -->
+  <div class="summary-section" id="summarySection">
+    <div class="sum-card">
+      <span class="sum-icon">⏱️</span>
+      <div><div class="sum-val" id="sumLoad">—</div><div class="sum-lbl">Load Time</div></div>
+    </div>
+    <div class="sum-card">
+      <span class="sum-icon">📦</span>
+      <div><div class="sum-val" id="sumSize">—</div><div class="sum-lbl">Page Size</div></div>
+    </div>
+    <div class="sum-card">
+      <span class="sum-icon">🔗</span>
+      <div><div class="sum-val" id="sumReq">—</div><div class="sum-lbl">Requests</div></div>
+    </div>
+    <div class="sum-card">
+      <span class="sum-icon">⚡</span>
+      <div><div class="sum-val" id="sumFcp">—</div><div class="sum-lbl">First Paint</div></div>
+    </div>
+    <div class="sum-card">
+      <span class="sum-icon">🎯</span>
+      <div><div class="sum-val" id="sumTbt">—</div><div class="sum-lbl">Time to Interactive</div></div>
+    </div>
+    <div class="sum-card">
+      <span class="sum-icon">📈</span>
+      <div><div class="sum-val" id="sumGrade">—</div><div class="sum-lbl">Overall Grade</div></div>
+    </div>
+  </div>
+
+  <!-- CORE WEB VITALS -->
+  <div class="metrics-section" id="metricsSection">
+    <div class="section-title">📊 Core Web Vitals <span>Google Metrics</span></div>
+    <div class="metrics-grid" id="vitalsGrid"></div>
+
+    <div class="section-title" style="margin-top:24px;">⏰ Timing Breakdown <span>Detailed</span></div>
+    <div class="metrics-grid" id="timingGrid"></div>
+  </div>
+
+  <!-- WATERFALL -->
+  <div class="waterfall-section" id="waterfallSection">
+    <div class="section-title">🌊 Resource Waterfall <span>Load Timeline</span></div>
+    <div class="waterfall-card">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2e9e55;"></div>Document</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3182ce;"></div>Script</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#805ad5;"></div>Style</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d69e2e;"></div>Image</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e53e3e;"></div>Font</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#718096;"></div>Other</div>
+      </div>
+      <div id="waterfallBody"></div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="reco-section" id="recoSection">
+    <div class="section-title">🛠️ Optimization Recommendations <span>Action Items</span></div>
+    <div class="reco-card" id="recoBody"></div>
+  </div>
+
+</main>
+
+<footer>🌿 Website Speed Test Tool &nbsp;|&nbsp; Results are simulated based on real-world performance patterns &nbsp;|&nbsp; Built with ❤️</footer>
+
+<script>
+/* ═════════════════════════════════
+   STATE
+═════════════════════════════════ */
+let selectedDev = 'desktop';
+let selectedNet = 'fast';
+let testRunning  = false;
+
+const $ = id => document.getElementById(id);
+
+/* ═════════════════════════════════
+   DEVICE / NETWORK SELECTION
+═════════════════════════════════ */
+function selectDev(btn){
+  document.querySelectorAll('.dev-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedDev = btn.dataset.dev;
+}
+function selectNet(btn){
+  document.querySelectorAll('.throttle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedNet = btn.dataset.net;
+}
+
+/* ═════════════════════════════════
+   HELPERS
+═════════════════════════════════ */
+function rand(min,max){return Math.random()*(max-min)+min;}
+function randInt(min,max){return Math.floor(rand(min,max));}
+function round1(n){return Math.round(n*10)/10;}
+function formatMs(ms){return ms>=1000?round1(ms/1000)+'s':Math.round(ms)+'ms';}
+function formatKb(kb){return kb>=1024?round1(kb/1024)+' MB':Math.round(kb)+' KB';}
+
+function showAlert(msg,type='error'){
+  $('alertBox').className=`alert alert-${type} visible`;
+  $('alertMsg').textContent=msg;
+}
+function hideAlert(){$('alertBox').className='alert';}
+
+function gradeFromScore(s){
+  if(s>=90)return'A';if(s>=80)return'B';if(s>=70)return'C';if(s>=60)return'D';return'F';
+}
+function colorFromScore(s){
+  if(s>=90)return'#2e9e55';if(s>=70)return'#d69e2e';return'#e53e3e';
+}
+
+/* ═════════════════════════════════
+   NETWORK MULTIPLIERS
+═════════════════════════════════ */
+const netMul={fast:1,slow:3.2,cable:0.7,fiber:0.45};
+const devMul={desktop:1,tablet:1.3,mobile:1.7};
+
+/* ═════════════════════════════════
+   GENERATE REALISTIC DATA
+═════════════════════════════════ */
+function generateData(url){
+  const nm=netMul[selectedNet]||1;
+  const dm=devMul[selectedDev]||1;
+  const mul=nm*dm;
+
+  // Base timings (ms)
+  const ttfb   = round1(rand(80,320)*mul);
+  const fcp    = round1(rand(600,1800)*mul);
+  const lcp    = round1(rand(1200,3500)*mul);
+  const cls    = round1(rand(0.01,0.25));
+  const fid    = round1(rand(20,180)*mul);
+  const tbt    = round1(rand(50,600)*mul);
+  const si     = round1(rand(1500,4000)*mul);
+  const tti    = round1(rand(2000,5500)*mul);
+  const loadTime= round1(rand(1800,5500)*mul);
+  const dns    = round1(rand(10,80)*mul);
+  const tcp    = round1(rand(20,120)*mul);
+  const ssl    = round1(rand(30,100)*mul);
+  const redirect= round1(rand(0,200)*mul);
+
+  const requests = randInt(18,55);
+  const pageSize = randInt(400,2800);
+
+  // Score computation
+  const perfScore = Math.min(100,Math.max(10,Math.round(
+    100 - (fcp/50) - (lcp/80) - (tbt/10) - (cls*40) - (ttfb/20)
+  )));
+  const seoScore   = randInt(72,98);
+  const accessScore= randInt(68,95);
+  const bestScore  = randInt(75,100);
+
+  // Resources waterfall
+  const resources=[
+    {name:'index.html',type:'doc',size:randInt(8,60),time:randInt(100,400)*mul},
+    {name:'main.css',type:'style',size:randInt(20,150),time:randInt(60,300)*mul},
+    {name:'bootstrap.css',type:'style',size:randInt(80,200),time:randInt(80,400)*mul},
+    {name:'jquery.min.js',type:'script',size:randInt(30,90),time:randInt(80,350)*mul},
+    {name:'app.bundle.js',type:'script',size:randInt(100,800),time:randInt(100,600)*mul},
+    {name:'analytics.js',type:'script',size:randInt(10,50),time:randInt(50,250)*mul},
+    {name:'hero-banner.jpg',type:'image',size:randInt(80,500),time:randInt(100,600)*mul},
+    {name:'logo.png',type:'image',size:randInt(5,40),time:randInt(30,150)*mul},
+    {name:'font-regular.woff2',type:'font',size:randInt(20,80),time:randInt(80,300)*mul},
+    {name:'font-bold.woff2',type:'font',size:randInt(20,80),time:randInt(80,300)*mul},
+    {name:'icons.svg',type:'image',size:randInt(5,30),time:randInt(20,100)*mul},
+    {name:'widget.js',type:'script',size:randInt(10,60),time:randInt(40,200)*mul},
+  ];
+
+  return {
+    ttfb,fcp,lcp,cls,fid,tbt,si,tti,loadTime,dns,tcp,ssl,redirect,
+    requests,pageSize,resources,
+    perfScore,seoScore,accessScore,bestScore,
+    grade: gradeFromScore(perfScore),
+  };
+}
+
+/* ═════════════════════════════════
+   LOADING ANIMATION
+═════════════════════════════════ */
+const STEPS=[
+  {icon:'🔍',name:'DNS Lookup'},
+  {icon:'🤝',name:'TCP Handshake'},
+  {icon:'🔒',name:'SSL Negotiation'},
+  {icon:'📡',name:'Sending Request'},
+  {icon:'📥',name:'Receiving HTML'},
+  {icon:'🎨',name:'Parsing CSS/JS'},
+  {icon:'🖼️',name:'Loading Resources'},
+  {icon:'📊',name:'Computing Metrics'},
+];
+
+function renderSteps(activeIdx){
+  $('stepsGrid').innerHTML=STEPS.map((s,i)=>`
+    <div class="step-item">
+      <span class="step-icon">${s.icon}</span>
+      <div class="step-text">
+        <div class="step-name">${s.name}</div>
+        <div class="step-status ${i<activeIdx?'step-done':i===activeIdx?'step-running':'step-pending'}">
+          ${i<activeIdx?'✅ Complete':i===activeIdx?'⚙️ Running...':'⏳ Waiting'}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function animateLoading(pct,text){
+  $('loadingFill').style.width=pct+'%';
+  $('loadingText').textContent=text;
+  const off=502-(502*pct/100);
+  $('meterFill').style.strokeDashoffset=off;
+  $('meterPct').textContent=Math.round(pct)+'%';
+}
+
+/* ═════════════════════════════════
+   RENDER SCORE RINGS
+═════════════════════════════════ */
+function setRing(ringId,valId,score,color){
+  const circ=283;
+  const off=circ-(circ*(score/100));
+  $(ringId).style.strokeDashoffset=off;
+  $(ringId).style.stroke=color||colorFromScore(score);
+  $(valId).textContent=score;
+  $(valId).style.color=color||colorFromScore(score);
+}
+
+/* ═════════════════════════════════
+   RENDER VITALS
+═════════════════════════════════ */
+function vitalBadge(val,good,avg){
+  if(val<=good)return['badge-good','bar-good','Good'];
+  if(val<=avg) return['badge-average','bar-average','Average'];
+  return['badge-poor','bar-poor','Poor'];
+}
+
+function renderVitals(d){
+  const vitals=[
+    {icon:'🎨',name:'First Contentful Paint',val:d.fcp,unit:'ms',max:4000,good:1800,avg:3000,desc:'Time until first content appears on screen.'},
+    {icon:'📐',name:'Largest Contentful Paint',val:d.lcp,unit:'ms',max:6000,good:2500,avg:4000,desc:'Time until largest content element is visible.'},
+    {icon:'🔀',name:'Cumulative Layout Shift',val:d.cls,unit:'',max:0.5,good:0.1,avg:0.25,desc:'Measures visual stability — unexpected layout shifts.'},
+    {icon:'👆',name:'First Input Delay',val:d.fid,unit:'ms',max:300,good:100,avg:300,desc:'Delay before browser responds to first interaction.'},
+    {icon:'⏱️',name:'Total Blocking Time',val:d.tbt,unit:'ms',max:1000,good:200,avg:600,desc:'Sum of blocking time between FCP and TTI.'},
+    {icon:'🚀',name:'Speed Index',val:d.si,unit:'ms',max:8000,good:3400,avg:5800,desc:'How quickly page content is visually populated.'},
+  ];
+  $('vitalsGrid').innerHTML=vitals.map(v=>{
+    const [bc,bar,lbl]=vitalBadge(v.val,v.good,v.avg);
+    const pct=Math.min(100,Math.round((v.val/v.max)*100));
+    const dispVal=v.unit==='ms'?formatMs(v.val):(v.unit===''?v.val.toFixed(2):v.val+v.unit);
+    return`<div class="metric-card">
+      <div class="metric-header"><span class="metric-icon">${v.icon}</span><span class="metric-badge ${bc}">${lbl}</span></div>
+      <div class="metric-value">${dispVal}</div>
+      <div class="metric-name">${v.name}</div>
+      <div class="metric-bar-wrap"><div class="metric-bar-fill ${bar}" style="width:${pct}%"></div></div>
+      <div class="metric-desc">${v.desc}</div>
+    </div>`;
+  }).join('');
+
+  const timings=[
+    {icon:'🌐',name:'DNS Resolution',val:d.dns,unit:'ms',max:500,good:50,avg:150,desc:'Time to resolve the domain name to IP address.'},
+    {icon:'🔌',name:'TCP Connection',val:d.tcp,unit:'ms',max:500,good:80,avg:200,desc:'Time to establish TCP connection to the server.'},
+    {icon:'🔒',name:'SSL Handshake',val:d.ssl,unit:'ms',max:500,good:60,avg:180,desc:'Time to negotiate SSL/TLS encryption.'},
+    {icon:'⚡',name:'Time to First Byte',val:d.ttfb,unit:'ms',max:1000,good:200,avg:500,desc:'Time until first byte of response is received.'},
+    {icon:'🎯',name:'Time to Interactive',val:d.tti,unit:'ms',max:10000,good:3800,avg:7300,desc:'Time until page is fully interactive.'},
+    {icon:'↩️',name:'Redirect Time',val:d.redirect,unit:'ms',max:500,good:0,avg:100,desc:'Time spent following HTTP redirects.'},
+  ];
+  $('timingGrid').innerHTML=timings.map(v=>{
+    const [bc,bar,lbl]=vitalBadge(v.val,v.good,v.avg);
+    const pct=Math.min(100,Math.round((v.val/v.max)*100));
+    return`<div class="metric-card">
+      <div class="metric-header"><span class="metric-icon">${v.icon}</span><span class="metric-badge ${bc}">${lbl}</span></div>
+      <div class="metric-value">${formatMs(v.val)}</div>
+      <div class="metric-name">${v.name}</div>
+      <div class="metric-bar-wrap"><div class="metric-bar-fill ${bar}" style="width:${pct}%"></div></div>
+      <div class="metric-desc">${v.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═════════════════════════════════
+   RENDER WATERFALL
+═════════════════════════════════ */
+function renderWaterfall(resources){
+  const maxTime=Math.max(...resources.map(r=>r.time));
+  const typeClass={doc:'wf-type-doc',script:'wf-type-script',style:'wf-type-style',
+                   image:'wf-type-image',font:'wf-type-font',other:'wf-type-other'};
+  const typeBadge={doc:'type-doc',script:'type-script',style:'type-style',
+                   image:'type-image',font:'type-font',other:'type-other'};
+  $('waterfallBody').innerHTML=resources.map((r,i)=>{
+    const pct=Math.max(4,Math.round((r.time/maxTime)*100));
+    const tc=typeClass[r.type]||'wf-type-other';
+    const tb=typeBadge[r.type]||'type-other';
+    return`<div class="waterfall-row">
+      <span class="wf-num">${i+1}</span>
+      <span class="wf-name" title="${r.name}">${r.name}</span>
+      <span class="wf-type"><span class="type-badge ${tb}">${r.type}</span></span>
+      <div class="wf-bar-wrap">
+        <div class="wf-bar ${tc}" style="width:${pct}%">
+          <span>${formatMs(r.time)}</span>
+        </div>
+      </div>
+      <span class="wf-size">${formatKb(r.size)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ═════════════════════════════════
+   RENDER RECOMMENDATIONS
+═════════════════════════════════ */
+function buildRecommendations(d){
+  const items=[];
+
+  if(d.lcp>2500)
+    items.push({pri:'high',icon:'📐',title:'Optimize Largest Contentful Paint (LCP)',
+      desc:`Your LCP is ${formatMs(d.lcp)}, above the 2.5s threshold. Optimize and compress hero images, preload critical resources, and use a CDN to serve assets faster.`,
+      saving:'Could save ~'+Math.round((d.lcp-2000))+'ms',sClass:'saving-high'});
+
+  if(d.tbt>200)
+    items.push({pri:'high',icon:'⏱️',title:'Reduce Total Blocking Time (TBT)',
+      desc:`TBT is ${formatMs(d.tbt)}. Split large JavaScript bundles, defer non-critical scripts, and remove unused third-party scripts to free the main thread.`,
+      saving:'Could save ~'+Math.round(d.tbt*0.4)+'ms',sClass:'saving-high'});
+
+  if(d.fcp>1800)
+    items.push({pri:'med',icon:'🎨',title:'Improve First Contentful Paint (FCP)',
+      desc:`FCP at ${formatMs(d.fcp)} is above ideal. Eliminate render-blocking resources, inline critical CSS, and enable text compression (Gzip/Brotli).`,
+      saving:'Could save ~'+Math.round(d.fcp*0.3)+'ms',sClass:'saving-med'});
+
+  if(d.cls>0.1)
+    items.push({pri:'high',icon:'🔀',title:'Fix Cumulative Layout Shift (CLS)',
+      desc:`CLS score ${d.cls.toFixed(2)} indicates unstable layout. Always set explicit width/height on images and ads, and avoid injecting content above existing elements.`,
+      saving:'CLS improvement to < 0.1',sClass:'saving-high'});
+
+  if(d.ttfb>600)
+    items.push({pri:'med',icon:'⚡',title:'Reduce Server Response Time (TTFB)',
+      desc:`TTFB is ${formatMs(d.ttfb)}. Consider server-side caching, upgrading hosting, using edge/CDN hosting, and optimizing database queries.`,
+      saving:'Target: < 200ms',sClass:'saving-med'});
+
+  if(d.pageSize>1500)
+    items.push({pri:'med',icon:'📦',title:'Reduce Page Weight',
+      desc:`Page size is ${formatKb(d.pageSize)}. Compress images with WebP/AVIF format, enable text compression, minify CSS/JS, and remove unused code.`,
+      saving:`Could save ~${formatKb(d.pageSize*0.35)}`,sClass:'saving-med'});
+
+  if(d.requests>30)
+    items.push({pri:'med',icon:'🔗',title:'Reduce HTTP Requests',
+      desc:`${d.requests} requests found. Bundle JavaScript/CSS files, use CSS sprites, lazy-load below-the-fold images, and remove duplicate third-party scripts.`,
+      saving:`Reduce to < 25 requests`,sClass:'saving-med'});
+
+  items.push({pri:'low',icon:'🔒',title:'Enable HTTP/2 or HTTP/3',
+    desc:'Upgrading to HTTP/2 allows multiplexing multiple requests over a single connection, dramatically reducing overhead for pages with many resources.',
+    saving:'20-30% speed improvement',sClass:'saving-low'});
+
+  items.push({pri:'low',icon:'💾',title:'Leverage Browser Caching',
+    desc:'Set proper cache-control headers for static assets (CSS, JS, images). This allows returning visitors to load your site much faster.',
+    saving:'Near-instant repeat visits',sClass:'saving-low'});
+
+  const priClass={high:'reco-high',med:'reco-med',low:'reco-low'};
+  const priEmoji={high:'🔴',med:'🟡',low:'🟢'};
+
+  $('recoBody').innerHTML=items.map(r=>`
+    <div class="reco-item">
+      <div class="reco-icon-wrap ${priClass[r.pri]}">${r.icon}</div>
+      <div class="reco-body">
+        <div class="reco-title">${priEmoji[r.pri]} ${r.title}</div>
+        <div class="reco-desc">${r.desc}</div>
+        <span class="reco-saving ${r.sClass}">⚡ ${r.saving}</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ═════════════════════════════════
+   MAIN TEST
+═════════════════════════════════ */
+async function startTest(){
+  if(testRunning)return;
+
+  let url=$('urlInput').value.trim();
+  if(!url){showAlert('Please enter a website URL to test.');return;}
+  if(!/^https?:\/\//i.test(url))url='https://'+url;
+  try{new URL(url);}catch{showAlert('Invalid URL. Please enter a valid website address.');return;}
+
+  $('urlInput').value=url;
+  hideAlert();
+  testRunning=true;
+  $('testBtn').disabled=true;
+  $('btnIcon').textContent='⏳';
+  $('btnText').textContent='Testing...';
+
+  // Hide previous results
+  ['scoreSection','summarySection','metricsSection','waterfallSection','recoSection']
+    .forEach(id=>{$(id).classList.remove('visible');$(id).style.display='';});
+
+  // Show loading
+  $('loadingSection').classList.add('visible');
+  $('meterFill').style.strokeDashoffset=502;
+  $('meterPct').textContent='0%';
+
+  // Generate data
+  const data=generateData(url);
+
+  // Animate through steps
+  const totalTime=2800;
+  for(let i=0;i<=STEPS.length;i++){
+    const pct=Math.round((i/STEPS.length)*100);
+    const text=i<STEPS.length?`${STEPS[i].icon} ${STEPS[i].name}...`:'✅ Analysis complete!';
+    animateLoading(pct,text);
+    renderSteps(i);
+    await sleep(totalTime/STEPS.length);
+  }
+
+  // Render results
+  renderResults(data);
+
+  // Hide loading
+  $('loadingSection').classList.remove('visible');
+
+  // Reset btn
+  testRunning=false;
+  $('testBtn').disabled=false;
+  $('btnIcon').textContent='⚡';
+  $('btnText').textContent='Run Speed Test';
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function renderResults(d){
+  // Scores
+  $('scoreSection').classList.add('visible');
+  setTimeout(()=>{
+    setRing('ringPerf','valPerf',d.perfScore);
+    setRing('ringSeo','valSeo',d.seoScore,'#3182ce');
+    setRing('ringAccess','valAccess',d.accessScore,'#805ad5');
+    setRing('ringBest','valBest',d.bestScore,'#d69e2e');
+  },100);
+
+  // Summary
+  $('summarySection').classList.add('visible');
+  $('sumLoad').textContent=formatMs(d.loadTime);
+  $('sumSize').textContent=formatKb(d.pageSize);
+  $('sumReq').textContent=d.requests;
+  $('sumFcp').textContent=formatMs(d.fcp);
+  $('sumTbt').textContent=formatMs(d.tti);
+  const gc=gradeFromScore(d.perfScore);
+  const gCol=d.perfScore>=90?'#2e9e55':d.perfScore>=70?'#d69e2e':'#e53e3e';
+  $('sumGrade').textContent=gc;
+  $('sumGrade').style.color=gCol;
+
+  // Vitals
+  $('metricsSection').classList.add('visible');
+  renderVitals(d);
+
+  // Waterfall
+  $('waterfallSection').classList.add('visible');
+  renderWaterfall(d.resources);
+
+  // Recommendations
+  $('recoSection').classList.add('visible');
+  buildRecommendations(d);
+
+  // Scroll to results
+  setTimeout(()=>$('scoreSection').scrollIntoView({behavior:'smooth',block:'start'}),200);
+}
+
+/* ═════════════════════════════════
+   ENTER KEY
+═════════════════════════════════ */
+$('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter')startTest();});
+</script>
+</body>
+</html>
