@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Color Picker & Converter – HEX, RGB, HSL Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Pick, convert and explore colors in HEX, RGB, HSL and more. Copy-ready CSS snippets, tints & shades palette, contrast checker and history. 100% free." />
+
+<!-- ═══════════════════════════════════════
+     GOOGLE ADSENSE
+     Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID
+═══════════════════════════════════════ -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+<!-- ═══════════════════════════════════════
+     MONETAG
+     Replace YOUR_MONETAG_SITE_ID with your site id
+═══════════════════════════════════════ -->
+<!-- <script src="https://cdn.monetag.com/YOUR_MONETAG_SITE_ID/invoke.js" data-cfasync="false" async></script> -->
+
+<!-- ═══════════════════════════════════════
+     EZOIC
+     Replace YOUR_EZOIC_ID with your Ezoic ID
+═══════════════════════════════════════ -->
+<!--
+<script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+<script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+<script>
+  window.ezstandalone = window.ezstandalone || {};
+  ezstandalone.cmd = ezstandalone.cmd || [];
+</script>
+-->
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0faf2;
+  --card:#ffffff;
+  --primary:#2e9e55;
+  --primary-dark:#1f7a40;
+  --primary-light:#d4f5e0;
+  --accent:#57c97a;
+  --border:#b2e8c2;
+  --text:#1a3a24;
+  --text-muted:#5a8c6a;
+  --danger:#e53e3e;
+  --warning:#d69e2e;
+  --blue:#3182ce;
+  --purple:#805ad5;
+  --shadow:0 4px 32px rgba(46,158,85,.13);
+  --shadow-sm:0 2px 12px rgba(46,158,85,.08);
+  --radius:18px;
+  --tr:all .2s ease;
+}
+body{
+  background:var(--bg);
+  font-family:'Segoe UI',system-ui,sans-serif;
+  color:var(--text);
+  min-height:100vh;
+}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+/* ═════════ HEADER ═════════ */
+header{
+  background:linear-gradient(135deg,#0d3d1f 0%,#1a6635 28%,#2e9e55 65%,#57c97a 100%);
+  padding:46px 24px 60px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 12% 55%,rgba(255,255,255,.09) 0%,transparent 50%),
+    radial-gradient(ellipse at 88% 12%,rgba(255,255,255,.07) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 95%,rgba(0,0,0,.08) 0%,transparent 55%);
+}
+.hc{position:absolute;border-radius:50%;background:rgba(255,255,255,.05);animation:hcf 7s ease-in-out infinite;}
+.hc1{width:230px;height:230px;top:-70px;left:-55px;animation-delay:0s;}
+.hc2{width:150px;height:150px;bottom:-40px;right:75px;animation-delay:2.5s;}
+.hc3{width:80px;height:80px;top:22px;right:250px;animation-delay:4.8s;}
+.hc4{width:105px;height:105px;top:70px;left:210px;animation-delay:1.6s;}
+@keyframes hcf{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+header::after{
+  content:'';
+  position:absolute;bottom:-2px;left:0;right:0;height:56px;
+  background:var(--bg);clip-path:ellipse(62% 100% at 50% 100%);
+}
+.h-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:99px;
+  padding:7px 22px;
+  margin-bottom:16px;
+  font-size:.8rem;font-weight:700;
+  color:rgba(255,255,255,.95);
+  backdrop-filter:blur(10px);
+  letter-spacing:.5px;
+}
+.h-icon-row{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-bottom:16px;
+}
+.h-icon-box{
+  width:70px;height:70px;
+  background:rgba(255,255,255,.15);
+  border:2px solid rgba(255,255,255,.25);
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.1rem;
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+  transition:var(--tr);
+}
+.h-icon-box:hover{transform:translateY(-3px) scale(1.05);}
+header h1{
+  color:#fff;font-size:2.6rem;font-weight:900;
+  letter-spacing:-1.1px;
+  text-shadow:0 2px 16px rgba(0,0,0,.18);
+  margin-bottom:8px;
+}
+header p{
+  color:rgba(255,255,255,.85);
+  font-size:1rem;
+}
+.h-tags{
+  display:flex;justify-content:center;gap:9px;
+  margin-top:16px;flex-wrap:wrap;
+}
+.htag{
+  padding:5px 14px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:99px;
+  font-size:.75rem;
+  font-weight:700;
+  color:rgba(255,255,255,.87);
+}
+
+/* ═════════ ADS ═════════ */
+.ad-wrap{padding:14px 18px;display:flex;justify-content:center;background:rgba(212,245,224,.25);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ad-unit{
+  background:var(--card);
+  border:1.5px dashed var(--border);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.ad-unit::before{
+  content:'Advertisement';
+  position:absolute;top:4px;left:8px;
+  font-size:.62rem;
+  color:var(--text-muted);
+  opacity:.6;
+  font-weight:600;
+}
+.ad-leader{width:100%;max-width:728px;height:90px;}
+.ad-rect{width:300px;height:250px;}
+.ad-vert{width:160px;height:600px;}
+.ad-banner{width:100%;max-width:728px;height:60px;}
+
+/* ═════════ LAYOUT ═════════ */
+.page-wrap{max-width:1320px;margin:0 auto;padding:26px 18px 70px;}
+.page-grid{display:grid;grid-template-columns:260px 1fr 280px;gap:18px;align-items:flex-start;}
+@media(max-width:1100px){.page-grid{grid-template-columns:1fr;}}
+.side-l,.side-r{display:flex;flex-direction:column;gap:16px;}
+
+/* ═════════ CARDS ═════════ */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  border:1.5px solid var(--border);
+  overflow:hidden;
+}
+.card-hd{
+  padding:14px 20px;
+  border-bottom:1.5px solid var(--border);
+  background:linear-gradient(135deg,var(--primary-light),rgba(255,255,255,.65));
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+}
+.card-title{font-size:.95rem;font-weight:800;color:var(--primary-dark);display:flex;align-items:center;gap:7px;}
+.card-badge{padding:3px 11px;background:var(--primary);color:#fff;border-radius:99px;font-size:.7rem;font-weight:800;letter-spacing:.3px;}
+.card-body{padding:20px;}
+
+/* ═════════ PICKER PANEL ═════════ */
+.picker-wrap{display:grid;grid-template-columns:1.4fr 1.2fr;gap:18px;align-items:flex-start;}
+@media(max-width:900px){.picker-wrap{grid-template-columns:1fr;}}
+
+.color-main{display:flex;flex-direction:column;gap:14px;}
+.section-label{font-size:.82rem;font-weight:800;color:var(--primary-dark);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+
+.swatch-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.swatch-big{
+  width:130px;height:130px;border-radius:18px;
+  box-shadow:var(--shadow);
+  border:2px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.swatch-big-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.swatch-big-text{font-size:2.4rem;font-weight:800;color:#ffffff;mix-blend-mode:difference;text-shadow:0 2px 8px rgba(0,0,0,.25);}
+.swatch-meta{
+  padding:9px 13px;
+  border-radius:12px;
+  border:1.5px solid var(--border);
+  background:var(--bg);
+  font-size:.8rem;
+  color:var(--text-muted);
+  display:flex;flex-direction:column;gap:3px;
+}
+.swatch-meta strong{color:var(--primary-dark);}
+.preview-text{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card);
+  font-size:.8rem;
+}
+.preview-line{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.preview-chip{width:28px;height:18px;border-radius:6px;border:1px solid rgba(0,0,0,.15);}
+
+/* ═════════ INPUTS ═════════ */
+.inputs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px;margin-top:6px;}
+.input-group{display:flex;flex-direction:column;gap:4px;}
+.input-label{font-size:.78rem;font-weight:700;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between;}
+.input-label small{font-size:.72rem;color:var(--text-muted);}
+.input-control{
+  width:100%;padding:9px 11px;
+  border:2px solid var(--border);border-radius:9px;
+  font-size:.86rem;color:var(--text);
+  background:var(--bg);
+  outline:none;font-family:inherit;
+  transition:var(--tr);
+}
+.input-control:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(46,158,85,.16);}
+.inline-inputs{display:flex;gap:6px;}
+.inline-inputs input{flex:1;text-align:center;}
+
+.hex-row{display:flex;align-items:center;gap:8px;}
+.hex-row input{flex:1;}
+.color-input{width:42px;height:36px;border-radius:9px;border:2px solid var(--border);overflow:hidden;padding:0;cursor:pointer;}
+
+/* ═════════ COPY BUTTONS ═════════ */
+.copy-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.copy-btn{
+  padding:7px 12px;border-radius:9px;border:1.5px solid var(--border);
+  font-size:.76rem;font-weight:700;
+  color:var(--text-muted);background:#fff;
+  cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--tr);
+}
+.copy-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+/* ═════════ PALETTE ═════════ */
+.palette{
+  margin-top:10px;
+  border-top:1px solid var(--border);
+  padding-top:10px;
+}
+.palette-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.palette-swatch{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(0,0,0,.08);
+  cursor:pointer;transition:var(--tr);position:relative;overflow:hidden;
+}
+.palette-swatch:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.palette-swatch span{
+  position:absolute;bottom:2px;right:3px;
+  font-size:.58rem;font-weight:800;color:rgba(0,0,0,.7);
+  text-shadow:0 1px 3px rgba(255,255,255,.7);
+}
+
+/* ═════════ CONTRAST ═════════ */
+.contrast-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);border:1.5px solid var(--border);
+  padding:14px 16px;margin-top:10px;
+}
+.con-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px;}
+.con-block{
+  border-radius:11px;border:1.5px solid var(--border);overflow:hidden;font-size:.8rem;
+}
+.con-sample{
+  padding:10px 11px;
+}
+.con-sample .txt{font-size:1.1rem;font-weight:800;margin-bottom:3px;}
+.con-meta{padding:7px 9px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.con-badge{padding:1px 7px;border-radius:99px;font-size:.7rem;font-weight:800;}
+.badge-pass{background:#c6f6d5;color:#22543d;}
+.badge-warn{background:#fefcbf;color:#744210;}
+.badge-fail{background:#fed7d7;color:#9b2c2c;}
+
+/* ═════════ RIGHT SIDE: CSS SNIPPETS & HISTORY ═════════ */
+.css-snippet{font-family:'Fira Code','Consolas',monospace;font-size:.8rem;background:#0d1a0f;color:#e2ffe8;padding:12px 14px;border-radius:11px;border:1.5px solid #2d3f2d;overflow-x:auto;max-height:200px;}
+.css-k{color:#93c5fd;}
+.css-v{color:#fde68a;}
+.css-c{color:#4ade80;}
+
+.snippet-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.sn-btn{padding:6px 11px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:.76rem;font-weight:700;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--tr);}
+.sn-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);}
+
+.history-list{display:flex;flex-direction:column;gap:8px;}
+.history-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;
+  border-radius:9px;border:1.5px solid var(--border);
+  background:var(--bg);cursor:pointer;transition:var(--tr);
+}
+.history-item:hover{background:var(--primary-light);border-color:var(--primary);}
+.h-color{width:26px;height:26px;border-radius:7px;border:1.5px solid rgba(0,0,0,.12);flex-shrink:0;}
+.h-info{flex:1;overflow:hidden;}
+.h-hex{font-size:.8rem;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.h-rgb{font-size:.74rem;color:var(--text-muted);}
+.h-del{background:none;border:none;font-size:.8rem;color:var(--text-muted);cursor:pointer;padding:2px 6px;border-radius:5px;transition:var(--tr);}
+.h-del:hover{background:#fff5f5;color:var(--danger);}
+
+/* ═════════ BOTTOM INFO ═════════ */
+.info-list{display:flex;flex-direction:column;gap:8px;}
+.info-item{font-size:.8rem;color:var(--text-muted);display:flex;gap:6px;}
+.info-label{font-weight:800;color:var(--primary-dark);}
+
+/* ═════════ TOAST ═════════ */
+.toast{
+  position:fixed;bottom:26px;right:26px;
+  padding:12px 16px;border-radius:11px;
+  font-size:.84rem;font-weight:700;color:#fff;
+  box-shadow:0 8px 26px rgba(0,0,0,.18);
+  transform:translateX(130%);opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  z-index:9999;display:flex;align-items:center;gap:8px;max-width:320px;
+}
+.toast.show{transform:translateX(0);opacity:1;}
+.t-success{background:linear-gradient(135deg,var(--primary),var(--primary-dark));}
+.t-error{background:linear-gradient(135deg,#e53e3e,#c53030);}
+.t-info{background:linear-gradient(135deg,#3182ce,#1a56db);}
+
+/* ═════════ FOOTER ═════════ */
+footer{
+  background:var(--card);
+  border-top:1.5px solid var(--border);
+  padding:22px;
+  text-align:center;
+  color:var(--text-muted);
+  font-size:.8rem;
+}
+@media(max-width:700px){
+  header h1{font-size:1.9rem;}
+  .picker-wrap{grid-template-columns:1fr;}
+  .page-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hc hc1"></div><div class="hc hc2"></div>
+  <div class="hc hc3"></div><div class="hc hc4"></div>
+  <div class="h-pill">🎨 HEX • RGB • HSL • Contrast • Palette</div>
+  <div class="h-icon-row">
+    <div class="h-icon-box">🎨</div>
+    <div class="h-icon-box" style="font-size:1.8rem;">↔</div>
+    <div class="h-icon-box">🧮</div>
+  </div>
+  <h1>Color Picker & Converter</h1>
+  <p>Pick, convert and explore colors in HEX, RGB, HSL & more — with live preview and palette</p>
+  <div class="h-tags">
+    <span class="htag">🎨 Color Picker</span>
+    <span class="htag">🔁 HEX ⇄ RGB ⇄ HSL</span>
+    <span class="htag">🖌️ Tints & Shades</span>
+    <span class="htag">⚖️ Contrast Checker</span>
+    <span class="htag">📋 CSS Snippets</span>
+    <span class="htag">🕒 History</span>
+  </div>
+</header>
+
+<!-- TOP AD -->
+<div class="ad-wrap">
+  <div class="ad-unit ad-leader">
+    <ins class="adsbygoogle"
+      style="display:block;width:100%;height:90px;"
+      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+      data-ad-slot="1111111111"
+      data-ad-format="horizontal"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="page-grid">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="side-l">
+
+      <!-- Vertical ad (Google / Ezoic / Monetag) -->
+      <div class="ad-unit ad-vert">
+        <ins class="adsbygoogle"
+          style="display:block;width:160px;height:600px;"
+          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+          data-ad-slot="2222222222"
+          data-ad-format="vertical"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </div>
+
+      <!-- Quick palette tips -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">💡 Palette Tips</span>
+        </div>
+        <div class="card-body">
+          <ul class="info-list">
+            <li class="info-item">
+              <span class="info-label">Primary:</span>
+              <span>Use the base color for main actions & highlights.</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Tints:</span>
+              <span>Lighter versions are perfect for backgrounds & hover states.</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Shades:</span>
+              <span>Darker versions are ideal for borders & text.</span>
+            </li>
+            <li class="info-item">
+              <span class="info-label">Contrast:</span>
+              <span>Aim for ≥ 4.5:1 for body text to meet WCAG AA.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: MAIN TOOL -->
+    <div>
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">🎨 Color Picker & Converter</span>
+          <span class="card-badge" id="modeBadge">HEX • RGB • HSL</span>
+        </div>
+        <div class="card-body">
+
+          <div class="picker-wrap">
+            <!-- LEFT: PICKER & CONVERTER -->
+            <div class="color-main">
+              <div>
+                <div class="section-label">🎯 Pick Color</div>
+                <div class="swatch-row">
+                  <div class="swatch-big" id="bigSwatch">
+                    <div class="swatch-big-inner" id="bigSwatchInner">
+                      <div class="swatch-big-text">Aa</div>
+                    </div>
+                  </div>
+                  <div class="swatch-meta" id="swatchMeta">
+                    <div><strong id="metaHex">#2E9E55</strong></div>
+                    <div id="metaRgb">rgb(46, 158, 85)</div>
+                    <div id="metaHsl">hsl(141, 54%, 40%)</div>
+                    <div style="margin-top:5px;font-size:.75rem;">
+                      <span style="font-weight:700;color:var(--primary-dark);">Luminance:</span>
+                      <span id="metaLum">0.34</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="preview-text" id="previewText">
+                  <div class="preview-line">
+                    <span class="preview-chip" id="chipBg" style="background:#2e9e55;"></span>
+                    <span style="font-weight:700;">Sample on Color:</span>
+                    <span id="sampleOnColor" style="font-size:.82rem;">The quick brown fox jumps over the lazy dog.</span>
+                  </div>
+                  <div class="preview-line">
+                    <span class="preview-chip" id="chipWhite" style="background:#ffffff;"></span>
+                    <span style="font-weight:700;">On White:</span>
+                    <span id="sampleOnWhite" style="font-size:.82rem;">The quick brown fox jumps over the lazy dog.</span>
+                  </div>
+                  <div class="preview-line">
+                    <span class="preview-chip" id="chipBlack" style="background:#000000;"></span>
+                    <span style="font-weight:700;">On Black:</span>
+                    <span id="sampleOnBlack" style="font-size:.82rem;">The quick brown fox jumps over the lazy dog.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- INPUTS -->
+              <div style="margin-top:12px;">
+                <div class="section-label">🔁 Convert Between Formats</div>
+                <div class="inputs-grid">
+
+                  <!-- HEX -->
+                  <div class="input-group">
+                    <div class="input-label">
+                      <span>HEX</span>
+                      <small>e.g. #2e9e55</small>
+                    </div>
+                    <div class="hex-row">
+                      <input class="input-control" id="hexInput" maxlength="9" value="#2e9e55" oninput="onHexChange(this.value)" />
+                      <label class="color-input">
+                        <input type="color" id="colorPicker" value="#2e9e55" onchange="onColorPickerChange(this.value)" />
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- RGB -->
+                  <div class="input-group">
+                    <div class="input-label">
+                      <span>RGB</span>
+                      <small>0 – 255</small>
+                    </div>
+                    <div class="inline-inputs">
+                      <input class="input-control" id="rInput" type="number" min="0" max="255" value="46" oninput="onRgbChange()" />
+                      <input class="input-control" id="gInput" type="number" min="0" max="255" value="158" oninput="onRgbChange()" />
+                      <input class="input-control" id="bInput" type="number" min="0" max="255" value="85" oninput="onRgbChange()" />
+                    </div>
+                  </div>
+
+                  <!-- HSL -->
+                  <div class="input-group">
+                    <div class="input-label">
+                      <span>HSL</span>
+                      <small>0–360 / 0–100%</small>
+                    </div>
+                    <div class="inline-inputs">
+                      <input class="input-control" id="hInput" type="number" min="0" max="360" value="141" oninput="onHslChange()" />
+                      <input class="input-control" id="sInput" type="number" min="0" max="100" value="54" oninput="onHslChange()" />
+                      <input class="input-control" id="lInput" type="number" min="0" max="40" value="40" oninput="onHslChange()" />
+                    </div>
+                  </div>
+
+                  <!-- EXTRA: ALPHA -->
+                  <div class="input-group">
+                    <div class="input-label">
+                      <span>Alpha</span>
+                      <small>0 – 1</small>
+                    </div>
+                    <div class="inline-inputs">
+                      <input class="input-control" id="aInput" type="number" min="0" max="1" step="0.05" value="1" oninput="onAlphaChange()" />
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- COPY BUTTONS -->
+                <div class="copy-row">
+                  <button class="copy-btn" onclick="copyText('hex')">📋 Copy HEX</button>
+                  <button class="copy-btn" onclick="copyText('rgb')">📋 Copy RGB</button>
+                  <button class="copy-btn" onclick="copyText('hsl')">📋 Copy HSL</button>
+                  <button class="copy-btn" onclick="copyText('css')">📋 Copy CSS</button>
+                </div>
+              </div>
+
+              <!-- PALETTE -->
+              <div class="palette">
+                <div class="section-label">🎨 Tints & Shades</div>
+                <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px;">Click a swatch to set it as the current color.</div>
+                <div>
+                  <div style="font-size:.76rem;font-weight:700;color:var(--text-muted);margin-bottom:3px;">Lighter</div>
+                  <div class="palette-row" id="tintsRow"></div>
+                </div>
+                <div>
+                  <div style="font-size:.76rem;font-weight:700;color:var(--text-muted);margin-bottom:3px;">Darker</div>
+                  <div class="palette-row" id="shadesRow"></div>
+                </div>
+              </div>
+
+              <!-- CONTRAST -->
+              <div class="contrast-card">
+                <div class="section-label">⚖️ Contrast Checker</div>
+                <div class="con-grid">
+                  <div class="con-block" id="conOnWhite">
+                    <div class="con-sample" id="conWhiteSample">
+                      <div class="txt">Aa</div>
+                      <div style="font-size:.76rem;">Text on White</div>
+                    </div>
+                    <div class="con-meta">
+                      <span id="ratioWhite">—</span>
+                      <span class="con-badge" id="badgeWhite">—</span>
+                    </div>
+                  </div>
+                  <div class="con-block" id="conOnBlack">
+                    <div class="con-sample" id="conBlackSample">
+                      <div class="txt">Aa</div>
+                      <div style="font-size:.76rem;">Text on Black</div>
+                    </div>
+                    <div class="con-meta">
+                      <span id="ratioBlack">—</span>
+                      <span class="con-badge" id="badgeBlack">—</span>
+                    </div>
+                  </div>
+                  <div class="con-block" id="conBgWhite">
+                    <div class="con-sample" id="conBgWhiteSample">
+                      <div class="txt">Aa</div>
+                      <div style="font-size:.76rem;">Color as Background</div>
+                    </div>
+                    <div class="con-meta">
+                      <span id="ratioBg">—</span>
+                      <span class="con-badge" id="badgeBg">—</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT: CSS & HISTORY -->
+            <div>
+              <div class="card" style="box-shadow:none;border:none;background:none;padding:0;">
+                <div class="card-body" style="padding:0 0 14px;">
+                  <div class="section-label">💻 CSS Snippets</div>
+                  <div class="css-snippet" id="cssSnippet">
+<span class="css-k">/* HEX */</span>
+<span class="css-k">color</span>: <span class="css-v">#2e9e55</span>;
+
+<span class="css-k">/* RGB */</span>
+<span class="css-k">color</span>: <span class="css-v">rgb(46, 158, 85)</span>;
+
+<span class="css-k">/* HSL */</span>
+<span class="css-k">color</span>: <span class="css-v">hsl(141, 54%, 40%)</span>;
+
+<span class="css-k">/* Background */</span>
+<span class="css-k">background-color</span>: <span class="css-v">#2e9e55</span>;
+                  </div>
+                  <div class="snippet-actions">
+                    <button class="sn-btn" onclick="copySnippet()">📋 Copy Snippet</button>
+                    <button class="sn-btn" onclick="copyTailwind()">🌬️ Tailwind</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MIDDLE AD -->
+              <div class="ad-unit ad-rect" style="margin:8px 0 12px;">
+                <ins class="adsbygoogle"
+                  style="display:block;width:300px;height:250px;"
+                  data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                  data-ad-slot="3333333333"
+                  data-ad-format="rectangle"></ins>
+                <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+              </div>
+
+              <!-- HISTORY -->
+              <div class="card">
+                <div class="card-hd">
+                  <span class="card-title">🕒 Color History</span>
+                  <button class="sn-btn" onclick="clearHistory()" style="padding:4px 9px;font-size:.7rem;">🗑️ Clear</button>
+                </div>
+                <div class="card-body" style="max-height:220px;overflow-y:auto;">
+                  <div class="history-list" id="historyList">
+                    <div style="font-size:.78rem;color:var(--text-muted);text-align:center;padding:8px 4px;">
+                      No colors yet — start picking!
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- INFO -->
+              <div class="card" style="margin-top:10px;">
+                <div class="card-hd">
+                  <span class="card-title">ℹ️ Useful Info</span>
+                </div>
+                <div class="card-body">
+                  <ul class="info-list">
+                    <li class="info-item"><span class="info-label">HEX:</span><span>#RRGGBB, example: <code style="font-family:'Fira Code',monospace;">#2e9e55</code></span></li>
+                    <li class="info-item"><span class="info-label">RGB:</span><span>0–255 per channel: <code>rgb(46, 158, 85)</code></span></li>
+                    <li class="info-item"><span class="info-label">HSL:</span><span>Hue 0–360, Saturation/Lightness 0–100%</span></li>
+                    <li class="info-item"><span class="info-label">Contrast:</span><span>WCAG AA: 4.5:1 (text), AAA: 7:1</span></li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- BOTTOM AD -->
+      <div class="ad-unit ad-banner" style="margin-top:16px;">
+        <ins class="adsbygoogle"
+          style="display:block;width:100%;height:60px;"
+          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+          data-ad-slot="4444444444"
+          data-ad-format="horizontal"
+          data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="side-r">
+      <!-- Rect ad -->
+      <div class="ad-unit ad-rect">
+        <ins class="adsbygoogle"
+          style="display:block;width:300px;height:250px;"
+          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+          data-ad-slot="5555555555"
+          data-ad-format="rectangle"></ins>
+        <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+      </div>
+
+      <!-- Common colors -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">📚 Common Colors</span>
+        </div>
+        <div class="card-body">
+          <div class="palette-row" id="commonColors"></div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">💡 Usage Ideas</span>
+        </div>
+        <div class="card-body">
+          <ul class="info-list">
+            <li class="info-item"><span class="info-label">Branding:</span><span>Define your brand palette with 1 primary + 2 accent colors.</span></li>
+            <li class="info-item"><span class="info-label">UI States:</span><span>Use tints for hover and shades for pressed/active states.</span></li>
+            <li class="info-item"><span class="info-label">Dark Mode:</span><span>Check contrast on both light and dark backgrounds.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Extra ad -->
+      <div class="ad-unit ad-rect">
+        <!-- Monetag or Ezoic zone can go here -->
+        <!-- Example placeholder -->
+        <span style="font-size:.75rem;color:var(--text-muted);">Monetag / Ezoic Ad Slot</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM AD -->
+<div class="ad-wrap">
+  <div class="ad-unit ad-banner">
+    <ins class="adsbygoogle"
+      style="display:block;width:100%;height:60px;"
+      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+      data-ad-slot="6666666666"
+      data-ad-format="horizontal"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  </div>
+</div>
+
+<footer>
+  🌿 Color Picker & Converter &nbsp;|&nbsp; HEX • RGB • HSL • Palette • Contrast &nbsp;|&nbsp; Built with ❤️
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let currentColor = {r:46,g:158,b:85,a:1};
+let history = JSON.parse(localStorage.getItem('colorHistory')||'[]');
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+function showToast(msg,type='success'){
+  const t=$('toast');
+  t.textContent=msg;
+  t.className=`toast t-${type} show`;
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+
+/* COLOR CONVERSIONS */
+function hexToRgb(hex){
+  hex=hex.replace('#','').trim();
+  if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+  if(hex.length!==6) return null;
+  const num=parseInt(hex,16);
+  return {r:(num>>16)&255,g:(num>>8)&255,b:num&255};
+}
+function rgbToHex(r,g,b){
+  return'#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function rgbToHsl(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}
+  else{
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){
+      case r:h=(g-b)/d+(g<b?6:0);break;
+      case g:h=(b-r)/d+2;break;
+      case b:h=(r-g)/d+4;break;
+    }
+    h/=6;
+  }
+  return{
+    h:Math.round(h*360),
+    s:Math.round(s*100),
+    l:Math.round(l*100)
+  };
+}
+function hslToRgb(h,s,l){
+  h/=360;s/=100;l/=100;
+  let r,g,b;
+  if(s===0){r=g=b=l;}
+  else{
+    const hue2rgb=(p,q,t)=>{
+      if(t<0)t+=1;if(t>1)t-=1;
+      if(t<1/6)return p+(q-p)*6*t;
+      if(t<1/2)return q;
+      if(t<2/3)return p+(q-p)*(2/3-t)*6;
+      return p;
+    };
+    const q=l<0.5?l*(1+s):l+s-l*s;
+    const p=2*l-q;
+    r=hue2rgb(p,q,h+1/3);
+    g=hue2rgb(p,q,h);
+    b=hue2rgb(p,q,h-1/3);
+  }
+  return{
+    r:Math.round(r*255),
+    g:Math.round(g*255),
+    b:Math.round(b*255)
+  };
+}
+
+/* LUMINANCE & CONTRAST */
+function relLuminance(r,g,b){
+  const a=[r,g,b].map(v=>{
+    v/=255;
+    return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
+  });
+  return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+}
+function contrastRatio(c1,c2){
+  const L1=relLuminance(c1.r,c1.g,c1.b);
+  const L2=relLuminance(c2.r,c2.g,c2.b);
+  const hi=Math.max(L1,L2),lo=Math.min(L1,L2);
+  return ((hi+0.05)/(lo+0.05));
+}
+function ratioBadge(ratio){
+  if(ratio>=7) return {label:'AAA',cls:'badge-pass'};
+  if(ratio>=4.5) return {label:'AA',cls:'badge-pass'};
+  if(ratio>=3) return {label:'AA Large',cls:'badge-warn'};
+  return {label:'Fail',cls:'badge-fail'};
+}
+
+/* ════════════════════════════════
+   UPDATE UI
+════════════════════════════════ */
+function setColorFromRGB(r,g,b,a=1,skipHistory=false){
+  currentColor={r:clamp(r,0,255),g:clamp(g,0,255),b:clamp(b,0,255),a:clamp(a,0,1)};
+  const hex=rgbToHex(currentColor.r,currentColor.g,currentColor.b);
+  const hsl=rgbToHsl(currentColor.r,currentColor.g,currentColor.b);
+
+  // Update inputs
+  $('hexInput').value=hex;
+  $('colorPicker').value=hex;
+  $('rInput').value=currentColor.r;
+  $('gInput').value=currentColor.g;
+  $('bInput').value=currentColor.b;
+  $('aInput').value=currentColor.a.toFixed(2);
+  $('hInput').value=hsl.h;
+  $('sInput').value=hsl.s;
+  $('lInput').value=hsl.l;
+
+  // Update swatch & preview
+  const rgbaCss = currentColor.a<1 ? `rgba(${currentColor.r}, ${currentColor.g}, ${currentColor.b}, ${currentColor.a.toFixed(2)})` : hex;
+  $('bigSwatchInner').style.background=rgbaCss;
+  $('chipBg').style.background=rgbaCss;
+  $('sampleOnColor').style.color='#ffffff';
+  $('sampleOnWhite').style.color=rgbaCss;
+  $('sampleOnBlack').style.color=rgbaCss;
+
+  $('metaHex').textContent=hex.toUpperCase();
+  $('metaRgb').textContent=`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+  $('metaHsl').textContent=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+  $('metaLum').textContent=relLuminance(currentColor.r,currentColor.g,currentColor.b).toFixed(3);
+
+  updatePalette(hex);
+  updateContrast();
+  updateCssSnippet();
+  if(!skipHistory) pushHistory(hex,currentColor);
+}
+
+/* Palette */
+function adjustLightness(hsl,delta){
+  let l=hsl.l+delta;
+  l=clamp(l,0,100);
+  const rgb=hslToRgb(hsl.h,hsl.s,l);
+  return{rgb,hsl:{h:hsl.h,s:hsl.s,l}};
+}
+function updatePalette(hex){
+  const rgb=hexToRgb(hex)||{r:0,g:0,b:0};
+  const baseHsl=rgbToHsl(rgb.r,rgb.g,rgb.b);
+
+  const tintsRow=$('tintsRow');const shadesRow=$('shadesRow');
+  tintsRow.innerHTML='';shadesRow.innerHTML='';
+
+  const steps=[40,30,20,10];
+  steps.forEach((d,i)=>{
+    const {rgb:rgbTint,hsl:hslTint}=adjustLightness(baseHsl,d);
+    const h=rgbToHex(rgbTint.r,rgbTint.g,rgbTint.b);
+    const sw=document.createElement('div');
+    sw.className='palette-swatch';
+    sw.style.background=h;
+    sw.title=h.toUpperCase();
+    sw.innerHTML=`<span>${i+1}</span>`;
+    sw.onclick=()=>setColorFromRGB(rgbTint.r,rgbTint.g,rgbTint.b,currentColor.a);
+    tintsRow.appendChild(sw);
+  });
+
+  steps.forEach((d,i)=>{
+    const {rgb:rgbShade,hsl:hslShade}=adjustLightness(baseHsl,-d);
+    const h=rgbToHex(rgbShade.r,rgbShade.g,rgbShade.b);
+    const sw=document.createElement('div');
+    sw.className='palette-swatch';
+    sw.style.background=h;
+    sw.title=h.toUpperCase();
+    sw.innerHTML=`<span>${i+1}</span>`;
+    sw.onclick=()=>setColorFromRGB(rgbShade.r,rgbShade.g,rgbShade.b,currentColor.a);
+    shadesRow.appendChild(sw);
+  });
+}
+
+/* Contrast */
+function updateContrast(){
+  const c=currentColor;
+  const white={r:255,g:255,b:255},black={r:0,g:0,b:0};
+
+  const ratioOnWhite=contrastRatio(c,white);
+  const bw=ratioBadge(ratioOnWhite);
+  $('ratioWhite').textContent=ratioOnWhite.toFixed(2)+':1';
+  $('badgeWhite').textContent=bw.label;
+  $('badgeWhite').className='con-badge '+bw.cls;
+  $('conWhiteSample').style.background='#ffffff';
+  $('conWhiteSample').style.color=rgbToHex(c.r,c.g,c.b);
+
+  const ratioOnBlack=contrastRatio(c,black);
+  const bb=ratioBadge(ratioOnBlack);
+  $('ratioBlack').textContent=ratioOnBlack.toFixed(2)+':1';
+  $('badgeBlack').textContent=bb.label;
+  $('badgeBlack').className='con-badge '+bb.cls;
+  $('conBlackSample').style.background='#000000';
+  $('conBlackSample').style.color=rgbToHex(c.r,c.g,c.b);
+
+  // Color as background: best text color (black or white)
+  const ratioBgWhite=contrastRatio(c,white);
+  const ratioBgBlack=contrastRatio(c,black);
+  const useWhite=ratioBgWhite>ratioBgBlack;
+  const txtColor=useWhite?'#ffffff':'#000000';
+  const bestRatio=Math.max(ratioBgWhite,ratioBgBlack);
+  const bgB=ratioBadge(bestRatio);
+  $('ratioBg').textContent=bestRatio.toFixed(2)+':1';
+  $('badgeBg').textContent=bgB.label;
+  $('badgeBg').className='con-badge '+bgB.cls;
+  $('conBgWhiteSample').style.background=rgbToHex(c.r,c.g,c.b);
+  $('conBgWhiteSample').style.color=txtColor;
+}
+
+/* CSS Snippet */
+function updateCssSnippet(){
+  const hex=rgbToHex(currentColor.r,currentColor.g,currentColor.b);
+  const alpha=currentColor.a;
+  const rgbStr=`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+  const rgbaStr=`rgba(${currentColor.r}, ${currentColor.g}, ${currentColor.b}, ${alpha.toFixed(2)})`;
+  const hsl=rgbToHsl(currentColor.r,currentColor.g,currentColor.b);
+  const hslStr=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+
+  const css=`<span class="css-k">/* HEX */</span>
+<span class="css-k">color</span>: <span class="css-v">${hex}</span>;
+
+<span class="css-k">/* RGB */</span>
+<span class="css-k">color</span>: <span class="css-v">${rgbStr}</span>;
+
+<span class="css-k">/* HSL */</span>
+<span class="css-k">color</span>: <span class="css-v">${hslStr}</span>;
+
+<span class="css-k">/* Background */</span>
+<span class="css-k">background-color</span>: <span class="css-v">${alpha<1?rgbaStr:hex}</span>;
+
+<span class="css-k">/* Border */</span>
+<span class="css-k">border</span>: <span class="css-v">2px solid ${hex}</span>;`;
+
+  $('cssSnippet').innerHTML=css;
+}
+
+/* ════════════════════════════════
+   INPUT HANDLERS
+════════════════════════════════ */
+function onColorPickerChange(val){
+  const rgb=hexToRgb(val);
+  if(!rgb) return;
+  setColorFromRGB(rgb.r,rgb.g,rgb.b,currentColor.a);
+}
+
+function onHexChange(val){
+  val=val.trim();
+  if(!val) return;
+  if(!val.startsWith('#')) val='#'+val;
+  const hex=val.replace(/[^0-9a-fA-F#]/g,'');
+  const rgb=hexToRgb(hex);
+  if(!rgb) return;
+  setColorFromRGB(rgb.r,rgb.g,rgb.b,currentColor.a);
+}
+
+function onRgbChange(){
+  const r=parseInt($('rInput').value)||0;
+  const g=parseInt($('gInput').value)||0;
+  const b=parseInt($('bInput').value)||0;
+  setColorFromRGB(r,g,b,currentColor.a);
+}
+
+function onHslChange(){
+  const h=clamp(parseInt($('hInput').value)||0,0,360);
+  const s=clamp(parseInt($('sInput').value)||0,0,100);
+  const l=clamp(parseInt($('lInput').value)||0,0,100);
+  const rgb=hslToRgb(h,s,l);
+  setColorFromRGB(rgb.r,rgb.g,rgb.b,currentColor.a);
+}
+
+function onAlphaChange(){
+  let a=parseFloat($('aInput').value);
+  if(isNaN(a)) a=1;
+  a=clamp(a,0,1);
+  setColorFromRGB(currentColor.r,currentColor.g,currentColor.b,a);
+}
+
+/* ════════════════════════════════
+   CLIPBOARD
+════════════════════════════════ */
+function copyText(type){
+  const hex=rgbToHex(currentColor.r,currentColor.g,currentColor.b).toUpperCase();
+  const rgb=`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+  const hsl=rgbToHsl(currentColor.r,currentColor.g,currentColor.b);
+  const hslStr=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+  const css=$('cssSnippet').innerText||$('cssSnippet').textContent;
+  let text='';
+  if(type==='hex') text=hex;
+  else if(type==='rgb') text=rgb;
+  else if(type==='hsl') text=hslStr;
+  else if(type==='css') text=css;
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied '+type.toUpperCase()+'!','success'));
+}
+function copySnippet(){
+  const css=$('cssSnippet').innerText||$('cssSnippet').textContent;
+  navigator.clipboard.writeText(css).then(()=>showToast('📋 CSS snippet copied!','success'));
+}
+function copyTailwind(){
+  const hsl=rgbToHsl(currentColor.r,currentColor.g,currentColor.b);
+  const line=`background-color: hsl(${hsl.h} ${hsl.s}% ${hsl.l}%); // Tailwind-compatible`;
+  navigator.clipboard.writeText(line).then(()=>showToast('🌬️ Tailwind style copied!','success'));
+}
+
+/* ════════════════════════════════
+   HISTORY
+════════════════════════════════ */
+function pushHistory(hex,rgb){
+  const item={hex:hex.toUpperCase(),rgb:`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,ts:Date.now()};
+  history=history.filter(h=>h.hex!==item.hex);
+  history.unshift(item);
+  history=history.slice(0,20);
+  localStorage.setItem('colorHistory',JSON.stringify(history));
+  renderHistory();
+}
+function renderHistory(){
+  const list=$('historyList');
+  if(!history.length){
+    list.innerHTML='<div style="font-size:.78rem;color:var(--text-muted);text-align:center;padding:8px 4px;">No colors yet — start picking!</div>';
+    return;
+  }
+  list.innerHTML=history.map((h,i)=>`
+    <div class="history-item" onclick="setFromHistory(${i})">
+      <div class="h-color" style="background:${h.hex};"></div>
+      <div class="h-info">
+        <div class="h-hex">${h.hex}</div>
+        <div class="h-rgb">${h.rgb}</div>
+      </div>
+      <button class="h-del" onclick="event.stopPropagation();deleteHistory(${i})">✕</button>
+    </div>`).join('');
+}
+function setFromHistory(i){
+  const h=history[i];if(!h) return;
+  const rgb=hexToRgb(h.hex);
+  if(!rgb) return;
+  setColorFromRGB(rgb.r,rgb.g,rgb.b,1,true);
+  showToast('🎨 Color restored from history','info');
+}
+function deleteHistory(i){
+  history.splice(i,1);
+  localStorage.setItem('colorHistory',JSON.stringify(history));
+  renderHistory();
+}
+function clearHistory(){
+  history=[];
+  localStorage.removeItem('colorHistory');
+  renderHistory();
+  showToast('🗑️ Color history cleared','info');
+}
+
+/* ════════════════════════════════
+   COMMON COLORS
+════════════════════════════════ */
+const COMMON_COLORS = [
+  {hex:'#000000',name:'Black'},
+  {hex:'#ffffff',name:'White'},
+  {hex:'#2e9e55',name:'Emerald'},
+  {hex:'#1d4ed8',name:'Blue'},
+  {hex:'#f97316',name:'Orange'},
+  {hex:'#e11d48',name:'Rose'},
+  {hex:'#14b8a6',name:'Teal'},
+  {hex:'#7c3aed',name:'Purple'},
+  {hex:'#facc15',name:'Yellow'},
+  {hex:'#9ca3af',name:'Gray'},
+  {hex:'#0f172a',name:'Slate'},
+  {hex:'#ef4444',name:'Red'},
+];
+function renderCommonColors(){
+  const row=$('commonColors');
+  row.innerHTML=COMMON_COLORS.map(c=>`
+    <div class="palette-swatch" style="width:34px;height:34px;background:${c.hex};" title="${c.name} (${c.hex})" onclick="setCommon('${c.hex}')"></div>
+  `).join('');
+}
+function setCommon(hex){
+  const rgb=hexToRgb(hex);if(!rgb) return;
+  setColorFromRGB(rgb.r,rgb.g,rgb.b,1);
+  showToast(`🎨 Set color to ${hex.toUpperCase()}`,'success');
+}
+
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+function init(){
+  renderHistory();
+  renderCommonColors();
+  setColorFromRGB(46,158,85,1,true);
+}
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
