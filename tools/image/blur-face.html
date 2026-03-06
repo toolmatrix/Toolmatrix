@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blur Face – Free Online Face Blur Tool | ToolMatrix</title>
@@ -631,12 +631,12 @@
                          User jab download karta hai → SmartLink se redirect hoga
                          Yeh earning ka sabse best tarika hai
                          ============================================================ -->
-                    <a href="https://omg10.com/4/10689787" 
+                    <a href="https://omg10.com/4/10689787"
                        id="smartDownloadBtn"
-                       class="smartlink-btn" 
+                       class="smartlink-btn"
                        target="_blank"
                        rel="noopener"
-                       onclick="handleSmartDownload(event)">
+                       onclick="triggerActualDownload()">
                         <i class="fas fa-download"></i> Apply Blur & Download
                     </a>
                     <div class="smartlink-note">
@@ -702,12 +702,15 @@ let scaleRatio = 1;
 
 // ============================================================
 // SMARTLINK CONFIG
-// Yahan apni Monetag / Adsterra SmartLink URL dalein
-// Monetag SmartLink: https://app.monetag.com/
-// Adsterra Direct Link: https://publishers.adsterra.com/
+// Apni Monetag ya Adsterra SmartLink URL yahan dalein
 // ============================================================
 const SMARTLINK_URL = 'https://geniouslinks.com/YOUR-SMARTLINK-ID';
-// ============================================================
+
+// Button href dynamically set karo taake browser block na kare
+window.addEventListener('load', () => {
+    const btn = document.getElementById('smartDownloadBtn');
+    if (btn) btn.href = SMARTLINK_URL;
+});
 
 const mainCanvas   = document.getElementById('mainCanvas');
 const mainCtx      = mainCanvas.getContext('2d');
@@ -715,32 +718,34 @@ const overlayCanvas= document.getElementById('overlayCanvas');
 const overlayCtx   = overlayCanvas.getContext('2d');
 
 // ========== SMARTLINK DOWNLOAD ==========
-// SmartLink tab khulta hai, aur actual download bhi trigger hota hai
-function handleSmartDownload(e) {
-    e.preventDefault(); // Default link behavior rok do
-
+// Kaise kaam karta hai:
+// 1. <a href> se SmartLink naturally new tab mein open hoti hai (earning)
+// 2. onclick se actual image download bhi saath mein trigger hoti hai
+function triggerActualDownload() {
     if (!originalImage || regions.length === 0) {
+        event.preventDefault(); // SmartLink bhi mat kholo
         toast('Pehle blur regions add karein! ✏️');
         return;
     }
-
-    // Step 1: SmartLink open karo (earning hogi)
-    window.open(SMARTLINK_URL, '_blank');
-
-    // Step 2: Actual download 800ms baad start karo (taaki tab open ho sake)
-    setTimeout(() => {
-        downloadImage();
-    }, 800);
+    // SmartLink tab khulne do, download bhi shuru karo
+    setTimeout(() => downloadImage(), 300);
 }
 
-// Keyboard shortcut Ctrl+S ke liye bhi same karo
+// Ctrl+S keyboard shortcut
 function handleKeyDownload() {
     if (!originalImage || regions.length === 0) {
         toast('Pehle blur regions add karein! ✏️');
         return;
     }
-    window.open(SMARTLINK_URL, '_blank');
-    setTimeout(() => downloadImage(), 800);
+    // Real <a> click banao — popup blocker bypass hoga
+    const a = document.createElement('a');
+    a.href = SMARTLINK_URL;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => downloadImage(), 300);
 }
 
 // ========== FILE HANDLING ==========
