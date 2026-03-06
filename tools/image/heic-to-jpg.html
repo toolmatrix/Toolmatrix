@@ -7,24 +7,20 @@
   <title>HEIC to JPG Converter</title>
   <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
-  <!-- ✅ MONETAG – In-Page Push Ad -->
+  <!-- ✅ MONETAG In-Page Push -->
   <script>(function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{
       --g1:#2ecc71;--g2:#27ae60;--g3:#1a9e50;
-      --bg:#f0fbf5;--card:#fff;
-      --border:#c3e6cb;--text:#1e3a2f;--muted:#5d8c72;
-      --bw:#e8f5e9;--bwc:#388e3c;
-      --bc:#fff9c4;--bcc:#f57f17;
-      --bd:#d4edda;--bdc:#155724;
-      --be:#fde8e8;--bec:#c0392b;
+      --bg:#f0fbf5;--border:#c3e6cb;--text:#1e3a2f;--muted:#5d8c72;
     }
-    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+      background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
     a{color:var(--g2);text-decoration:none}
     a:hover{text-decoration:underline}
-    button{font-family:inherit}
+    button{font-family:inherit;cursor:pointer}
 
     /* ── NAV ── */
     nav{background:#fff;padding:13px 24px;display:flex;align-items:center;
@@ -39,17 +35,15 @@
     .nav-badge{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:var(--g3);
       font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px}
 
-    /* ── PAGE SWITCH ── */
-    #page-upload{display:flex;flex-direction:column;flex:1}
-    #page-convert{display:none;flex-direction:column;flex:1}
-    #page-convert.active{display:flex}
+    /* ── PAGES ── */
+    .page{display:none;flex-direction:column;flex:1}
+    .page.active{display:flex}
 
-    /* ── AD BLOCKS ── */
+    /* ── ADS ── */
     .ad-wrap{display:flex;justify-content:center;align-items:center;
-      background:#e8f5e9;border-bottom:1px solid #c8e6c9;padding:8px 12px;min-height:52px}
-    /* Desktop 728×90 – shown ≥768px */
+      background:#e8f5e9;border-bottom:1px solid #c8e6c9;padding:8px 12px;min-height:52px;
+      overflow:hidden}
     .ad-desktop{display:none}
-    /* Mobile 300×250 – shown <768px */
     .ad-mobile{display:none}
     @media(min-width:768px){.ad-desktop{display:block}}
     @media(max-width:767px){.ad-mobile{display:block}}
@@ -83,10 +77,9 @@
     .dz-text{font-size:1.1rem;color:#2d6a4f;margin-bottom:5px;font-weight:700}
     .dz-hint{font-size:.88rem;color:#95b8a1;margin-bottom:20px}
     .dz-btn{display:inline-block;padding:13px 36px;
-      background:linear-gradient(135deg,var(--g1),var(--g2));
-      color:#fff;border:none;border-radius:30px;font-size:.98rem;font-weight:700;
-      cursor:pointer;transition:all .2s;box-shadow:0 5px 16px rgba(46,204,113,.3);
-      position:relative;z-index:1}
+      background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;
+      border-radius:30px;font-size:.98rem;font-weight:700;cursor:pointer;transition:all .2s;
+      box-shadow:0 5px 16px rgba(46,204,113,.3);position:relative;z-index:1}
     .dz-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,204,113,.4)}
     .dz-format{font-size:.75rem;color:#b2d8bc;margin-top:16px;letter-spacing:.3px}
     #fileInput{display:none}
@@ -105,7 +98,7 @@
       padding:14px 24px;display:flex;align-items:center;gap:14px}
     .back-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;
       border:2px solid var(--border);border-radius:10px;background:#fff;
-      color:var(--g3);font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+      color:var(--g3);font-size:.85rem;font-weight:700;transition:all .15s}
     .back-btn:hover{border-color:var(--g1);background:#f1fdf5}
     .cp-header-title{font-weight:800;font-size:1.05rem;color:#1b5e20;flex:1}
     .cp-header-count{background:#e8f5e9;color:var(--g3);font-size:.78rem;
@@ -117,12 +110,12 @@
       width:100%;max-width:900px;display:flex;align-items:center;gap:14px;
       border:1.5px solid var(--border);box-shadow:0 2px 8px rgba(46,204,113,.05)}
     .quality-box label{font-size:.85rem;font-weight:700;color:#2d6a4f;white-space:nowrap}
-    .quality-box input[type="range"]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;
-      outline:none;cursor:pointer}
-    .quality-box input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;
-      border-radius:50%;background:var(--g2);cursor:pointer;border:3px solid #fff;
-      box-shadow:0 2px 6px rgba(46,204,113,.4)}
-    .qval{font-size:.9rem;font-weight:800;color:var(--g1);min-width:40px;text-align:right}
+    .quality-box input[type=range]{flex:1;-webkit-appearance:none;height:6px;
+      border-radius:3px;outline:none;cursor:pointer}
+    .quality-box input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
+      width:20px;height:20px;border-radius:50%;background:var(--g2);cursor:pointer;
+      border:3px solid #fff;box-shadow:0 2px 6px rgba(46,204,113,.4)}
+    .qval{font-size:.9rem;font-weight:800;color:var(--g1);min-width:42px;text-align:right}
 
     /* ── PROGRESS ── */
     .progress-section{display:none;justify-content:center;padding:12px 20px 0}
@@ -136,17 +129,18 @@
     .prog-text{font-size:.78rem;color:var(--g1);margin-top:6px;font-weight:700;text-align:right}
 
     /* ── ACTIONS ── */
-    .actions-section{display:flex;justify-content:center;padding:14px 20px;gap:10px;flex-wrap:wrap}
-    .act-btn{padding:13px 32px;border:none;border-radius:12px;font-size:.95rem;font-weight:800;
-      cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+    .actions-section{display:flex;justify-content:center;padding:14px 20px;
+      gap:10px;flex-wrap:wrap}
+    .act-btn{padding:13px 32px;border:none;border-radius:12px;font-size:.95rem;
+      font-weight:800;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
     .act-btn.convert{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;
       box-shadow:0 5px 18px rgba(46,204,113,.3)}
     .act-btn.convert:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(46,204,113,.4)}
-    .act-btn.convert:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+    .act-btn.convert:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
     .act-btn.download-all{background:#fff;color:var(--g2);border:2.5px solid var(--g2)}
     .act-btn.download-all:hover{background:#f0fbf5}
     .add-more-btn{padding:13px 22px;border:2.5px dashed #a5d6a7;border-radius:12px;
-      background:#fff;color:#81c784;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s}
+      background:#fff;color:#81c784;font-size:.9rem;font-weight:700;transition:all .15s}
     .add-more-btn:hover{border-color:var(--g1);color:var(--g1);background:#f0fbf5}
     .btn-spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);
       border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
@@ -155,11 +149,11 @@
     /* ── PREVIEW CARDS ── */
     .previews-section{display:flex;justify-content:center;padding:0 20px 20px}
     .previews-grid{width:100%;max-width:900px;display:flex;flex-direction:column;gap:14px}
+
     .preview-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;
       overflow:hidden;box-shadow:0 3px 12px rgba(46,204,113,.07);transition:box-shadow .2s}
     .preview-card:hover{box-shadow:0 6px 20px rgba(46,204,113,.13)}
 
-    /* Card top */
     .pc-top{display:flex;align-items:center;gap:12px;padding:12px 16px;
       border-bottom:1px solid #e8f5e9;background:linear-gradient(90deg,#f0fbf5,#fff)}
     .pc-num{width:26px;height:26px;border-radius:50%;
@@ -170,45 +164,50 @@
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .pc-filesize{font-size:.73rem;color:#95b8a1;white-space:nowrap}
 
-    /* Card preview row */
     .pc-previews{display:grid;grid-template-columns:1fr 1fr}
     .pc-preview-box{padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
     .pc-preview-box:first-child{border-right:1px solid #e8f5e9}
     .pc-label{font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-      color:var(--muted);display:flex;align-items:center;gap:5px}
+      color:var(--muted);display:flex;align-items:center;gap:5px;align-self:flex-start}
     .pc-label .dot{width:6px;height:6px;border-radius:50%;background:#95b8a1}
     .pc-label .dot.green{background:var(--g1)}
 
-    /* Image wrap – fixed height for speed */
-    .pc-img-wrap{width:100%;height:160px;background:#f0fbf5;border-radius:10px;overflow:hidden;
-      display:flex;align-items:center;justify-content:center;border:1.5px solid #c8e6c9;
-      position:relative}
-    .pc-img-wrap img{width:100%;height:100%;object-fit:contain;
-      /* GPU-accelerated render */
-      will-change:transform;image-rendering:auto}
-    .pc-loading{display:flex;flex-direction:column;align-items:center;gap:6px;
-      color:#95b8a1;font-size:.76rem}
+    /* ── IMAGE WRAP — fixed height, always visible ── */
+    .pc-img-wrap{
+      width:100%;height:180px;
+      background:#f0fbf5;border-radius:10px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      border:1.5px solid #c8e6c9;position:relative}
+    .pc-img-wrap img{
+      width:100%;height:100%;object-fit:contain;
+      display:block;border-radius:0}
+    /* skeleton shimmer while loading */
+    .pc-img-wrap.loading{background:linear-gradient(90deg,#e8f5e9 25%,#d4edda 50%,#e8f5e9 75%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .pc-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;
+      color:#95b8a1;font-size:.76rem;pointer-events:none;user-select:none}
     .loader-ring{width:28px;height:28px;border:3px solid #c8e6c9;
       border-top-color:var(--g1);border-radius:50%;animation:spin .6s linear infinite}
 
-    /* Card bottom */
     .pc-bottom{padding:10px 16px;background:#f9fef9;border-top:1px solid #e8f5e9;
       display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
     .badge{padding:4px 12px;border-radius:20px;font-size:.73rem;font-weight:700;
       display:inline-flex;align-items:center;gap:5px}
-    .badge.waiting{background:var(--bw);color:var(--bwc)}
-    .badge.converting{background:var(--bc);color:var(--bcc)}
-    .badge.done{background:var(--bd);color:var(--bdc)}
-    .badge.error{background:var(--be);color:var(--bec)}
+    .badge.waiting{background:#e8f5e9;color:#388e3c}
+    .badge.converting{background:#fff9c4;color:#f57f17}
+    .badge.done{background:#d4edda;color:#155724}
+    .badge.error{background:#fde8e8;color:#c0392b}
     .mini-spin{width:11px;height:11px;border:2px solid #f9c74f;
-      border-top-color:var(--bcc);border-radius:50%;animation:spin .5s linear infinite;display:inline-block}
+      border-top-color:#f57f17;border-radius:50%;animation:spin .5s linear infinite;display:inline-block}
+
     .pc-size-change{font-size:.72rem;color:#95b8a1}
     .pc-size-change .saved{color:var(--g1);font-weight:700}
 
-    /* Download button in card – directlink wrapped */
     .dl-btn{padding:7px 16px;border:none;border-radius:8px;
       background:linear-gradient(135deg,var(--g1),var(--g2));
-      color:#fff;font-size:.76rem;font-weight:700;cursor:pointer;
+      color:#fff;font-size:.76rem;font-weight:700;
       transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
     .dl-btn:hover{background:var(--g3);box-shadow:0 3px 10px rgba(46,204,113,.3)}
 
@@ -218,15 +217,15 @@
 
     /* ── FOOTER ── */
     footer{background:#fff;border-top:1.5px solid var(--border);
-      text-align:center;padding:16px 20px;color:#95b8a1;font-size:.78rem}
+      text-align:center;padding:16px 20px;color:#95b8a1;font-size:.78rem;margin-top:auto}
     footer span{color:var(--g2);font-weight:700}
 
     /* ── TOAST ── */
     .toast{position:fixed;bottom:22px;left:50%;
-      transform:translateX(-50%) translateY(80px);
-      background:#fff;color:var(--text);padding:12px 26px;border-radius:12px;
-      font-size:.88rem;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.1);
-      z-index:500;transition:transform .3s ease;border-left:4px solid var(--g1)}
+      transform:translateX(-50%) translateY(80px);background:#fff;color:var(--text);
+      padding:12px 26px;border-radius:12px;font-size:.88rem;font-weight:600;
+      box-shadow:0 6px 24px rgba(0,0,0,.1);z-index:999;
+      transition:transform .3s ease;border-left:4px solid var(--g1)}
     .toast.err{border-left-color:#e74c3c}
     .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -239,7 +238,7 @@
       .info-card{width:140px;padding:14px 12px}
       .pc-previews{grid-template-columns:1fr}
       .pc-preview-box:first-child{border-right:none;border-bottom:1px solid #e8f5e9}
-      .pc-img-wrap{height:130px}
+      .pc-img-wrap{height:150px}
       .act-btn{padding:11px 20px;font-size:.88rem}
       .nav-sub{display:none}
     }
@@ -256,19 +255,17 @@
   <span class="nav-badge">🔒 100% Private</span>
 </nav>
 
-<!-- ════════════════════════
-     PAGE 1 — UPLOAD
-════════════════════════ -->
-<div id="page-upload">
+<!-- ════════════════════════════
+     PAGE 1 — UPLOAD (active by default)
+════════════════════════════ -->
+<div id="page-upload" class="page active">
 
-  <!-- Ad: Desktop 728×90 | Mobile 300×250 -->
+  <!-- Ad Top -->
   <div class="ad-wrap">
-    <!-- ✅ ADSTERRA Desktop 728×90 -->
     <div class="ad-desktop">
       <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
       <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
     </div>
-    <!-- ✅ ADSTERRA Mobile 300×250 -->
     <div class="ad-mobile">
       <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
       <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
@@ -277,23 +274,53 @@
 
   <!-- Hero -->
   <div class="hero">
+    <div class="hero-badge">✨ Free · No Registration · Browser-Only</div>
     <h1>Convert <span class="hl">HEIC</span> to <span class="hl">JPG</span></h1>
     <p>Transform Apple HEIC photos to JPG format instantly. Free, fast, and works right in your browser.</p>
+    <div class="hero-features">
+      <div class="feat"><div class="feat-dot"></div>No upload to server</div>
+      <div class="feat"><div class="feat-dot"></div>Batch conversion</div>
+      <div class="feat"><div class="feat-dot"></div>Quality control</div>
+      <div class="feat"><div class="feat-dot"></div>Instant preview</div>
     </div>
   </div>
 
-  <!-- Upload -->
+  <!-- Drop Zone -->
   <div class="upload-wrap">
     <div id="dropZone">
       <div class="dz-icon">📁</div>
-      <div class="dz-text">Drag & drop your HEIC files here</div>
+      <div class="dz-text">Drag &amp; drop your HEIC files here</div>
       <div class="dz-hint">or click the button below to browse</div>
-      <button class="dz-btn" onclick="document.getElementById('fileInput').click()">
+      <button class="dz-btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">
         📂 Select HEIC Files
       </button>
       <div class="dz-format">Supports: .heic · .heif · Multiple files</div>
     </div>
     <input type="file" id="fileInput" accept=".heic,.heif,image/heic,image/heif" multiple>
+  </div>
+
+  <!-- Info cards -->
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="ic-icon">🔒</div>
+      <div class="ic-title">100% Private</div>
+      <div class="ic-desc">Files never leave your device. All processing in browser.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">⚡</div>
+      <div class="ic-title">Lightning Fast</div>
+      <div class="ic-desc">Convert multiple HEIC photos in seconds.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">🎨</div>
+      <div class="ic-title">Quality Control</div>
+      <div class="ic-desc">Choose JPG quality from 10% to 100%.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">📱</div>
+      <div class="ic-title">Any Device</div>
+      <div class="ic-desc">Works on desktop, tablet &amp; mobile.</div>
+    </div>
   </div>
 
   <footer>
@@ -303,26 +330,23 @@
 </div>
 
 
-<!-- ════════════════════════
+<!-- ════════════════════════════
      PAGE 2 — CONVERT
-════════════════════════ -->
-<div id="page-convert">
+════════════════════════════ -->
+<div id="page-convert" class="page">
 
-  <!-- Header -->
   <div class="cp-header">
     <button class="back-btn" onclick="goBack()">← Back</button>
     <span class="cp-header-title">Convert &amp; Download</span>
     <span class="cp-header-count" id="cpCount">0 files</span>
   </div>
 
-  <!-- Ad: Desktop 728×90 | Mobile 300×250 -->
+  <!-- Ad Top -->
   <div class="ad-wrap">
-    <!-- ✅ ADSTERRA Desktop 728×90 -->
     <div class="ad-desktop">
       <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
       <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
     </div>
-    <!-- ✅ ADSTERRA Mobile 300×250 -->
     <div class="ad-mobile">
       <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
       <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
@@ -348,20 +372,17 @@
     </div>
   </div>
 
-  <!-- Actions — Convert + Download always together -->
+  <!-- Actions -->
   <div class="actions-section">
     <button class="add-more-btn" onclick="document.getElementById('fileInput').click()">+ Add More</button>
-    <button class="act-btn convert" id="convertBtn" onclick="convertAll()">
-      ⚡ Convert to JPG
-    </button>
-    <!-- Download All — directlink fires on click -->
+    <button class="act-btn convert" id="convertBtn" onclick="convertAll()">⚡ Convert to JPG</button>
     <button class="act-btn download-all" id="downloadAllBtn"
-      onclick="fireDirectlink(); downloadAll();" style="display:none">
+      onclick="fireDirectlink();downloadAll();" style="display:none">
       ⤓ Download All
     </button>
   </div>
 
-  <!-- Preview cards -->
+  <!-- Preview Cards -->
   <div class="previews-section">
     <div class="previews-grid" id="previewsGrid"></div>
   </div>
@@ -384,177 +405,185 @@
   </footer>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════
-   CONFIG
-══════════════════════════════════ */
-// ✅ Your Directlink URL — paste your Monetag/Adsterra directlink here
-const DIRECTLINK_URL = 'https://omg10.com/4/10689787';
+/* ─── CONFIG ─── */
+const DIRECTLINK_URL = 'https://YOUR-DIRECTLINK-URL-HERE.com'; // apna directlink yahan
 
-/* ══════════════════════════════════
-   STATE
-══════════════════════════════════ */
+/* ─── STATE ─── */
 let files = [];
 let isConverting = false;
 
-/* ══════════════════════════════════
-   INIT
-══════════════════════════════════ */
+/* ─── INIT ─── */
 document.addEventListener('DOMContentLoaded', () => {
   const dz = document.getElementById('dropZone');
   const fi = document.getElementById('fileInput');
 
-  dz.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fi.click(); });
-  ['dragenter','dragover'].forEach(ev =>
-    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
-  ['dragleave','drop'].forEach(ev =>
-    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
-  dz.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
-  fi.addEventListener('change', e => { handleFiles(e.target.files); fi.value = ''; });
+  /* Click on drop zone (not on button) → open file picker */
+  dz.addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') fi.click();
+  });
 
-  // Quality slider gradient init
+  /* Drag events */
+  dz.addEventListener('dragenter', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', e => { e.preventDefault(); dz.classList.remove('dragover'); });
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+
+  fi.addEventListener('change', e => {
+    handleFiles(e.target.files);
+    fi.value = '';
+  });
+
   updateQualityLabel(92);
 });
 
-/* ══════════════════════════════════
-   DIRECTLINK
-══════════════════════════════════ */
+/* ─── DIRECTLINK ─── */
 function fireDirectlink() {
-  try { window.open(DIRECTLINK_URL, '_blank', 'noopener'); } catch(e) {}
+  try { window.open(DIRECTLINK_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
 }
 
-/* ══════════════════════════════════
-   FILE HANDLING
-══════════════════════════════════ */
-async function handleFiles(fileList) {
+/* ─── FILE HANDLING ─── */
+function handleFiles(fileList) {
   let added = 0;
   for (const f of fileList) {
     const n = f.name.toLowerCase();
     if (n.endsWith('.heic') || n.endsWith('.heif') ||
         f.type === 'image/heic' || f.type === 'image/heif') {
-      files.push({ file:f, name:f.name, size:f.size,
-        status:'waiting', blob:null, url:null, previewUrl:null });
+      files.push({
+        file: f, name: f.name, size: f.size,
+        status: 'waiting', blob: null, url: null, previewUrl: null
+      });
       added++;
     }
   }
+
   if (added === 0 && fileList.length > 0) {
-    showToast('Please select HEIC/HEIF files only', true); return;
+    showToast('Please select HEIC or HEIF files only', true);
+    return;
   }
+
   if (added > 0) {
     showToast(`${added} file${added > 1 ? 's' : ''} added`);
-    switchToConvertPage();
+    showConvertPage();
     renderAllCards();
-    // ✅ Fast: generate all previews in PARALLEL
-    generatePreviewsFast();
+    /* Start preview generation after cards are in DOM */
+    generatePreviews();
   }
 }
 
-/* ══════════════════════════════════
-   FAST PARALLEL PREVIEWS
-   – very low quality (0.12) just for thumbnail
-══════════════════════════════════ */
-async function generatePreviewsFast() {
-  const jobs = files.map((f, i) => {
-    if (f.previewUrl) return Promise.resolve();
-    return heic2any({ blob: f.file, toType: 'image/jpeg', quality: 0.12 })
-      .then(blob => {
-        const result = Array.isArray(blob) ? blob[0] : blob;
-        files[i].previewUrl = URL.createObjectURL(result);
-        // Only update the orig-wrap, not full card re-render (fast DOM patch)
-        const wrap = document.getElementById('orig-wrap-' + i);
-        if (wrap) {
-          wrap.innerHTML = `<img src="${files[i].previewUrl}" alt="Original" loading="lazy">`;
-        }
-      })
-      .catch(() => { /* silently skip */ });
-  });
-  // Run all previews at the same time
-  await Promise.all(jobs);
-}
-
-/* ══════════════════════════════════
-   PAGE SWITCHING
-══════════════════════════════════ */
-function switchToConvertPage() {
-  document.getElementById('page-upload').style.display = 'none';
-  const cp = document.getElementById('page-convert');
-  cp.style.display = 'flex'; cp.classList.add('active');
+/* ─── PAGE SWITCH ─── */
+function showConvertPage() {
+  document.getElementById('page-upload').classList.remove('active');
+  document.getElementById('page-convert').classList.add('active');
+  document.getElementById('cpCount').textContent =
+    files.length + ' file' + (files.length !== 1 ? 's' : '');
   updateActionBtns();
 }
+
 function goBack() {
-  document.getElementById('page-upload').style.display = 'flex';
-  const cp = document.getElementById('page-convert');
-  cp.style.display = 'none'; cp.classList.remove('active');
+  /* Reset everything and go back to upload page */
+  files.forEach(f => { if (f.url) URL.revokeObjectURL(f.url);
+                        if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
+  files = [];
+  isConverting = false;
+  document.getElementById('previewsGrid').innerHTML = '';
+  document.getElementById('progressBar').classList.remove('show');
+  document.getElementById('progFill').style.width = '0';
+  document.getElementById('progText').textContent = '0%';
+  const btn = document.getElementById('convertBtn');
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Convert to JPG';
+
+  document.getElementById('page-convert').classList.remove('active');
+  document.getElementById('page-upload').classList.add('active');
 }
 
-/* ══════════════════════════════════
-   RENDER CARDS
-══════════════════════════════════ */
+/* ─── RENDER ALL CARDS ─── */
 function renderAllCards() {
   const grid = document.getElementById('previewsGrid');
   grid.innerHTML = '';
   files.forEach((_, i) => grid.appendChild(buildCard(i)));
 }
 
+/* ─── BUILD ONE CARD ─── */
 function buildCard(i) {
   const f = files[i];
   const card = document.createElement('div');
   card.className = 'preview-card';
   card.id = 'card-' + i;
 
-  const jpgName = f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
-  const origSize = formatSize(f.size);
+  const jpgName = f.name.replace(/\.(heic|heif)$/i, '.jpg');
+  const origSize = fmtSize(f.size);
 
-  const origHTML = f.previewUrl
-    ? `<img src="${f.previewUrl}" alt="Original" loading="lazy">`
-    : `<div class="pc-loading"><div class="loader-ring"></div><span>Loading…</span></div>`;
-
-  let convHTML = '';
-  if (f.status === 'done' && f.url) {
-    convHTML = `<img src="${f.url}" alt="Converted" loading="lazy">`;
-  } else if (f.status === 'converting') {
-    convHTML = `<div class="pc-loading"><div class="loader-ring"></div><span>Converting…</span></div>`;
-  } else if (f.status === 'error') {
-    convHTML = `<div class="pc-loading">❌<span>Failed</span></div>`;
+  /* ── original preview side ── */
+  let origInner = '';
+  if (f.previewUrl) {
+    origInner = `<img src="${f.previewUrl}" alt="original">`;
   } else {
-    convHTML = `<div class="pc-loading" style="font-size:1.8rem">🖼️</div>`;
+    origInner = `<div class="pc-placeholder">
+      <div class="loader-ring"></div><span>Generating…</span></div>`;
   }
 
-  let badge = '';
-  if (f.status === 'waiting')    badge = `<span class="badge waiting">⏳ Waiting</span>`;
-  if (f.status === 'converting') badge = `<span class="badge converting"><span class="mini-spin"></span> Converting</span>`;
-  if (f.status === 'done')       badge = `<span class="badge done">✓ Done</span>`;
-  if (f.status === 'error')      badge = `<span class="badge error">✕ Error</span>`;
+  /* ── converted preview side ── */
+  let convInner = '';
+  if (f.status === 'done' && f.url) {
+    convInner = `<img src="${f.url}" alt="converted">`;
+  } else if (f.status === 'converting') {
+    convInner = `<div class="pc-placeholder">
+      <div class="loader-ring"></div><span>Converting…</span></div>`;
+  } else if (f.status === 'error') {
+    convInner = `<div class="pc-placeholder">❌<span>Failed</span></div>`;
+  } else {
+    convInner = `<div class="pc-placeholder" style="font-size:2rem">🖼️</div>`;
+  }
 
+  /* ── badge ── */
+  const badgeMap = {
+    waiting:    `<span class="badge waiting">⏳ Waiting</span>`,
+    converting: `<span class="badge converting"><span class="mini-spin"></span> Converting</span>`,
+    done:       `<span class="badge done">✓ Done</span>`,
+    error:      `<span class="badge error">✕ Error</span>`
+  };
+  const badge = badgeMap[f.status] || '';
+
+  /* ── size info ── */
   let sizeInfo = `<span class="pc-size-change">Size: ${origSize}</span>`;
   if (f.status === 'done' && f.blob) {
-    const convSize = formatSize(f.blob.size);
-    const saved = (((f.size - f.blob.size) / f.size) * 100).toFixed(0);
-    sizeInfo = `<span class="pc-size-change">${origSize} → ${convSize}
-      ${+saved > 0 ? `<span class="saved">(-${saved}%)</span>` : ''}</span>`;
+    const cs = fmtSize(f.blob.size);
+    const pct = Math.round(((f.size - f.blob.size) / f.size) * 100);
+    sizeInfo = `<span class="pc-size-change">${origSize} → ${cs}
+      ${pct > 0 ? `<span class="saved">(-${pct}%)</span>` : ''}</span>`;
   }
 
-  // ✅ Directlink fires on individual download too
+  /* ── download button (directlink on click) ── */
   const dlBtn = f.status === 'done'
-    ? `<button class="dl-btn" onclick="fireDirectlink(); downloadOne(${i})">⤓ Download JPG</button>` : '';
+    ? `<button class="dl-btn" onclick="fireDirectlink();downloadOne(${i})">⤓ Download JPG</button>`
+    : '';
+
+  /* ── image wrap class ── */
+  const origWrapClass = f.previewUrl ? 'pc-img-wrap' : 'pc-img-wrap loading';
+  const convWrapClass = (f.status === 'done' && f.url) ? 'pc-img-wrap' : 'pc-img-wrap';
 
   card.innerHTML = `
     <div class="pc-top">
       <div class="pc-num">${i + 1}</div>
-      <div class="pc-filename">${escHTML(jpgName)}</div>
+      <div class="pc-filename" title="${escHTML(jpgName)}">${escHTML(jpgName)}</div>
       <div class="pc-filesize">${origSize}</div>
     </div>
     <div class="pc-previews">
       <div class="pc-preview-box">
         <div class="pc-label"><div class="dot"></div>Original HEIC</div>
-        <div class="pc-img-wrap" id="orig-wrap-${i}">${origHTML}</div>
+        <div class="${origWrapClass}" id="orig-wrap-${i}">${origInner}</div>
       </div>
       <div class="pc-preview-box">
         <div class="pc-label"><div class="dot green"></div>Converted JPG</div>
-        <div class="pc-img-wrap" id="conv-wrap-${i}">${convHTML}</div>
+        <div class="${convWrapClass}" id="conv-wrap-${i}">${convInner}</div>
       </div>
     </div>
     <div class="pc-bottom">
@@ -563,18 +592,59 @@ function buildCard(i) {
       </div>
       ${dlBtn}
     </div>`;
+
   return card;
 }
 
-// Lightweight card refresh — only patches changed parts where possible
+/* ─── REFRESH ONE CARD ─── */
 function refreshCard(i) {
   const old = document.getElementById('card-' + i);
   if (old) old.replaceWith(buildCard(i));
 }
 
-/* ══════════════════════════════════
-   CONVERT
-══════════════════════════════════ */
+/* ─── GENERATE PREVIEWS (sequential, reliable) ─── */
+async function generatePreviews() {
+  for (let i = 0; i < files.length; i++) {
+    if (files[i].previewUrl) continue; /* already done */
+
+    /* Show shimmer while loading */
+    const wrap = document.getElementById('orig-wrap-' + i);
+    if (wrap) wrap.classList.add('loading');
+
+    try {
+      /* Use quality 0.4 — reliable on all HEIC files */
+      const result = await heic2any({
+        blob: files[i].file,
+        toType: 'image/jpeg',
+        quality: 0.4
+      });
+      const blob = Array.isArray(result) ? result[0] : result;
+      files[i].previewUrl = URL.createObjectURL(blob);
+
+      /* Directly update ONLY the original wrap — no full card rebuild */
+      const w = document.getElementById('orig-wrap-' + i);
+      if (w) {
+        w.classList.remove('loading');
+        /* Create img element properly */
+        const img = new Image();
+        img.alt = 'Original';
+        img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+        img.src = files[i].previewUrl;
+        w.innerHTML = '';
+        w.appendChild(img);
+      }
+    } catch (err) {
+      console.warn('Preview failed for file', i, err);
+      const w = document.getElementById('orig-wrap-' + i);
+      if (w) {
+        w.classList.remove('loading');
+        w.innerHTML = `<div class="pc-placeholder">🖼️<span>HEIC</span></div>`;
+      }
+    }
+  }
+}
+
+/* ─── CONVERT ALL ─── */
 async function convertAll() {
   if (isConverting || files.length === 0) return;
   isConverting = true;
@@ -591,18 +661,42 @@ async function convertAll() {
 
   for (let i = 0; i < files.length; i++) {
     if (files[i].status === 'done') { done++; continue; }
+
     files[i].status = 'converting';
-    refreshCard(i);
+    /* Only update badge area, not whole card */
+    const convWrap = document.getElementById('conv-wrap-' + i);
+    if (convWrap) {
+      convWrap.innerHTML = `<div class="pc-placeholder">
+        <div class="loader-ring"></div><span>Converting…</span></div>`;
+    }
+    refreshCardBottom(i);
 
     try {
-      const blob = await heic2any({ blob: files[i].file, toType: 'image/jpeg', quality });
-      const result = Array.isArray(blob) ? blob[0] : blob;
-      files[i].blob = result;
-      files[i].url  = URL.createObjectURL(result);
+      const result = await heic2any({
+        blob: files[i].file,
+        toType: 'image/jpeg',
+        quality: quality
+      });
+      const blob = Array.isArray(result) ? result[0] : result;
+      files[i].blob   = blob;
+      files[i].url    = URL.createObjectURL(blob);
       files[i].status = 'done';
-    } catch(err) {
-      console.error(err);
+
+      /* Update converted preview directly */
+      const cw = document.getElementById('conv-wrap-' + i);
+      if (cw) {
+        const img = new Image();
+        img.alt = 'Converted';
+        img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+        img.src = files[i].url;
+        cw.innerHTML = '';
+        cw.appendChild(img);
+      }
+    } catch (err) {
+      console.error('Convert error:', err);
       files[i].status = 'error';
+      const cw = document.getElementById('conv-wrap-' + i);
+      if (cw) cw.innerHTML = `<div class="pc-placeholder">❌<span>Failed</span></div>`;
     }
 
     done++;
@@ -610,7 +704,7 @@ async function convertAll() {
     document.getElementById('progFill').style.width = pct + '%';
     document.getElementById('progText').textContent  = pct + '%';
     document.getElementById('progLabel').textContent = `Converting… (${done}/${files.length})`;
-    refreshCard(i);
+    refreshCardBottom(i);
   }
 
   document.getElementById('progLabel').textContent = '✓ Conversion complete!';
@@ -621,68 +715,98 @@ async function convertAll() {
   const allDone = files.every(f => f.status === 'done');
   const anyDone = files.some(f  => f.status === 'done');
 
-  if (allDone)      showToast('✓ All files converted!');
-  else if (anyDone) showToast('Some files converted. Check errors.');
-  else              showToast('Conversion failed. Try other files.', true);
+  if (allDone)      showToast('✓ All files converted successfully!');
+  else if (anyDone) showToast('Some files converted. Check for errors.');
+  else              showToast('Conversion failed. Try different files.', true);
 
   updateActionBtns();
   setTimeout(() => pb.classList.remove('show'), 2500);
 }
 
-/* ══════════════════════════════════
-   ACTION BUTTONS
-   Convert button always visible
-   Download All visible once any done
-══════════════════════════════════ */
+/* Update only the bottom row of a card (badge + size + dl btn) */
+function refreshCardBottom(i) {
+  const card = document.getElementById('card-' + i);
+  if (!card) return;
+  const bottom = card.querySelector('.pc-bottom');
+  if (!bottom) return;
+
+  const f = files[i];
+  const origSize = fmtSize(f.size);
+
+  const badgeMap = {
+    waiting:    `<span class="badge waiting">⏳ Waiting</span>`,
+    converting: `<span class="badge converting"><span class="mini-spin"></span> Converting</span>`,
+    done:       `<span class="badge done">✓ Done</span>`,
+    error:      `<span class="badge error">✕ Error</span>`
+  };
+
+  let sizeInfo = `<span class="pc-size-change">Size: ${origSize}</span>`;
+  if (f.status === 'done' && f.blob) {
+    const cs  = fmtSize(f.blob.size);
+    const pct = Math.round(((f.size - f.blob.size) / f.size) * 100);
+    sizeInfo  = `<span class="pc-size-change">${origSize} → ${cs}
+      ${pct > 0 ? `<span class="saved">(-${pct}%)</span>` : ''}</span>`;
+  }
+
+  const dlBtn = f.status === 'done'
+    ? `<button class="dl-btn" onclick="fireDirectlink();downloadOne(${i})">⤓ Download JPG</button>` : '';
+
+  bottom.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      ${badgeMap[f.status] || ''}${sizeInfo}
+    </div>
+    ${dlBtn}`;
+}
+
+/* ─── ACTION BUTTONS STATE ─── */
 function updateActionBtns() {
   const anyDone = files.some(f => f.status === 'done');
-  // Convert btn — always visible (so user can re-convert with different quality)
-  const btn = document.getElementById('convertBtn');
-  btn.style.display = 'inline-flex';
-  // Download All — visible as soon as any file is done
   document.getElementById('downloadAllBtn').style.display = anyDone ? 'inline-flex' : 'none';
   document.getElementById('cpCount').textContent =
     files.length + ' file' + (files.length !== 1 ? 's' : '');
 }
 
-/* ══════════════════════════════════
-   DOWNLOAD
-══════════════════════════════════ */
+/* ─── DOWNLOAD ─── */
 function downloadOne(idx) {
   const f = files[idx];
-  if (!f.blob) return;
+  if (!f || !f.blob) return;
   const a = document.createElement('a');
-  a.href = f.url || URL.createObjectURL(f.blob);
-  a.download = f.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  a.href     = f.url;
+  a.download = f.name.replace(/\.(heic|heif)$/i, '.jpg');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function downloadAll() {
-  const doneFiles = files.filter(f => f.status === 'done');
-  if (!doneFiles.length) return;
-  if (doneFiles.length === 1) { downloadOne(files.indexOf(doneFiles[0])); return; }
-  doneFiles.forEach((f, i) =>
-    setTimeout(() => downloadOne(files.indexOf(f)), i * 400));
-  showToast(`⤓ Downloading ${doneFiles.length} files…`);
+  const done = files.filter(f => f.status === 'done');
+  if (!done.length) return;
+  if (done.length === 1) { downloadOne(files.indexOf(done[0])); return; }
+  done.forEach((f, i) =>
+    setTimeout(() => downloadOne(files.indexOf(f)), i * 450));
+  showToast(`⤓ Downloading ${done.length} files…`);
 }
 
-/* ══════════════════════════════════
-   UTILS
-══════════════════════════════════ */
+/* ─── QUALITY LABEL ─── */
 function updateQualityLabel(v) {
-  document.getElementById('qVal').textContent = v + '%';
+  const el = document.getElementById('qVal');
+  if (el) el.textContent = v + '%';
   const s = document.getElementById('qualitySlider');
-  if (s) s.style.background =
+  if (s)  s.style.background =
     `linear-gradient(90deg,var(--g1) ${v}%,#e0e0e0 ${v}%)`;
 }
-function formatSize(b) {
-  if (b < 1024) return b + ' B';
+
+/* ─── UTILS ─── */
+function fmtSize(b) {
+  if (!b) return '0 B';
+  if (b < 1024)    return b + ' B';
   if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
   return (b / 1048576).toFixed(1) + ' MB';
 }
 function escHTML(s) {
   const d = document.createElement('div');
-  d.textContent = s; return d.innerHTML;
+  d.textContent = s;
+  return d.innerHTML;
 }
 function showToast(msg, isErr) {
   const t = document.getElementById('toast');
