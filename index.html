@@ -1103,9 +1103,85 @@ let allCards=[];
 const catKeys=Object.keys(toolData);
 
 /* ── AD 4 (IN-FEED): inject between every 2nd category ──
-   Desktop: 728x90 | Mobile: 300x250
-   Note: inline <script> tags inside innerHTML won't execute,
-   so we build the element manually and append scripts properly.
+  <script>
+
+/* ── AD 4 (IN-FEED): inject between every 2nd category ──
+Desktop: 728x90 | Mobile: 300x250
+──────────────────────────────────────── */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+const categories = document.querySelectorAll(".tool-category");
+
+categories.forEach((category, index) => {
+
+if ((index + 1) % 2 === 0) {
+
+const adWrapper = document.createElement("div");
+adWrapper.className = "ad-wrapper";
+adWrapper.style.padding = "20px 0";
+adWrapper.style.textAlign = "center";
+
+const label = document.createElement("span");
+label.className = "ad-label";
+label.innerText = "Advertisement";
+
+adWrapper.appendChild(label);
+
+/* Desktop Ad */
+
+const desktopAd = document.createElement("div");
+desktopAd.className = "ad-desktop";
+
+const script1 = document.createElement("script");
+script1.innerHTML = `
+atOptions = {
+'key' : '4afdbe032cc77af781754d77ab0211fb',
+'format' : 'iframe',
+'height' : 90,
+'width' : 728,
+'params' : {}
+};`;
+
+const script2 = document.createElement("script");
+script2.src = "//onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js";
+
+desktopAd.appendChild(script1);
+desktopAd.appendChild(script2);
+
+/* Mobile Ad */
+
+const mobileAd = document.createElement("div");
+mobileAd.className = "ad-mobile";
+
+const script3 = document.createElement("script");
+script3.innerHTML = `
+atOptions = {
+'key' : 'f2bd4040afafe750e7a3e138c826e72c',
+'format' : 'iframe',
+'height' : 250,
+'width' : 300,
+'params' : {}
+};`;
+
+const script4 = document.createElement("script");
+script4.src = "//onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js";
+
+mobileAd.appendChild(script3);
+mobileAd.appendChild(script4);
+
+adWrapper.appendChild(desktopAd);
+adWrapper.appendChild(mobileAd);
+
+category.after(adWrapper);
+
+}
+
+});
+
+});
+
+</script>
    ─────────────────────────────────────────────────────────── */
 function createInFeedAd(){
   const wrap = document.createElement("div");
