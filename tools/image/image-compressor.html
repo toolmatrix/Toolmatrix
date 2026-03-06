@@ -7,13 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- ===== MONETAG IN-PAGE PUSH NOTIFICATION (placeholder) ===== -->
-    <!-- Replace with your Monetag push script. Usually looks like: -->
-   <script>(function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-        // (PLACEHOLDER) Monetag push notification initialization 
-        console.log('Monetag push notification loaded (simulated)');
-        // In real integration, remove this comment and paste Monetag's script.
-    </script>
+    <!-- ===== MONETAG IN-PAGE PUSH NOTIFICATION ===== -->
+    <!-- Replace with your actual Monetag push script if different -->
+    <script>(function(s){s.dataset.zone='10689876'; s.src='https://nap5k.com/tag.min.js'})(document.currentScript.parentNode.appendChild(document.createElement('script')));</script>
     <!-- ===== END MONETAG PUSH ===== -->
 
     <style>
@@ -343,12 +339,19 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
+<!-- NAVBAR (fixed: added missing nav-links) -->
 <nav class="navbar">
     <a href="#" class="logo">
         <div class="logo-icon"><i class="fas fa-compress-arrows-alt"></i></div>
         <span>Compressor</span><span>Image</span>
     </a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="#"><i class="fas fa-compress-arrows-alt"></i> Compress</a></li>
+        <li><a href="#"><i class="fas fa-crop-alt"></i> Crop</a></li>
+        <li><a href="#"><i class="fas fa-sync-alt"></i> Rotate</a></li>
+        <li><a href="#"><i class="fas fa-eye-slash"></i> Blur Face</a></li>
+    </ul>
     <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')"><i class="fas fa-bars"></i></button>
 </nav>
 
@@ -585,19 +588,21 @@
 
 <!-- ===== MONETAG AD UNIT (above footer) ===== -->
 <div class="ad-footer">
-    <!-- Monetag in-page push / banner placeholder -->
     <div class="ad-placeholder">
-        <!-- REPLACE WITH YOUR MONETAG AD CODE (e.g., banner or native) -->
-        <!-- Example: <script src="//your-monetag-ad.js"></script> -->
-        <i class="fas fa-ad"></i>  <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
-    <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+        <!-- Monetag banner ad (example) -->
+        <script>atOptions={'key':'4afdbe032cc77af781754dab77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+        <script src="https://onsetcab.com/4afdbe032cc77af781754dab77ab0211fb/invoke.js"></script>
     </div>
 </div>
 <!-- ===== END AD UNIT ===== -->
 
-<!-- FOOTER -->
+<!-- FOOTER (fixed: removed stray </div>) -->
 <footer class="footer">
     <p>Made with 💚 by <a href="#">ToolMatrix</a> — Free Online Image Compressor</p>
+    <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
     </div>
 </footer>
 
@@ -611,20 +616,18 @@ let aspectLocked = true;
 let aspectRatio = 1;
 
 // ========== MONETAG DIRECT LINK AD (trigger on download) ==========
-// Replace these URLs with your actual Monetag direct link ad URLs
-const AD_URL_DESKTOP =  <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
-    <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-const AD_URL_MOBILE  = <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':50,'width':300,'params':{}};</script>
-    <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+// 🔁 REPLACE THESE URLs WITH YOUR ACTUAL MONETAG DIRECT AD LINKS
+const AD_URL_DESKTOP = 'https://omg10.com/4/10689787';   // desktop ad
+const AD_URL_MOBILE  = 'https://omg10.com/4/10689788';   // mobile ad (use same if only one)
+
 function triggerDirectAd() {
-    // Detect device (simple width check, you can also use userAgent)
+    // Detect device (simple width check + userAgent)
     const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const adUrl = isMobile ? https://omg10.com/4/10689787: https://omg10.com/4/10689787;
+    const adUrl = isMobile ? AD_URL_MOBILE : AD_URL_DESKTOP;
 
     // Open ad in new tab (user-initiated, should bypass popup blocker)
     window.open(adUrl, '_blank');
 
-    // (Optional) you can also track the ad view
     console.log(`Direct link ad opened (${isMobile ? 'mobile' : 'desktop'}): ${adUrl}`);
 }
 // ========== END AD TRIGGER ==========
