@@ -1,380 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Image to Base64 Converter</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Image to Base64 Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Monetag In-Page Push -->
+  <script async src="https://nap5k.com/tag.min.js" data-zone="10689876" data-cfasync="false"></script>
+  <!-- Adsterra Popunder — fires once on first click -->
+  <script>(function(){document.addEventListener('click',function(){var s=document.createElement('script');s.src='https://omg10.com/4/10689787';s.async=true;document.head.appendChild(s);},{once:true});})();</script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --primary:#22c55e;
-  --primary-dark:#16a34a;
-  --primary-xdark:#15803d;
-  --primary-light:#bbf7d0;
-  --primary-xlight:#dcfce7;
-  --primary-xxlight:#f0fdf4;
-  --bg:#f0fdf4;
-  --surface:#ffffff;
-  --surface2:#f0fdf4;
-  --text:#14532d;
-  --text-mid:#166534;
-  --text-muted:#6b7280;
-  --border:#bbf7d0;
-  --border2:#86efac;
-  --danger:#ef4444;
-  --danger-light:#fee2e2;
-  --warning:#f59e0b;
-  --shadow:0 4px 20px rgba(34,197,94,0.10);
-  --shadow2:0 2px 8px rgba(34,197,94,0.13);
-  --shadow3:0 8px 32px rgba(34,197,94,0.18);
+  --primary:#22c55e;--primary-dark:#16a34a;--primary-xdark:#15803d;
+  --primary-light:#bbf7d0;--primary-xlight:#dcfce7;--primary-xxlight:#f0fdf4;
+  --bg:#f0fdf4;--surface:#ffffff;--surface2:#f0fdf4;
+  --text:#14532d;--text-mid:#166534;--text-muted:#6b7280;
+  --border:#bbf7d0;--border2:#86efac;
+  --danger:#ef4444;--danger-light:#fee2e2;--warning:#f59e0b;
+  --shadow:0 4px 20px rgba(34,197,94,0.10);--shadow2:0 2px 8px rgba(34,197,94,0.13);--shadow3:0 8px 32px rgba(34,197,94,0.18);
 }
-body{
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;
-}
-
-/* ── SCROLLBAR ── */
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--surface2)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* ── NAV ── */
-nav{
-  background:var(--surface);
-  padding:0 24px;
-  display:flex;align-items:center;height:62px;
-  border-bottom:2px solid var(--border);
-  box-shadow:var(--shadow);
-  position:sticky;top:0;z-index:100;
-  gap:12px;
+/* AD SYSTEM */
+.ad-desktop{display:none!important}
+.ad-mobile{display:none!important}
+@media(min-width:769px){.ad-desktop{display:block!important}.ad-mobile{display:none!important}}
+@media(max-width:768px){.ad-desktop{display:none!important}.ad-mobile{display:block!important}}
+.ad-wrap{
+  width:100%;display:flex;flex-direction:column;align-items:center;
+  background:var(--surface);border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);
+  padding:10px 0;
 }
+.ad-lbl{font-size:.5rem;color:var(--border2);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+
+/* NAV */
+nav{background:var(--surface);padding:0 24px;display:flex;align-items:center;height:62px;border-bottom:2px solid var(--border);box-shadow:var(--shadow);position:sticky;top:0;z-index:100;gap:12px}
 .nav-logo{display:flex;align-items:center;gap:10px}
-.nav-logo-icon{
-  width:38px;height:38px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 3px 10px rgba(34,197,94,0.3);flex-shrink:0;
-}
+.nav-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(34,197,94,0.3);flex-shrink:0}
 .nav-logo-icon i{color:#fff;font-size:1rem}
 .nav-title{font-weight:800;font-size:1.05rem;color:var(--primary-dark);letter-spacing:-.3px}
-.nav-sub{
-  color:var(--primary);font-size:.7rem;font-weight:700;
-  background:var(--primary-xlight);border:1px solid var(--border2);
-  border-radius:20px;padding:2px 10px;letter-spacing:.5px;text-transform:uppercase;
-}
-.nav-badge{
-  display:flex;align-items:center;gap:5px;
-  color:var(--text-muted);font-size:.72rem;font-weight:600;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:20px;padding:4px 10px;
-}
+.nav-sub{color:var(--primary);font-size:.7rem;font-weight:700;background:var(--primary-xlight);border:1px solid var(--border2);border-radius:20px;padding:2px 10px;letter-spacing:.5px;text-transform:uppercase}
+.nav-badge{display:flex;align-items:center;gap:5px;color:var(--text-muted);font-size:.72rem;font-weight:600;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px}
 .nav-badge i{color:var(--primary);font-size:.7rem}
 .nav-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.nb{
-  padding:8px 16px;border:none;border-radius:9px;font-size:.82rem;
-  font-weight:600;cursor:pointer;transition:all .18s;display:flex;
-  align-items:center;gap:6px;white-space:nowrap;font-family:inherit;
-}
+.nb{padding:8px 16px;border:none;border-radius:9px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit}
 .nb.sec{background:var(--surface2);color:var(--text-muted);border:1.5px solid var(--border2)}
 .nb.sec:hover{background:var(--primary-xlight);border-color:var(--primary);color:var(--primary-dark)}
-.nb.pri{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;box-shadow:0 3px 12px rgba(34,197,94,0.3);border:none;
-}
+.nb.pri{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 3px 12px rgba(34,197,94,0.3);border:none}
 .nb.pri:hover{box-shadow:0 5px 18px rgba(34,197,94,0.4);transform:translateY(-1px)}
 
-/* ── UPLOAD AREA ── */
-.upload-wrap{
-  display:flex;flex-direction:column;align-items:center;
-  padding:44px 20px 40px;
-  background:linear-gradient(180deg,var(--primary-xxlight) 0%,var(--bg) 100%);
-  border-bottom:2px solid var(--border);
-}
+/* UPLOAD */
+.upload-wrap{display:flex;flex-direction:column;align-items:center;padding:44px 20px 40px;background:linear-gradient(180deg,var(--primary-xxlight) 0%,var(--bg) 100%);border-bottom:2px solid var(--border)}
 .upload-hero{text-align:center;margin-bottom:28px}
 .upload-hero h1{font-size:1.9rem;font-weight:900;color:var(--text);margin-bottom:8px;letter-spacing:-.5px}
 .upload-hero h1 em{font-style:normal;color:var(--primary-dark)}
 .upload-hero p{color:var(--text-muted);font-size:.92rem;max-width:480px;line-height:1.6}
 .upload-features{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.uf-badge{
-  display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;
-  color:var(--primary-dark);background:var(--primary-xlight);
-  border:1px solid var(--border2);border-radius:20px;padding:4px 12px;
-}
+.uf-badge{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;color:var(--primary-dark);background:var(--primary-xlight);border:1px solid var(--border2);border-radius:20px;padding:4px 12px}
 .uf-badge i{font-size:.68rem}
-
-#dropZone{
-  width:100%;max-width:620px;
-  border:2.5px dashed var(--border2);
-  border-radius:20px;background:var(--surface);
-  text-align:center;cursor:pointer;transition:all .25s;
-  padding:48px 32px;position:relative;overflow:hidden;
-}
-#dropZone::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.06) 0%,transparent 70%);
-  pointer-events:none;
-}
-#dropZone:hover,#dropZone.dragover{
-  border-color:var(--primary);background:var(--primary-xlight);
-  transform:translateY(-3px);box-shadow:var(--shadow3);
-}
-.dz-icon-wrap{
-  width:80px;height:80px;border-radius:50%;
-  background:linear-gradient(135deg,var(--primary-xlight),var(--primary-light));
-  border:2px solid var(--border2);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 18px;
-}
+#dropZone{width:100%;max-width:620px;border:2.5px dashed var(--border2);border-radius:20px;background:var(--surface);text-align:center;cursor:pointer;transition:all .25s;padding:48px 32px;position:relative;overflow:hidden}
+#dropZone::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.06) 0%,transparent 70%);pointer-events:none}
+#dropZone:hover,#dropZone.dragover{border-color:var(--primary);background:var(--primary-xlight);transform:translateY(-3px);box-shadow:var(--shadow3)}
+.dz-icon-wrap{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary-xlight),var(--primary-light));border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
 .dz-icon-wrap i{font-size:2rem;color:var(--primary-dark)}
 .dz-text{font-size:1.05rem;color:var(--text);font-weight:700;margin-bottom:5px}
 .dz-hint{font-size:.84rem;color:var(--text-muted);margin-bottom:20px}
-.dz-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:12px 32px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;border:none;border-radius:30px;
-  font-size:.92rem;font-weight:700;cursor:pointer;
-  transition:all .2s;box-shadow:0 4px 14px rgba(34,197,94,0.3);
-  font-family:inherit;
-}
+.dz-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 32px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:30px;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(34,197,94,0.3);font-family:inherit}
 .dz-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,0.4)}
 .dz-fmt{font-size:.71rem;color:var(--text-muted);margin-top:16px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .fmt-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 8px;font-weight:600;color:var(--primary-dark)}
 #fileInput{display:none}
 
-/* ── PROGRESS BAR ── */
+/* PROGRESS */
 .progress-wrap{display:none;width:100%;max-width:620px;margin-top:16px}
 .progress-wrap.show{display:block}
 .progress-bar-bg{background:var(--border);border-radius:10px;height:6px;overflow:hidden}
 .progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:10px;transition:width .3s;width:0%}
 .progress-label{font-size:.72rem;color:var(--text-muted);margin-top:5px;text-align:center}
 
-/* ── RESULT ── */
+/* RESULT */
 #resultSection{display:none;padding:0 20px 50px}
 #resultSection.show{display:block}
 .result-container{max-width:920px;margin:0 auto}
-
-/* SECTION LABEL */
-.section-label{
-  display:flex;align-items:center;gap:8px;
-  font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;
-  color:var(--primary-dark);margin:24px 0 10px;
-}
+.section-label{display:flex;align-items:center;gap:8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary-dark);margin:24px 0 10px}
 .section-label::after{content:'';flex:1;height:1.5px;background:var(--border)}
 
-/* ── INFO CARD ── */
-.info-card{
-  background:var(--surface);border-radius:16px;
-  border:1.5px solid var(--border);
-  padding:20px 22px;
-  display:flex;align-items:center;gap:18px;
-  box-shadow:var(--shadow2);flex-wrap:wrap;
-}
-.preview-box{
-  width:82px;height:82px;border-radius:12px;
-  background:var(--surface2);border:2px solid var(--border);
-  overflow:hidden;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-}
+/* INFO CARD */
+.info-card{background:var(--surface);border-radius:16px;border:1.5px solid var(--border);padding:20px 22px;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow2);flex-wrap:wrap}
+.preview-box{width:82px;height:82px;border-radius:12px;background:var(--surface2);border:2px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
 .preview-box img{width:100%;height:100%;object-fit:cover}
-.preview-box .prev-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3));
-  opacity:0;transition:.2s;
-}
+.preview-box .prev-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.3));opacity:0;transition:.2s}
 .preview-box:hover .prev-overlay{opacity:1}
 .info-details{flex:1;min-width:200px}
 .info-name{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:8px;word-break:break-all;line-height:1.3}
 .info-grid{display:flex;gap:8px;flex-wrap:wrap}
-.info-chip{
-  display:flex;align-items:center;gap:5px;
-  background:var(--primary-xlight);border:1px solid var(--border2);
-  border-radius:8px;padding:4px 10px;font-size:.74rem;
-}
+.info-chip{display:flex;align-items:center;gap:5px;background:var(--primary-xlight);border:1px solid var(--border2);border-radius:8px;padding:4px 10px;font-size:.74rem}
 .info-chip i{color:var(--primary);font-size:.68rem}
 .info-chip .ic-label{color:var(--text-muted);font-weight:500}
 .info-chip .ic-val{color:var(--primary-dark);font-weight:800;margin-left:2px}
 .info-actions{display:flex;gap:8px;flex-wrap:wrap}
-.ib{
-  padding:8px 15px;border:1.5px solid var(--border2);border-radius:9px;
-  background:var(--surface);color:var(--text-muted);font-size:.78rem;font-weight:600;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-  display:flex;align-items:center;gap:6px;font-family:inherit;
-}
+.ib{padding:8px 15px;border:1.5px solid var(--border2);border-radius:9px;background:var(--surface);color:var(--text-muted);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;font-family:inherit;text-decoration:none}
 .ib i{font-size:.8rem;color:var(--primary)}
 .ib:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
 .ib.danger{border-color:#fca5a5;color:var(--danger)}
 .ib.danger i{color:var(--danger)}
 .ib.danger:hover{background:var(--danger-light);border-color:var(--danger)}
-.ib.success-btn{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;border-color:transparent;
-  box-shadow:0 3px 10px rgba(34,197,94,0.25);
-}
+.ib.success-btn{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(34,197,94,0.25)}
 .ib.success-btn i{color:#fff}
 .ib.success-btn:hover{box-shadow:0 5px 16px rgba(34,197,94,0.35);transform:translateY(-1px);color:#fff}
 
-/* ── STATS STRIP ── */
-.stats-strip{
-  display:flex;gap:0;border-radius:12px;overflow:hidden;
-  border:1.5px solid var(--border);
-}
-.stat-box{
-  flex:1;background:var(--surface);padding:14px 16px;text-align:center;
-  border-right:1.5px solid var(--border);
-}
+/* STATS */
+.stats-strip{display:flex;gap:0;border-radius:12px;overflow:hidden;border:1.5px solid var(--border)}
+.stat-box{flex:1;background:var(--surface);padding:14px 16px;text-align:center;border-right:1.5px solid var(--border)}
 .stat-box:last-child{border-right:none}
 .stat-val{font-size:1.15rem;font-weight:900;color:var(--primary-dark);margin-bottom:2px}
 .stat-label{font-size:.68rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
 
-/* ── FORMAT BAR ── */
-.format-bar{
-  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
-  overflow:hidden;box-shadow:var(--shadow2);
-}
-.format-tabs{
-  display:flex;border-bottom:1.5px solid var(--border);
-  overflow-x:auto;background:var(--surface2);scrollbar-width:none;
-}
+/* FORMAT BAR */
+.format-bar{background:var(--surface);border-radius:16px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow2)}
+.format-tabs{display:flex;border-bottom:1.5px solid var(--border);overflow-x:auto;background:var(--surface2);scrollbar-width:none}
 .format-tabs::-webkit-scrollbar{display:none}
-.ftab{
-  flex:1;min-width:80px;padding:13px 10px;border:none;background:none;
-  color:var(--text-muted);cursor:pointer;font-size:.77rem;font-weight:700;
-  transition:all .15s;text-align:center;white-space:nowrap;
-  border-bottom:2.5px solid transparent;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-}
+.ftab{flex:1;min-width:80px;padding:13px 10px;border:none;background:none;color:var(--text-muted);cursor:pointer;font-size:.77rem;font-weight:700;transition:all .15s;text-align:center;white-space:nowrap;border-bottom:2.5px solid transparent;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
 .ftab i{font-size:.78rem}
 .ftab:hover{color:var(--primary-dark);background:var(--primary-xlight)}
 .ftab.active{color:var(--primary-dark);border-bottom-color:var(--primary);background:var(--surface)}
 .format-content{padding:18px 20px}
-.format-label{
-  font-size:.75rem;color:var(--text-muted);font-weight:700;
-  margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;
-  text-transform:uppercase;letter-spacing:.8px;
-}
-.char-count{
-  font-size:.72rem;font-weight:600;
-  background:var(--primary-xlight);border:1px solid var(--border2);
-  border-radius:8px;padding:3px 10px;color:var(--primary-dark);
-}
-.code-box{
-  position:relative;background:var(--surface2);
-  border:1.5px solid var(--border);border-radius:12px;overflow:hidden;
-}
-.code-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px;background:var(--primary-xlight);
-  border-bottom:1.5px solid var(--border);
-}
+.format-label{font-size:.75rem;color:var(--text-muted);font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.8px}
+.char-count{font-size:.72rem;font-weight:600;background:var(--primary-xlight);border:1px solid var(--border2);border-radius:8px;padding:3px 10px;color:var(--primary-dark)}
+.code-box{position:relative;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--primary-xlight);border-bottom:1.5px solid var(--border)}
 .code-dots{display:flex;gap:5px}
 .code-dot{width:9px;height:9px;border-radius:50%}
-.code-dot.r{background:#ef4444}
-.code-dot.y{background:#f59e0b}
-.code-dot.g{background:var(--primary)}
+.code-dot.r{background:#ef4444}.code-dot.y{background:#f59e0b}.code-dot.g{background:var(--primary)}
 .code-lang{font-size:.68rem;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:1px}
-.code-area{
-  width:100%;min-height:140px;max-height:280px;
-  padding:14px 16px;font-family:'Courier New',monospace;
-  font-size:.78rem;color:var(--text);border:none;background:transparent;
-  resize:vertical;outline:none;line-height:1.7;word-break:break-all;
-}
-.code-actions{
-  display:flex;gap:6px;padding:10px 14px;
-  border-top:1.5px solid var(--border);background:var(--surface2);flex-wrap:wrap;
-}
-.cb{
-  padding:6px 14px;border:1.5px solid var(--border2);border-radius:7px;
-  background:var(--surface);color:var(--text-muted);font-size:.75rem;font-weight:600;
-  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
-  font-family:inherit;
-}
+.code-area{width:100%;min-height:140px;max-height:280px;padding:14px 16px;font-family:'Courier New',monospace;font-size:.78rem;color:var(--text);border:none;background:transparent;resize:vertical;outline:none;line-height:1.7;word-break:break-all}
+.code-actions{display:flex;gap:6px;padding:10px 14px;border-top:1.5px solid var(--border);background:var(--surface2);flex-wrap:wrap}
+.cb{padding:6px 14px;border:1.5px solid var(--border2);border-radius:7px;background:var(--surface);color:var(--text-muted);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;font-family:inherit;text-decoration:none}
 .cb i{font-size:.75rem;color:var(--primary)}
 .cb:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
 .cb.copied{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-xlight)}
 
-/* ── REVERSE CARD ── */
-.reverse-card{
-  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
-  overflow:hidden;box-shadow:var(--shadow2);
-}
-.reverse-header{
-  background:var(--primary-xlight);padding:16px 20px;
-  border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px;
-}
-.reverse-header-icon{
-  width:36px;height:36px;border-radius:9px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
+/* REVERSE CARD */
+.reverse-card{background:var(--surface);border-radius:16px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow2)}
+.reverse-header{background:var(--primary-xlight);padding:16px 20px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.reverse-header-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .reverse-header-icon i{color:#fff;font-size:.9rem}
 .reverse-title{font-size:.92rem;font-weight:800;color:var(--text)}
 .reverse-desc{font-size:.74rem;color:var(--text-muted);margin-top:1px}
 .reverse-body{padding:20px}
-.reverse-input{
-  width:100%;min-height:100px;padding:13px 15px;
-  border:1.5px solid var(--border2);border-radius:10px;
-  background:var(--surface2);color:var(--text);
-  font-family:'Courier New',monospace;font-size:.78rem;
-  resize:vertical;outline:none;line-height:1.6;transition:border .18s;
-}
+.reverse-input{width:100%;min-height:100px;padding:13px 15px;border:1.5px solid var(--border2);border-radius:10px;background:var(--surface2);color:var(--text);font-family:'Courier New',monospace;font-size:.78rem;resize:vertical;outline:none;line-height:1.6;transition:border .18s}
 .reverse-input:focus{border-color:var(--primary);background:var(--surface)}
 .reverse-input::placeholder{color:var(--text-muted)}
 .reverse-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.reverse-preview{
-  margin-top:16px;display:none;
-  background:var(--surface2);border-radius:12px;
-  border:1.5px solid var(--border);padding:16px;text-align:center;
-}
+.reverse-preview{margin-top:16px;display:none;background:var(--surface2);border-radius:12px;border:1.5px solid var(--border);padding:16px;text-align:center}
 .reverse-preview.show{display:block}
 .reverse-preview img{max-width:100%;max-height:320px;border-radius:10px;box-shadow:var(--shadow2)}
 .rev-img-info{font-size:.74rem;color:var(--text-muted);margin-top:10px}
 
-/* ── HOW TO CARD ── */
-.howto-card{
-  background:var(--surface);border-radius:16px;border:1.5px solid var(--border);
-  padding:20px 22px;box-shadow:var(--shadow2);margin-bottom:10px;
-}
-.howto-title{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.howto-title i{color:var(--primary)}
-.howto-steps{display:flex;gap:0;flex-direction:column}
-.howto-step{
-  display:flex;gap:14px;align-items:flex-start;
-  padding:10px 0;border-bottom:1.5px solid var(--border);
-}
-.howto-step:last-child{border-bottom:none;padding-bottom:0}
-.step-num{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;font-size:.75rem;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-}
-.step-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px}
-.step-desc{font-size:.74rem;color:var(--text-muted);line-height:1.5}
-
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(100px);
-  background:var(--surface);color:var(--text);
-  padding:12px 20px;border-radius:12px;
-  font-size:.84rem;font-weight:600;
-  box-shadow:0 8px 30px rgba(0,0,0,0.12);
-  z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);
-  border:1.5px solid var(--border);
-  display:flex;align-items:center;gap:8px;
-  min-width:200px;justify-content:center;
-  border-left:4px solid var(--primary);
-}
-.toast.err{border-left-color:var(--danger)}
-.toast.warn{border-left-color:var(--warning)}
-.toast i{font-size:.9rem;color:var(--primary)}
-.toast.err i{color:var(--danger)}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);color:var(--text);padding:12px 20px;border-radius:12px;font-size:.84rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:9999;transition:all .3s cubic-bezier(.34,1.56,.64,1);border:1.5px solid var(--border);display:flex;align-items:center;gap:8px;min-width:200px;justify-content:center;border-left:4px solid var(--primary)}
+.toast.err{border-left-color:var(--danger)}.toast.warn{border-left-color:var(--warning)}
+.toast i{font-size:.9rem;color:var(--primary)}.toast.err i{color:var(--danger)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* ── RESPONSIVE ── */
+/* FOOTER */
+.footer{text-align:center;padding:22px 20px;border-top:1.5px solid var(--border);margin-top:10px}
+.footer p{color:var(--text-muted);font-size:.82rem}
+.footer a{color:var(--primary-dark);font-weight:700;text-decoration:none}
+
 @media(max-width:768px){
   .upload-wrap{padding:28px 16px 24px}
   .upload-hero h1{font-size:1.45rem}
@@ -386,7 +186,6 @@ nav{
   .stats-strip{flex-wrap:wrap}
   .stat-box{flex:1;min-width:calc(50% - 1px)}
   .stat-box:nth-child(2){border-right:none}
-  .howto-card{display:none}
 }
 @media(max-width:480px){
   .upload-hero h1{font-size:1.2rem}
@@ -400,7 +199,7 @@ nav{
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
+<!-- NAV -->
 <nav>
   <div class="nav-logo">
     <div class="nav-logo-icon"><i class="fas fa-file-code"></i></div>
@@ -414,11 +213,11 @@ nav{
   </div>
 </nav>
 
-<!-- ═══ UPLOAD ═══ -->
+<!-- UPLOAD -->
 <div class="upload-wrap" id="uploadWrap">
   <div class="upload-hero">
     <h1>Convert Image to <em>Base64</em></h1>
-    <p>Instantly convert any image to Base64 string. Supports Data URI, CSS, HTML, JSON & more formats.</p>
+    <p>Instantly convert any image to Base64 string. Supports Data URI, CSS, HTML, JSON &amp; more formats.</p>
     <div class="upload-features">
       <span class="uf-badge"><i class="fas fa-bolt"></i> Instant Convert</span>
       <span class="uf-badge"><i class="fas fa-shield-alt"></i> 100% Private</span>
@@ -427,38 +226,42 @@ nav{
       <span class="uf-badge"><i class="fas fa-file-download"></i> Download Output</span>
     </div>
   </div>
-
   <div id="dropZone">
     <div class="dz-icon-wrap"><i class="fas fa-cloud-upload-alt"></i></div>
-    <div class="dz-text">Drag & drop your image here</div>
+    <div class="dz-text">Drag &amp; drop your image here</div>
     <div class="dz-hint">or click the button below to browse</div>
     <button class="dz-btn" onclick="document.getElementById('fileInput').click()">
       <i class="fas fa-folder-open"></i> Select Image
     </button>
     <div class="dz-fmt">
-      <span class="fmt-pill">JPG</span>
-      <span class="fmt-pill">PNG</span>
-      <span class="fmt-pill">WEBP</span>
-      <span class="fmt-pill">GIF</span>
-      <span class="fmt-pill">BMP</span>
-      <span class="fmt-pill">SVG</span>
-      <span class="fmt-pill">ICO</span>
+      <span class="fmt-pill">JPG</span><span class="fmt-pill">PNG</span><span class="fmt-pill">WEBP</span>
+      <span class="fmt-pill">GIF</span><span class="fmt-pill">BMP</span><span class="fmt-pill">SVG</span><span class="fmt-pill">ICO</span>
     </div>
   </div>
-
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
     <div class="progress-label" id="progressLabel">Converting...</div>
   </div>
-
   <input type="file" id="fileInput" accept="image/*">
 </div>
 
-<!-- ═══ RESULT ═══ -->
+<!-- AD 1: Upload page (below upload, above result) -->
+<div class="ad-wrap" id="uploadAd">
+  <span class="ad-lbl">Advertisement</span>
+  <div class="ad-desktop">
+    <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+    <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+  </div>
+  <div class="ad-mobile">
+    <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+    <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+  </div>
+</div>
+
+<!-- RESULT -->
 <div id="resultSection">
   <div class="result-container">
 
-    <!-- Image Info -->
     <div class="section-label"><i class="fas fa-info-circle"></i> Image Information</div>
     <div class="info-card">
       <div class="preview-box">
@@ -477,34 +280,41 @@ nav{
       </div>
       <div class="info-actions">
         <button class="ib success-btn" onclick="copyAll()"><i class="fas fa-copy"></i> Copy Base64</button>
-        <button class="ib" onclick="downloadTxt()"><i class="fas fa-file-alt"></i> Save .txt</button>
-        <button class="ib" onclick="downloadOriginal()"><i class="fas fa-download"></i> Download</button>
+        <!-- SmartLink on Save .txt -->
+        <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
+           class="ib" onclick="downloadTxt()">
+          <i class="fas fa-file-alt"></i> Save .txt
+        </a>
+        <!-- SmartLink on Download original -->
+        <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
+           class="ib" onclick="downloadOriginal()">
+          <i class="fas fa-download"></i> Download
+        </a>
         <button class="ib danger" onclick="clearAll()"><i class="fas fa-trash"></i> Clear</button>
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="section-label"><i class="fas fa-chart-bar"></i> Statistics</div>
     <div class="stats-strip">
-      <div class="stat-box">
-        <div class="stat-val" id="stat-chars">-</div>
-        <div class="stat-label">Characters</div>
+      <div class="stat-box"><div class="stat-val" id="stat-chars">-</div><div class="stat-label">Characters</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-b64kb">-</div><div class="stat-label">Base64 Size</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-ratio">-</div><div class="stat-label">Size Increase</div></div>
+      <div class="stat-box"><div class="stat-val">~33%</div><div class="stat-label">Overhead</div></div>
+    </div>
+
+    <!-- AD 2: Between stats and format output (inside result) -->
+    <div class="ad-wrap" style="margin:18px 0;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
+      <span class="ad-lbl">Advertisement</span>
+      <div class="ad-desktop">
+        <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+        <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
       </div>
-      <div class="stat-box">
-        <div class="stat-val" id="stat-b64kb">-</div>
-        <div class="stat-label">Base64 Size</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="stat-ratio">-</div>
-        <div class="stat-label">Size Increase</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val">~33%</div>
-        <div class="stat-label">Overhead</div>
+      <div class="ad-mobile">
+        <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+        <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
       </div>
     </div>
 
-    <!-- Format Output -->
     <div class="section-label"><i class="fas fa-code"></i> Output Formats</div>
     <div class="format-bar">
       <div class="format-tabs">
@@ -522,25 +332,24 @@ nav{
         </div>
         <div class="code-box">
           <div class="code-header">
-            <div class="code-dots">
-              <div class="code-dot r"></div>
-              <div class="code-dot y"></div>
-              <div class="code-dot g"></div>
-            </div>
+            <div class="code-dots"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div></div>
             <span class="code-lang" id="codeLang">DATA URI</span>
           </div>
           <textarea class="code-area" id="codeArea" readonly spellcheck="false"></textarea>
           <div class="code-actions">
             <button class="cb" id="copyBtn" onclick="copyCode()"><i class="fas fa-copy"></i> Copy</button>
             <button class="cb" onclick="selectCode()"><i class="fas fa-text-width"></i> Select All</button>
-            <button class="cb" onclick="downloadCode()"><i class="fas fa-download"></i> Download</button>
+            <!-- SmartLink on Download code -->
+            <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
+               class="cb" onclick="downloadCode()">
+              <i class="fas fa-download"></i> Download
+            </a>
             <button class="cb" onclick="wrapToggle()" id="wrapBtn"><i class="fas fa-align-left"></i> Wrap</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Reverse Decode -->
     <div class="section-label"><i class="fas fa-exchange-alt"></i> Base64 to Image (Decoder)</div>
     <div class="reverse-card">
       <div class="reverse-header">
@@ -554,8 +363,12 @@ nav{
         <textarea class="reverse-input" id="reverseInput"
           placeholder="Paste Base64 or Data URI here... (e.g. data:image/png;base64,iVBOR...)"></textarea>
         <div class="reverse-actions">
-          <button class="ib success-btn" onclick="decodeB64()"><i class="fas fa-magic"></i> Decode & Preview</button>
-          <button class="ib" onclick="dlDecoded()"><i class="fas fa-download"></i> Download Image</button>
+          <button class="ib success-btn" onclick="decodeB64()"><i class="fas fa-magic"></i> Decode &amp; Preview</button>
+          <!-- SmartLink on decoded download -->
+          <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
+             class="ib" onclick="dlDecoded()">
+            <i class="fas fa-download"></i> Download Image
+          </a>
           <button class="ib" onclick="copyDecodedSrc()"><i class="fas fa-copy"></i> Copy Data URI</button>
           <button class="ib danger" onclick="clearReverse()"><i class="fas fa-times"></i> Clear</button>
         </div>
@@ -566,74 +379,31 @@ nav{
       </div>
     </div>
 
-    <!-- How To Use -->
-    <div class="section-label"><i class="fas fa-question-circle"></i> How to Use</div>
-    <div class="howto-card">
-      <div class="howto-title"><i class="fas fa-lightbulb"></i> Quick Guide</div>
-      <div class="howto-steps">
-        <div class="howto-step">
-          <div class="step-num">1</div>
-          <div>
-            <div class="step-title">Upload Image</div>
-            <div class="step-desc">Drag & drop, click to browse, or paste from clipboard (Ctrl+V). Supports JPG, PNG, WEBP, GIF, BMP, SVG, ICO up to 50MB.</div>
-          </div>
-        </div>
-        <div class="howto-step">
-          <div class="step-num">2</div>
-          <div>
-            <div class="step-title">Choose Format</div>
-            <div class="step-desc">Select from Data URI, Raw Base64, CSS background-image, HTML img tag, Markdown, or JSON format.</div>
-          </div>
-        </div>
-        <div class="howto-step">
-          <div class="step-num">3</div>
-          <div>
-            <div class="step-title">Copy or Download</div>
-            <div class="step-desc">Click Copy to clipboard, or download as .txt, .css, .html, .json, or .md file for direct use in your project.</div>
-          </div>
-        </div>
-        <div class="howto-step">
-          <div class="step-num">4</div>
-          <div>
-            <div class="step-title">Decode Back (Optional)</div>
-            <div class="step-desc">Use the decoder section to paste any Base64 string and convert it back to a viewable and downloadable image.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- TOAST -->
+<footer class="footer">
+  <p>Made with 💚 by <a href="../../index.html">ToolMatrix</a> — Free Online Image Tool</p>
+</footer>
+
 <div class="toast" id="toast">
   <i class="fas fa-check-circle" id="toastIcon"></i>
   <span id="toastMsg"></span>
 </div>
 
 <script>
-// ════════════════════════════════════
-//  STATE
-// ════════════════════════════════════
+const SMARTLINK = 'https://omg10.com/4/10689787';
+
 let D = { file:null, dataUri:'', raw:'', mime:'', w:0, h:0 };
-let curFmt   = 'datauri';
+let curFmt = 'datauri';
 let wrapMode = false;
 
-// ════════════════════════════════════
-//  INIT
-// ════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   const fi = document.getElementById('fileInput');
   const dz = document.getElementById('dropZone');
 
-  fi.addEventListener('change', e => {
-    if (e.target.files[0]) process(e.target.files[0]);
-    fi.value = '';
-  });
-
-  dz.addEventListener('click', e => {
-    if (e.target.tagName !== 'BUTTON') fi.click();
-  });
+  fi.addEventListener('change', e => { if (e.target.files[0]) process(e.target.files[0]); fi.value = ''; });
+  dz.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fi.click(); });
 
   ['dragenter','dragover'].forEach(ev =>
     dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); })
@@ -641,62 +411,35 @@ document.addEventListener('DOMContentLoaded', () => {
   ['dragleave','drop'].forEach(ev =>
     dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); })
   );
-  dz.addEventListener('drop', e => {
-    if (e.dataTransfer.files[0]) process(e.dataTransfer.files[0]);
-  });
+  dz.addEventListener('drop', e => { if (e.dataTransfer.files[0]) process(e.dataTransfer.files[0]); });
 
-  // Clipboard paste
   document.addEventListener('paste', e => {
     const items = e.clipboardData?.items;
     if (!items) return;
     for (let item of items) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-        process(item.getAsFile());
-        break;
-      }
+      if (item.type.startsWith('image/')) { e.preventDefault(); process(item.getAsFile()); break; }
     }
   });
 });
 
-// ════════════════════════════════════
-//  PROCESS FILE
-// ════════════════════════════════════
 function process(file) {
-  if (!file || !file.type.startsWith('image/')) {
-    toast('Please select a valid image file', 'err'); return;
-  }
-  if (file.size > 50 * 1024 * 1024) {
-    toast('File too large — max 50MB', 'err'); return;
-  }
+  if (!file || !file.type.startsWith('image/')) { toast('Please select a valid image file', 'err'); return; }
+  if (file.size > 50 * 1024 * 1024) { toast('File too large — max 50MB', 'err'); return; }
 
-  D.file = file;
-  D.mime = file.type;
+  D.file = file; D.mime = file.type;
   showProgress(true, 'Reading file...');
 
   const r = new FileReader();
   r.onprogress = e => {
-    if (e.lengthComputable) {
-      const pct = Math.round((e.loaded / e.total) * 60);
-      setProgress(pct, 'Converting to Base64...');
-    }
+    if (e.lengthComputable) setProgress(Math.round((e.loaded/e.total)*60), 'Converting to Base64...');
   };
   r.onload = e => {
     setProgress(80, 'Loading image...');
     D.dataUri = e.target.result;
-    D.raw     = D.dataUri.split(',')[1];
+    D.raw = D.dataUri.split(',')[1];
     const img = new Image();
-    img.onload = () => {
-      D.w = img.naturalWidth;
-      D.h = img.naturalHeight;
-      setProgress(100, 'Done!');
-      setTimeout(() => { showProgress(false); showResult(); }, 400);
-    };
-    img.onerror = () => {
-      D.w = 0; D.h = 0;
-      setProgress(100, 'Done!');
-      setTimeout(() => { showProgress(false); showResult(); }, 400);
-    };
+    img.onload = () => { D.w = img.naturalWidth; D.h = img.naturalHeight; setProgress(100,'Done!'); setTimeout(() => { showProgress(false); showResult(); }, 400); };
+    img.onerror = () => { D.w=0; D.h=0; setProgress(100,'Done!'); setTimeout(() => { showProgress(false); showResult(); }, 400); };
     img.src = D.dataUri;
   };
   r.onerror = () => { showProgress(false); toast('Failed to read file', 'err'); };
@@ -704,8 +447,7 @@ function process(file) {
 }
 
 function showProgress(show, label) {
-  const pw = document.getElementById('progressWrap');
-  pw.classList.toggle('show', show);
+  document.getElementById('progressWrap').classList.toggle('show', show);
   if (label) document.getElementById('progressLabel').textContent = label;
   if (!show) setProgress(0, '');
 }
@@ -714,31 +456,22 @@ function setProgress(pct, label) {
   if (label) document.getElementById('progressLabel').textContent = label;
 }
 
-// ════════════════════════════════════
-//  SHOW RESULT
-// ════════════════════════════════════
 function showResult() {
-  document.getElementById('previewImg').src   = D.dataUri;
-  document.getElementById('fileName').textContent  = D.file.name;
-  document.getElementById('fileType').textContent  = D.mime;
-  document.getElementById('fileSize').textContent  = fmtSize(D.file.size);
-  document.getElementById('fileDims').textContent  = D.w && D.h ? D.w + ' × ' + D.h + ' px' : 'Unknown';
-  document.getElementById('b64Size').textContent   = fmtSize(D.raw.length);
-
-  if (D.w && D.h) {
-    const g = gcd(D.w, D.h);
-    document.getElementById('fileRatio').textContent = (D.w/g) + ':' + (D.h/g);
-  }
-
+  document.getElementById('previewImg').src = D.dataUri;
+  document.getElementById('fileName').textContent = D.file.name;
+  document.getElementById('fileType').textContent = D.mime;
+  document.getElementById('fileSize').textContent = fmtSize(D.file.size);
+  document.getElementById('fileDims').textContent = D.w && D.h ? D.w+' × '+D.h+' px' : 'Unknown';
+  document.getElementById('b64Size').textContent = fmtSize(D.raw.length);
+  if (D.w && D.h) { const g=gcd(D.w,D.h); document.getElementById('fileRatio').textContent=(D.w/g)+':'+(D.h/g); }
   document.getElementById('stat-chars').textContent = D.dataUri.length.toLocaleString();
   document.getElementById('stat-b64kb').textContent = fmtSize(D.raw.length);
-  document.getElementById('stat-ratio').textContent = ((D.raw.length / D.file.size) * 100).toFixed(1) + '%';
-
+  document.getElementById('stat-ratio').textContent = ((D.raw.length/D.file.size)*100).toFixed(1)+'%';
   document.getElementById('resultSection').classList.add('show');
   document.getElementById('navBtns').style.display = 'flex';
-
-  shrinkUpload();
-  updateCode();
+  // Hide upload-page ad when result is showing
+  document.getElementById('uploadAd').style.display = 'none';
+  shrinkUpload(); updateCode();
   toast('Image converted successfully!');
   document.getElementById('resultSection').scrollIntoView({ behavior:'smooth', block:'start' });
 }
@@ -747,90 +480,59 @@ function shrinkUpload() {
   const uw = document.getElementById('uploadWrap');
   uw.querySelector('.upload-hero').style.display = 'none';
   uw.style.padding = '14px 20px';
-
   const dz = document.getElementById('dropZone');
-  dz.style.padding      = '14px 20px';
-  dz.style.borderRadius = '12px';
+  dz.style.padding = '14px 20px'; dz.style.borderRadius = '12px';
   dz.querySelector('.dz-icon-wrap').style.display = 'none';
-  dz.querySelector('.dz-hint').style.display      = 'none';
-  dz.querySelector('.dz-fmt').style.display       = 'none';
-  dz.querySelector('.dz-text').textContent        = 'Drop another image or';
-  dz.querySelector('.dz-btn').innerHTML           = '<i class="fas fa-plus"></i> Select New Image';
-  dz.querySelector('.dz-btn').style.padding       = '8px 20px';
-  dz.querySelector('.dz-btn').style.fontSize      = '.82rem';
+  dz.querySelector('.dz-hint').style.display = 'none';
+  dz.querySelector('.dz-fmt').style.display = 'none';
+  dz.querySelector('.dz-text').textContent = 'Drop another image or';
+  dz.querySelector('.dz-btn').innerHTML = '<i class="fas fa-plus"></i> Select New Image';
+  dz.querySelector('.dz-btn').style.padding = '8px 20px';
+  dz.querySelector('.dz-btn').style.fontSize = '.82rem';
 }
 
-// ════════════════════════════════════
-//  FORMAT SWITCHER
-// ════════════════════════════════════
 function switchFormat(btn) {
   document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  curFmt = btn.dataset.f;
-  updateCode();
+  btn.classList.add('active'); curFmt = btn.dataset.f; updateCode();
 }
 
 function updateCode() {
   const a = document.getElementById('codeArea');
-  let c = '', t = '', lang = '';
-
-  switch (curFmt) {
-    case 'datauri':
-      c = D.dataUri; t = 'Data URI'; lang = 'DATA URI'; break;
-    case 'raw':
-      c = D.raw; t = 'Raw Base64'; lang = 'BASE64'; break;
+  let c='',t='',lang='';
+  switch(curFmt) {
+    case 'datauri': c=D.dataUri; t='Data URI'; lang='DATA URI'; break;
+    case 'raw': c=D.raw; t='Raw Base64'; lang='BASE64'; break;
     case 'css':
-      c = `.element {\n  background-image: url("${D.dataUri}");\n  background-size: cover;\n  background-repeat: no-repeat;\n  background-position: center;\n  width: ${D.w}px;\n  height: ${D.h}px;\n}`;
-      t = 'CSS Background'; lang = 'CSS'; break;
+      c=`.element {\n  background-image: url("${D.dataUri}");\n  background-size: cover;\n  background-repeat: no-repeat;\n  background-position: center;\n  width: ${D.w}px;\n  height: ${D.h}px;\n}`;
+      t='CSS Background'; lang='CSS'; break;
     case 'html':
-      c = `<img\n  src="${D.dataUri}"\n  alt="${esc(D.file.name)}"\n  width="${D.w}"\n  height="${D.h}"\n  style="max-width:100%;height:auto"\n/>`;
-      t = 'HTML <img> Tag'; lang = 'HTML'; break;
+      c=`<img\n  src="${D.dataUri}"\n  alt="${esc(D.file.name)}"\n  width="${D.w}"\n  height="${D.h}"\n  style="max-width:100%;height:auto"\n/>`;
+      t='HTML <img> Tag'; lang='HTML'; break;
     case 'markdown':
-      c = `![${esc(D.file.name)}](${D.dataUri} "${esc(D.file.name)}")`;
-      t = 'Markdown'; lang = 'MARKDOWN'; break;
+      c=`![${esc(D.file.name)}](${D.dataUri} "${esc(D.file.name)}")`;
+      t='Markdown'; lang='MARKDOWN'; break;
     case 'json':
-      c = JSON.stringify({
-        filename:             D.file.name,
-        mimeType:             D.mime,
-        width:                D.w,
-        height:               D.h,
-        originalSize:         D.file.size,
-        originalSizeFormatted:fmtSize(D.file.size),
-        base64Size:           D.raw.length,
-        base64SizeFormatted:  fmtSize(D.raw.length),
-        dataUri:              D.dataUri,
-        base64:               D.raw
-      }, null, 2);
-      t = 'JSON Object'; lang = 'JSON'; break;
+      c=JSON.stringify({filename:D.file.name,mimeType:D.mime,width:D.w,height:D.h,originalSize:D.file.size,originalSizeFormatted:fmtSize(D.file.size),base64Size:D.raw.length,base64SizeFormatted:fmtSize(D.raw.length),dataUri:D.dataUri,base64:D.raw},null,2);
+      t='JSON Object'; lang='JSON'; break;
   }
-
-  a.value                = c;
-  a.style.wordBreak      = wrapMode ? 'normal'   : 'break-all';
-  a.style.whiteSpace     = wrapMode ? 'pre'      : 'pre-wrap';
+  a.value = c;
+  a.style.wordBreak = wrapMode ? 'normal' : 'break-all';
+  a.style.whiteSpace = wrapMode ? 'pre' : 'pre-wrap';
   document.getElementById('formatTitle').textContent = t;
-  document.getElementById('codeLang').textContent    = lang;
-  document.getElementById('charCount').textContent   = c.length.toLocaleString() + ' chars';
-
+  document.getElementById('codeLang').textContent = lang;
+  document.getElementById('charCount').textContent = c.length.toLocaleString()+' chars';
   const cb = document.getElementById('copyBtn');
   cb.classList.remove('copied');
   cb.innerHTML = '<i class="fas fa-copy"></i> Copy';
 }
 
-// ════════════════════════════════════
-//  COPY / SELECT / DOWNLOAD
-// ════════════════════════════════════
 function copyCode() {
   const a = document.getElementById('codeArea');
   const b = document.getElementById('copyBtn');
   navigator.clipboard.writeText(a.value)
     .then(() => {
-      b.classList.add('copied');
-      b.innerHTML = '<i class="fas fa-check"></i> Copied!';
-      toast('Copied to clipboard!');
-      setTimeout(() => {
-        b.classList.remove('copied');
-        b.innerHTML = '<i class="fas fa-copy"></i> Copy';
-      }, 2200);
+      b.classList.add('copied'); b.innerHTML='<i class="fas fa-check"></i> Copied!'; toast('Copied to clipboard!');
+      setTimeout(() => { b.classList.remove('copied'); b.innerHTML='<i class="fas fa-copy"></i> Copy'; }, 2200);
     })
     .catch(() => { a.select(); document.execCommand('copy'); toast('Copied!'); });
 }
@@ -838,176 +540,143 @@ function copyCode() {
 function copyAll() {
   navigator.clipboard.writeText(D.dataUri)
     .then(() => toast('Data URI copied to clipboard!'))
-    .catch(() => toast('Copy failed', 'err'));
+    .catch(() => toast('Copy failed','err'));
 }
 
 function selectCode() {
   const a = document.getElementById('codeArea');
-  a.select();
-  a.setSelectionRange(0, a.value.length);
-  toast('All text selected');
+  a.select(); a.setSelectionRange(0, a.value.length); toast('All text selected');
 }
 
 function wrapToggle() {
   wrapMode = !wrapMode;
   const btn = document.getElementById('wrapBtn');
   btn.classList.toggle('copied', wrapMode);
-  btn.innerHTML = wrapMode
-    ? '<i class="fas fa-check"></i> Wrap ON'
-    : '<i class="fas fa-align-left"></i> Wrap';
+  btn.innerHTML = wrapMode ? '<i class="fas fa-check"></i> Wrap ON' : '<i class="fas fa-align-left"></i> Wrap';
   updateCode();
 }
 
+// Download functions — SmartLink is on the <a href>, actual download here with 350ms delay
 function downloadTxt() {
-  dl(D.dataUri, D.file.name.replace(/\.[^.]+$/, '') + '-base64.txt', 'text/plain');
-  toast('Saved as .txt');
+  setTimeout(() => { dl(D.dataUri, D.file.name.replace(/\.[^.]+$/,'')+'-base64.txt', 'text/plain'); toast('Saved as .txt'); }, 350);
 }
 
 function downloadCode() {
-  const c   = document.getElementById('codeArea').value;
-  const extM = { css:'css', html:'html', json:'json', markdown:'md' };
-  const ext  = extM[curFmt] || 'txt';
-  dl(c, D.file.name.replace(/\.[^.]+$/, '') + '-base64.' + ext, 'text/plain');
-  toast('Downloaded .' + ext);
+  const c = document.getElementById('codeArea').value;
+  const extM = {css:'css',html:'html',json:'json',markdown:'md'};
+  const ext = extM[curFmt]||'txt';
+  setTimeout(() => { dl(c, D.file.name.replace(/\.[^.]+$/,'')+'-base64.'+ext, 'text/plain'); toast('Downloaded .'+ext); }, 350);
 }
 
 function downloadOriginal() {
-  const a = document.createElement('a');
-  a.href = D.dataUri;
-  a.download = D.file.name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast('Original image downloaded!');
+  setTimeout(() => {
+    const a = document.createElement('a');
+    a.href = D.dataUri; a.download = D.file.name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast('Original image downloaded!');
+  }, 350);
 }
 
 function dl(content, name, type) {
-  const b = new Blob([content], { type });
+  const b = new Blob([content], {type});
   const u = URL.createObjectURL(b);
   const a = document.createElement('a');
-  a.href = u; a.download = name;
+  a.href=u; a.download=name;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(u);
 }
 
-// ════════════════════════════════════
-//  CLEAR
-// ════════════════════════════════════
 function clearAll() {
-  D = { file:null, dataUri:'', raw:'', mime:'', w:0, h:0 };
+  D = {file:null,dataUri:'',raw:'',mime:'',w:0,h:0};
   document.getElementById('resultSection').classList.remove('show');
   document.getElementById('navBtns').style.display = 'none';
   document.getElementById('codeArea').value = '';
+  document.getElementById('uploadAd').style.display = 'flex';
   clearReverse();
-
   const uw = document.getElementById('uploadWrap');
-  uw.querySelector('.upload-hero').style.display = '';
-  uw.style.padding = '';
-
+  uw.querySelector('.upload-hero').style.display = ''; uw.style.padding = '';
   const dz = document.getElementById('dropZone');
-  dz.style.padding                                    = '';
-  dz.style.borderRadius                               = '';
-  dz.querySelector('.dz-icon-wrap').style.display     = '';
-  dz.querySelector('.dz-hint').style.display          = '';
-  dz.querySelector('.dz-fmt').style.display           = '';
-  dz.querySelector('.dz-text').textContent            = 'Drag & drop your image here';
-  dz.querySelector('.dz-btn').innerHTML               = '<i class="fas fa-folder-open"></i> Select Image';
-  dz.querySelector('.dz-btn').style.padding           = '';
-  dz.querySelector('.dz-btn').style.fontSize          = '';
-
-  window.scrollTo({ top:0, behavior:'smooth' });
-  toast('Cleared!');
+  dz.style.padding=''; dz.style.borderRadius='';
+  dz.querySelector('.dz-icon-wrap').style.display='';
+  dz.querySelector('.dz-hint').style.display='';
+  dz.querySelector('.dz-fmt').style.display='';
+  dz.querySelector('.dz-text').textContent='Drag & drop your image here';
+  dz.querySelector('.dz-btn').innerHTML='<i class="fas fa-folder-open"></i> Select Image';
+  dz.querySelector('.dz-btn').style.padding=''; dz.querySelector('.dz-btn').style.fontSize='';
+  window.scrollTo({top:0,behavior:'smooth'}); toast('Cleared!');
 }
 
-// ════════════════════════════════════
-//  REVERSE DECODE
-// ════════════════════════════════════
 function decodeB64() {
   let inp = document.getElementById('reverseInput').value.trim();
-  if (!inp) { toast('Paste Base64 or Data URI first', 'err'); return; }
-
+  if (!inp) { toast('Paste Base64 or Data URI first','err'); return; }
   let src = inp;
   if (!inp.startsWith('data:')) {
-    let m = 'image/png';
-    if      (inp.startsWith('/9j/'))                             m = 'image/jpeg';
-    else if (inp.startsWith('iVBOR'))                            m = 'image/png';
-    else if (inp.startsWith('R0lGOD'))                           m = 'image/gif';
-    else if (inp.startsWith('UklGR'))                            m = 'image/webp';
-    else if (inp.startsWith('PHN2Z') || inp.startsWith('PD94b'))m = 'image/svg+xml';
-    src = `data:${m};base64,${inp}`;
+    let m='image/png';
+    if      (inp.startsWith('/9j/'))                              m='image/jpeg';
+    else if (inp.startsWith('iVBOR'))                             m='image/png';
+    else if (inp.startsWith('R0lGOD'))                            m='image/gif';
+    else if (inp.startsWith('UklGR'))                             m='image/webp';
+    else if (inp.startsWith('PHN2Z')||inp.startsWith('PD94b'))   m='image/svg+xml';
+    src=`data:${m};base64,${inp}`;
   }
-
   const img = document.getElementById('reverseImg');
   img.onload = () => {
     document.getElementById('reversePreview').classList.add('show');
-    document.getElementById('revImgInfo').textContent =
-      `Dimensions: ${img.naturalWidth} × ${img.naturalHeight} px`;
+    document.getElementById('revImgInfo').textContent=`Dimensions: ${img.naturalWidth} × ${img.naturalHeight} px`;
     toast('Image decoded successfully!');
   };
-  img.onerror = () => {
-    document.getElementById('reversePreview').classList.remove('show');
-    toast('Invalid Base64 — could not decode', 'err');
-  };
+  img.onerror = () => { document.getElementById('reversePreview').classList.remove('show'); toast('Invalid Base64 — could not decode','err'); };
   img.src = src;
 }
 
 function dlDecoded() {
   const img = document.getElementById('reverseImg');
-  if (!img.src || img.src === location.href) { toast('Decode an image first', 'err'); return; }
-  const a   = document.createElement('a');
-  a.href    = img.src;
-  let ext   = 'png';
-  if (img.src.includes('jpeg'))      ext = 'jpg';
-  else if (img.src.includes('gif'))  ext = 'gif';
-  else if (img.src.includes('webp')) ext = 'webp';
-  else if (img.src.includes('svg'))  ext = 'svg';
-  a.download = 'decoded-image.' + ext;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast('Decoded image downloaded!');
+  if (!img.src || img.src===location.href) { toast('Decode an image first','err'); return; }
+  // SmartLink is on <a href>, actual download with delay
+  setTimeout(() => {
+    const a = document.createElement('a'); a.href=img.src;
+    let ext='png';
+    if (img.src.includes('jpeg')) ext='jpg';
+    else if (img.src.includes('gif')) ext='gif';
+    else if (img.src.includes('webp')) ext='webp';
+    else if (img.src.includes('svg')) ext='svg';
+    a.download='decoded-image.'+ext;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast('Decoded image downloaded!');
+  }, 350);
 }
 
 function copyDecodedSrc() {
   const img = document.getElementById('reverseImg');
-  if (!img.src || img.src === location.href) { toast('Decode an image first', 'err'); return; }
-  navigator.clipboard.writeText(img.src)
-    .then(() => toast('Data URI copied!'))
-    .catch(() => toast('Copy failed', 'err'));
+  if (!img.src || img.src===location.href) { toast('Decode an image first','err'); return; }
+  navigator.clipboard.writeText(img.src).then(()=>toast('Data URI copied!')).catch(()=>toast('Copy failed','err'));
 }
 
 function clearReverse() {
-  document.getElementById('reverseInput').value = '';
+  document.getElementById('reverseInput').value='';
   document.getElementById('reversePreview').classList.remove('show');
-  document.getElementById('reverseImg').src = '';
-  document.getElementById('revImgInfo').textContent = '';
+  document.getElementById('reverseImg').src='';
+  document.getElementById('revImgInfo').textContent='';
 }
 
-// ════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════
 function fmtSize(b) {
-  if (b < 1024)    return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-  return (b / 1048576).toFixed(2) + ' MB';
+  if (b<1024) return b+' B';
+  if (b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(2)+' MB';
 }
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function gcd(a,b) { return b===0?a:gcd(b,a%b); }
 
 function toast(msg, type) {
-  const t  = document.getElementById('toast');
-  const ic = document.getElementById('toastIcon');
-  const ms = document.getElementById('toastMsg');
-  ms.textContent = msg;
-  t.className    = 'toast' + (type ? ' ' + type : '');
-  ic.className   = type === 'err'  ? 'fas fa-times-circle'
-                 : type === 'warn' ? 'fas fa-exclamation-circle'
-                 : 'fas fa-check-circle';
-  ic.style.color = type === 'err'  ? 'var(--danger)'
-                 : type === 'warn' ? 'var(--warning)'
-                 : 'var(--primary)';
+  const t=document.getElementById('toast');
+  const ic=document.getElementById('toastIcon');
+  const ms=document.getElementById('toastMsg');
+  ms.textContent=msg;
+  t.className='toast'+(type?' '+type:'');
+  ic.className=type==='err'?'fas fa-times-circle':type==='warn'?'fas fa-exclamation-circle':'fas fa-check-circle';
+  ic.style.color=type==='err'?'var(--danger)':type==='warn'?'var(--warning)':'var(--primary)';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  setTimeout(()=>t.classList.remove('show'),2800);
 }
 </script>
 </body>
