@@ -1,751 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Flip Tool — Mirror Your Photos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(140deg, #e8f5e9 0%, #c8e6c9 20%, #f1f8e9 45%, #dcedc8 70%, #e8f5e9 100%);
-            min-height: 100vh;
-            padding: 18px;
-            color: #2e7d32;
-            overflow-x: hidden;
-        }
-
-        .container { max-width: 980px; margin: 0 auto; }
-
-        /* ===== FLOATING SHAPES BG ===== */
-        body::before, body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            opacity: 0.08;
-            z-index: -1;
-            pointer-events: none;
-        }
-        body::before {
-            width: 400px; height: 400px;
-            background: #43a047;
-            top: -100px; right: -100px;
-        }
-        body::after {
-            width: 350px; height: 350px;
-            background: #66bb6a;
-            bottom: -80px; left: -80px;
-        }
-
-        /* ===== HEADER ===== */
-        .header { text-align: center; padding: 32px 20px 8px; }
-
-        .logo-wrap {
-            position: relative;
-            width: 90px; height: 90px;
-            margin: 0 auto 16px;
-        }
-
-        .logo-wrap .logo-bg {
-            width: 90px; height: 90px;
-            background: linear-gradient(135deg, #43a047, #66bb6a);
-            border-radius: 26px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 42px;
-            box-shadow: 0 12px 35px rgba(67,160,71,0.3);
-            animation: logoFloat 3.5s ease-in-out infinite;
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo-wrap::after {
-            content: '';
-            position: absolute;
-            inset: -5px;
-            border-radius: 30px;
-            background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
-            z-index: 1;
-            animation: logoFloat 3.5s ease-in-out infinite reverse;
-        }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #1b5e20, #2e7d32, #43a047);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        .header .subtitle {
-            color: #66bb6a;
-            font-size: 0.92rem;
-            font-weight: 500;
-            margin-top: 4px;
-        }
-
-        /* ===== CHIPS ===== */
-        .chips {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 18px 0 26px;
-        }
-
-        .chip {
-            background: rgba(255,255,255,0.8);
-            border: 1.5px solid #a5d6a7;
-            border-radius: 50px;
-            padding: 7px 18px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #388e3c;
-            backdrop-filter: blur(8px);
-            display: flex; align-items: center; gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .chip:hover {
-            background: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-        }
-
-        /* ===== UPLOAD AREA ===== */
-        .upload-area {
-            background: rgba(255,255,255,0.65);
-            border: 2.5px dashed #81c784;
-            border-radius: 28px;
-            padding: 55px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            backdrop-filter: blur(14px);
-        }
-
-        .upload-area:hover {
-            border-color: #43a047;
-            background: rgba(255,255,255,0.92);
-            transform: translateY(-4px);
-            box-shadow: 0 16px 45px rgba(67,160,71,0.12);
-        }
-
-        .upload-area.dragover {
-            border-color: #1b5e20;
-            background: #e8f5e9;
-            transform: scale(1.02);
-        }
-
-        .upload-emoji {
-            font-size: 60px;
-            display: block;
-            margin-bottom: 14px;
-            animation: bounce 2.5s ease infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-14px); }
-        }
-
-        .upload-area h2 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #2e7d32;
-        }
-
-        .upload-area .hint {
-            color: #81c784;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-
-        .browse-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 20px;
-            padding: 13px 36px;
-            background: linear-gradient(135deg, #43a047, #66bb6a);
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            box-shadow: 0 6px 22px rgba(67,160,71,0.3);
-            transition: all 0.3s;
-        }
-
-        .browse-btn:hover {
-            transform: translateY(-3px) scale(1.04);
-            box-shadow: 0 10px 30px rgba(67,160,71,0.45);
-        }
-
-        #fileInput { display: none; }
-
-        /* ===== EDITOR ===== */
-        .editor {
-            display: none;
-            margin-top: 26px;
-            animation: slideUp 0.5s ease;
-        }
-
-        .editor.show { display: block; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== IMAGE INFO BAR ===== */
-        .info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .info-bar h3 { font-size: 1.05rem; color: #2e7d32; }
-
-        .info-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .info-tag {
-            background: rgba(255,255,255,0.85);
-            border: 1.5px solid #c8e6c9;
-            padding: 5px 14px;
-            border-radius: 50px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: #388e3c;
-        }
-
-        /* ===== COMPARISON AREA ===== */
-        .comparison {
-            background: rgba(255,255,255,0.7);
-            border: 1.5px solid #c8e6c9;
-            border-radius: 24px;
-            padding: 22px;
-            backdrop-filter: blur(12px);
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .img-card {
-            background: #fafafa;
-            border: 2px solid #e0e0e0;
-            border-radius: 18px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .img-card:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            transform: translateY(-3px);
-        }
-
-        .img-card img, .img-card canvas {
-            width: 100%;
-            height: auto;
-            display: block;
-            background: repeating-conic-gradient(#e8e8e8 0% 25%, #fff 0% 50%) 50%/16px 16px;
-        }
-
-        .img-badge {
-            position: absolute;
-            top: 12px; left: 12px;
-            padding: 6px 18px;
-            border-radius: 50px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            backdrop-filter: blur(10px);
-            z-index: 3;
-        }
-
-        .badge-original {
-            background: rgba(67,160,71,0.88);
-            color: #fff;
-        }
-
-        .badge-flipped {
-            background: rgba(30,136,229,0.88);
-            color: #fff;
-        }
-
-        .flip-indicator {
-            position: absolute;
-            bottom: 12px; right: 12px;
-            background: rgba(0,0,0,0.55);
-            color: #fff;
-            padding: 5px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            backdrop-filter: blur(6px);
-            display: none;
-            z-index: 3;
-        }
-
-        .flip-indicator.show { display: block; }
-
-        /* ===== FLIP CONTROLS ===== */
-        .controls-section {
-            margin-top: 22px;
-            background: rgba(255,255,255,0.72);
-            border: 1.5px solid #c8e6c9;
-            border-radius: 24px;
-            padding: 24px;
-            backdrop-filter: blur(12px);
-        }
-
-        .controls-section h3 {
-            font-size: 1.02rem;
-            color: #2e7d32;
-            margin-bottom: 18px;
-            text-align: center;
-        }
-
-        /* Flip Buttons */
-        .flip-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 22px;
-        }
-
-        .flip-btn {
-            background: #fff;
-            border: 2.5px solid #c8e6c9;
-            border-radius: 20px;
-            padding: 28px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.35s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .flip-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(67,160,71,0.04), rgba(67,160,71,0.08));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .flip-btn:hover::before { opacity: 1; }
-
-        .flip-btn:hover {
-            border-color: #43a047;
-            transform: translateY(-4px);
-            box-shadow: 0 12px 35px rgba(67,160,71,0.15);
-        }
-
-        .flip-btn.active {
-            border-color: #2e7d32;
-            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-            box-shadow: 0 8px 28px rgba(67,160,71,0.18);
-        }
-
-        .flip-btn .flip-icon {
-            font-size: 44px;
-            display: block;
-            margin-bottom: 10px;
-            transition: transform 0.5s ease;
-        }
-
-        .flip-btn:hover .flip-icon { transform: scale(1.15); }
-
-        .flip-btn.active .flip-icon.h-icon {
-            animation: flipH 0.6s ease;
-        }
-
-        .flip-btn.active .flip-icon.v-icon {
-            animation: flipV 0.6s ease;
-        }
-
-        @keyframes flipH {
-            0% { transform: scaleX(1); }
-            50% { transform: scaleX(-1); }
-            100% { transform: scaleX(1); }
-        }
-
-        @keyframes flipV {
-            0% { transform: scaleY(1); }
-            50% { transform: scaleY(-1); }
-            100% { transform: scaleY(1); }
-        }
-
-        .flip-btn .flip-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #2e7d32;
-            display: block;
-        }
-
-        .flip-btn .flip-desc {
-            font-size: 0.76rem;
-            color: #81c784;
-            margin-top: 3px;
-            display: block;
-        }
-
-        .flip-btn .shortcut {
-            display: inline-block;
-            margin-top: 10px;
-            background: #e8f5e9;
-            border: 1px solid #c8e6c9;
-            padding: 3px 12px;
-            border-radius: 8px;
-            font-size: 0.68rem;
-            font-weight: 700;
-            color: #43a047;
-        }
-
-        /* ===== ROTATION SECTION ===== */
-        .rotation-row {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 22px;
-        }
-
-        .rotate-btn {
-            width: 60px; height: 60px;
-            background: #fff;
-            border: 2px solid #c8e6c9;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; justify-content: center;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
-            gap: 2px;
-        }
-
-        .rotate-btn span:first-child { font-size: 22px; }
-        .rotate-btn span:last-child { font-size: 0.58rem; font-weight: 700; color: #66bb6a; }
-
-        .rotate-btn:hover {
-            border-color: #43a047;
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(67,160,71,0.12);
-        }
-
-        .rotate-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* ===== FLIP HISTORY ===== */
-        .history-section {
-            background: #fff;
-            border: 1.5px solid #e8f5e9;
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 22px;
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .history-header h4 {
-            font-size: 0.85rem;
-            color: #2e7d32;
-        }
-
-        .clear-hist-btn {
-            background: none;
-            border: 1.5px solid #ef9a9a;
-            color: #e53935;
-            padding: 4px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .clear-hist-btn:hover { background: #ffebee; }
-
-        .history-list {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            min-height: 32px;
-        }
-
-        .history-tag {
-            background: #e8f5e9;
-            border: 1px solid #c8e6c9;
-            padding: 5px 14px;
-            border-radius: 50px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: #388e3c;
-            animation: popIn 0.3s ease;
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .no-history {
-            font-size: 0.75rem;
-            color: #b0bec5;
-            font-style: italic;
-        }
-
-        /* ===== ACTION BUTTONS ===== */
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 24px;
-        }
-
-        .action-btn {
-            padding: 14px 32px;
-            border: none;
-            border-radius: 60px;
-            font-size: 0.92rem;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        .btn-download-main {
-            background: linear-gradient(135deg, #2e7d32, #43a047, #66bb6a);
-            color: #fff;
-            box-shadow: 0 8px 28px rgba(46,125,50,0.35);
-        }
-
-        .btn-download-main:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 38px rgba(46,125,50,0.5);
-        }
-
-        .btn-undo {
-            background: #fff;
-            color: #ff9800;
-            border: 2px solid #ffe0b2;
-        }
-
-        .btn-undo:hover { background: #fff8e1; transform: translateY(-2px); }
-
-        .btn-reset-all {
-            background: #fff;
-            color: #e53935;
-            border: 2px solid #ef9a9a;
-        }
-
-        .btn-reset-all:hover { background: #ffebee; transform: translateY(-2px); }
-
-        .btn-new-img {
-            background: #fff;
-            color: #43a047;
-            border: 2px solid #a5d6a7;
-        }
-
-        .btn-new-img:hover { background: #e8f5e9; transform: translateY(-2px); }
-
-        /* ===== DOWNLOAD PANEL ===== */
-        .download-panel {
-            display: none;
-            margin-top: 20px;
-            background: rgba(255,255,255,0.8);
-            border: 1.5px solid #c8e6c9;
-            border-radius: 20px;
-            padding: 22px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            animation: slideUp 0.4s ease;
-        }
-
-        .download-panel.show { display: block; }
-
-        .download-panel h4 {
-            font-size: 0.95rem;
-            color: #2e7d32;
-            margin-bottom: 14px;
-        }
-
-        .format-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .fmt-btn {
-            padding: 9px 24px;
-            border: 2px solid #c8e6c9;
-            background: #fff;
-            border-radius: 50px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            color: #388e3c;
-            transition: all 0.3s;
-        }
-
-        .fmt-btn:hover, .fmt-btn.active {
-            background: #e8f5e9;
-            border-color: #43a047;
-        }
-
-        .quality-row {
-            margin-top: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .quality-row label {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #388e3c;
-        }
-
-        .quality-row select {
-            padding: 9px 16px;
-            border: 1.5px solid #c8e6c9;
-            border-radius: 12px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.82rem;
-            color: #2e7d32;
-            background: #fff;
-            outline: none;
-        }
-
-        .dl-now-btn {
-            margin-top: 14px;
-            padding: 12px 36px;
-            background: linear-gradient(135deg, #43a047, #66bb6a);
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            box-shadow: 0 6px 20px rgba(67,160,71,0.3);
-            transition: all 0.3s;
-        }
-
-        .dl-now-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 28px rgba(67,160,71,0.45);
-        }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(120px);
-            background: linear-gradient(135deg, #2e7d32, #43a047);
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 60px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            box-shadow: 0 10px 35px rgba(46,125,50,0.4);
-            z-index: 1000;
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            display: flex; align-items: center; gap: 8px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            margin-top: 45px;
-            padding: 20px;
-        }
-
-        .footer p {
-            color: #81c784;
-            font-size: 0.82rem;
-        }
-
-        .footer-row {
-            display: flex;
-            justify-content: center;
-            gap: 22px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .footer-item {
-            font-size: 0.76rem;
-            color: #66bb6a;
-            font-weight: 500;
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        /* ===== CANVAS HIDDEN ===== */
-        #flipCanvas { display: none; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 700px) {
-            .header h1 { font-size: 1.6rem; }
-            .comparison-grid { grid-template-columns: 1fr; }
-            .flip-btns { grid-template-columns: 1fr; }
-            .actions { flex-direction: column; align-items: center; }
-            .action-btn { width: 100%; justify-content: center; }
-        }
-
-        @media (max-width: 480px) {
-            .rotation-row { gap: 8px; }
-            .rotate-btn { width: 50px; height: 50px; }
-        }
-    </style>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Flip Tool — Mirror Your Photos</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Monetag In-Page Push -->
+<script async src="https://nap5k.com/tag.min.js" data-zone="10689876" data-cfasync="false"></script>
+<!-- Adsterra Popunder — fires once on first user click -->
+<script>
+(function(){
+  document.addEventListener('click',function(){
+    var s=document.createElement('script');
+    s.src='https://omg10.com/4/10689787';
+    s.async=true;document.head.appendChild(s);
+  },{once:true});
+})();
+</script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── AD SYSTEM ── */
+.ad-desktop{display:none!important}
+.ad-mobile{display:none!important}
+@media(min-width:769px){.ad-desktop{display:block!important}.ad-mobile{display:none!important}}
+@media(max-width:768px){.ad-desktop{display:none!important}.ad-mobile{display:block!important}}
+.ad-wrap{
+  width:100%;display:flex;flex-direction:column;align-items:center;
+  background:rgba(255,255,255,0.65);
+  border:1.5px solid #c8e6c9;border-radius:18px;
+  padding:10px 0;margin:22px auto;
+  backdrop-filter:blur(8px);
+}
+.ad-lbl{font-size:.52rem;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(140deg, #e8f5e9 0%, #c8e6c9 20%, #f1f8e9 45%, #dcedc8 70%, #e8f5e9 100%);
+    min-height: 100vh;
+    padding: 18px;
+    color: #2e7d32;
+    overflow-x: hidden;
+}
+
+.container { max-width: 980px; margin: 0 auto; }
+
+body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+body::before {
+    width: 400px; height: 400px;
+    background: #43a047;
+    top: -100px; right: -100px;
+}
+body::after {
+    width: 350px; height: 350px;
+    background: #66bb6a;
+    bottom: -80px; left: -80px;
+}
+
+/* HEADER */
+.header { text-align: center; padding: 32px 20px 8px; }
+
+.logo-wrap {
+    position: relative;
+    width: 90px; height: 90px;
+    margin: 0 auto 16px;
+}
+
+.logo-wrap .logo-bg {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+    border-radius: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 12px 35px rgba(67,160,71,0.3);
+    animation: logoFloat 3.5s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+}
+
+.logo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #a5d6a7, #c8e6c9);
+    z-index: 1;
+    animation: logoFloat 3.5s ease-in-out infinite reverse;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #1b5e20, #2e7d32, #43a047);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.header .subtitle {
+    color: #66bb6a;
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* CHIPS */
+.chips {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0 26px;
+}
+
+.chip {
+    background: rgba(255,255,255,0.8);
+    border: 1.5px solid #a5d6a7;
+    border-radius: 50px;
+    padding: 7px 18px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #388e3c;
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.3s;
+}
+
+.chip:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* UPLOAD AREA */
+.upload-area {
+    background: rgba(255,255,255,0.65);
+    border: 2.5px dashed #81c784;
+    border-radius: 28px;
+    padding: 55px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    backdrop-filter: blur(14px);
+}
+
+.upload-area:hover {
+    border-color: #43a047;
+    background: rgba(255,255,255,0.92);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 45px rgba(67,160,71,0.12);
+}
+
+.upload-area.dragover {
+    border-color: #1b5e20;
+    background: #e8f5e9;
+    transform: scale(1.02);
+}
+
+.upload-emoji {
+    font-size: 60px;
+    display: block;
+    margin-bottom: 14px;
+    animation: bounce 2.5s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+}
+
+.upload-area h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #2e7d32;
+}
+
+.upload-area .hint {
+    color: #81c784;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.browse-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 13px 36px;
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 6px 22px rgba(67,160,71,0.3);
+    transition: all 0.3s;
+}
+
+.browse-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 10px 30px rgba(67,160,71,0.45);
+}
+
+#fileInput { display: none; }
+
+/* EDITOR */
+.editor {
+    display: none;
+    margin-top: 26px;
+    animation: slideUp 0.5s ease;
+}
+
+.editor.show { display: block; }
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* IMAGE INFO BAR */
+.info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.info-bar h3 { font-size: 1.05rem; color: #2e7d32; }
+.info-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.info-tag {
+    background: rgba(255,255,255,0.85);
+    border: 1.5px solid #c8e6c9;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #388e3c;
+}
+
+/* COMPARISON */
+.comparison {
+    background: rgba(255,255,255,0.7);
+    border: 1.5px solid #c8e6c9;
+    border-radius: 24px;
+    padding: 22px;
+    backdrop-filter: blur(12px);
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.img-card {
+    background: #fafafa;
+    border: 2px solid #e0e0e0;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.img-card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+}
+
+.img-card img, .img-card canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: repeating-conic-gradient(#e8e8e8 0% 25%, #fff 0% 50%) 50%/16px 16px;
+}
+
+.img-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    z-index: 3;
+}
+
+.badge-original { background: rgba(67,160,71,0.88); color: #fff; }
+.badge-flipped  { background: rgba(30,136,229,0.88); color: #fff; }
+
+.flip-indicator {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+    display: none;
+    z-index: 3;
+}
+.flip-indicator.show { display: block; }
+
+/* FLIP CONTROLS */
+.controls-section {
+    margin-top: 22px;
+    background: rgba(255,255,255,0.72);
+    border: 1.5px solid #c8e6c9;
+    border-radius: 24px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+}
+
+.controls-section h3 {
+    font-size: 1.02rem;
+    color: #2e7d32;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.flip-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.flip-btn {
+    background: #fff;
+    border: 2.5px solid #c8e6c9;
+    border-radius: 20px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.flip-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(67,160,71,0.04), rgba(67,160,71,0.08));
+    opacity: 0; transition: opacity 0.3s;
+}
+.flip-btn:hover::before { opacity: 1; }
+.flip-btn:hover {
+    border-color: #43a047;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(67,160,71,0.15);
+}
+.flip-btn.active {
+    border-color: #2e7d32;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    box-shadow: 0 8px 28px rgba(67,160,71,0.18);
+}
+
+.flip-btn .flip-icon {
+    font-size: 44px;
+    display: block;
+    margin-bottom: 10px;
+    transition: transform 0.5s ease;
+}
+.flip-btn:hover .flip-icon { transform: scale(1.15); }
+.flip-btn.active .flip-icon.h-icon { animation: flipH 0.6s ease; }
+.flip-btn.active .flip-icon.v-icon { animation: flipV 0.6s ease; }
+
+@keyframes flipH {
+    0% { transform: scaleX(1); }
+    50% { transform: scaleX(-1); }
+    100% { transform: scaleX(1); }
+}
+@keyframes flipV {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(-1); }
+    100% { transform: scaleY(1); }
+}
+
+.flip-btn .flip-title { font-size: 1rem; font-weight: 700; color: #2e7d32; display: block; }
+.flip-btn .flip-desc  { font-size: 0.76rem; color: #81c784; margin-top: 3px; display: block; }
+.flip-btn .shortcut {
+    display: inline-block; margin-top: 10px;
+    background: #e8f5e9; border: 1px solid #c8e6c9;
+    padding: 3px 12px; border-radius: 8px;
+    font-size: 0.68rem; font-weight: 700; color: #43a047;
+}
+
+/* ROTATION */
+.rotation-row {
+    display: flex; justify-content: center;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 22px;
+}
+
+.rotate-btn {
+    width: 60px; height: 60px;
+    background: #fff; border: 2px solid #c8e6c9; border-radius: 16px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; font-family: 'Poppins', sans-serif;
+    transition: all 0.3s; gap: 2px;
+}
+.rotate-btn span:first-child { font-size: 22px; }
+.rotate-btn span:last-child  { font-size: 0.58rem; font-weight: 700; color: #66bb6a; }
+.rotate-btn:hover {
+    border-color: #43a047;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(67,160,71,0.12);
+}
+.rotate-btn:active { transform: scale(0.95); }
+
+/* HISTORY */
+.history-section {
+    background: #fff; border: 1.5px solid #e8f5e9;
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 22px;
+}
+.history-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.history-header h4 { font-size: 0.85rem; color: #2e7d32; }
+.clear-hist-btn {
+    background: none; border: 1.5px solid #ef9a9a; color: #e53935;
+    padding: 4px 14px; border-radius: 50px; font-size: 0.7rem; font-weight: 600;
+    cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.3s;
+}
+.clear-hist-btn:hover { background: #ffebee; }
+.history-list { display: flex; gap: 8px; flex-wrap: wrap; min-height: 32px; }
+.history-tag {
+    background: #e8f5e9; border: 1px solid #c8e6c9;
+    padding: 5px 14px; border-radius: 50px; font-size: 0.72rem; font-weight: 600;
+    color: #388e3c; animation: popIn 0.3s ease; display: flex; align-items: center; gap: 4px;
+}
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.no-history { font-size: 0.75rem; color: #b0bec5; font-style: italic; }
+
+/* ACTIONS */
+.actions {
+    display: flex; justify-content: center;
+    gap: 12px; flex-wrap: wrap; margin-top: 24px;
+}
+.action-btn {
+    padding: 14px 32px; border: none; border-radius: 60px;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer;
+    font-family: 'Poppins', sans-serif; transition: all 0.3s;
+    display: flex; align-items: center; gap: 8px;
+}
+.btn-download-main {
+    background: linear-gradient(135deg, #2e7d32, #43a047, #66bb6a);
+    color: #fff; box-shadow: 0 8px 28px rgba(46,125,50,0.35);
+}
+.btn-download-main:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 38px rgba(46,125,50,0.5);
+}
+.btn-undo       { background:#fff; color:#ff9800; border:2px solid #ffe0b2; }
+.btn-undo:hover { background:#fff8e1; transform:translateY(-2px); }
+.btn-reset-all  { background:#fff; color:#e53935; border:2px solid #ef9a9a; }
+.btn-reset-all:hover { background:#ffebee; transform:translateY(-2px); }
+.btn-new-img    { background:#fff; color:#43a047; border:2px solid #a5d6a7; }
+.btn-new-img:hover  { background:#e8f5e9; transform:translateY(-2px); }
+
+/* DOWNLOAD PANEL */
+.download-panel {
+    display: none; margin-top: 20px;
+    background: rgba(255,255,255,0.8);
+    border: 1.5px solid #c8e6c9; border-radius: 20px;
+    padding: 22px; text-align: center;
+    backdrop-filter: blur(10px); animation: slideUp 0.4s ease;
+}
+.download-panel.show { display: block; }
+.download-panel h4 { font-size: 0.95rem; color: #2e7d32; margin-bottom: 14px; }
+
+.format-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.fmt-btn {
+    padding: 9px 24px; border: 2px solid #c8e6c9; background: #fff;
+    border-radius: 50px; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; font-family: 'Poppins', sans-serif; color: #388e3c; transition: all 0.3s;
+}
+.fmt-btn:hover, .fmt-btn.active { background: #e8f5e9; border-color: #43a047; }
+
+.quality-row {
+    margin-top: 14px; display: flex;
+    align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+}
+.quality-row label { font-size: 0.82rem; font-weight: 600; color: #388e3c; }
+.quality-row select {
+    padding: 9px 16px; border: 1.5px solid #c8e6c9; border-radius: 12px;
+    font-family: 'Poppins', sans-serif; font-size: 0.82rem; color: #2e7d32;
+    background: #fff; outline: none;
+}
+
+/* Download Now — SmartLink wrapper */
+.dl-now-wrap {
+    display: inline-block; margin-top: 14px;
+}
+.dl-now-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 36px;
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+    color: #fff; border: none; border-radius: 50px;
+    font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; font-family: 'Poppins', sans-serif;
+    box-shadow: 0 6px 20px rgba(67,160,71,0.3);
+    transition: all 0.3s; text-decoration: none;
+}
+.dl-now-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(67,160,71,0.45);
+}
+
+/* TOAST */
+.toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: linear-gradient(135deg, #2e7d32, #43a047);
+    color: #fff; padding: 14px 32px; border-radius: 60px;
+    font-size: 0.88rem; font-weight: 600;
+    box-shadow: 0 10px 35px rgba(46,125,50,0.4);
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Poppins', sans-serif;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* FOOTER */
+.footer { text-align: center; margin-top: 45px; padding: 20px; }
+.footer p { color: #81c784; font-size: 0.82rem; }
+.footer a { color: #43a047; font-weight: 700; text-decoration: none; }
+
+#flipCanvas { display: none; }
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+    .header h1 { font-size: 1.6rem; }
+    .comparison-grid { grid-template-columns: 1fr; }
+    .flip-btns { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; align-items: center; }
+    .action-btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 480px) {
+    .rotation-row { gap: 8px; }
+    .rotate-btn { width: 50px; height: 50px; }
+}
+</style>
 </head>
 <body>
-
 <div class="container">
 
     <!-- HEADER -->
     <div class="header">
-        <div class="logo-wrap">
-            <div class="logo-bg">🔄</div>
-        </div>
+        <div class="logo-wrap"><div class="logo-bg">🔄</div></div>
         <h1>Image Flip Tool</h1>
         <p class="subtitle">Flip & mirror any photo horizontally or vertically — instantly ✨</p>
     </div>
@@ -766,6 +594,19 @@
         <p class="hint">or click to browse — PNG, JPG, JPEG, WEBP, BMP, SVG supported</p>
         <button class="browse-btn" onclick="document.getElementById('fileInput').click()">📁 Browse Image</button>
         <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <!-- AD: Upload page -->
+    <div class="ad-wrap" id="uploadAd">
+        <span class="ad-lbl">Advertisement</span>
+        <div class="ad-desktop">
+            <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+            <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+        </div>
+        <div class="ad-mobile">
+            <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+            <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+        </div>
     </div>
 
     <!-- EDITOR -->
@@ -796,11 +637,23 @@
             </div>
         </div>
 
+        <!-- AD: Editor page (shown after image loads) -->
+        <div class="ad-wrap" id="editorAd" style="max-width:740px;margin:22px auto">
+            <span class="ad-lbl">Advertisement</span>
+            <div class="ad-desktop">
+                <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+                <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+            </div>
+            <div class="ad-mobile">
+                <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+                <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+            </div>
+        </div>
+
         <!-- CONTROLS -->
         <div class="controls-section">
             <h3>🎛️ Flip & Transform Controls</h3>
 
-            <!-- FLIP BUTTONS -->
             <div class="flip-btns">
                 <div class="flip-btn" id="btnFlipH" onclick="flipImage('horizontal')">
                     <span class="flip-icon h-icon">↔️</span>
@@ -816,23 +669,18 @@
                 </div>
             </div>
 
-            <!-- ROTATION -->
             <div class="rotation-row">
                 <div class="rotate-btn" onclick="rotateImage(-90)" title="Rotate Left 90°">
-                    <span>↩️</span>
-                    <span>-90°</span>
+                    <span>↩️</span><span>-90°</span>
                 </div>
                 <div class="rotate-btn" onclick="rotateImage(90)" title="Rotate Right 90°">
-                    <span>↪️</span>
-                    <span>+90°</span>
+                    <span>↪️</span><span>+90°</span>
                 </div>
                 <div class="rotate-btn" onclick="rotateImage(180)" title="Rotate 180°">
-                    <span>🔃</span>
-                    <span>180°</span>
+                    <span>🔃</span><span>180°</span>
                 </div>
             </div>
 
-            <!-- HISTORY -->
             <div class="history-section">
                 <div class="history-header">
                     <h4>📋 Transform History</h4>
@@ -856,9 +704,9 @@
         <div class="download-panel" id="downloadPanel">
             <h4>📥 Download Settings</h4>
             <div class="format-row">
-                <button class="fmt-btn active" data-fmt="png" onclick="selFmt(this)">PNG</button>
-                <button class="fmt-btn" data-fmt="jpeg" onclick="selFmt(this)">JPEG</button>
-                <button class="fmt-btn" data-fmt="webp" onclick="selFmt(this)">WEBP</button>
+                <button class="fmt-btn active" data-fmt="png"  onclick="selFmt(this)">PNG</button>
+                <button class="fmt-btn"        data-fmt="jpeg" onclick="selFmt(this)">JPEG</button>
+                <button class="fmt-btn"        data-fmt="webp" onclick="selFmt(this)">WEBP</button>
             </div>
             <div class="quality-row">
                 <label>Quality:</label>
@@ -868,23 +716,25 @@
                     <option value="0.8">Medium (80%)</option>
                     <option value="0.6">Low (60%)</option>
                 </select>
-                <button class="dl-now-btn" onclick="downloadNow()">⬇️ Download Now</button>
+            </div>
+            <!-- SmartLink wraps the download button -->
+            <div class="dl-now-wrap">
+                <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
+                   class="dl-now-btn"
+                   onclick="downloadNow()">
+                    ⬇️ Download Now
+                </a>
             </div>
         </div>
 
     </div>
 
     <!-- FOOTER -->
-    <div class="footer">
-        <p>Made with 💚 — Image Flip Tool</p>
-        <div class="footer-row">
-            <span class="footer-item">🔒 100% Private</span>
-            <span class="footer-item">⚡ Instant Flip</span>
-            <span class="footer-item">🌐 Works Offline</span>
-            <span class="footer-item">🆓 Completely Free</span>
-        </div>
-    </div>
-</div>
+    <footer class="footer">
+        <p>Made with 💚 by <a href="../../index.html">ToolMatrix</a> — Free Online Image Tool</p>
+    </footer>
+
+</div><!-- /container -->
 
 <!-- TOAST -->
 <div class="toast" id="toast">✅ Done!</div>
@@ -893,315 +743,249 @@
 <canvas id="flipCanvas"></canvas>
 
 <script>
-    // ===== STATE =====
-    let originalImg = null;
-    let currentImg = null;
-    let fileName = 'image';
-    let history = [];
-    let selectedFmt = 'png';
+const SMARTLINK = 'https://omg10.com/4/10689787';
 
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const editor = document.getElementById('editor');
-    const previewCanvas = document.getElementById('previewCanvas');
-    const pCtx = previewCanvas.getContext('2d');
-    const flipCanvas = document.getElementById('flipCanvas');
-    const fCtx = flipCanvas.getContext('2d');
+// ===== STATE =====
+let originalImg = null;
+let currentImg  = null;
+let fileName    = 'image';
+let history     = [];
+let selectedFmt = 'png';
 
-    // ===== DRAG & DROP =====
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
-    });
-    dropZone.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fileInput.click(); });
-    fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+const dropZone     = document.getElementById('dropZone');
+const fileInput    = document.getElementById('fileInput');
+const editor       = document.getElementById('editor');
+const previewCanvas= document.getElementById('previewCanvas');
+const pCtx         = previewCanvas.getContext('2d');
+const flipCanvas   = document.getElementById('flipCanvas');
+const fCtx         = flipCanvas.getContext('2d');
+const uploadAd     = document.getElementById('uploadAd');
 
-    // ===== KEYBOARD SHORTCUTS =====
-    document.addEventListener('keydown', e => {
-        if (!originalImg) return;
-        if (e.key.toLowerCase() === 'h') flipImage('horizontal');
-        if (e.key.toLowerCase() === 'v') flipImage('vertical');
-    });
+// ===== DRAG & DROP =====
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+dropZone.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') fileInput.click(); });
+fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
-    // ===== LOAD FILE =====
-    function loadFile(file) {
-        if (!file.type.startsWith('image/')) return;
-        fileName = file.name.split('.')[0];
-        const reader = new FileReader();
-        reader.onload = ev => {
-            const img = new Image();
-            img.onload = () => {
-                originalImg = img;
-                currentImg = img;
-                document.getElementById('originalImg').src = ev.target.result;
-                document.getElementById('tagName').textContent = '📄 ' + file.name;
-                document.getElementById('tagDim').textContent = '📐 ' + img.width + '×' + img.height;
-                document.getElementById('tagSize').textContent = '💾 ' + fmtSize(file.size);
+// Clipboard paste
+document.addEventListener('paste', e => {
+    const item = [...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));
+    if (item) loadFile(item.getAsFile());
+});
 
-                drawPreview();
-                dropZone.style.display = 'none';
-                editor.classList.add('show');
-                history = [];
-                renderHistory();
-                updateIndicator();
-            };
-            img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
+// ===== KEYBOARD =====
+document.addEventListener('keydown', e => {
+    if (!originalImg) return;
+    if (e.key.toLowerCase() === 'h') flipImage('horizontal');
+    if (e.key.toLowerCase() === 'v') flipImage('vertical');
+});
 
-    function fmtSize(b) {
-        if (b < 1024) return b + ' B';
-        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-        return (b / 1048576).toFixed(1) + ' MB';
-    }
-
-    // ===== DRAW PREVIEW =====
-    function drawPreview() {
-        previewCanvas.width = currentImg.width;
-        previewCanvas.height = currentImg.height;
-        pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-        pCtx.drawImage(currentImg, 0, 0);
-    }
-
-    // ===== FLIP IMAGE =====
-    function flipImage(direction) {
-        if (!currentImg) return;
-
-        const w = currentImg.width;
-        const h = currentImg.height;
-
-        flipCanvas.width = w;
-        flipCanvas.height = h;
-        fCtx.clearRect(0, 0, w, h);
-        fCtx.save();
-
-        if (direction === 'horizontal') {
-            fCtx.translate(w, 0);
-            fCtx.scale(-1, 1);
-            history.push({ type: '↔️ Horizontal Flip', icon: '↔️' });
-        } else {
-            fCtx.translate(0, h);
-            fCtx.scale(1, -1);
-            history.push({ type: '↕️ Vertical Flip', icon: '↕️' });
-        }
-
-        fCtx.drawImage(currentImg, 0, 0);
-        fCtx.restore();
-
-        // Update current
-        const newImg = new Image();
-        newImg.onload = () => {
-            currentImg = newImg;
+// ===== LOAD FILE =====
+function loadFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    fileName = file.name.split('.')[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+            originalImg = img;
+            currentImg  = img;
+            document.getElementById('originalImg').src = ev.target.result;
+            document.getElementById('tagName').textContent = '📄 ' + file.name;
+            document.getElementById('tagDim').textContent  = '📐 ' + img.width + '×' + img.height;
+            document.getElementById('tagSize').textContent = '💾 ' + fmtSize(file.size);
             drawPreview();
-            updateIndicator();
+            // Hide upload zone & upload ad, show editor
+            dropZone.style.display = 'none';
+            uploadAd.style.display = 'none';
+            editor.classList.add('show');
+            history = [];
             renderHistory();
-            highlightBtn(direction);
-            showToast(direction === 'horizontal' ? '↔️ Flipped Horizontally!' : '↕️ Flipped Vertically!');
+            updateIndicator();
         };
-        newImg.src = flipCanvas.toDataURL();
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function fmtSize(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+    return (b/1048576).toFixed(1) + ' MB';
+}
+
+// ===== DRAW PREVIEW =====
+function drawPreview() {
+    previewCanvas.width  = currentImg.width;
+    previewCanvas.height = currentImg.height;
+    pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    pCtx.drawImage(currentImg, 0, 0);
+}
+
+// ===== FLIP =====
+function flipImage(direction) {
+    if (!currentImg) return;
+    const w = currentImg.width, h = currentImg.height;
+    flipCanvas.width = w; flipCanvas.height = h;
+    fCtx.clearRect(0, 0, w, h);
+    fCtx.save();
+    if (direction === 'horizontal') {
+        fCtx.translate(w, 0); fCtx.scale(-1, 1);
+        history.push({ type: '↔️ Horizontal Flip', icon: '↔️' });
+    } else {
+        fCtx.translate(0, h); fCtx.scale(1, -1);
+        history.push({ type: '↕️ Vertical Flip', icon: '↕️' });
     }
+    fCtx.drawImage(currentImg, 0, 0);
+    fCtx.restore();
+    const newImg = new Image();
+    newImg.onload = () => {
+        currentImg = newImg;
+        drawPreview(); updateIndicator(); renderHistory(); highlightBtn(direction);
+        showToast(direction === 'horizontal' ? '↔️ Flipped Horizontally!' : '↕️ Flipped Vertically!');
+    };
+    newImg.src = flipCanvas.toDataURL();
+}
 
-    // ===== ROTATE IMAGE =====
-    function rotateImage(deg) {
-        if (!currentImg) return;
+// ===== ROTATE =====
+function rotateImage(deg) {
+    if (!currentImg) return;
+    const w = currentImg.width, h = currentImg.height;
+    const rad = (deg * Math.PI) / 180;
+    const absCos = Math.abs(Math.cos(rad)), absSin = Math.abs(Math.sin(rad));
+    const newW = Math.round(w * absCos + h * absSin);
+    const newH = Math.round(w * absSin + h * absCos);
+    flipCanvas.width = newW; flipCanvas.height = newH;
+    fCtx.clearRect(0, 0, newW, newH);
+    fCtx.save();
+    fCtx.translate(newW/2, newH/2); fCtx.rotate(rad);
+    fCtx.drawImage(currentImg, -w/2, -h/2);
+    fCtx.restore();
+    const newImg = new Image();
+    newImg.onload = () => {
+        currentImg = newImg; drawPreview();
+        document.getElementById('tagDim').textContent = '📐 ' + newImg.width + '×' + newImg.height;
+        history.push({ type: `🔄 Rotate ${deg}°`, icon: '🔄' });
+        updateIndicator(); renderHistory();
+        showToast(`🔄 Rotated ${deg}°!`);
+    };
+    newImg.src = flipCanvas.toDataURL();
+}
 
-        const w = currentImg.width;
-        const h = currentImg.height;
-        const rad = (deg * Math.PI) / 180;
+function highlightBtn(dir) {
+    const btn = dir === 'horizontal' ? document.getElementById('btnFlipH') : document.getElementById('btnFlipV');
+    btn.classList.add('active');
+    setTimeout(() => btn.classList.remove('active'), 700);
+}
 
-        const absCos = Math.abs(Math.cos(rad));
-        const absSin = Math.abs(Math.sin(rad));
-        const newW = Math.round(w * absCos + h * absSin);
-        const newH = Math.round(w * absSin + h * absCos);
+function updateIndicator() {
+    const ind = document.getElementById('flipIndicator');
+    ind.textContent = history.length > 0 ? history.length + ' transform(s) applied' : 'No flip applied';
+    ind.classList.add('show');
+}
 
-        flipCanvas.width = newW;
-        flipCanvas.height = newH;
-        fCtx.clearRect(0, 0, newW, newH);
-        fCtx.save();
-        fCtx.translate(newW / 2, newH / 2);
-        fCtx.rotate(rad);
-        fCtx.drawImage(currentImg, -w / 2, -h / 2);
-        fCtx.restore();
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (history.length === 0) {
+        list.innerHTML = '<span class="no-history">No transforms yet — start flipping! 🎉</span>';
+        return;
+    }
+    list.innerHTML = '';
+    history.forEach(item => {
+        const tag = document.createElement('span');
+        tag.className = 'history-tag';
+        tag.innerHTML = `<span>${item.icon}</span> ${item.type.replace(item.icon + ' ', '')}`;
+        list.appendChild(tag);
+    });
+}
 
+// ===== UNDO =====
+function undoLast() {
+    if (!originalImg || history.length === 0) { showToast('⚠️ Nothing to undo!'); return; }
+    history.pop();
+    const steps = [...history];
+    history = [];
+    currentImg = originalImg;
+    drawPreview();
+    if (steps.length === 0) { renderHistory(); updateIndicator(); showToast('↩️ Undone!'); return; }
+    let chain = Promise.resolve();
+    steps.forEach(step => { chain = chain.then(() => replayStep(step)); });
+    chain.then(() => { renderHistory(); updateIndicator(); showToast('↩️ Undone!'); });
+}
+
+function replayStep(step) {
+    return new Promise(resolve => {
+        const w = currentImg.width, h = currentImg.height;
+        if (step.type.includes('Horizontal')) {
+            flipCanvas.width = w; flipCanvas.height = h;
+            fCtx.clearRect(0,0,w,h); fCtx.save(); fCtx.translate(w,0); fCtx.scale(-1,1);
+            fCtx.drawImage(currentImg,0,0); fCtx.restore(); history.push(step);
+        } else if (step.type.includes('Vertical')) {
+            flipCanvas.width = w; flipCanvas.height = h;
+            fCtx.clearRect(0,0,w,h); fCtx.save(); fCtx.translate(0,h); fCtx.scale(1,-1);
+            fCtx.drawImage(currentImg,0,0); fCtx.restore(); history.push(step);
+        } else if (step.type.includes('Rotate')) {
+            const deg = parseInt(step.type.match(/-?\d+/)[0]);
+            const rad = (deg * Math.PI) / 180;
+            const absCos = Math.abs(Math.cos(rad)), absSin = Math.abs(Math.sin(rad));
+            const nW = Math.round(w*absCos+h*absSin), nH = Math.round(w*absSin+h*absCos);
+            flipCanvas.width = nW; flipCanvas.height = nH;
+            fCtx.clearRect(0,0,nW,nH); fCtx.save(); fCtx.translate(nW/2,nH/2); fCtx.rotate(rad);
+            fCtx.drawImage(currentImg,-w/2,-h/2); fCtx.restore(); history.push(step);
+        }
         const newImg = new Image();
-        newImg.onload = () => {
-            currentImg = newImg;
-            drawPreview();
-            document.getElementById('tagDim').textContent = '📐 ' + newImg.width + '×' + newImg.height;
-            history.push({ type: `🔄 Rotate ${deg}°`, icon: '🔄' });
-            updateIndicator();
-            renderHistory();
-            showToast(`🔄 Rotated ${deg}°!`);
-        };
+        newImg.onload = () => { currentImg = newImg; drawPreview(); resolve(); };
         newImg.src = flipCanvas.toDataURL();
-    }
+    });
+}
 
-    // ===== HIGHLIGHT BTN =====
-    function highlightBtn(dir) {
-        const btn = dir === 'horizontal' ? document.getElementById('btnFlipH') : document.getElementById('btnFlipV');
-        btn.classList.add('active');
-        setTimeout(() => btn.classList.remove('active'), 700);
-    }
+function resetAll() {
+    if (!originalImg) return;
+    currentImg = originalImg; history = [];
+    drawPreview(); renderHistory(); updateIndicator();
+    document.getElementById('tagDim').textContent = '📐 ' + originalImg.width + '×' + originalImg.height;
+    showToast('🔄 Reset to original!');
+}
 
-    // ===== UPDATE INDICATOR =====
-    function updateIndicator() {
-        const ind = document.getElementById('flipIndicator');
-        if (history.length > 0) {
-            ind.textContent = history.length + ' transform(s) applied';
-            ind.classList.add('show');
-        } else {
-            ind.textContent = 'No flip applied';
-            ind.classList.add('show');
-        }
-    }
+function clearHistory() { resetAll(); }
 
-    // ===== RENDER HISTORY =====
-    function renderHistory() {
-        const list = document.getElementById('historyList');
-        if (history.length === 0) {
-            list.innerHTML = '<span class="no-history">No transforms yet — start flipping! 🎉</span>';
-            return;
-        }
-        list.innerHTML = '';
-        history.forEach((item, i) => {
-            const tag = document.createElement('span');
-            tag.className = 'history-tag';
-            tag.innerHTML = `<span>${item.icon}</span> ${item.type.replace(item.icon + ' ', '')}`;
-            list.appendChild(tag);
-        });
-    }
+function newImage() {
+    originalImg = null; currentImg = null;
+    fileInput.value = ''; history = [];
+    dropZone.style.display = '';
+    uploadAd.style.display = '';
+    editor.classList.remove('show');
+    document.getElementById('downloadPanel').classList.remove('show');
+}
 
-    // ===== UNDO =====
-    function undoLast() {
-        if (!originalImg || history.length === 0) {
-            showToast('⚠️ Nothing to undo!');
-            return;
-        }
+// ===== DOWNLOAD =====
+function toggleDownload() {
+    document.getElementById('downloadPanel').classList.toggle('show');
+}
 
-        // Replay all except last
-        history.pop();
-        const stepsToReplay = [...history];
-        history = [];
+function selFmt(el) {
+    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedFmt = el.dataset.fmt;
+}
 
-        // Reset to original
-        currentImg = originalImg;
-        drawPreview();
+function downloadNow() {
+    // SmartLink opens via native <a href> — actual file download here
+    const quality = parseFloat(document.getElementById('qualitySel').value);
+    const mime = selectedFmt === 'jpeg' ? 'image/jpeg' : selectedFmt === 'webp' ? 'image/webp' : 'image/png';
+    const ext  = selectedFmt === 'jpeg' ? 'jpg' : selectedFmt;
 
-        // Replay
-        if (stepsToReplay.length === 0) {
-            renderHistory();
-            updateIndicator();
-            showToast('↩️ Undone!');
-            return;
-        }
+    flipCanvas.width  = currentImg.width;
+    flipCanvas.height = currentImg.height;
+    fCtx.clearRect(0, 0, flipCanvas.width, flipCanvas.height);
+    fCtx.drawImage(currentImg, 0, 0);
 
-        let chain = Promise.resolve();
-        stepsToReplay.forEach(step => {
-            chain = chain.then(() => replayStep(step));
-        });
-
-        chain.then(() => {
-            renderHistory();
-            updateIndicator();
-            showToast('↩️ Undone!');
-        });
-    }
-
-    function replayStep(step) {
-        return new Promise(resolve => {
-            const w = currentImg.width;
-            const h = currentImg.height;
-
-            if (step.type.includes('Horizontal')) {
-                flipCanvas.width = w; flipCanvas.height = h;
-                fCtx.clearRect(0, 0, w, h);
-                fCtx.save(); fCtx.translate(w, 0); fCtx.scale(-1, 1);
-                fCtx.drawImage(currentImg, 0, 0); fCtx.restore();
-                history.push(step);
-            } else if (step.type.includes('Vertical')) {
-                flipCanvas.width = w; flipCanvas.height = h;
-                fCtx.clearRect(0, 0, w, h);
-                fCtx.save(); fCtx.translate(0, h); fCtx.scale(1, -1);
-                fCtx.drawImage(currentImg, 0, 0); fCtx.restore();
-                history.push(step);
-            } else if (step.type.includes('Rotate')) {
-                const deg = parseInt(step.type.match(/-?\d+/)[0]);
-                const rad = (deg * Math.PI) / 180;
-                const absCos = Math.abs(Math.cos(rad));
-                const absSin = Math.abs(Math.sin(rad));
-                const nW = Math.round(w * absCos + h * absSin);
-                const nH = Math.round(w * absSin + h * absCos);
-                flipCanvas.width = nW; flipCanvas.height = nH;
-                fCtx.clearRect(0, 0, nW, nH);
-                fCtx.save(); fCtx.translate(nW / 2, nH / 2); fCtx.rotate(rad);
-                fCtx.drawImage(currentImg, -w / 2, -h / 2); fCtx.restore();
-                history.push(step);
-            }
-
-            const newImg = new Image();
-            newImg.onload = () => {
-                currentImg = newImg;
-                drawPreview();
-                resolve();
-            };
-            newImg.src = flipCanvas.toDataURL();
-        });
-    }
-
-    // ===== RESET ALL =====
-    function resetAll() {
-        if (!originalImg) return;
-        currentImg = originalImg;
-        history = [];
-        drawPreview();
-        renderHistory();
-        updateIndicator();
-        document.getElementById('tagDim').textContent = '📐 ' + originalImg.width + '×' + originalImg.height;
-        showToast('🔄 Reset to original!');
-    }
-
-    // ===== CLEAR HISTORY =====
-    function clearHistory() {
-        resetAll();
-    }
-
-    // ===== NEW IMAGE =====
-    function newImage() {
-        originalImg = null;
-        currentImg = null;
-        fileInput.value = '';
-        history = [];
-        dropZone.style.display = '';
-        editor.classList.remove('show');
-        document.getElementById('downloadPanel').classList.remove('show');
-    }
-
-    // ===== DOWNLOAD =====
-    function toggleDownload() {
-        document.getElementById('downloadPanel').classList.toggle('show');
-    }
-
-    function selFmt(el) {
-        document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        selectedFmt = el.dataset.fmt;
-    }
-
-    function downloadNow() {
-        const quality = parseFloat(document.getElementById('qualitySel').value);
-        const mime = selectedFmt === 'jpeg' ? 'image/jpeg' : selectedFmt === 'webp' ? 'image/webp' : 'image/png';
-        const ext = selectedFmt === 'jpeg' ? 'jpg' : selectedFmt;
-
-        // Draw final on flipCanvas
-        flipCanvas.width = currentImg.width;
-        flipCanvas.height = currentImg.height;
-        fCtx.clearRect(0, 0, flipCanvas.width, flipCanvas.height);
-        fCtx.drawImage(currentImg, 0, 0);
-
+    setTimeout(() => {
         flipCanvas.toBlob(blob => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1211,16 +995,15 @@
             URL.revokeObjectURL(url);
             showToast('✅ Downloaded successfully!');
         }, mime, quality);
-    }
+    }, 350);
+}
 
-    // ===== TOAST =====
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2400);
-    }
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
 </script>
-
 </body>
 </html>
