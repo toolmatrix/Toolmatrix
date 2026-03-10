@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PDF Splitter — Free Online Tool</title>
+    <title>Split PDF — Free Online PDF Splitter | ToolMatrix</title>
+    <meta name="description" content="Split PDF files online for free. Split by page range, extract pages, or split every page into a separate PDF. Fast, secure, and works entirely in your browser.">
+    <meta name="keywords" content="split pdf, pdf splitter, extract pdf pages, divide pdf, pdf cutter online free">
+    <meta name="author" content="ToolMatrix">
+    <meta property="og:title" content="Split PDF — Free Online PDF Splitter | ToolMatrix">
+    <meta property="og:description" content="Split any PDF into multiple files by range, extract pages, or split every page. Free, fast, 100% browser-based.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+    <!-- Monetag In-Page Push -->
+    <script async src="https://nap5k.com/tag.min.js" data-zone="10689876" data-cfasync="false"></script>
+    <!-- Adsterra Popunder — fires once on first click -->
+    <script>(function(){document.addEventListener('click',function(){var s=document.createElement('script');s.src='https://omg10.com/4/10689787';s.async=true;document.head.appendChild(s);},{once:true});})();</script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -24,6 +37,19 @@
             background:var(--g100);color:var(--txt);-webkit-font-smoothing:antialiased}
         .app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
+        /* ===== AD SYSTEM ===== */
+        .ad-desktop{display:none!important}.ad-mobile{display:none!important}
+        @media(min-width:769px){.ad-desktop{display:block!important}.ad-mobile{display:none!important}}
+        @media(max-width:768px){.ad-desktop{display:none!important}.ad-mobile{display:block!important}}
+        .ad-wrap{width:100%;display:flex;flex-direction:column;align-items:center;
+            background:rgba(255,255,255,.75);border:1px solid var(--bdr);padding:8px 0;border-radius:10px}
+        .ad-lbl{font-size:.46rem;color:var(--txtM);letter-spacing:2px;text-transform:uppercase;
+            font-weight:700;margin-bottom:4px}
+        /* Upload screen ad — inside up-card below features */
+        .upload-ad{margin-top:20px;width:100%}
+        /* Grid view ad — below gv-header, above page grid */
+        .grid-ad{margin-bottom:16px}
+
         /* ===== NAVBAR ===== */
         .nav{flex-shrink:0;background:linear-gradient(135deg,var(--g800),var(--g950));
             padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;
@@ -37,8 +63,6 @@
         .nfile{display:flex;flex-direction:column;max-width:180px}
         .nfname{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .nfpg{font-size:10px;color:rgba(255,255,255,.4);font-weight:600}
-
-        /* Steps */
         .nsteps{display:flex;align-items:center;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
         .ns{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4)}
         .ns.active{color:#FFEB3B}.ns.done{color:var(--g300)}
@@ -48,7 +72,6 @@
         .ns.done .sn{border-color:var(--g300);background:var(--g600);color:#fff}
         .sline{width:32px;height:2px;background:rgba(255,255,255,.12);border-radius:2px}
         .sline.done{background:var(--g400)}
-
         .navr{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
         .nb{height:36px;padding:0 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);
             background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:600;cursor:pointer;
@@ -79,8 +102,6 @@
         .sb-scroll{flex:1;overflow-y:auto;padding:16px 18px}
         .sb-scroll::-webkit-scrollbar{width:5px}
         .sb-scroll::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
-
-        /* Split Modes */
         .sg{margin-bottom:22px}
         .sgl{font-size:11px;font-weight:700;color:var(--g800);text-transform:uppercase;letter-spacing:.8px;
             margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -105,8 +126,6 @@
         .mc-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--g300);
             display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0}
         .mode-card.active .mc-check{background:var(--g600);border-color:var(--g600);color:#fff}
-
-        /* Range Inputs */
         .range-section{display:none;animation:slideD .3s ease}
         .range-section.show{display:block}
         @keyframes slideD{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
@@ -129,13 +148,9 @@
         .hint-box{margin-top:10px;padding:10px 14px;background:#FFFDE7;border-radius:var(--rs);
             font-size:11px;color:#795548;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
         .hint-box i{color:var(--orange);margin-top:2px;flex-shrink:0}
-
-        /* Fixed Pages Input */
         .fixed-input{width:100%;padding:10px 14px;border:2px solid var(--g200);border-radius:var(--rs);
             font-size:13px;font-family:inherit;outline:none;transition:var(--t);font-weight:600}
         .fixed-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(76,175,80,.12)}
-
-        /* Page Selection */
         .page-select-section{display:none}
         .page-select-section.show{display:block}
         .ps-actions{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
@@ -155,24 +170,22 @@
         .pg-chip .pgn{font-size:13px;font-weight:800}
         .pg-chip .pgl{font-size:8px;font-weight:600;opacity:.7}
         .pg-chip.sel .pgl{opacity:.9}
-        .pg-chip.split-marker::after{content:'✂';position:absolute;top:-2px;right:2px;font-size:10px}
 
-        /* Sidebar Footer */
+        /* Sidebar Footer — SmartLink split button */
         .sb-foot{flex-shrink:0;padding:14px 18px;border-top:1px solid var(--bdr);background:var(--g50)}
         .split-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--g600),var(--g900));
             color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;
             transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;
-            gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);position:relative;overflow:hidden}
+            gap:10px;box-shadow:0 5px 20px rgba(46,125,50,.3);position:relative;overflow:hidden;
+            text-decoration:none}
         .split-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
             background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:.6s}
         .split-btn:hover::after{left:100%}
         .split-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(46,125,50,.4)}
-        .split-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+        .split-btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important;pointer-events:none}
 
         /* ===== CENTER ===== */
         .center{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-        /* File Bar */
         .fbar{flex-shrink:0;display:none;align-items:center;gap:12px;padding:10px 18px;
             background:var(--w);border-bottom:1px solid var(--bdr)}
         .fbar.show{display:flex}
@@ -186,12 +199,8 @@
             color:var(--red);font-size:14px;cursor:pointer;transition:var(--t);display:flex;
             align-items:center;justify-content:center;flex-shrink:0}
         .fbrm:hover{background:var(--red);color:#fff}
-
-        /* SCREENS */
         .scr{display:none;flex:1;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
         .scr.active{display:flex}
-
-        /* Upload Card */
         .up-card{width:100%;max-width:680px;background:var(--w);border-radius:24px;box-shadow:var(--shL);
             padding:48px 40px;text-align:center;animation:fadeUp .5s ease}
         @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -218,13 +227,13 @@
         .uf strong{font-size:12px;color:var(--txt);display:block}
         .uf em{font-size:10px;color:var(--txtM);font-style:normal}
 
-        /* ===== PAGE GRID VIEW ===== */
+        /* ===== GRID VIEW ===== */
         .grid-view{display:none;flex:1;overflow-y:auto;padding:20px;background:#e8e8e8}
         .grid-view.show{display:block}
         .grid-view::-webkit-scrollbar{width:8px}
         .grid-view::-webkit-scrollbar-track{background:#ddd}
         .grid-view::-webkit-scrollbar-thumb{background:var(--g400);border-radius:10px}
-        .gv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;
+        .gv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
             padding:10px 16px;background:rgba(0,0,0,.4);border-radius:12px;backdrop-filter:blur(8px)}
         .gv-title{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
         .gv-actions{display:flex;gap:6px}
@@ -234,8 +243,6 @@
         .gv-btn:hover{background:rgba(255,255,255,.25)}
         .gv-btn.active{background:var(--g600);border-color:var(--g600)}
         .page-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-
-        /* Page Card */
         .page-card{background:var(--w);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);
             transition:var(--t);cursor:pointer;position:relative;border:3px solid transparent}
         .page-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.15)}
@@ -254,19 +261,17 @@
             background:var(--red);display:none;box-shadow:0 0 8px rgba(239,83,80,.5)}
         .page-card.split-end .split-line{display:block}
 
-        /* ===== RESULT SCREEN ===== */
+        /* ===== RESULT VIEW ===== */
         .result-view{display:none;flex:1;overflow-y:auto;padding:20px;background:#e8e8e8}
         .result-view.show{display:block}
         .result-view::-webkit-scrollbar{width:8px}
         .result-view::-webkit-scrollbar-track{background:#ddd}
         .result-view::-webkit-scrollbar-thumb{background:var(--g400);border-radius:10px}
         .rv-header{text-align:center;margin-bottom:24px}
-        .rv-header h2{font-size:24px;font-weight:800;color:var(--w);margin-bottom:6px;
-            text-shadow:0 2px 8px rgba(0,0,0,.3)}
+        .rv-header h2{font-size:24px;font-weight:800;color:var(--w);margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
         .rv-header p{font-size:14px;color:rgba(255,255,255,.7)}
         .rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-        .rv-card{background:var(--w);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);
-            transition:var(--t)}
+        .rv-card{background:var(--w);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);transition:var(--t)}
         .rv-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.15)}
         .rv-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
             background:linear-gradient(135deg,var(--g600),var(--g800));color:#fff}
@@ -274,20 +279,24 @@
         .rv-card-hdr .rv-pages{font-size:11px;opacity:.8}
         .rv-card-body{padding:16px}
         .rv-page-thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-        .rv-thumb{width:50px;height:65px;border-radius:6px;overflow:hidden;border:1.5px solid var(--g200);
-            background:#f5f5f5}
+        .rv-thumb{width:50px;height:65px;border-radius:6px;overflow:hidden;border:1.5px solid var(--g200);background:#f5f5f5}
         .rv-thumb canvas{width:100%;height:100%;object-fit:cover;display:block}
         .rv-card-meta{font-size:11px;color:var(--txtM);display:flex;gap:12px;margin-bottom:12px}
         .rv-card-meta span{display:flex;align-items:center;gap:4px}
+
+        /* SmartLink individual download button */
         .rv-dl-btn{width:100%;padding:10px;background:linear-gradient(135deg,var(--g600),var(--g800));
             color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
-            transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+            transition:var(--t);font-family:inherit;display:flex;align-items:center;justify-content:center;
+            gap:6px;text-decoration:none}
         .rv-dl-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(46,125,50,.3)}
         .rv-dl-all{text-align:center;margin-top:20px}
+
+        /* SmartLink Download All button */
         .rv-dl-all-btn{padding:14px 40px;background:linear-gradient(135deg,var(--g600),var(--g950));
             color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;
             transition:var(--t);font-family:inherit;display:inline-flex;align-items:center;gap:10px;
-            box-shadow:0 6px 25px rgba(46,125,50,.35)}
+            box-shadow:0 6px 25px rgba(46,125,50,.35);text-decoration:none}
         .rv-dl-all-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(46,125,50,.45)}
         .rv-restart{margin-top:12px;padding:10px 28px;background:transparent;border:2px solid rgba(255,255,255,.3);
             color:rgba(255,255,255,.8);border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;
@@ -300,6 +309,11 @@
         .status-bar .si{display:flex;align-items:center;gap:5px;white-space:nowrap}
         .status-bar .si i{font-size:10px;color:var(--g400)}
         .stl,.str{display:flex;align-items:center;gap:16px}
+
+        /* ===== FOOTER ===== */
+        .footer{flex-shrink:0;text-align:center;padding:7px 16px;border-top:1px solid var(--bdr);
+            background:var(--w);font-size:.72rem;color:var(--txtM)}
+        .footer a{color:var(--g700);font-weight:700;text-decoration:none}
 
         /* ===== OVERLAYS ===== */
         .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;
@@ -315,8 +329,7 @@
         .ov h3{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:6px}
         .ov p{font-size:14px;color:var(--txtM)}
         .pbar-track{width:100%;height:8px;background:var(--g100);border-radius:10px;margin-top:18px;overflow:hidden}
-        .pbar-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:10px;
-            width:0%;transition:width .3s}
+        .pbar-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:10px;width:0%;transition:width .3s}
         .pbar-label{font-size:12px;color:var(--txtM);margin-top:8px;font-weight:600}
 
         /* TOAST */
@@ -339,15 +352,13 @@
             border-color:var(--g600);box-shadow:0 3px 12px rgba(46,125,50,.3)}
         .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
         .sbov.show{display:block}
-
         #fileInput{display:none}
 
         /* RESPONSIVE */
         @media(max-width:900px){
             .nsteps{display:none}.nsep,.nfile{display:none}
             .nb.desk{display:none}.mmenu{display:flex}.mobbar{display:flex}
-            .sb{position:fixed;left:-320px;top:0;bottom:0;z-index:100;
-                transition:left var(--t);box-shadow:var(--shL)}
+            .sb{position:fixed;left:-320px;top:0;bottom:0;z-index:100;transition:left var(--t);box-shadow:var(--shL)}
             .sb.open{left:0}.sb-close{display:flex}
             .nav{height:50px;padding:0 12px}
             .logo-t{font-size:15px}
@@ -358,8 +369,7 @@
             .rv-grid{grid-template-columns:1fr}
         }
         @media(max-width:480px){
-            .dz{padding:30px 16px}
-            .up-card h2{font-size:20px}
+            .dz{padding:30px 16px}.up-card h2{font-size:20px}
             .page-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
         }
     </style>
@@ -403,7 +413,6 @@
                 <button class="sb-close" onclick="closeSB()"><i class="fas fa-times"></i></button>
             </div>
             <div class="sb-scroll">
-                <!-- Split Mode -->
                 <div class="sg">
                     <div class="sgl"><i class="fas fa-th-large"></i> Split Mode</div>
                     <div class="mode-cards">
@@ -437,8 +446,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Range Mode -->
                 <div class="sg range-section show" id="rangeSection">
                     <div class="sgl"><i class="fas fa-list-ol"></i> Page Ranges</div>
                     <div class="range-list" id="rangeList">
@@ -451,8 +458,6 @@
                     <button class="add-range-btn" onclick="addRange()"><i class="fas fa-plus"></i> Add Range</button>
                     <div class="hint-box"><i class="fas fa-lightbulb"></i><span>Format: <strong>1-3</strong> (page 1 to 3) or <strong>5</strong> (single page). You can add multiple ranges.</span></div>
                 </div>
-
-                <!-- Extract Mode -->
                 <div class="sg page-select-section" id="extractSection">
                     <div class="sgl"><i class="fas fa-hand-pointer"></i> Select Pages to Extract</div>
                     <div class="ps-actions">
@@ -463,15 +468,11 @@
                     </div>
                     <div class="ps-grid" id="psGrid"></div>
                 </div>
-
-                <!-- Fixed Mode -->
                 <div class="sg range-section" id="fixedSection">
                     <div class="sgl"><i class="fas fa-th"></i> Pages Per Split</div>
                     <input class="fixed-input" type="number" id="fixedInput" value="5" min="1" placeholder="Enter pages per split">
                     <div class="hint-box"><i class="fas fa-lightbulb"></i><span>Enter how many pages each split file should contain.</span></div>
                 </div>
-
-                <!-- Every Mode Info -->
                 <div class="sg range-section" id="everySection">
                     <div class="hint-box" style="background:var(--g50);border:1.5px solid var(--g200)">
                         <i class="fas fa-info-circle" style="color:var(--g600)"></i>
@@ -479,10 +480,11 @@
                     </div>
                 </div>
             </div>
+            <!-- SmartLink Split button in sidebar -->
             <div class="sb-foot">
-                <button class="split-btn" id="sbSplit" onclick="splitPDF()" disabled>
+                <a class="split-btn" id="sbSplit" href="https://omg10.com/4/10689787" target="_blank" rel="noopener" onclick="doSplitFromSB(event)" disabled>
                     <i class="fas fa-cut"></i> Split PDF
-                </button>
+                </a>
             </div>
         </div>
 
@@ -520,6 +522,20 @@
                         <div class="uf"><i class="fas fa-hand-pointer"></i><div><strong>Extract Pages</strong><em>Pick individual pages</em></div></div>
                         <div class="uf"><i class="fas fa-lock"></i><div><strong>100% Secure</strong><em>Browser-only</em></div></div>
                     </div>
+                    <!-- AD: Upload screen — below features -->
+                    <div class="upload-ad">
+                        <div class="ad-wrap">
+                            <span class="ad-lbl">Advertisement</span>
+                            <div class="ad-desktop">
+                                <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+                                <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+                            </div>
+                            <div class="ad-mobile">
+                                <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+                                <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -530,6 +546,20 @@
                     <div class="gv-actions">
                         <button class="gv-btn active" onclick="setGridSize('normal',this)"><i class="fas fa-th-large"></i></button>
                         <button class="gv-btn" onclick="setGridSize('small',this)"><i class="fas fa-th"></i></button>
+                    </div>
+                </div>
+                <!-- AD: Editor/grid view — below header -->
+                <div class="grid-ad">
+                    <div class="ad-wrap">
+                        <span class="ad-lbl">Advertisement</span>
+                        <div class="ad-desktop">
+                            <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+                            <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+                        </div>
+                        <div class="ad-mobile">
+                            <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+                            <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+                        </div>
                     </div>
                 </div>
                 <div class="page-grid" id="pageGrid"></div>
@@ -543,7 +573,10 @@
                 </div>
                 <div class="rv-grid" id="rvGrid"></div>
                 <div class="rv-dl-all">
-                    <button class="rv-dl-all-btn" onclick="downloadAll()"><i class="fas fa-download"></i> Download All Files</button>
+                    <!-- SmartLink Download All -->
+                    <a class="rv-dl-all-btn" href="https://omg10.com/4/10689787" target="_blank" rel="noopener" onclick="doDownloadAll()">
+                        <i class="fas fa-download"></i> Download All Files
+                    </a>
                     <br>
                     <button class="rv-restart" onclick="restart()"><i class="fas fa-redo"></i> Split Another PDF</button>
                 </div>
@@ -570,6 +603,11 @@
         <button class="mb" onclick="removeFile()"><i class="fas fa-redo"></i>Reset</button>
         <button class="mb go" onclick="splitPDF()"><i class="fas fa-cut"></i>Split</button>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Made with 💚 by <a href="../../index.html">ToolMatrix</a> — Free Online Split PDF Tool</p>
+    </footer>
 </div>
 
 <!-- PROCESSING OVERLAY -->
@@ -587,9 +625,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    const SMARTLINK='https://omg10.com/4/10689787';
     pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
 
-    // ========== STATE ==========
     let pdfDoc=null,pdfBytes=null,totalPages=0,fileName='';
     let splitMode='range';
     let selectedPages=new Set();
@@ -612,7 +650,6 @@
         pdfDoc=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise;
         totalPages=pdfDoc.numPages;
         fileName=file.name.replace('.pdf','');
-
         document.getElementById('nfname').textContent=file.name;
         document.getElementById('nfpg').textContent=totalPages+' pages';
         document.getElementById('fbname').textContent=file.name;
@@ -620,14 +657,14 @@
         document.getElementById('fbsz').textContent=fmtSz(file.size);
         document.getElementById('fbar').classList.add('show');
         document.getElementById('navSplit').disabled=false;
-        document.getElementById('sbSplit').disabled=false;
+        // Enable SmartLink sidebar button
+        const sbBtn=document.getElementById('sbSplit');
+        sbBtn.removeAttribute('disabled');
         document.getElementById('bPg').textContent=totalPages;
         document.getElementById('everyCount').textContent=totalPages;
         document.getElementById('gvCount').textContent=totalPages;
-
         await renderPageGrid();
         buildPageSelector();
-
         document.getElementById('scrUpload').classList.remove('active');
         document.getElementById('gridView').classList.add('show');
         document.getElementById('resultView').classList.remove('show');
@@ -640,7 +677,7 @@
         selectedPages.clear();rangeCount=1;
         document.getElementById('fbar').classList.remove('show');
         document.getElementById('navSplit').disabled=true;
-        document.getElementById('sbSplit').disabled=true;
+        document.getElementById('sbSplit').setAttribute('disabled','');
         document.getElementById('gridView').classList.remove('show');
         document.getElementById('resultView').classList.remove('show');
         document.getElementById('scrUpload').classList.add('active');
@@ -664,15 +701,12 @@
             const canvas=document.createElement('canvas');
             canvas.width=vp.width;canvas.height=vp.height;
             await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-
             const card=document.createElement('div');
-            card.className='page-card';
-            card.dataset.page=i;
+            card.className='page-card';card.dataset.page=i;
             card.onclick=()=>togglePageCard(card,i);
             card.innerHTML=`<div class="pc-badge">Start</div><div class="split-line"></div>`;
             card.insertBefore(canvas,card.firstChild);
-            const footer=document.createElement('div');
-            footer.className='pc-footer';
+            const footer=document.createElement('div');footer.className='pc-footer';
             footer.innerHTML=`<span class="pc-num">Page ${i}</span><span class="pc-check"><i class="fas fa-check"></i></span>`;
             card.appendChild(footer);
             grid.appendChild(card);
@@ -682,134 +716,73 @@
     function togglePageCard(card,num){
         if(splitMode!=='extract')return;
         card.classList.toggle('selected');
-        if(selectedPages.has(num))selectedPages.delete(num);
-        else selectedPages.add(num);
-        // Sync sidebar
-        const chips=document.querySelectorAll('.pg-chip');
-        chips.forEach(c=>{if(+c.dataset.page===num)c.classList.toggle('sel')});
+        if(selectedPages.has(num))selectedPages.delete(num);else selectedPages.add(num);
+        document.querySelectorAll('.pg-chip').forEach(c=>{if(+c.dataset.page===num)c.classList.toggle('sel')});
     }
 
     function setGridSize(size,el){
-        document.querySelectorAll('.gv-btn').forEach(b=>b.classList.remove('active'));
-        el.classList.add('active');
+        document.querySelectorAll('.gv-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');
         const grid=document.getElementById('pageGrid');
         if(size==='small')grid.style.gridTemplateColumns='repeat(auto-fill,minmax(100px,1fr))';
         else grid.style.gridTemplateColumns='repeat(auto-fill,minmax(160px,1fr))';
     }
 
-    // ========== PAGE SELECTOR (Sidebar) ==========
+    // ========== PAGE SELECTOR ==========
     function buildPageSelector(){
-        const grid=document.getElementById('psGrid');grid.innerHTML='';
-        selectedPages.clear();
+        const grid=document.getElementById('psGrid');grid.innerHTML='';selectedPages.clear();
         for(let i=1;i<=totalPages;i++){
-            const chip=document.createElement('button');
-            chip.className='pg-chip';
-            chip.dataset.page=i;
+            const chip=document.createElement('button');chip.className='pg-chip';chip.dataset.page=i;
             chip.innerHTML=`<span class="pgn">${i}</span><span class="pgl">Page</span>`;
             chip.onclick=()=>{
                 chip.classList.toggle('sel');
                 if(selectedPages.has(i))selectedPages.delete(i);else selectedPages.add(i);
-                // Sync grid
-                document.querySelectorAll('.page-card').forEach(c=>{
-                    if(+c.dataset.page===i)c.classList.toggle('selected');
-                });
+                document.querySelectorAll('.page-card').forEach(c=>{if(+c.dataset.page===i)c.classList.toggle('selected')});
             };
             grid.appendChild(chip);
         }
     }
 
-    function selectAllPages(){
-        selectedPages.clear();
-        for(let i=1;i<=totalPages;i++)selectedPages.add(i);
-        document.querySelectorAll('.pg-chip').forEach(c=>c.classList.add('sel'));
-        document.querySelectorAll('.page-card').forEach(c=>c.classList.add('selected'));
-        toast('All pages selected ✅');
-    }
-    function deselectAllPages(){
-        selectedPages.clear();
-        document.querySelectorAll('.pg-chip').forEach(c=>c.classList.remove('sel'));
-        document.querySelectorAll('.page-card').forEach(c=>c.classList.remove('selected'));
-        toast('All deselected');
-    }
-    function selectOddPages(){
-        deselectAllPages();
-        for(let i=1;i<=totalPages;i+=2){selectedPages.add(i);
-            document.querySelectorAll('.pg-chip').forEach(c=>{if(+c.dataset.page===i)c.classList.add('sel')});
-            document.querySelectorAll('.page-card').forEach(c=>{if(+c.dataset.page===i)c.classList.add('selected')});
-        }toast('Odd pages selected');
-    }
-    function selectEvenPages(){
-        deselectAllPages();
-        for(let i=2;i<=totalPages;i+=2){selectedPages.add(i);
-            document.querySelectorAll('.pg-chip').forEach(c=>{if(+c.dataset.page===i)c.classList.add('sel')});
-            document.querySelectorAll('.page-card').forEach(c=>{if(+c.dataset.page===i)c.classList.add('selected')});
-        }toast('Even pages selected');
-    }
+    function selectAllPages(){selectedPages.clear();for(let i=1;i<=totalPages;i++)selectedPages.add(i);document.querySelectorAll('.pg-chip').forEach(c=>c.classList.add('sel'));document.querySelectorAll('.page-card').forEach(c=>c.classList.add('selected'));toast('All pages selected ✅')}
+    function deselectAllPages(){selectedPages.clear();document.querySelectorAll('.pg-chip').forEach(c=>c.classList.remove('sel'));document.querySelectorAll('.page-card').forEach(c=>c.classList.remove('selected'));toast('All deselected')}
+    function selectOddPages(){deselectAllPages();for(let i=1;i<=totalPages;i+=2){selectedPages.add(i);document.querySelectorAll('.pg-chip').forEach(c=>{if(+c.dataset.page===i)c.classList.add('sel')});document.querySelectorAll('.page-card').forEach(c=>{if(+c.dataset.page===i)c.classList.add('selected')})}toast('Odd pages selected')}
+    function selectEvenPages(){deselectAllPages();for(let i=2;i<=totalPages;i+=2){selectedPages.add(i);document.querySelectorAll('.pg-chip').forEach(c=>{if(+c.dataset.page===i)c.classList.add('sel')});document.querySelectorAll('.page-card').forEach(c=>{if(+c.dataset.page===i)c.classList.add('selected')})}toast('Even pages selected')}
 
     // ========== SPLIT MODE ==========
     function setMode(mode,el){
         splitMode=mode;
-        document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));
-        if(el)el.classList.add('active');
-
+        document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');
         document.getElementById('rangeSection').classList.remove('show');
         document.getElementById('extractSection').classList.remove('show');
         document.getElementById('fixedSection').classList.remove('show');
         document.getElementById('everySection').classList.remove('show');
-
         if(mode==='range')document.getElementById('rangeSection').classList.add('show');
         else if(mode==='extract')document.getElementById('extractSection').classList.add('show');
         else if(mode==='fixed')document.getElementById('fixedSection').classList.add('show');
         else if(mode==='every')document.getElementById('everySection').classList.add('show');
-
         const modeNames={range:'Range',extract:'Extract',every:'Every Page',fixed:'Fixed Size'};
         document.getElementById('bMode').textContent=modeNames[mode];
-
-        // Reset selections when switching modes
         deselectAllPages();
     }
 
-    // ========== RANGE MANAGEMENT ==========
-    function addRange(){
-        rangeCount++;
-        const div=document.createElement('div');div.className='range-row';
-        div.innerHTML=`<span class="rr-label">Split ${rangeCount}</span>
-            <input class="rr-input" type="text" placeholder="e.g. ${rangeCount*2}-${rangeCount*2+2}" data-range>
-            <button class="rr-remove" onclick="removeRange(this)"><i class="fas fa-times"></i></button>`;
-        document.getElementById('rangeList').appendChild(div);
-    }
-    function removeRange(btn){
-        const rows=document.querySelectorAll('.range-row');
-        if(rows.length>1)btn.closest('.range-row').remove();
-    }
+    // ========== RANGES ==========
+    function addRange(){rangeCount++;const div=document.createElement('div');div.className='range-row';div.innerHTML=`<span class="rr-label">Split ${rangeCount}</span><input class="rr-input" type="text" placeholder="e.g. ${rangeCount*2}-${rangeCount*2+2}" data-range><button class="rr-remove" onclick="removeRange(this)"><i class="fas fa-times"></i></button>`;document.getElementById('rangeList').appendChild(div)}
+    function removeRange(btn){const rows=document.querySelectorAll('.range-row');if(rows.length>1)btn.closest('.range-row').remove()}
+    function parseRanges(){const ranges=[];document.querySelectorAll('[data-range]').forEach(input=>{const val=input.value.trim();if(!val)return;const parts=val.split('-');if(parts.length===1){const p=parseInt(parts[0]);if(p>=1&&p<=totalPages)ranges.push([p,p])}else if(parts.length===2){const start=parseInt(parts[0]),end=parseInt(parts[1]);if(start>=1&&end<=totalPages&&start<=end)ranges.push([start,end])}});return ranges}
 
-    function parseRanges(){
-        const ranges=[];
-        document.querySelectorAll('[data-range]').forEach(input=>{
-            const val=input.value.trim();if(!val)return;
-            const parts=val.split('-');
-            if(parts.length===1){
-                const p=parseInt(parts[0]);
-                if(p>=1&&p<=totalPages)ranges.push([p,p]);
-            }else if(parts.length===2){
-                const start=parseInt(parts[0]),end=parseInt(parts[1]);
-                if(start>=1&&end<=totalPages&&start<=end)ranges.push([start,end]);
-            }
-        });
-        return ranges;
+    // Sidebar SmartLink: opens tab, actual split after 350ms
+    function doSplitFromSB(e){
+        if(!pdfDoc){e.preventDefault();toast('Upload a PDF first ⚠️');return}
+        setTimeout(()=>splitPDF(),350);
     }
 
     // ========== SPLIT PDF ==========
     async function splitPDF(){
         if(!pdfDoc){toast('Upload a PDF first ⚠️');return}
-        closeSB();
-        showProc('Splitting PDF...','Creating split files...');
+        closeSB();showProc('Splitting PDF...','Creating split files...');
         setStep(1);splitResults=[];
-
         const{PDFDocument}=PDFLib;
         const srcDoc=await PDFDocument.load(pdfBytes);
         let tasks=[];
-
         if(splitMode==='range'){
             const ranges=parseRanges();
             if(!ranges.length){hideProc();toast('Enter valid page ranges ⚠️');return}
@@ -822,30 +795,22 @@
             for(let i=0;i<totalPages;i++)tasks.push({label:`${fileName}_page_${i+1}.pdf`,pages:[i]});
         }else if(splitMode==='fixed'){
             const n=parseInt(document.getElementById('fixedInput').value)||5;
-            for(let i=0;i<totalPages;i+=n){
-                const end=Math.min(i+n-1,totalPages-1);
-                const pages=[];for(let j=i;j<=end;j++)pages.push(j);
-                tasks.push({label:`${fileName}_pages_${i+1}-${end+1}.pdf`,pages});
-            }
+            for(let i=0;i<totalPages;i+=n){const end=Math.min(i+n-1,totalPages-1);const pages=[];for(let j=i;j<=end;j++)pages.push(j);tasks.push({label:`${fileName}_pages_${i+1}-${end+1}.pdf`,pages})}
         }
-
         for(let i=0;i<tasks.length;i++){
             const task=tasks[i];
             const progress=Math.round(((i+1)/tasks.length)*100);
             document.getElementById('pbarFill').style.width=progress+'%';
             document.getElementById('pbarLbl').textContent=`File ${i+1} of ${tasks.length} (${progress}%)`;
             document.getElementById('procD').textContent=task.label;
-
             const newDoc=await PDFDocument.create();
             const copiedPages=await newDoc.copyPages(srcDoc,task.pages);
             copiedPages.forEach(p=>newDoc.addPage(p));
             const bytes=await newDoc.save();
             const blob=new Blob([bytes],{type:'application/pdf'});
             splitResults.push({name:task.label,blob,size:blob.size,pageCount:task.pages.length,pageNums:task.pages.map(p=>p+1)});
-
             await new Promise(r=>setTimeout(r,80));
         }
-
         hideProc();setStep(2);
         renderResults();
         document.getElementById('gridView').classList.remove('show');
@@ -857,25 +822,13 @@
     // ========== RENDER RESULTS ==========
     async function renderResults(){
         const grid=document.getElementById('rvGrid');grid.innerHTML='';
-
         for(let i=0;i<splitResults.length;i++){
             const res=splitResults[i];
             const card=document.createElement('div');card.className='rv-card';
-
-            // Render small thumbnails
-            let thumbsHTML='';
             const maxThumbs=Math.min(res.pageNums.length,4);
-            for(let j=0;j<maxThumbs;j++){
-                const pNum=res.pageNums[j];
-                const page=await pdfDoc.getPage(pNum);
-                const vp=page.getViewport({scale:.15});
-                const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
-                await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-                thumbsHTML+=`<div class="rv-thumb"><canvas width="${vp.width}" height="${vp.height}"></canvas></div>`;
-                // We'll set canvas data after
-            }
+            let thumbsHTML='';
+            for(let j=0;j<maxThumbs;j++)thumbsHTML+=`<div class="rv-thumb"><canvas></canvas></div>`;
             if(res.pageNums.length>4)thumbsHTML+=`<div class="rv-thumb" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--txtM)">+${res.pageNums.length-4}</div>`;
-
             card.innerHTML=`
                 <div class="rv-card-hdr">
                     <div class="rv-name"><i class="fas fa-file-pdf"></i> Split ${i+1}</div>
@@ -887,11 +840,11 @@
                         <span><i class="fas fa-file"></i> ${res.name}</span>
                         <span><i class="fas fa-weight-hanging"></i> ${fmtSz(res.size)}</span>
                     </div>
-                    <button class="rv-dl-btn" onclick="downloadFile(${i})"><i class="fas fa-download"></i> Download</button>
+                    <a class="rv-dl-btn" href="${SMARTLINK}" target="_blank" rel="noopener" onclick="doDownloadOne(${i})">
+                        <i class="fas fa-download"></i> Download
+                    </a>
                 </div>`;
             grid.appendChild(card);
-
-            // Render actual canvas thumbnails
             const canvases=card.querySelectorAll('.rv-thumb canvas');
             for(let j=0;j<canvases.length;j++){
                 const pNum=res.pageNums[j];
@@ -903,41 +856,37 @@
         }
     }
 
-    // ========== DOWNLOAD ==========
-    function downloadFile(idx){
-        const res=splitResults[idx];
-        const url=URL.createObjectURL(res.blob);
-        const a=document.createElement('a');a.href=url;a.download=res.name;a.click();
-        URL.revokeObjectURL(url);toast('Downloaded! 📄');
+    // SmartLink: href opens tab, actual download after 350ms
+    function doDownloadOne(idx){
+        const res=splitResults[idx];if(!res)return;
+        setTimeout(()=>{
+            const url=URL.createObjectURL(res.blob);
+            const a=document.createElement('a');a.href=url;a.download=res.name;a.click();
+            URL.revokeObjectURL(url);toast('Downloaded! 📄');
+        },350);
     }
 
-    function downloadAll(){
-        splitResults.forEach((_,i)=>setTimeout(()=>downloadFile(i),i*300));
+    // Download All: SmartLink href fires once, all files stagger after 350ms
+    function doDownloadAll(){
+        splitResults.forEach((_,i)=>setTimeout(()=>{
+            const res=splitResults[i];
+            const url=URL.createObjectURL(res.blob);
+            const a=document.createElement('a');a.href=url;a.download=res.name;a.click();
+            URL.revokeObjectURL(url);
+        },350+i*300));
         toast('Downloading all files... 📦');
     }
 
     function restart(){
         document.getElementById('resultView').classList.remove('show');
-        if(pdfDoc){
-            document.getElementById('gridView').classList.add('show');
-            setStep(1);
-        }else{
-            document.getElementById('scrUpload').classList.add('active');
-            setStep(0);
-        }
+        if(pdfDoc){document.getElementById('gridView').classList.add('show');setStep(1)}
+        else{document.getElementById('scrUpload').classList.add('active');setStep(0)}
     }
 
-    // ========== HELPERS ==========
-    function setStep(s){
-        ['s1','s2','s3'].forEach((id,i)=>{const e=document.getElementById(id);e.classList.remove('active','done');
-            if(i<s)e.classList.add('done');else if(i===s)e.classList.add('active')});
-        ['sl1','sl2'].forEach((id,i)=>{document.getElementById(id).classList.toggle('done',i<s)});
-    }
+    function setStep(s){['s1','s2','s3'].forEach((id,i)=>{const e=document.getElementById(id);e.classList.remove('active','done');if(i<s)e.classList.add('done');else if(i===s)e.classList.add('active')});['sl1','sl2'].forEach((id,i)=>{document.getElementById(id).classList.toggle('done',i<s)})}
     function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbov').classList.toggle('show')}
     function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbov').classList.remove('show')}
-    function showProc(t,d){document.getElementById('procT').textContent=t;document.getElementById('procD').textContent=d;
-        document.getElementById('pbarFill').style.width='0%';document.getElementById('pbarLbl').textContent='0%';
-        document.getElementById('procOv').classList.add('show')}
+    function showProc(t,d){document.getElementById('procT').textContent=t;document.getElementById('procD').textContent=d;document.getElementById('pbarFill').style.width='0%';document.getElementById('pbarLbl').textContent='0%';document.getElementById('procOv').classList.add('show')}
     function hideProc(){document.getElementById('procOv').classList.remove('show')}
     function setStatus(t,c){document.getElementById('bStatus').innerHTML=`<i class="fas fa-circle" style="color:${c};font-size:8px"></i> ${t}`}
     function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
