@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>PDF Annotator — Free Online | ToolMatrix</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
@@ -171,6 +171,7 @@ input[type=range].gr::-webkit-slider-thumb{
   display:flex;flex-direction:column;align-items:center;
   padding:16px;gap:14px;
   -webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;
 }
 @media(max-width:768px){
   .cv-area{padding-bottom:calc(var(--btm) + 16px);}
@@ -320,7 +321,7 @@ input[type=range].gr::-webkit-slider-thumb{
   </div>
   <div class="hdr-r" id="hdrR">
     <button class="hbtn" id="clearBtn" style="display:none" onclick="clearPg()">🗑️ Clear</button>
-    <button class="hbtn" id="exportBtn" style="display:none" onclick="doExport()">💾 Export</button>
+    <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener" class="hbtn" id="exportBtn" style="display:none;text-decoration:none;cursor:pointer" onclick="doExport()">💾 Export</a>
     <button class="hbtn" onclick="trigUpload()" id="openBtn">📂 Open PDF</button>
   </div>
 </header>
@@ -453,7 +454,7 @@ input[type=range].gr::-webkit-slider-thumb{
     <div class="mb-sep"></div>
     <button class="mb" onclick="trigUpload()"><span>📂</span><span class="tl">Open</span></button>
     <button class="mb" onclick="clearPg()"><span>🗑️</span><span class="tl">Clear</span></button>
-    <button class="mb" onclick="doExport()"><span>💾</span><span class="tl">Export</span></button>
+    <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener" class="mb" onclick="doExport()" style="text-decoration:none"><span>💾</span><span class="tl">Export</span></a>
   </div>
 </div>
 
@@ -720,30 +721,71 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 /* ── CANVAS EVENTS ── */
+/* Pinch zoom state */
+let pinching=false,pinchD0=0,zoom0=1;
+function getTouchDist(touches){return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);}
+
 function attachEv(canvas,p){
   // Mouse
   canvas.addEventListener('mousedown',e=>pDn(getMP(e,canvas),e,canvas,p));
   canvas.addEventListener('mousemove',e=>{if(!drw)return;pMv(getMP(e,canvas),canvas,p);});
   canvas.addEventListener('mouseup',e=>pUp(getMP(e,canvas),canvas,p));
   canvas.addEventListener('mouseleave',e=>{if(drw)pUp(getMP(e,canvas),canvas,p);});
-  // Touch — single pointer
+
+  // Touch
   canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      // Two fingers → pinch zoom
+      pinching=true;drw=false;
+      pinchD0=getTouchDist(e.touches);
+      zoom0=zoom;
+      e.preventDefault();
+      return;
+    }
     if(e.touches.length!==1)return;
     e.preventDefault();
     pDn(getTP(e.touches[0],canvas),e.touches[0],canvas,p);
   },{passive:false});
+
   canvas.addEventListener('touchmove',e=>{
+    if(pinching&&e.touches.length===2){
+      e.preventDefault();
+      const d=getTouchDist(e.touches);
+      const newZoom=Math.max(0.3,Math.min(5,zoom0*(d/pinchD0)));
+      // Live visual scale (smooth feel, no re-render while pinching)
+      const ratio=newZoom/zoom0;
+      const pgs=document.getElementById('pdfPgs');
+      pgs.style.transform=`scale(${ratio})`;
+      pgs.style.transformOrigin='top center';
+      document.getElementById('zLbl').textContent=Math.round(newZoom*100)+'%';
+      zoom=newZoom;
+      return;
+    }
     if(!drw||e.touches.length!==1)return;
     e.preventDefault();
     pMv(getTP(e.touches[0],canvas),canvas,p);
   },{passive:false});
+
   canvas.addEventListener('touchend',e=>{
+    if(pinching){
+      pinching=false;
+      // Remove visual scale and do real re-render
+      const pgs=document.getElementById('pdfPgs');
+      pgs.style.transform='';
+      document.getElementById('zLbl').textContent=Math.round(zoom*100)+'%';
+      renderAll();
+      return;
+    }
     if(!drw)return;
     e.preventDefault();
     const last=dP.length?dP[dP.length-1]:dS;
     pUp(last,canvas,p);
   },{passive:false});
-  canvas.addEventListener('touchcancel',e=>{if(drw)pUp(dP.length?dP[dP.length-1]:dS,canvas,p);},{passive:false});
+
+  canvas.addEventListener('touchcancel',()=>{
+    if(pinching){pinching=false;const pgs=document.getElementById('pdfPgs');pgs.style.transform='';renderAll();return;}
+    if(drw)pUp(dP.length?dP[dP.length-1]:dS,null,p);
+  },{passive:true});
 }
 
 function getMP(e,c){
@@ -916,7 +958,7 @@ function doExport(){
 
 /* ── ZOOM ── */
 function chZ(d){
-  zoom=Math.max(0.3,Math.min(4,zoom+d));
+  zoom=Math.max(0.3,Math.min(5,zoom+d));
   document.getElementById('zLbl').textContent=Math.round(zoom*100)+'%';
   if(PDF)renderAll();
 }
@@ -926,11 +968,38 @@ function fitW(){
   const avail=isMob()?a.clientWidth-20:a.clientWidth-40;
   PDF.getPage(1).then(p=>{
     const vp=p.getViewport({scale:1});
-    zoom=Math.min(Math.max(avail/vp.width,.3),4);
+    zoom=Math.min(Math.max(avail/vp.width,.3),5);
     document.getElementById('zLbl').textContent=Math.round(zoom*100)+'%';
     renderAll();
   });
 }
+
+/* Pinch zoom on the cv-area background (outside canvas pages) */
+(function(){
+  const area=document.getElementById('cvArea');
+  let p0=false,pd0=0,z0=1;
+  area.addEventListener('touchstart',e=>{
+    if(e.touches.length===2&&!pinching){
+      p0=true;pd0=getTouchDist(e.touches);z0=zoom;
+    }
+  },{passive:true});
+  area.addEventListener('touchmove',e=>{
+    if(!p0||e.touches.length!==2||pinching)return;
+    const d=getTouchDist(e.touches);
+    zoom=Math.max(0.3,Math.min(5,z0*(d/pd0)));
+    document.getElementById('zLbl').textContent=Math.round(zoom*100)+'%';
+    const pgs=document.getElementById('pdfPgs');
+    pgs.style.transform=`scale(${zoom/z0})`;
+    pgs.style.transformOrigin='top center';
+  },{passive:true});
+  area.addEventListener('touchend',e=>{
+    if(!p0)return;
+    p0=false;
+    const pgs=document.getElementById('pdfPgs');
+    pgs.style.transform='';
+    if(PDF)renderAll();
+  },{passive:true});
+})();
 
 /* ── TOAST ── */
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2800);}
