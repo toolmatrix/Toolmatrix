@@ -137,17 +137,15 @@ header{position:sticky;top:0;width:100%;height:var(--hh);background:linear-gradi
 .bh-card-date{font-size:.72rem;color:#475569;display:flex;align-items:center;gap:5px}
 
 /* ── SEARCH & FILTER BAR ── */
-.filter-bar{background:#fff;border-bottom:1px solid var(--bdr);padding:20px 0;position:sticky;top:var(--hh);z-index:100;width:100%}
-.filter-inner{display:flex;align-items:stretch;gap:10px;flex-direction:column}
-.filter-inner .blog-search{width:100%}
-.blog-search{position:relative}
-.blog-search input{width:100%;padding:13px 48px 13px 20px;border:2px solid #e2e8f0;border-radius:50px;font-size:.95rem;font-family:inherit;transition:var(--tr);background:#f8fafc}
+.filter-bar{background:#fff;border-bottom:1px solid var(--bdr);padding:18px 0;position:sticky;top:var(--hh);z-index:100;width:100%}
+.filter-inner{display:flex;flex-direction:column;gap:12px}
+.blog-search{position:relative;width:100%}
+.blog-search input{width:100%;padding:13px 48px 13px 20px;border:2px solid #e2e8f0;border-radius:50px;font-size:.95rem;font-family:inherit;transition:var(--tr);background:#f8fafc;color:#0f172a}
 .blog-search input:focus{outline:none;border-color:#10b981;background:#fff;box-shadow:0 0 0 4px rgba(16,185,129,.1)}
 .blog-search i{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#10b981;font-size:1rem;pointer-events:none}
-.cats-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.cats-scroll::-webkit-scrollbar{display:none}
-.cat-btn{padding:9px 18px;border-radius:50px;font-size:.85rem;font-weight:600;white-space:nowrap;cursor:pointer;transition:var(--tr);border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-family:inherit}
-.cat-btn:hover{border-color:#10b981;color:#10b981}
+.cats-scroll{display:flex;gap:8px;flex-wrap:wrap}
+.cat-btn{padding:9px 20px;border-radius:50px;font-size:.85rem;font-weight:600;white-space:nowrap;cursor:pointer;transition:var(--tr);border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-family:inherit}
+.cat-btn:hover{border-color:#10b981;color:#10b981;background:#f0fdf4}
 .cat-btn.active{background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(16,185,129,.3)}
 
 /* ── MAIN BLOG LAYOUT ── */
@@ -445,7 +443,6 @@ footer{background:#020617;padding:60px 0 0;border-top:1px solid rgba(16,185,129,
     <div class="blog-layout">
       <!-- LEFT: Posts -->
       <div>
-        <!-- Posts Grid -->
         <!-- Posts Grid -->
         <div class="section-title"><span>Latest Articles</span></div>
         <div class="posts-grid" id="postsGrid">
@@ -1668,118 +1665,141 @@ hbg.addEventListener("click",function(){
 });
 document.getElementById("mtog").addEventListener("click",function(){this.classList.toggle("open");document.getElementById("msub").classList.toggle("show");});
 
-/* ── BLOG FILTER + PAGINATION SYSTEM ── */
-var ALL_CARDS = Array.from(document.querySelectorAll("#postsGrid .post-card"));
-var currentCat = "all";
-var currentQ = "";
-var currentPage = 1;
-var PER_PAGE = 15;
-
+/* ── BLOG FILTER + PAGINATION ── */
 (function(){
-  var cats = ["pdf","image","seo","text","webdev","utility"];
-  cats.forEach(function(cat){
-    var cnt = ALL_CARDS.filter(function(c){ return c.getAttribute("data-cat")===cat; }).length;
-    var el = document.getElementById("cnt-"+cat);
-    if(el) el.textContent = cnt;
-  });
-  document.querySelectorAll(".bh-stat").forEach(function(s){
-    var sp=s.querySelector("span");
-    if(sp && sp.textContent.trim()==="Articles") s.querySelector("strong").textContent=ALL_CARDS.length+"+";
-  });
-})();
+  var ALL    = Array.from(document.querySelectorAll('#postsGrid .post-card'));
+  var curCat = 'all', curQ = '', curPage = 1, PER = 15;
 
-function getFiltered(){
-  return ALL_CARDS.filter(function(c){
-    var catOk = currentCat==="all" || c.getAttribute("data-cat")===currentCat;
-    var txt = (c.getAttribute("data-title")||"")+" "+(c.querySelector(".post-title")?c.querySelector(".post-title").textContent:"");
-    return catOk && (!currentQ || txt.toLowerCase().includes(currentQ));
+  /* ─ Auto-count sidebar badges ─ */
+  ['pdf','image','seo','text','webdev','utility'].forEach(function(cat){
+    var el = document.getElementById('cnt-'+cat);
+    if(el) el.textContent = ALL.filter(function(c){return c.dataset.cat===cat;}).length;
   });
-}
-
-function renderPage(){
-  var f=getFiltered(), total=f.length;
-  var tp=Math.max(1,Math.ceil(total/PER_PAGE));
-  if(currentPage>tp) currentPage=1;
-  var s=(currentPage-1)*PER_PAGE, e=s+PER_PAGE;
-  ALL_CARDS.forEach(function(c){c.style.display="none";});
-  f.forEach(function(c,i){ if(i>=s&&i<e){c.style.display="flex";c.style.flexDirection="column";} });
-  document.getElementById("noPosts").style.display=total===0?"block":"none";
-  var pi=document.getElementById("pageInfo");
-  pi.textContent=total>0?"Showing "+(s+1)+"–"+Math.min(e,total)+" of "+total+" articles":"";
-  buildPag(tp);
-  document.querySelectorAll(".sb-cat").forEach(function(a){
-    var active=a.getAttribute("data-cat")===currentCat;
-    a.style.background=active?"rgba(16,185,129,.1)":"";
-    a.style.borderColor=active?"#10b981":"";
-    a.querySelector(".sb-cat-count").style.background=active?"#10b981":"";
-    a.querySelector(".sb-cat-count").style.color=active?"#fff":"";
+  /* ─ Hero articles count ─ */
+  document.querySelectorAll('.bh-stat').forEach(function(s){
+    if(s.querySelector('span') && s.querySelector('span').textContent.trim()==='Articles')
+      s.querySelector('strong').textContent = ALL.length + '+';
   });
-}
 
-function buildPag(tp){
-  var pg=document.getElementById("pagination");
-  pg.innerHTML="";
-  var w=document.getElementById("paginationWrap");
-  if(tp<=1){w.style.display="none";return;}
-  w.style.display="block";
-  function mk(lbl,pg_num,active,dis){
-    var b=document.createElement("button");
-    b.className="pag-btn"+(active?" active":"")+(dis?" disabled":"");
-    b.innerHTML=lbl;
-    if(!dis&&!active) b.addEventListener("click",function(){
-      currentPage=pg_num;renderPage();
-      window.scrollTo({top:document.getElementById("postsGrid").offsetTop-140,behavior:"smooth"});
+  function filtered(){
+    return ALL.filter(function(c){
+      var catOk = curCat==='all' || c.dataset.cat===curCat;
+      var txt   = (c.dataset.title||'') + ' ' + (c.querySelector('.post-title')||{textContent:''}).textContent;
+      return catOk && (!curQ || txt.toLowerCase().indexOf(curQ) > -1);
     });
-    return b;
   }
-  function dt(){var s=document.createElement("span");s.className="pag-dots";s.textContent="…";return s;}
-  pg.appendChild(mk('<i class="fas fa-chevron-left"></i>',currentPage-1,false,currentPage===1));
-  var ps=[];
-  if(tp<=7){for(var i=1;i<=tp;i++)ps.push(i);}
-  else{
-    ps.push(1);
-    if(currentPage>3)ps.push("...");
-    var lo=Math.max(2,currentPage-1),hi=Math.min(tp-1,currentPage+1);
-    for(var i=lo;i<=hi;i++)ps.push(i);
-    if(currentPage<tp-2)ps.push("...");
-    ps.push(tp);
+
+  function render(){
+    var list = filtered(), n = list.length;
+    var tp = Math.max(1, Math.ceil(n/PER));
+    if(curPage > tp) curPage = 1;
+    var s = (curPage-1)*PER, e = s+PER;
+
+    ALL.forEach(function(c){ c.style.display='none'; });
+    list.forEach(function(c,i){
+      if(i>=s && i<e){ c.style.display='flex'; c.style.flexDirection='column'; }
+    });
+
+    var noEl = document.getElementById('noPosts');
+    if(noEl) noEl.style.display = n===0 ? 'block' : 'none';
+
+    var pi = document.getElementById('pageInfo');
+    if(pi) pi.textContent = n>0 ? 'Showing '+(s+1)+'–'+Math.min(e,n)+' of '+n+' articles' : '';
+
+    buildPag(tp);
+
+    /* Sidebar active state */
+    document.querySelectorAll('.sb-cat').forEach(function(a){
+      var on = a.dataset.cat === curCat;
+      a.style.background   = on ? 'rgba(16,185,129,.1)' : '';
+      a.style.borderColor  = on ? '#10b981' : '';
+      var cnt = a.querySelector('.sb-cat-count');
+      if(cnt){ cnt.style.background=on?'#10b981':''; cnt.style.color=on?'#fff':''; }
+    });
+
+    /* Top bar active state */
+    document.querySelectorAll('.cat-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.cat === curCat);
+    });
   }
-  ps.forEach(function(p){pg.appendChild(p==="..."?dt():mk(p,p,p===currentPage,false));});
-  pg.appendChild(mk('<i class="fas fa-chevron-right"></i>',currentPage+1,false,currentPage===tp));
-}
 
-document.querySelectorAll(".cat-btn").forEach(function(b){
-  b.addEventListener("click",function(){
-    document.querySelectorAll(".cat-btn").forEach(function(x){x.classList.remove("active");});
-    this.classList.add("active");
-    currentCat=this.getAttribute("data-cat"); currentPage=1; renderPage();
+  function buildPag(tp){
+    var pg = document.getElementById('pagination');
+    var wr = document.getElementById('paginationWrap');
+    if(!pg) return;
+    pg.innerHTML = '';
+    if(tp<=1){ wr.style.display='none'; return; }
+    wr.style.display = 'block';
+
+    function btn(lbl, pg_n, act, dis){
+      var b = document.createElement('button');
+      b.className = 'pag-btn'+(act?' active':'')+(dis?' disabled':'');
+      b.innerHTML = lbl;
+      if(!dis && !act) b.addEventListener('click', function(){
+        curPage = pg_n; render();
+        var grid = document.getElementById('postsGrid');
+        if(grid) window.scrollTo({top: grid.offsetTop-150, behavior:'smooth'});
+      });
+      return b;
+    }
+    function dot(){ var s=document.createElement('span'); s.className='pag-dots'; s.textContent='…'; return s; }
+
+    pg.appendChild(btn('<i class="fas fa-chevron-left"></i>', curPage-1, false, curPage===1));
+
+    var ps = [];
+    if(tp<=7){ for(var i=1;i<=tp;i++) ps.push(i); }
+    else {
+      ps.push(1);
+      if(curPage>3) ps.push('…');
+      var lo=Math.max(2,curPage-1), hi=Math.min(tp-1,curPage+1);
+      for(var i=lo;i<=hi;i++) ps.push(i);
+      if(curPage<tp-2) ps.push('…');
+      ps.push(tp);
+    }
+    ps.forEach(function(p){ pg.appendChild(typeof p==='number' ? btn(p,p,p===curPage,false) : dot()); });
+
+    pg.appendChild(btn('<i class="fas fa-chevron-right"></i>', curPage+1, false, curPage===tp));
+  }
+
+  /* ─ Top category buttons ─ */
+  document.querySelectorAll('.cat-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      curCat = this.dataset.cat;
+      curPage = 1;
+      render();
+    });
   });
-});
 
-document.querySelectorAll(".sb-cat").forEach(function(a){
-  a.addEventListener("click",function(e){
-    e.preventDefault();
-    var cat=this.getAttribute("data-cat");
-    document.querySelectorAll(".cat-btn").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-cat")===cat);});
-    currentCat=cat; currentPage=1; renderPage();
-    window.scrollTo({top:document.getElementById("postsGrid").offsetTop-140,behavior:"smooth"});
+  /* ─ Sidebar category links ─ */
+  document.querySelectorAll('.sb-cat').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      curCat  = this.dataset.cat;
+      curPage = 1;
+      render();
+      var grid = document.getElementById('postsGrid');
+      if(grid) window.scrollTo({top: grid.offsetTop-150, behavior:'smooth'});
+    });
   });
-});
 
-var sT;
-document.getElementById("blogSearch").addEventListener("input",function(){
-  var v=this.value;
-  if(document.getElementById("sbSearch"))document.getElementById("sbSearch").value=v;
-  clearTimeout(sT);sT=setTimeout(function(){currentQ=v.toLowerCase().trim();currentPage=1;renderPage();},250);
-});
-if(document.getElementById("sbSearch")){
-  document.getElementById("sbSearch").addEventListener("input",function(){
-    var v=this.value;document.getElementById("blogSearch").value=v;
-    clearTimeout(sT);sT=setTimeout(function(){currentQ=v.toLowerCase().trim();currentPage=1;renderPage();},250);
+  /* ─ Search ─ */
+  var sT;
+  function onSearch(v){
+    if(document.getElementById('sbSearch')) document.getElementById('sbSearch').value = v;
+    clearTimeout(sT);
+    sT = setTimeout(function(){ curQ=v.toLowerCase().trim(); curPage=1; render(); }, 250);
+  }
+  var mainSearch = document.getElementById('blogSearch');
+  if(mainSearch) mainSearch.addEventListener('input', function(){ onSearch(this.value); });
+  var sbSearch = document.getElementById('sbSearch');
+  if(sbSearch) sbSearch.addEventListener('input', function(){
+    document.getElementById('blogSearch').value = this.value;
+    onSearch(this.value);
   });
-}
 
-renderPage();
+  /* ─ Init ─ */
+  render();
+})();
 
 /* ── AUTH ── */
 function initAuth(){
