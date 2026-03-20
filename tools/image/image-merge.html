@@ -71,7 +71,7 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .nb.rst:hover{background:rgba(239,68,68,.28)}
 
 /* ======================== PAGE 1: UPLOAD ======================== */
-#pgUpload{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;background:linear-gradient(160deg,var(--g50) 0%,var(--w) 60%,var(--g50) 100%);position:relative;overflow:hidden;}
+#pgUpload{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px 0;background:linear-gradient(160deg,var(--g50) 0%,var(--w) 60%,var(--g50) 100%);position:relative;overflow:hidden;}
 #pgUpload::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.06),transparent 70%);pointer-events:none;}
 .u-badge{display:inline-flex;align-items:center;gap:6px;background:var(--g100);border:1.5px solid var(--bd);border-radius:30px;padding:6px 18px;font-size:.72rem;font-weight:700;color:var(--g700);margin-bottom:16px;}
 .u-title{font-size:2.1rem;font-weight:900;color:var(--g900);margin-bottom:10px;text-align:center;letter-spacing:-.5px}
@@ -242,17 +242,8 @@ footer a:hover{color:var(--g900)}
 
 <!-- ======================== PAGE 1: UPLOAD ======================== -->
 <div id="pgUpload">
-  <div class="u-badge"><i class="fas fa-shield-alt"></i> 100% Private &mdash; Browser Only</div>
   <div class="u-title">Image <em>Collage</em> Maker</div>
   <div class="u-desc">Combine multiple photos into beautiful collages. 8 layout styles, custom spacing, borders and instant download &mdash; completely free.</div>
-  <div class="u-chips">
-    <span class="uchip"><i class="fas fa-layer-group"></i> 8 Layouts</span>
-    <span class="uchip"><i class="fas fa-images"></i> Multi-Photo</span>
-    <span class="uchip"><i class="fas fa-lock"></i> Private</span>
-    <span class="uchip"><i class="fas fa-download"></i> PNG/JPG/WebP</span>
-    <span class="uchip"><i class="fas fa-infinity"></i> Free</span>
-  </div>
-
   <div id="dropZone">
     <div class="dz-inner">
       <div class="dz-ring"><i class="fas fa-cloud-upload-alt"></i></div>
@@ -276,11 +267,12 @@ footer a:hover{color:var(--g900)}
     </div>
   </div>
   <input type="file" id="fileInput" accept="image/*" multiple>
-
-  <footer>
-    <p>Made with <span class="fheart">&#9829;</span> by <a href="../../index.html">ToolMatrix</a> &mdash; Free Online Image Collage Maker</p>
-  </footer>
 </div>
+
+<!-- Upload page footer pushed to bottom -->
+<footer id="uploadFooter" style="margin-top:auto;">
+  <p>Made with <span class="fheart">&#9829;</span> by <a href="../../index.html">ToolMatrix</a> &mdash; Free Online Image Collage Maker</p>
+</footer>
 
 <!-- ======================== PAGE 2: EDITOR ======================== -->
 <div id="pgEditor">
@@ -455,34 +447,66 @@ let images=[],currentLayout='grid2x2';
 const dz=document.getElementById('dropZone');
 const fi=document.getElementById('fileInput');
 
+// Click to open file picker (exclude ad area and buttons)
 dz.addEventListener('click',e=>{
   if(!e.target.closest('.dz-ad')&&e.target.tagName!=='BUTTON'&&!e.target.closest('button'))fi.click();
 });
-['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
-['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
-dz.addEventListener('drop',e=>{if(e.dataTransfer.files.length)loadFiles(e.dataTransfer.files);});
-fi.addEventListener('change',e=>{if(e.target.files.length)loadFiles(e.target.files);fi.value='';});
-document.addEventListener('paste',e=>{
-  const imgs=[...(e.clipboardData?.items||[])].filter(i=>i.type.startsWith('image/')).map(i=>i.getAsFile());
-  if(imgs.length)loadFiles(imgs);
+
+// Drag visual feedback
+dz.addEventListener('dragenter',e=>{e.preventDefault();e.stopPropagation();dz.classList.add('drag');});
+dz.addEventListener('dragover', e=>{e.preventDefault();e.stopPropagation();dz.classList.add('drag');});
+dz.addEventListener('dragleave',e=>{e.preventDefault();e.stopPropagation();dz.classList.remove('drag');});
+
+// Drop -- convert FileList to Array immediately before any async
+dz.addEventListener('drop',e=>{
+  e.preventDefault();e.stopPropagation();
+  dz.classList.remove('drag');
+  const fileArr=Array.from(e.dataTransfer.files||[]).filter(f=>f.type.startsWith('image/'));
+  if(fileArr.length)loadFiles(fileArr);
 });
 
-function loadFiles(files){
+// File input change
+fi.addEventListener('change',e=>{
+  const fileArr=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'));
+  fi.value='';
+  if(fileArr.length)loadFiles(fileArr);
+});
+
+// Paste from clipboard
+document.addEventListener('paste',e=>{
+  const fileArr=[...(e.clipboardData?.items||[])].filter(i=>i.type.startsWith('image/')).map(i=>i.getAsFile()).filter(Boolean);
+  if(fileArr.length)loadFiles(fileArr);
+});
+
+function loadFiles(fileArr){
+  // fileArr is already a plain Array -- no FileList reference issues
+  const total=fileArr.length;
+  if(!total)return;
   let loaded=0;
-  Array.from(files).forEach(file=>{
-    if(!file.type.startsWith('image/'))return;
+  const alreadyInEditor=document.getElementById('pgEditor').classList.contains('on');
+
+  fileArr.forEach(file=>{
     const r=new FileReader();
     r.onload=ev=>{
       const img=new Image();
       img.onload=()=>{
         images.push({src:ev.target.result,img,name:file.name});
         loaded++;
-        if(loaded===Array.from(files).filter(f=>f.type.startsWith('image/')).length){
-          openEditor();
+        if(loaded===total){
+          // All loaded
+          if(alreadyInEditor){
+            renderThumbs();
+            setStatus('idle',images.length+' photo(s) loaded');
+            toast(loaded+' photo(s) added!');
+          }else{
+            openEditor();
+          }
         }
       };
+      img.onerror=()=>{loaded++;if(loaded===total&&!alreadyInEditor)openEditor();};
       img.src=ev.target.result;
     };
+    r.onerror=()=>{loaded++;if(loaded===total&&!alreadyInEditor)openEditor();};
     r.readAsDataURL(file);
   });
 }
@@ -490,6 +514,7 @@ function loadFiles(files){
 function openEditor(){
   document.getElementById('pgUpload').style.display='none';
   document.getElementById('topAd').style.display='none';
+  document.getElementById('uploadFooter').style.display='none';
   const ed=document.getElementById('pgEditor');
   ed.classList.add('on');
   document.getElementById('navRight').classList.add('on');
@@ -502,6 +527,7 @@ function backToUpload(){
   document.getElementById('pgEditor').classList.remove('on');
   document.getElementById('pgUpload').style.display='';
   document.getElementById('topAd').style.display='';
+  document.getElementById('uploadFooter').style.display='';
   document.getElementById('navRight').classList.remove('on');
 }
 
