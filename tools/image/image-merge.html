@@ -233,12 +233,6 @@ footer a:hover{color:var(--g900)}
   </div>
 </nav>
 
-<!-- TOP AD -->
-<div class="ad-wrap" id="topAd">
-  <span class="ad-lbl">Advertisement</span>
-  <div class="ad-desktop"><script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script></div>
-  <div class="ad-mobile"><script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script><script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script></div>
-</div>
 
 <!-- ======================== PAGE 1: UPLOAD ======================== -->
 <div id="pgUpload">
@@ -513,7 +507,6 @@ function loadFiles(fileArr){
 
 function openEditor(){
   document.getElementById('pgUpload').style.display='none';
-  document.getElementById('topAd').style.display='none';
   document.getElementById('uploadFooter').style.display='none';
   const ed=document.getElementById('pgEditor');
   ed.classList.add('on');
@@ -526,7 +519,6 @@ function openEditor(){
 function backToUpload(){
   document.getElementById('pgEditor').classList.remove('on');
   document.getElementById('pgUpload').style.display='';
-  document.getElementById('topAd').style.display='';
   document.getElementById('uploadFooter').style.display='';
   document.getElementById('navRight').classList.remove('on');
 }
@@ -596,17 +588,30 @@ function generateCollage(randomize){
       const cells=buildCells(layout,cW,cH,gap,images.length);
       cells.forEach((cell,i)=>{
         const imgObj=images[i%images.length].img;
+        if(!imgObj.width||!imgObj.height)return;
         ctx.save();
-        if(shadow>0){ctx.shadowColor=`rgba(0,0,0,${shadow})`;ctx.shadowBlur=14;ctx.shadowOffsetX=3;ctx.shadowOffsetY=3;}
-        roundedRect(ctx,cell.x,cell.y,cell.w,cell.h,br);ctx.clip();
-        ctx.shadowColor='transparent';ctx.shadowBlur=0;
-        const scale=Math.max(cell.w/imgObj.width,cell.h/imgObj.height);
-        const sw=cell.w/scale,sh=cell.h/scale;
-        const sx=(imgObj.width-sw)/2,sy=(imgObj.height-sh)/2;
-        ctx.drawImage(imgObj,sx,sy,sw,sh,cell.x,cell.y,cell.w,cell.h);
+        // Shadow before clip
+        if(shadow>0){
+          ctx.shadowColor=`rgba(0,0,0,${shadow})`;
+          ctx.shadowBlur=16;ctx.shadowOffsetX=3;ctx.shadowOffsetY=4;
+        }
+        roundedRect(ctx,cell.x,cell.y,cell.w,cell.h,br);
+        ctx.clip();
+        ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
+        // Object-fit: cover -- fill cell, crop excess
+        const scaleX=cell.w/imgObj.width;
+        const scaleY=cell.h/imgObj.height;
+        const scale=Math.max(scaleX,scaleY);
+        const drawnW=imgObj.width*scale;
+        const drawnH=imgObj.height*scale;
+        const dx=cell.x+(cell.w-drawnW)/2;
+        const dy=cell.y+(cell.h-drawnH)/2;
+        ctx.drawImage(imgObj,Math.round(dx),Math.round(dy),Math.round(drawnW),Math.round(drawnH));
         ctx.restore();
+        // Border on top
         if(bw>0){
-          ctx.save();roundedRect(ctx,cell.x+bw/2,cell.y+bw/2,cell.w-bw,cell.h-bw,Math.max(0,br-bw/2));
+          ctx.save();
+          roundedRect(ctx,cell.x+bw/2,cell.y+bw/2,cell.w-bw,cell.h-bw,Math.max(0,br-bw/2));
           ctx.strokeStyle=bc;ctx.lineWidth=bw;ctx.stroke();ctx.restore();
         }
       });
@@ -631,42 +636,109 @@ function getRandomLayout(){
 }
 
 function buildCells(layout,W,H,gap,n){
-  const g=gap,p=g;const cells=[];
+  const g=Math.round(gap);
+  // Fixed edge padding = gap (minimum 4px so images don't touch edge)
+  const p=Math.max(g,4);
+  const cells=[];
+  // Available inner area
+  const iW=W-p*2; // inner width
+  const iH=H-p*2; // inner height
+
   if(layout==='grid2x2'){
-    const cw=(W-p*2-g)/2,ch=(H-p*2-g)/2;
-    for(let r=0;r<2;r++)for(let c=0;c<2;c++)cells.push({x:p+c*(cw+g),y:p+r*(ch+g),w:cw,h:ch});
+    // 2 columns, 2 rows
+    const cw=Math.floor((iW-g)/2);
+    const ch=Math.floor((iH-g)/2);
+    // Adjust last column/row for rounding
+    const cw2=iW-g-cw, ch2=iH-g-ch;
+    cells.push({x:p,      y:p,      w:cw,  h:ch });
+    cells.push({x:p+cw+g, y:p,      w:cw2, h:ch });
+    cells.push({x:p,      y:p+ch+g, w:cw,  h:ch2});
+    cells.push({x:p+cw+g, y:p+ch+g, w:cw2, h:ch2});
+
   }else if(layout==='grid3x1'){
-    const cw=W-p*2,ch=(H-p*2-g*2)/3;
-    for(let r=0;r<3;r++)cells.push({x:p,y:p+r*(ch+g),w:cw,h:ch});
+    // 3 rows, full width
+    const ch=Math.floor((iH-g*2)/3);
+    const ch3=iH-g*2-ch*2;
+    cells.push({x:p, y:p,           w:iW, h:ch });
+    cells.push({x:p, y:p+ch+g,      w:iW, h:ch });
+    cells.push({x:p, y:p+(ch+g)*2,  w:iW, h:ch3});
+
   }else if(layout==='grid1x3'){
-    const ch=H-p*2,cw=(W-p*2-g*2)/3;
-    for(let c=0;c<3;c++)cells.push({x:p+c*(cw+g),y:p,w:cw,h:ch});
+    // 3 columns, full height
+    const cw=Math.floor((iW-g*2)/3);
+    const cw3=iW-g*2-cw*2;
+    cells.push({x:p,          y:p, w:cw,  h:iH});
+    cells.push({x:p+cw+g,     y:p, w:cw,  h:iH});
+    cells.push({x:p+(cw+g)*2, y:p, w:cw3, h:iH});
+
   }else if(layout==='grid3x2'){
-    const cw=(W-p*2-g*2)/3,ch=(H-p*2-g)/2;
-    for(let r=0;r<2;r++)for(let c=0;c<3;c++)cells.push({x:p+c*(cw+g),y:p+r*(ch+g),w:cw,h:ch});
+    // 3 columns, 2 rows
+    const cw=Math.floor((iW-g*2)/3);
+    const cw3=iW-g*2-cw*2;
+    const ch=Math.floor((iH-g)/2);
+    const ch2=iH-g-ch;
+    for(let r=0;r<2;r++){
+      const y=p+r*(ch+g);
+      const rowH=r===0?ch:ch2;
+      cells.push({x:p,          y, w:cw,  h:rowH});
+      cells.push({x:p+cw+g,     y, w:cw,  h:rowH});
+      cells.push({x:p+(cw+g)*2, y, w:cw3, h:rowH});
+    }
+
   }else if(layout==='featured'){
-    const lw=(W-p*2)*.58,rw=(W-p*2)*.42-g,ch=(H-p*2-g)/2;
-    cells.push({x:p,y:p,w:lw,h:H-p*2});
-    cells.push({x:p+lw+g,y:p,w:rw,h:ch});
-    cells.push({x:p+lw+g,y:p+ch+g,w:rw,h:ch});
+    // Left: 1 big | Right: 2 stacked
+    const lw=Math.round(iW*0.58)-Math.floor(g/2);
+    const rw=iW-lw-g;
+    const rh=Math.floor((iH-g)/2);
+    const rh2=iH-g-rh;
+    cells.push({x:p,      y:p,      w:lw, h:iH });
+    cells.push({x:p+lw+g, y:p,      w:rw, h:rh });
+    cells.push({x:p+lw+g, y:p+rh+g, w:rw, h:rh2});
+
   }else if(layout==='horizontal'){
-    const count=Math.min(n,5),cw=(W-p*2-g*(count-1))/count,ch=H-p*2;
-    for(let i=0;i<count;i++)cells.push({x:p+i*(cw+g),y:p,w:cw,h:ch});
+    // N columns (up to 5), full height
+    const count=Math.min(n,5);
+    const cw=Math.floor((iW-g*(count-1))/count);
+    for(let i=0;i<count;i++){
+      const x=p+i*(cw+g);
+      const w=(i===count-1)?(iW-g*(count-1)-cw*(count-1)):cw;
+      cells.push({x, y:p, w:Math.max(w,1), h:iH});
+    }
+
   }else if(layout==='diagonal'){
-    const count=Math.min(n,4),step=Math.min(30,(W-p*2-200)/count);
-    const iw=W-p*2-step*count,ih=H-p*2-step*count;
-    for(let i=count-1;i>=0;i--)cells.push({x:p+i*step,y:p+i*step,w:iw,h:ih});
+    // Stacked/diagonal -- up to 4 images with offset
+    const count=Math.min(n,4);
+    const offset=Math.min(24,Math.floor(Math.min(iW,iH)*0.07));
+    const imgW=iW-offset*(count-1);
+    const imgH=iH-offset*(count-1);
+    // Draw back to front
+    for(let i=count-1;i>=0;i--){
+      cells.push({x:p+i*offset, y:p+i*offset, w:imgW, h:imgH});
+    }
+
   }else if(layout==='mosaic'){
-    const r1h=(H-p*2)*.5-g/2,r2h=(H-p*2)*.5-g/2;
-    const w1=(W-p*2)*.55-g/2,w2=(W-p*2)*.45-g/2;
-    const w3=(W-p*2)/3-g*2/3,w4=(W-p*2)/3-g*2/3,w5=(W-p*2)/3-g*2/3;
-    cells.push({x:p,y:p,w:w1,h:r1h});
-    cells.push({x:p+w1+g,y:p,w:w2,h:r1h});
-    cells.push({x:p,y:p+r1h+g,w:w3,h:r2h});
-    cells.push({x:p+w3+g,y:p+r1h+g,w:w4,h:r2h});
-    cells.push({x:p+w3+g+w4+g,y:p+r1h+g,w:w5,h:r2h});
+    // Row 1: big left + small right
+    // Row 2: 3 equal columns
+    const r1h=Math.floor(iH*0.48);
+    const r2h=iH-r1h-g;
+    const lw=Math.round(iW*0.60)-Math.floor(g/2);
+    const rw=iW-lw-g;
+    // Row 2: 3 cols
+    const cw=Math.floor((iW-g*2)/3);
+    const cw3=iW-g*2-cw*2;
+
+    cells.push({x:p,      y:p,      w:lw,  h:r1h}); // big left
+    cells.push({x:p+lw+g, y:p,      w:rw,  h:r1h}); // small right top row
+    cells.push({x:p,          y:p+r1h+g, w:cw,  h:r2h});
+    cells.push({x:p+cw+g,     y:p+r1h+g, w:cw,  h:r2h});
+    cells.push({x:p+(cw+g)*2, y:p+r1h+g, w:cw3, h:r2h});
   }
-  return cells;
+
+  // Ensure all dimensions are positive integers
+  return cells.map(c=>({
+    x:Math.round(c.x), y:Math.round(c.y),
+    w:Math.max(1,Math.round(c.w)), h:Math.max(1,Math.round(c.h))
+  }));
 }
 
 function roundedRect(ctx,x,y,w,h,r){
