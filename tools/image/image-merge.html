@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🖼️ Image Collage Maker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green1: #e8f5e9;
+      --green2: #c8e6c9;
+      --green3: #a5d6a7;
+      --green4: #66bb6a;
+      --green5: #388e3c;
+      --green6: #1b5e20;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(56,142,60,0.15);
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #e0f2f1 100%);
+      min-height: 100vh;
+      color: #2e7d32;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--green5), var(--green4));
+      color: white;
+      text-align: center;
+      padding: 22px 20px 18px;
+      box-shadow: 0 4px 16px rgba(56,142,60,0.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    header h1 { font-size: 2rem; font-weight: 800; letter-spacing: 1px; }
+    header p  { font-size: 0.92rem; opacity: 0.9; margin-top: 4px; }
+
+    /* ── MAIN LAYOUT ── */
+    .container { max-width: 1300px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    @media(max-width:900px){ .tool-grid{ grid-template-columns:1fr; } }
+
+    /* ── PANEL CARD ── */
+    .panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      border: 1.5px solid var(--green3);
+    }
+    .panel h2 {
+      font-size: 1rem; font-weight: 700;
+      color: var(--green5);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 7px;
+      border-bottom: 2px solid var(--green2);
+      padding-bottom: 8px;
+    }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2.5px dashed var(--green4);
+      border-radius: 12px;
+      background: var(--green1);
+      padding: 30px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      background: var(--green2);
+      border-color: var(--green5);
+      transform: scale(1.01);
+    }
+    .upload-zone .upload-icon { font-size: 2.6rem; }
+    .upload-zone p { font-size: 0.88rem; color: var(--green5); margin-top: 6px; font-weight: 600; }
+    .upload-zone span { font-size: 0.78rem; color: #66bb6a; }
+    #fileInput { display: none; }
+
+    /* ── THUMBNAILS ── */
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+      max-height: 270px;
+      overflow-y: auto;
+    }
+    .thumb-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      border: 2px solid var(--green3);
+      cursor: grab;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .thumb-item:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(56,142,60,0.25); }
+    .thumb-item.dragging { opacity: 0.45; transform: scale(0.95); }
+    .thumb-item img { width:100%; height:100%; object-fit:cover; display:block; }
+    .thumb-del {
+      position: absolute; top: 3px; right: 3px;
+      background: rgba(183,28,28,0.85);
+      color: white; border: none; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px;
+      cursor: pointer; display:flex; align-items:center; justify-content:center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .thumb-item:hover .thumb-del { opacity: 1; }
+    .thumb-count {
+      background: var(--green4); color: white;
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 0.78rem; font-weight: 700;
+      display: inline-block; margin-top: 8px;
+    }
+
+    /* ── SETTINGS ── */
+    .setting-row { margin-bottom: 14px; }
+    .setting-row label {
+      display: block; font-size: 0.82rem;
+      font-weight: 600; color: var(--green5); margin-bottom: 5px;
+    }
+    .setting-row select,
+    .setting-row input[type="color"],
+    .setting-row input[type="range"] {
+      width: 100%; border-radius: 8px;
+      border: 1.5px solid var(--green3);
+      padding: 7px 10px;
+      background: var(--green1);
+      color: var(--green6);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .setting-row select:focus,
+    .setting-row input:focus { border-color: var(--green4); }
+    .setting-row input[type="color"] { height: 38px; padding: 2px 6px; cursor: pointer; }
+    .range-val { font-weight:700; color: var(--green4); margin-left:8px; }
+    .range-wrap { display:flex; align-items:center; }
+    .range-wrap input { flex:1; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      width: 100%; padding: 11px;
+      border: none; border-radius: 10px;
+      font-size: 0.93rem; font-weight: 700;
+      cursor: pointer; transition: all 0.22s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green4), var(--green5));
+      color: white; box-shadow: 0 4px 14px rgba(56,142,60,0.3);
+      margin-bottom: 10px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(56,142,60,0.4); }
+    .btn-secondary {
+      background: var(--green1); color: var(--green5);
+      border: 1.5px solid var(--green3);
+    }
+    .btn-secondary:hover { background: var(--green2); }
+    .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none !important; }
+
+    /* ── CANVAS AREA ── */
+    .canvas-panel { min-height: 500px; }
+    .canvas-wrap {
+      background: repeating-conic-gradient(#c8e6c9 0% 25%, #e8f5e9 0% 50%) 0 0 / 20px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--green3);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      min-height: 400px;
+      position: relative;
+    }
+    #collageCanvas {
+      max-width: 100%;
+      max-height: 560px;
+      border-radius: 8px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+      display: none;
+    }
+    .canvas-placeholder {
+      text-align: center;
+      color: var(--green4);
+      padding: 40px;
+    }
+    .canvas-placeholder .big-icon { font-size: 4rem; }
+    .canvas-placeholder p { font-size: 0.95rem; margin-top: 10px; font-weight: 600; }
+    .canvas-placeholder span { font-size: 0.8rem; opacity: 0.75; }
+
+    /* ── LAYOUT PRESETS ── */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .layout-btn {
+      aspect-ratio: 1; border-radius: 9px;
+      border: 2px solid var(--green3);
+      background: var(--green1);
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .layout-btn:hover { border-color: var(--green4); background: var(--green2); transform: scale(1.06); }
+    .layout-btn.active { border-color: var(--green5); background: var(--green2); box-shadow: 0 0 0 3px rgba(56,142,60,0.2); }
+    .layout-btn span.lbl {
+      position:absolute; bottom:3px; left:0; right:0;
+      text-align:center; font-size:9px; font-weight:700; color:var(--green5);
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      background: var(--green1);
+      border: 1.5px solid var(--green3);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 0.82rem; color: var(--green5);
+      margin-top: 14px; display:flex; align-items:center; gap:8px;
+    }
+    .status-dot { width:9px; height:9px; border-radius:50%; background:var(--green4); flex-shrink:0; }
+    .status-dot.processing { animation: pulse 1s infinite; background: #ff9800; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--green1); border-radius:10px; }
+    ::-webkit-scrollbar-thumb { background: var(--green3); border-radius:10px; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align:center; padding:18px;
+      font-size:0.8rem; color:var(--green5); opacity:0.7;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🖼️ Image Collage Maker</h1>
+  <p>Multiple images ko combine karke beautiful collage banayein — instantly!</p>
+</header>
+
+<div class="container">
+  <div class="tool-grid">
+
+    <!-- ══ LEFT PANEL ══ -->
+    <div>
+
+      <!-- Upload -->
+      <div class="panel" style="margin-bottom:18px;">
+        <h2>📁 Images Upload</h2>
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">🌿</div>
+          <p>Click or Drag & Drop Images Here</p>
+          <span>PNG, JPG, WEBP, GIF — Multiple files supported</span>
+          <input type="file" id="fileInput" accept="image/*" multiple/>
+        </div>
+        <div id="thumbGrid" class="thumb-grid"></div>
+        <div id="imgCount" style="text-align:center; display:none;">
+          <span class="thumb-count" id="countBadge">0 images</span>
+          <button class="btn btn-secondary" style="margin-top:10px;" onclick="clearAll()">🗑️ Clear All</button>
+        </div>
+      </div>
+
+      <!-- Layout -->
+      <div class="panel" style="margin-bottom:18px;">
+        <h2>📐 Layout Select</h2>
+        <div class="layout-grid" id="layoutGrid">
+          <div class="layout-btn active" data-layout="grid2x2" title="2×2 Grid">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="12" height="12" rx="2" fill="#66bb6a"/><rect x="18" y="2" width="12" height="12" rx="2" fill="#66bb6a"/><rect x="2" y="18" width="12" height="12" rx="2" fill="#66bb6a"/><rect x="18" y="18" width="12" height="12" rx="2" fill="#66bb6a"/></svg>
+            <span class="lbl">2×2</span>
+          </div>
+          <div class="layout-btn" data-layout="grid3x1" title="3 Vertical">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="8" rx="2" fill="#66bb6a"/><rect x="2" y="12" width="28" height="8" rx="2" fill="#66bb6a"/><rect x="2" y="22" width="28" height="8" rx="2" fill="#66bb6a"/></svg>
+            <span class="lbl">3-Row</span>
+          </div>
+          <div class="layout-btn" data-layout="grid1x3" title="3 Horizontal">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="8" height="28" rx="2" fill="#66bb6a"/><rect x="12" y="2" width="8" height="28" rx="2" fill="#66bb6a"/><rect x="22" y="2" width="8" height="28" rx="2" fill="#66bb6a"/></svg>
+            <span class="lbl">3-Col</span>
+          </div>
+          <div class="layout-btn" data-layout="grid3x2" title="3×2 Grid">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="8" height="12" rx="2" fill="#66bb6a"/><rect x="12" y="2" width="8" height="12" rx="2" fill="#66bb6a"/><rect x="22" y="2" width="8" height="12" rx="2" fill="#66bb6a"/><rect x="2" y="18" width="8" height="12" rx="2" fill="#66bb6a"/><rect x="12" y="18" width="8" height="12" rx="2" fill="#66bb6a"/><rect x="22" y="18" width="8" height="12" rx="2" fill="#66bb6a"/></svg>
+            <span class="lbl">3×2</span>
+          </div>
+          <div class="layout-btn" data-layout="featured" title="Featured (1 big + 2 small)">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="17" height="28" rx="2" fill="#66bb6a"/><rect x="21" y="2" width="9" height="13" rx="2" fill="#a5d6a7"/><rect x="21" y="17" width="9" height="13" rx="2" fill="#a5d6a7"/></svg>
+            <span class="lbl">Feature</span>
+          </div>
+          <div class="layout-btn" data-layout="horizontal" title="Horizontal Strip">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="8" width="28" height="16" rx="2" fill="#66bb6a"/></svg>
+            <span class="lbl">Strip</span>
+          </div>
+          <div class="layout-btn" data-layout="diagonal" title="Diagonal / Stacked">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="1" y="1" width="22" height="22" rx="3" fill="#a5d6a7" transform="rotate(8,12,12)"/><rect x="8" y="8" width="22" height="22" rx="3" fill="#66bb6a" transform="rotate(-6,20,20)"/></svg>
+            <span class="lbl">Stack</span>
+          </div>
+          <div class="layout-btn" data-layout="mosaic" title="Mosaic / Random">
+            <svg width="32" height="32" viewBox="0 0 32 32"><rect x="2" y="2" width="17" height="10" rx="2" fill="#66bb6a"/><rect x="21" y="2" width="9" height="10" rx="2" fill="#a5d6a7"/><rect x="2" y="14" width="9" height="16" rx="2" fill="#a5d6a7"/><rect x="13" y="14" width="17" height="7" rx="2" fill="#66bb6a"/><rect x="13" y="23" width="17" height="7" rx="2" fill="#c8e6c9"/></svg>
+            <span class="lbl">Mosaic</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="panel">
+        <h2>⚙️ Settings</h2>
+
+        <div class="setting-row">
+          <label>📏 Canvas Size</label>
+          <select id="canvasSize">
+            <option value="800x600">800 × 600 (Landscape)</option>
+            <option value="600x800">600 × 800 (Portrait)</option>
+            <option value="800x800" selected>800 × 800 (Square)</option>
+            <option value="1200x600">1200 × 600 (Wide)</option>
+            <option value="1080x1080">1080 × 1080 (Instagram)</option>
+            <option value="1920x1080">1920 × 1080 (Full HD)</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <label>🎨 Background Color</label>
+          <input type="color" id="bgColor" value="#e8f5e9"/>
+        </div>
+
+        <div class="setting-row">
+          <label>📦 Gap / Spacing <span class="range-val" id="gapVal">8</span>px</label>
+          <div class="range-wrap">
+            <input type="range" id="gapRange" min="0" max="40" value="8"
+              oninput="document.getElementById('gapVal').textContent=this.value"/>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <label>🔲 Border Radius <span class="range-val" id="radiusVal">6</span>px</label>
+          <div class="range-wrap">
+            <input type="range" id="radiusRange" min="0" max="50" value="6"
+              oninput="document.getElementById('radiusVal').textContent=this.value"/>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <label>🖼️ Border Width <span class="range-val" id="borderWVal">0</span>px</label>
+          <div class="range-wrap">
+            <input type="range" id="borderWRange" min="0" max="10" value="0"
+              oninput="document.getElementById('borderWVal').textContent=this.value"/>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <label>🎨 Border Color</label>
+          <input type="color" id="borderColor" value="#ffffff"/>
+        </div>
+
+        <div class="setting-row">
+          <label>🌟 Shadow Opacity <span class="range-val" id="shadowVal">0</span>%</label>
+          <div class="range-wrap">
+            <input type="range" id="shadowRange" min="0" max="100" value="0"
+              oninput="document.getElementById('shadowVal').textContent=this.value"/>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <label>💧 Overall Opacity <span class="range-val" id="opacityVal">100</span>%</label>
+          <div class="range-wrap">
+            <input type="range" id="opacityRange" min="20" max="100" value="100"
+              oninput="document.getElementById('opacityVal').textContent=this.value"/>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="generateCollage()">✨ Generate Collage</button>
+        <button class="btn btn-secondary" onclick="generateCollage(true)">🔄 Randomize Layout</button>
+      </div>
+    </div>
+
+    <!-- ══ RIGHT PANEL ══ -->
+    <div class="panel canvas-panel">
+      <h2>🖼️ Preview & Export</h2>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <div class="canvas-placeholder" id="placeholder">
+          <div class="big-icon">🌿</div>
+          <p>Upload images & click Generate</p>
+          <span>Your collage will appear here</span>
+        </div>
+        <canvas id="collageCanvas"></canvas>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Ready — upload images to begin</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px;">
+        <button class="btn btn-primary" id="dlPng" onclick="downloadCollage('png')" disabled>
+          ⬇️ PNG
+        </button>
+        <button class="btn btn-primary" id="dlJpg" onclick="downloadCollage('jpg')" disabled>
+          ⬇️ JPG
+        </button>
+        <button class="btn btn-secondary" id="dlWebp" onclick="downloadCollage('webp')" disabled>
+          ⬇️ WEBP
+        </button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+        <button class="btn btn-secondary" onclick="copyToClipboard()" id="copyBtn" disabled>
+          📋 Copy Image
+        </button>
+        <button class="btn btn-secondary" onclick="openFullscreen()" id="fsBtn" disabled>
+          🔍 Fullscreen
+        </button>
+      </div>
+
+      <!-- Info Bar -->
+      <div id="infoBar" style="display:none; margin-top:14px;
+        background:var(--green1); border:1.5px solid var(--green3);
+        border-radius:10px; padding:10px 14px;
+        font-size:0.82rem; color:var(--green5); text-align:center;">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>🌿 Image Collage Maker — All processing done locally in your browser. No upload to server.</footer>
+
+<script>
+  let images = [];
+  let currentLayout = 'grid2x2';
+  let collageGenerated = false;
+
+  // ── Upload Zone ──
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput  = document.getElementById('fileInput');
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => loadFiles(e.target.files));
+
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('drag-over');
+    loadFiles(e.dataTransfer.files);
+  });
+
+  function loadFiles(files) {
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          images.push({ src: ev.target.result, img, name: file.name });
+          renderThumbs();
+          setStatus('idle', `${images.length} image${images.length>1?'s':''} loaded`);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderThumbs() {
+    const grid = document.getElementById('thumbGrid');
+    grid.innerHTML = '';
+    images.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'thumb-item';
+      div.draggable = true;
+      div.dataset.idx = i;
+      div.innerHTML = `<img src="${item.src}" alt="${item.name}"/>
+        <button class="thumb-del" onclick="removeImg(${i})">✕</button>`;
+      // drag reorder
+      div.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); div.classList.add('dragging'); });
+      div.addEventListener('dragend', () => div.classList.remove('dragging'));
+      div.addEventListener('dragover', e => e.preventDefault());
+      div.addEventListener('drop', e => {
+        e.preventDefault();
+        const from = +e.dataTransfer.getData('text/plain');
+        const to   = +div.dataset.idx;
+        if (from === to) return;
+        const tmp = images[from]; images[from] = images[to]; images[to] = tmp;
+        renderThumbs();
+      });
+      grid.appendChild(div);
+    });
+    document.getElementById('imgCount').style.display = images.length ? 'block' : 'none';
+    document.getElementById('countBadge').textContent = `${images.length} image${images.length>1?'s':''}`;
+  }
+
+  function removeImg(i) { images.splice(i,1); renderThumbs(); }
+  function clearAll() {
+    images = []; renderThumbs();
+    document.getElementById('collageCanvas').style.display = 'none';
+    document.getElementById('placeholder').style.display = 'block';
+    ['dlPng','dlJpg','dlWebp','copyBtn','fsBtn'].forEach(id => document.getElementById(id).disabled = true);
+    document.getElementById('infoBar').style.display = 'none';
+    setStatus('idle','Ready — upload images to begin');
+    collageGenerated = false;
+  }
+
+  // ── Layout buttons ──
+  document.getElementById('layoutGrid').querySelectorAll('.layout-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLayout = btn.dataset.layout;
+    });
+  });
+
+  // ── Status ──
+  function setStatus(type, msg) {
+    const dot  = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    dot.className  = 'status-dot' + (type==='processing' ? ' processing' : '');
+    text.textContent = msg;
+  }
+
+  // ── Main generate ──
+  function generateCollage(randomize) {
+    if (images.length === 0) { alert('⚠️ Please upload at least 1 image first!'); return; }
+
+    setStatus('processing','Generating collage…');
+
+    const [cW, cH]  = document.getElementById('canvasSize').value.split('x').map(Number);
+    const gap       = +document.getElementById('gapRange').value;
+    const br        = +document.getElementById('radiusRange').value;
+    const bw        = +document.getElementById('borderWRange').value;
+    const bc        = document.getElementById('borderColor').value;
+    const bg        = document.getElementById('bgColor').value;
+    const shadow    = +document.getElementById('shadowRange').value / 100;
+    const opacity   = +document.getElementById('opacityRange').value / 100;
+
+    const canvas  = document.getElementById('collageCanvas');
+    const ctx     = canvas.getContext('2d');
+    canvas.width  = cW;
+    canvas.height = cH;
+
+    // background
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, cW, cH);
+
+    const layout = randomize ? getRandomLayout() : currentLayout;
+    const cells  = buildCells(layout, cW, cH, gap, images.length);
+
+    cells.forEach((cell, i) => {
+      const imgObj = images[i % images.length].img;
+      ctx.save();
+
+      // shadow
+      if (shadow > 0) {
+        ctx.shadowColor   = `rgba(0,0,0,${shadow})`;
+        ctx.shadowBlur    = 12;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+      }
+
+      // clip with border radius
+      roundedRect(ctx, cell.x, cell.y, cell.w, cell.h, br);
+      ctx.clip();
+
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+
+      // draw image (cover)
+      const scale = Math.max(cell.w / imgObj.width, cell.h / imgObj.height);
+      const sw    = cell.w / scale, sh = cell.h / scale;
+      const sx    = (imgObj.width  - sw) / 2;
+      const sy    = (imgObj.height - sh) / 2;
+      ctx.globalAlpha = opacity;
+      ctx.drawImage(imgObj, sx, sy, sw, sh, cell.x, cell.y, cell.w, cell.h);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
+      // border
+      if (bw > 0) {
+        ctx.save();
+        roundedRect(ctx, cell.x + bw/2, cell.y + bw/2, cell.w - bw, cell.h - bw, Math.max(0, br - bw/2));
+        ctx.strokeStyle = bc;
+        ctx.lineWidth   = bw;
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    canvas.style.display = 'block';
+    document.getElementById('placeholder').style.display = 'none';
+    ['dlPng','dlJpg','dlWebp','copyBtn','fsBtn'].forEach(id => document.getElementById(id).disabled = false);
+    collageGenerated = true;
+
+    const infoBar = document.getElementById('infoBar');
+    infoBar.style.display = 'block';
+    infoBar.textContent   = `✅ Collage: ${cW}×${cH}px | ${cells.length} cell(s) | Layout: ${layout} | Gap: ${gap}px`;
+    setStatus('idle', `Collage ready! (${cW}×${cH}px)`);
+  }
+
+  function getRandomLayout() {
+    const layouts = ['grid2x2','grid3x1','grid1x3','grid3x2','featured','horizontal','diagonal','mosaic'];
+    return layouts[Math.floor(Math.random() * layouts.length)];
+  }
+
+  // ── Build cells for each layout ──
+  function buildCells(layout, W, H, gap, n) {
+    const g = gap;
+    const cells = [];
+    const p = g; // padding
+
+    if (layout === 'grid2x2') {
+      const cols = 2, rows = 2;
+      const cw = (W - p*2 - g*(cols-1)) / cols;
+      const ch = (H - p*2 - g*(rows-1)) / rows;
+      for (let r=0;r<rows;r++) for (let c=0;c<cols;c++)
+        cells.push({ x: p+c*(cw+g), y: p+r*(ch+g), w:cw, h:ch });
+    } else if (layout === 'grid3x1') {
+      const rows=3, cw=W-p*2, ch=(H-p*2-g*(rows-1))/rows;
+      for (let r=0;r<rows;r++) cells.push({ x:p, y:p+r*(ch+g), w:cw, h:ch });
+    } else if (layout === 'grid1x3') {
+      const cols=3, ch=H-p*2, cw=(W-p*2-g*(cols-1))/cols;
+      for (let c=0;c<cols;c++) cells.push({ x:p+c*(cw+g), y:p, w:cw, h:ch });
+    } else if (layout === 'grid3x2') {
+      const cols=3, rows=2, cw=(W-p*2-g*(cols-1))/cols, ch=(H-p*2-g*(rows-1))/rows;
+      for (let r=0;r<rows;r++) for (let c=0;c<cols;c++)
+        cells.push({ x:p+c*(cw+g), y:p+r*(ch+g), w:cw, h:ch });
+    } else if (layout === 'featured') {
+      const lw = (W-p*2)*0.58, rw = (W-p*2)*0.42-g;
+      const ch = (H-p*2-g)/2;
+      cells.push({ x:p, y:p, w:lw, h:H-p*2 });
+      cells.push({ x:p+lw+g, y:p,    w:rw, h:ch });
+      cells.push({ x:p+lw+g, y:p+ch+g, w:rw, h:ch });
+    } else if (layout === 'horizontal') {
+      const count = Math.min(n, 5);
+      const cw = (W - p*2 - g*(count-1)) / count;
+      const ch = H - p*2;
+      for (let i=0;i<count;i++) cells.push({ x:p+i*(cw+g), y:p, w:cw, h:ch });
+    } else if (layout === 'diagonal') {
+      const count = Math.min(n, 4);
+      const step  = Math.min(30, (W-p*2-200)/count);
+      const iw    = W - p*2 - step*count;
+      const ih    = H - p*2 - step*count;
+      for (let i=count-1;i>=0;i--)
+        cells.push({ x:p+i*step, y:p+i*step, w:iw, h:ih });
+    } else if (layout === 'mosaic') {
+      const row1h = (H-p*2)*0.5 - g/2;
+      const row2h = (H-p*2)*0.5 - g/2;
+      const w1 = (W-p*2)*0.55 - g/2;
+      const w2 = (W-p*2)*0.45 - g/2;
+      const w3 = (W-p*2)*0.33 - g*2/3;
+      const w4 = (W-p*2)*0.34 - g*2/3;
+      const w5 = (W-p*2)*0.33 - g*2/3;
+      cells.push({ x:p,          y:p,          w:w1, h:row1h });
+      cells.push({ x:p+w1+g,     y:p,          w:w2, h:row1h });
+      cells.push({ x:p,          y:p+row1h+g,  w:w3, h:row2h });
+      cells.push({ x:p+w3+g,     y:p+row1h+g,  w:w4, h:row2h });
+      cells.push({ x:p+w3+g+w4+g,y:p+row1h+g,  w:w5, h:row2h });
+    }
+    return cells;
+  }
+
+  function roundedRect(ctx, x, y, w, h, r) {
+    if (r === 0) { ctx.beginPath(); ctx.rect(x,y,w,h); return; }
+    r = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+  }
+
+  // ── Download ──
+  function downloadCollage(fmt) {
+    const canvas = document.getElementById('collageCanvas');
+    const mime   = fmt === 'jpg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png';
+    const q      = fmt === 'png' ? 1 : 0.92;
+    const a      = document.createElement('a');
+    a.download   = `collage_${Date.now()}.${fmt}`;
+    a.href       = canvas.toDataURL(mime, q);
+    a.click();
+    setStatus('idle', `Downloaded as ${fmt.toUpperCase()}!`);
+  }
+
+  // ── Copy to clipboard ──
+  async function copyToClipboard() {
+    const canvas = document.getElementById('collageCanvas');
+    canvas.toBlob(async blob => {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        setStatus('idle','✅ Copied to clipboard!');
+      } catch { setStatus('idle','❌ Copy not supported in this browser'); }
+    });
+  }
+
+  // ── Fullscreen ──
+  function openFullscreen() {
+    const canvas = document.getElementById('collageCanvas');
+    const win    = window.open('','_blank');
+    win.document.write(`<html><head><title>Collage Preview</title>
+      <style>body{margin:0;background:#1b5e20;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+      img{max-width:95vw;max-height:95vh;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);}</style></head>
+      <body><img src="${canvas.toDataURL()}"/></body></html>`);
+    win.document.close();
+  }
+</script>
+</body>
+</html>
