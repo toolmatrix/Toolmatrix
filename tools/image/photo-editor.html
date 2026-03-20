@@ -4,12 +4,14 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Photo Editor - Free Online Photo Editor</title>
+  <title>Photo Editor Online Free - Edit Photos in Browser | ToolMatrix</title>
+  <meta name="description" content="Free online photo editor. Add text, filters, crop, draw and resize photos directly in browser. No download needed. Like iloveimg.">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <!-- Monetag In-Page Push -->
   <script async src="https://nap5k.com/tag.min.js" data-zone="10689876" data-cfasync="false"></script>
-  <!-- Adsterra Popunder — fires once on first click -->
+  <!-- Adsterra Popunder -- fires once on first click -->
   <script>(function(){document.addEventListener('click',function(){var s=document.createElement('script');s.src='https://omg10.com/4/10689787';s.async=true;document.head.appendChild(s);},{once:true});})();</script>
 
   <style>
@@ -24,7 +26,7 @@
       --shadow: 0 4px 20px rgba(34,197,94,0.10);
       --shadow2: 0 2px 8px rgba(34,197,94,0.13);
     }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body { font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: var(--surface2); }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -38,9 +40,11 @@
     .ad-lbl { font-size: .5rem; color: var(--border2); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
 
     /* HEADER */
-    header { background: var(--surface); border-bottom: 2px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
-    .logo { display: flex; align-items: center; gap: 9px; font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
-    .logo i { color: var(--primary); font-size: 1.3rem; }
+    header { background: linear-gradient(90deg,var(--primary-dark),#16a34a,#22c55e); border-bottom: none; padding: 0 20px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 18px rgba(22,163,74,.22); }
+    .logo { display: flex; align-items: center; gap: 9px; font-size: 1.15rem; font-weight: 800; color: #fff; text-decoration: none; }
+    .logo-ic { width: 40px; height: 40px; background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.28); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; flex-shrink: 0; }
+    .logo-nm { color: #fff; }.logo-nm span { color: #bbf7d0; }
+    .header-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
     .header-actions { display: flex; gap: 7px; flex-wrap: wrap; }
     .btn { padding: 7px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.18s; white-space: nowrap; font-family: inherit; text-decoration: none; }
     .btn-primary  { background: var(--primary); color: #fff; }
@@ -71,11 +75,102 @@
     #file-input { display: none; }
 
     /* FOOTER */
-    .footer { text-align: center; padding: 18px 20px; border-top: 1.5px solid var(--border); width: 100%; margin-top: 10px; }
+    .footer { text-align: center; padding: 16px 20px; border-top: 1.5px solid var(--border); width: 100%; background: var(--surface); flex-shrink: 0; }
     .footer p { color: var(--text-muted); font-size: .82rem; }
     .footer a { color: var(--primary-dark); font-weight: 700; text-decoration: none; }
+    .footer-heart { display: inline-block; animation: hbeat 1.2s ease-in-out infinite; color: var(--primary); }
+    @keyframes hbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.45)} 28%{transform:scale(1)} 42%{transform:scale(1.28)} 70%{transform:scale(1)} }
 
-    /* EDITOR */
+    /* ====== MOBILE BOTTOM BAR (iloveimg style) ====== */
+    .mob-bottom-bar { display: none; }
+
+    @media (max-width: 800px) {
+      /* Hide desktop sidebars & old mobile tabs */
+      .sidebar, .sidebar-right { display: none !important; }
+      .mobile-tabs { display: none !important; }
+
+      /* Editor layout: full width canvas */
+      .editor-main { grid-template-columns: 1fr !important; }
+
+      /* Bottom bar */
+      .mob-bottom-bar {
+        display: flex;
+        flex-shrink: 0;
+        background: var(--surface);
+        border-top: 2px solid var(--border);
+        padding: 6px 8px 8px;
+        gap: 4px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        z-index: 50;
+      }
+      .mob-bottom-bar::-webkit-scrollbar { display: none; }
+      .mbb-btn {
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+        flex-shrink: 0; min-width: 58px; padding: 7px 6px;
+        border-radius: 12px; border: 1.5px solid var(--border);
+        background: var(--surface2); color: var(--text-muted);
+        cursor: pointer; font-family: inherit; font-size: .65rem; font-weight: 700;
+        transition: all .18s; -webkit-tap-highlight-color: transparent;
+      }
+      .mbb-btn i { font-size: 1.1rem; color: var(--primary); }
+      .mbb-btn:hover, .mbb-btn.active { background: var(--primary-xlight); border-color: var(--primary); color: var(--primary-dark); }
+      .mbb-btn.active i { color: var(--primary-dark); }
+      .mbb-btn.cursor-btn { background: var(--primary); border-color: var(--primary-dark); color: #fff; }
+      .mbb-btn.cursor-btn i { color: #fff; }
+
+      /* Bottom panel sheet */
+      .mob-panel-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35);
+        z-index: 200; -webkit-tap-highlight-color: transparent;
+      }
+      .mob-panel-overlay.on { display: block; }
+      .mob-panel-sheet {
+        position: fixed; left: 0; right: 0; bottom: 0;
+        background: var(--surface); border-radius: 22px 22px 0 0;
+        box-shadow: 0 -8px 40px rgba(34,197,94,.18);
+        z-index: 201; transform: translateY(100%);
+        transition: transform .28s cubic-bezier(.4,0,.2,1);
+        max-height: 75vh; display: flex; flex-direction: column;
+        border-top: 2px solid var(--border);
+      }
+      .mob-panel-sheet.on { transform: translateY(0); }
+      .mob-panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px 10px; border-bottom: 1.5px solid var(--border);
+        flex-shrink: 0;
+      }
+      .mph-title { font-size: .9rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+      .mph-title i { color: var(--primary); }
+      .mph-cursor-btn {
+        display: flex; align-items: center; gap: 6px;
+        padding: 7px 14px; background: var(--primary); border: none;
+        border-radius: 22px; color: #fff; font-size: .78rem; font-weight: 800;
+        cursor: pointer; font-family: inherit;
+      }
+      .mph-close-btn {
+        width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border2);
+        background: var(--surface2); color: var(--text-muted); font-size: .85rem;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+      }
+      .mob-panel-body {
+        overflow-y: auto; padding: 14px 16px; flex: 1;
+        scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+      }
+      .mob-panel-body .sidebar-section { border: none; padding: 0; margin-bottom: 14px; }
+      .mob-panel-body .sidebar-section-title { margin-bottom: 12px; }
+
+      /* Hide tools-bar zoom clutter on mobile */
+      .tools-bar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+      .tools-bar::-webkit-scrollbar { display: none; }
+      .tool-btn { min-width: 44px; padding: 6px 7px; }
+      .tools-bar-divider { flex-shrink: 0; }
+    }
+    @media (max-width: 480px) {
+      .zoom-label { min-width: 36px; font-size: .75rem; }
+      .mbb-btn { min-width: 52px; font-size: .6rem; }
+    }
     #editor-section { display: none; flex-direction: column; height: calc(100vh - 62px); overflow: hidden; }
     .editor-main { display: grid; grid-template-columns: 235px 1fr 245px; flex: 1; overflow: hidden; min-height: 0; }
 
@@ -178,18 +273,9 @@
     .spinner { width: 44px; height: 44px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .75s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* MOBILE */
-    .mobile-tabs { display: none; }
+    /* OLD MOBILE -- overridden by new mob-bottom-bar system */
+    .mobile-tabs { display: none !important; }
     @media (max-width: 800px) {
-      .editor-main { grid-template-columns: 1fr; }
-      .sidebar, .sidebar-right { display: none; }
-      .sidebar.mobile-show, .sidebar-right.mobile-show { display: block; max-height: 210px; overflow-y: auto; border: none; border-bottom: 1.5px solid var(--border); }
-      .mobile-tabs { display: flex; background: var(--surface); border-bottom: 1.5px solid var(--border); overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-      .mobile-tabs::-webkit-scrollbar { display: none; }
-      .mobile-tab { padding: 9px 14px; font-size: .73rem; white-space: nowrap; cursor: pointer; color: var(--text-muted); border-bottom: 2.5px solid transparent; display: flex; align-items: center; gap: 5px; font-family: inherit; background: none; border-top: none; border-left: none; border-right: none; font-weight: 600; transition: all .15s; }
-      .mobile-tab.active { color: var(--primary-dark); border-bottom-color: var(--primary); }
-      .tools-bar { overflow-x: auto; flex-wrap: nowrap; padding: 7px 10px; }
-      .tool-btn { min-width: 44px; padding: 6px 7px; }
       header { padding: 8px 12px; }
       .btn span { display: none; }
       .btn { padding: 7px 9px; }
@@ -213,18 +299,19 @@
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <i class="fas fa-image"></i>
-    <span>Photo Editor</span>
-  </div>
+  <a href="../../index.html" class="logo" style="text-decoration:none;">
+    <div class="logo-ic"><i class="fas fa-image"></i></div>
+    <div class="logo-nm">Tool<span>Matrix</span></div>
+  </a>
   <div class="header-actions">
-    <button class="btn btn-secondary" id="undo-btn" onclick="undoAction()" disabled><i class="fas fa-undo"></i><span>Undo</span></button>
-    <button class="btn btn-secondary" id="redo-btn" onclick="redoAction()" disabled><i class="fas fa-redo"></i><span>Redo</span></button>
-    <button class="btn btn-danger"    id="reset-btn" onclick="resetImage()" disabled><i class="fas fa-rotate-left"></i><span>Reset</span></button>
-    <button class="btn btn-secondary" onclick="uploadNew()"><i class="fas fa-upload"></i><span>Upload</span></button>
+    <button class="btn btn-secondary" id="undo-btn" onclick="undoAction()" disabled style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.22);"><i class="fas fa-undo"></i><span>Undo</span></button>
+    <button class="btn btn-secondary" id="redo-btn" onclick="redoAction()" disabled style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.22);"><i class="fas fa-redo"></i><span>Redo</span></button>
+    <button class="btn btn-danger"    id="reset-btn" onclick="resetImage()" disabled style="background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.3);"><i class="fas fa-rotate-left"></i><span>Reset</span></button>
+    <button class="btn btn-secondary" onclick="uploadNew()" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.22);"><i class="fas fa-upload"></i><span>New</span></button>
     <!-- SmartLink on Save/Download -->
     <a href="https://omg10.com/4/10689787" target="_blank" rel="noopener"
-       class="btn btn-success disabled" id="download-btn" onclick="downloadImage()">
+       class="btn btn-success disabled" id="download-btn" onclick="downloadImage()"
+       style="background:rgba(255,255,255,.22);color:#fff;border-color:rgba(255,255,255,.3);">
       <i class="fas fa-download"></i><span>Save</span>
     </a>
   </div>
@@ -249,31 +336,46 @@
       <span class="format-badge">JPG</span><span class="format-badge">PNG</span>
       <span class="format-badge">WebP</span><span class="format-badge">GIF</span><span class="format-badge">BMP</span>
     </div>
+    <!-- AD inside drop zone -->
+    <div class="ad-wrap" style="margin-top:22px;border-radius:12px;border:1.5px solid var(--border);overflow:hidden;width:100%">
+      <span class="ad-lbl">Advertisement</span>
+      <div class="ad-desktop">
+        <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+        <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+      </div>
+      <div class="ad-mobile">
+        <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+        <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+      </div>
+    </div>
   </div>
   <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)"/>
 
-  <!-- AD: Upload page -->
-  <div class="ad-wrap" id="uploadAd" style="margin-top:20px;max-width:760px;border-radius:14px;border:1.5px solid var(--border);overflow:hidden">
-    <span class="ad-lbl">Advertisement</span>
-    <div class="ad-desktop">
-      <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
-      <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-    </div>
-    <div class="ad-mobile">
-      <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
-      <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-    </div>
-  </div>
-
-  <!-- FOOTER (inside upload section, hidden when editor opens) -->
-  <footer class="footer">
-    <p>Made with 💚 by <a href="../../index.html">ToolMatrix</a> — Free Online photo editor</p>
+  <!-- FOOTER (upload page) -->
+  <footer class="footer" style="margin-top:18px;">
+    <p>Made with <span class="footer-heart">&#9825;</span> by <a href="../../index.html">ToolMatrix</a> &mdash; Free Online Photo Editor</p>
   </footer>
 </div>
 
 <!-- EDITOR -->
 <div id="editor-section">
-  <!-- Mobile Tabs -->
+  <!-- Mobile bottom panel overlay -->
+  <div class="mob-panel-overlay" id="mobOverlay" onclick="closeMobPanel()"></div>
+  <!-- Mobile bottom sheet panel -->
+  <div class="mob-panel-sheet" id="mobPanelSheet">
+    <div class="mob-panel-header">
+      <div class="mph-title" id="mobPanelTitle"><i class="fas fa-sliders-h"></i> Adjustments</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="mph-cursor-btn" onclick="closeMobPanel();activateTool('select')">
+          <i class="fas fa-arrow-pointer"></i> Cursor
+        </button>
+        <button class="mph-close-btn" onclick="closeMobPanel()"><i class="fas fa-times"></i></button>
+      </div>
+    </div>
+    <div class="mob-panel-body" id="mobPanelBody"></div>
+  </div>
+
+  <!-- Mobile Tabs (desktop fallback -- hidden on mobile via CSS) -->
   <div class="mobile-tabs" id="mobile-tabs">
     <button class="mobile-tab active" id="tab-canvas"  onclick="showMobilePanel('canvas')"><i class="fas fa-image"></i>Canvas</button>
     <button class="mobile-tab"        id="tab-adjust"  onclick="showMobilePanel('adjust')"><i class="fas fa-sliders-h"></i>Adjust</button>
@@ -327,7 +429,7 @@
         <div class="slider-group"><div class="slider-label"><span>Brightness</span><span id="brightness-val">0</span></div><input type="range" id="brightness" min="-100" max="100" value="0" oninput="updateVal('brightness-val',this.value);applyFilters()"></div>
         <div class="slider-group"><div class="slider-label"><span>Contrast</span><span id="contrast-val">0</span></div><input type="range" id="contrast" min="-100" max="100" value="0" oninput="updateVal('contrast-val',this.value);applyFilters()"></div>
         <div class="slider-group"><div class="slider-label"><span>Saturation</span><span id="saturation-val">0</span></div><input type="range" id="saturation" min="-100" max="100" value="0" oninput="updateVal('saturation-val',this.value);applyFilters()"></div>
-        <div class="slider-group"><div class="slider-label"><span>Hue Rotate</span><span id="hue-val">0°</span></div><input type="range" id="hue" min="0" max="360" value="0" oninput="updateVal('hue-val',this.value+'°');applyFilters()"></div>
+        <div class="slider-group"><div class="slider-label"><span>Hue Rotate</span><span id="hue-val">0deg</span></div><input type="range" id="hue" min="0" max="360" value="0" oninput="updateVal('hue-val',this.value+'deg');applyFilters()"></div>
         <div class="slider-group"><div class="slider-label"><span>Blur</span><span id="blur-val">0</span></div><input type="range" id="blur" min="0" max="20" value="0" step="0.1" oninput="updateVal('blur-val',this.value);applyFilters()"></div>
         <div class="slider-group"><div class="slider-label"><span>Sharpen</span><span id="sharpen-val">0</span></div><input type="range" id="sharpen" min="0" max="10" value="0" step="0.5" oninput="updateVal('sharpen-val',this.value);applyFilters()"></div>
         <div class="slider-group"><div class="slider-label"><span>Opacity</span><span id="opacity-val">100%</span></div><input type="range" id="opacity" min="0" max="100" value="100" oninput="updateVal('opacity-val',this.value+'%');applyFilters()"></div>
@@ -506,6 +608,42 @@
     <div class="info-item"><i class="fas fa-weight"></i><span>File:</span><span id="info-filesize">-</span></div>
     <div class="info-item"><i class="fas fa-tools"></i><span>Tool:</span><span id="info-tool">Select</span></div>
   </div>
+
+  <!-- MOBILE BOTTOM BAR (iloveimg style) -->
+  <div class="mob-bottom-bar" id="mobBottomBar">
+    <button class="mbb-btn cursor-btn" id="mbb-cursor" onclick="closeMobPanel();activateTool('select')">
+      <i class="fas fa-arrow-pointer"></i> Cursor
+    </button>
+    <button class="mbb-btn" id="mbb-adjust" onclick="openMobPanel('adjust')">
+      <i class="fas fa-sliders-h"></i> Adjust
+    </button>
+    <button class="mbb-btn" id="mbb-filters" onclick="openMobPanel('filters')">
+      <i class="fas fa-magic"></i> Filters
+    </button>
+    <button class="mbb-btn" id="mbb-crop" onclick="openMobPanel('crop')">
+      <i class="fas fa-crop-alt"></i> Crop
+    </button>
+    <button class="mbb-btn" id="mbb-draw" onclick="openMobPanel('draw')">
+      <i class="fas fa-pen"></i> Draw
+    </button>
+    <button class="mbb-btn" id="mbb-erase" onclick="openMobPanel('erase')">
+      <i class="fas fa-eraser"></i> Erase
+    </button>
+    <button class="mbb-btn" id="mbb-text" onclick="openMobPanel('text')">
+      <i class="fas fa-font"></i> Text
+    </button>
+    <button class="mbb-btn" id="mbb-resize" onclick="openMobPanel('resize')">
+      <i class="fas fa-expand-arrows-alt"></i> Resize
+    </button>
+    <button class="mbb-btn" id="mbb-export" onclick="openMobPanel('export')">
+      <i class="fas fa-download"></i> Export
+    </button>
+  </div>
+
+  <!-- FOOTER (editor page) -->
+  <footer class="footer" id="editorFooter" style="display:none;">
+    <p>Made with <span class="footer-heart">&#9825;</span> by <a href="../../index.html">ToolMatrix</a> &mdash; Free Online Photo Editor</p>
+  </footer>
 </div><!-- /editor-section -->
 
 <script>
@@ -567,7 +705,7 @@ function processFile(file) {
     const img=new Image();
     img.onload=()=>{
       originalImage=img; originalAspectRatio=img.width/img.height;
-      document.getElementById('info-size').textContent=img.width+'×'+img.height;
+      document.getElementById('info-size').textContent=img.width+'x'+img.height;
       document.getElementById('resize-w').value=img.width;
       document.getElementById('resize-h').value=img.height;
       setupCanvas(img.width,img.height);
@@ -591,12 +729,13 @@ function showEditor() {
   dlBtn.classList.remove('disabled');
   dlBtn.href=SMARTLINK;
   document.getElementById('reset-btn').disabled=false;
+  document.getElementById('editorFooter').style.display='block';
 }
 
 function setupCanvas(w,h) {
   mainCanvas.width=w; mainCanvas.height=h;
   overlayCanvas.width=w; overlayCanvas.height=h;
-  document.getElementById('info-canvas').textContent=w+'×'+h;
+  document.getElementById('info-canvas').textContent=w+'x'+h;
 }
 
 function updateVal(id,val) { document.getElementById(id).textContent=val; }
@@ -653,7 +792,7 @@ function applySharpenEffect() {
 
 function resetAdjustments() {
   const defs={brightness:0,contrast:0,saturation:0,hue:0,blur:0,sharpen:0,opacity:100,temperature:0,vignette:0};
-  const lbls={'brightness-val':'0','contrast-val':'0','saturation-val':'0','hue-val':'0°','blur-val':'0','sharpen-val':'0','opacity-val':'100%','temp-val':'0','vignette-val':'0'};
+  const lbls={'brightness-val':'0','contrast-val':'0','saturation-val':'0','hue-val':'0deg','blur-val':'0','sharpen-val':'0','opacity-val':'100%','temp-val':'0','vignette-val':'0'};
   Object.keys(defs).forEach(id=>document.getElementById(id).value=defs[id]);
   Object.keys(lbls).forEach(id=>document.getElementById(id).textContent=lbls[id]);
   applyFilters(); showToast('Adjustments reset ho gaye!','success');
@@ -833,7 +972,7 @@ function applyResize() {
   setupCanvas(nw,nh); currentImageData=tc.getImageData(0,0,nw,nh);
   mainCtx.putImageData(currentImageData,0,0); applyFilters();
   originalAspectRatio=nw/nh; document.getElementById('resize-w').value=nw; document.getElementById('resize-h').value=nh;
-  fitToScreen(); saveHistory('Resize '+nw+'×'+nh); showToast('Resize ho gaya: '+nw+'×'+nh,'success');
+  fitToScreen(); saveHistory('Resize '+nw+'x'+nh); showToast('Resize ho gaya: '+nw+'x'+nh,'success');
 }
 
 function saveHistory(label) {
@@ -898,6 +1037,110 @@ function showMobilePanel(panel) {
   document.getElementById('right-sidebar').classList.remove('mobile-show');
   if(panel==='adjust') document.getElementById('left-sidebar').classList.add('mobile-show');
   else if(['filters','text','resize','export'].includes(panel)) document.getElementById('right-sidebar').classList.add('mobile-show');
+}
+
+// ====== MOBILE BOTTOM PANEL (iloveimg style) ======
+const MOB_PANELS = {
+  adjust: {
+    title: '<i class="fas fa-sliders-h"></i> Adjustments',
+    html: () => document.getElementById('left-sidebar').innerHTML
+  },
+  filters: {
+    title: '<i class="fas fa-magic"></i> Filter Presets',
+    html: () => {
+      const sec = document.querySelector('.sidebar-right .sidebar-section');
+      return sec ? sec.innerHTML : '';
+    }
+  },
+  crop: {
+    title: '<i class="fas fa-crop-alt"></i> Crop Options',
+    activate: () => activateTool('crop'),
+    html: () => `
+      <div class="sidebar-section-title" style="margin-bottom:12px"><i class="fas fa-crop-alt"></i> Aspect Ratio</div>
+      <div class="crop-aspect-grid">
+        <button class="crop-aspect-btn" onclick="setCropAspect(0,0)">Free</button>
+        <button class="crop-aspect-btn" onclick="setCropAspect(1,1)">1:1</button>
+        <button class="crop-aspect-btn" onclick="setCropAspect(16,9)">16:9</button>
+        <button class="crop-aspect-btn" onclick="setCropAspect(4,3)">4:3</button>
+        <button class="crop-aspect-btn" onclick="setCropAspect(3,2)">3:2</button>
+        <button class="crop-aspect-btn" onclick="setCropAspect(9,16)">9:16</button>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:8px" onclick="applyCrop();closeMobPanel()"><i class="fas fa-check"></i> Apply Crop</button>
+      <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="cancelCrop();closeMobPanel()"><i class="fas fa-times"></i> Cancel Crop</button>`
+  },
+  draw: {
+    title: '<i class="fas fa-pen"></i> Draw Options',
+    activate: () => activateTool('draw'),
+    html: () => `
+      <div class="color-row"><label>Brush Color</label><input type="color" id="m-draw-color" value="#22c55e" onchange="document.getElementById('draw-color').value=this.value;updateDrawSettings()"></div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Brush Size</span><span id="m-brush-size-val">5</span></div>
+        <input type="range" id="m-brush-size" min="1" max="60" value="5" oninput="document.getElementById('brush-size').value=this.value;document.getElementById('m-brush-size-val').textContent=this.value;updateDrawSettings()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Opacity</span><span id="m-brush-opacity-val">100%</span></div>
+        <input type="range" id="m-brush-opacity" min="1" max="100" value="100" oninput="document.getElementById('brush-opacity').value=this.value;document.getElementById('m-brush-opacity-val').textContent=this.value+'%';updateDrawSettings()">
+      </div>
+      <select onchange="document.getElementById('brush-style').value=this.value;updateDrawSettings()" style="margin-bottom:10px">
+        <option value="round">Round Brush</option>
+        <option value="square">Square Brush</option>
+      </select>
+      <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="clearDrawing()"><i class="fas fa-trash"></i> Clear Drawing</button>`
+  },
+  erase: {
+    title: '<i class="fas fa-eraser"></i> Eraser',
+    activate: () => activateTool('erase'),
+    html: () => `
+      <div class="slider-group">
+        <div class="slider-label"><span>Eraser Size</span><span id="m-erase-val">20</span></div>
+        <input type="range" min="2" max="80" value="20" oninput="document.getElementById('brush-size').value=this.value;document.getElementById('m-erase-val').textContent=this.value;updateDrawSettings()">
+      </div>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;line-height:1.5"><i class="fas fa-info-circle" style="color:var(--primary)"></i> Erase tool se image ka hissa mita saktay ho.</p>`
+  },
+  text: {
+    title: '<i class="fas fa-font"></i> Text Options',
+    activate: () => activateTool('text'),
+    html: () => {
+      const sec = document.querySelectorAll('.sidebar-right .sidebar-section')[1];
+      return sec ? sec.innerHTML : '';
+    }
+  },
+  resize: {
+    title: '<i class="fas fa-expand-arrows-alt"></i> Resize Image',
+    html: () => {
+      const sec = document.querySelectorAll('.sidebar-right .sidebar-section')[2];
+      return sec ? sec.innerHTML : '';
+    }
+  },
+  export: {
+    title: '<i class="fas fa-download"></i> Export / Download',
+    html: () => {
+      const sec = document.querySelectorAll('.sidebar-right .sidebar-section')[3];
+      return sec ? sec.innerHTML : '';
+    }
+  }
+};
+
+function openMobPanel(key) {
+  const cfg = MOB_PANELS[key];
+  if (!cfg) return;
+  // Update active button
+  document.querySelectorAll('.mbb-btn').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('mbb-'+key);
+  if(btn) btn.classList.add('active');
+  // Set title & body
+  document.getElementById('mobPanelTitle').innerHTML = cfg.title;
+  document.getElementById('mobPanelBody').innerHTML = cfg.html();
+  // Activate tool if needed
+  if (cfg.activate) cfg.activate();
+  // Show panel
+  document.getElementById('mobOverlay').classList.add('on');
+  document.getElementById('mobPanelSheet').classList.add('on');
+}
+function closeMobPanel() {
+  document.getElementById('mobOverlay').classList.remove('on');
+  document.getElementById('mobPanelSheet').classList.remove('on');
+  document.querySelectorAll('.mbb-btn').forEach(b=>b.classList.remove('active'));
 }
 
 function showLoading(show){document.getElementById('loading').style.display=show?'flex':'none';}
