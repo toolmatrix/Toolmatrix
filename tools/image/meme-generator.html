@@ -102,9 +102,9 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .editor-wrap{display:flex;flex:1;overflow:hidden;gap:0;}
 
 /* Canvas area - FULL WIDTH desktop */
-.canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#1a1a2e;overflow:auto;padding:16px;}
+.canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#111827;overflow:auto;padding:16px;min-width:0;}
 .canvas-label{font-size:.62rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;align-self:flex-start;}
-#memeCanvas{border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5);cursor:crosshair;max-width:100%;display:block;}
+#memeCanvas{border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);cursor:crosshair;display:block;max-width:100%;height:auto;}
 .canvas-hints{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;justify-content:center;}
 .hint-pill{font-size:.6rem;font-weight:600;color:rgba(255,255,255,.3);background:rgba(255,255,255,.06);border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:4px;}
 .hint-pill i{font-size:.58rem;}
@@ -176,9 +176,9 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .img-ctrl-btn.act{background:var(--g500);color:#fff;border-color:var(--g500);}
 
 /* Stickers */
-.sticker-grid{display:flex;flex-wrap:wrap;gap:6px;}
-.sticker{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--bd);background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;transition:var(--tr);}
-.sticker:hover{border-color:var(--g400);background:var(--g100);transform:scale(1.1);}
+.sticker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
+.sticker{width:100%;aspect-ratio:1;border-radius:8px;border:1.5px solid var(--bd);background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;transition:var(--tr);line-height:1;}
+.sticker:hover{border-color:var(--g400);background:var(--g100);transform:scale(1.15);z-index:1;position:relative;}
 
 /* Mobile bottom bar */
 .mob-bar{display:none;background:var(--g800);padding:8px 12px;gap:8px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
@@ -205,11 +205,14 @@ footer a:hover{color:var(--g900);}
 @media(max-width:900px){
   .sidebar{display:none;}
   .mob-bar{display:flex;}
-  .canvas-area{padding:8px;}
+  .canvas-area{padding:6px;justify-content:center;}
+  #memeCanvas{width:100%!important;height:auto!important;}
 }
 @media(max-width:480px){
   .u-title{font-size:1.5rem;}
   .dz-inner{padding:32px 16px 20px;}
+  .mob-panel{max-height:45vh;}
+  .sticker-grid{grid-template-columns:repeat(6,1fr);}
 }
 </style>
 </head>
@@ -218,7 +221,7 @@ footer a:hover{color:var(--g900);}
 
 <nav>
   <div class="nav-ic"><i class="fas fa-laugh-squint"></i></div>
-  <span class="nav-nm">Meme<span> Generator</span></span>
+  <span class="nav-nm">Tool<span>Matrix</span></span>
   <div class="nav-right" id="navRight">
     <button class="nb sec" onclick="startOver()"><i class="fas fa-redo"></i> <span>New</span></button>
     <button class="nb ylw" onclick="undoAction()"><i class="fas fa-undo"></i></button>
@@ -271,11 +274,11 @@ footer a:hover{color:var(--g900);}
 <div id="pgEditor">
   <!-- Mobile tabs -->
   <div class="mob-bar" id="mobBar">
-    <button class="mob-tab on" onclick="mobTab('text',this)">Text</button>
-    <button class="mob-tab" onclick="mobTab('style',this)">Style</button>
+    <button class="mob-tab on" onclick="mobTab('canvas',this)">Canvas</button>
+    <button class="mob-tab" onclick="mobTab('text',this)">Text</button>
     <button class="mob-tab" onclick="mobTab('layers',this)">Layers</button>
+    <button class="mob-tab" onclick="mobTab('stickers',this)">Emojis</button>
     <button class="mob-tab" onclick="mobTab('image',this)">Image</button>
-    <button class="mob-tab" onclick="mobTab('stickers',this)">Stickers</button>
     <button class="mob-tab" onclick="mobTab('download',this)">Download</button>
   </div>
 
@@ -491,10 +494,12 @@ const BLANK_COLORS=[
 ];
 
 const STICKERS=[
-  'LOL','FIRE','SKULL','EYES','THINK','CRY','100','YAY','COOL','ROFL',
-  'GO','LOVE','WOW','CLAP','FACEPALM','EYEROLL','MAD','LIKE','TARGET','STAR',
-  'EVIL','CROWN','FLEX','MINDBLOWN','DIZZY','SMIRK','SUSPICIOUS','CRINGE','SALUTE','BOOM',
-  'PIZZA','ROBOT','GHOST','DRAMA','BUTTERFLY','RAINBOW','LIGHTNING','CIRCUS','TROPHY','DIAMOND',
+  '\uD83D\uDE02','\uD83D\uDD25','\uD83D\uDC80','\uD83D\uDC40','\uD83E\uDD14','\uD83D\uDE2D','\uD83D\uDCAF','\uD83C\uDF89',
+  '\uD83D\uDE0E','\uD83E\uDD23','\uD83D\uDE80','\u2764\uFE0F','\uD83D\uDE0D','\uD83D\uDC4F','\uD83E\uDD26','\uD83D\uDE44',
+  '\uD83D\uDE24','\uD83D\uDC4D','\uD83C\uDFAF','\u2B50','\uD83D\uDE08','\uD83D\uDC51','\uD83D\uDCAA','\uD83E\uDD2F',
+  '\uD83E\uDD74','\uD83D\uDE0F','\uD83E\uDD28','\uD83D\uDE2C','\uD83D\uDCA5','\uD83D\uDC4B','\uD83C\uDF55','\uD83E\uDD16',
+  '\uD83D\uDC7B','\uD83C\uDFAD','\uD83E\uDD8B','\uD83C\uDF08','\u26A1','\uD83C\uDFAA','\uD83C\uDFC6','\uD83D\uDC8E',
+  '\uD83D\uDE4F','\uD83E\uDD1F','\uD83D\uDC83','\uD83D\uDD7A','\uD83C\uDF7A','\uD83C\uDF89','\uD83D\uDC39','\uD83D\uDC31',
 ];
 
 const FONTS=['Impact','Arial Black','Comic Sans MS','Plus Jakarta Sans','Georgia','Times New Roman','Courier New','Verdana','Trebuchet MS','Tahoma'];
@@ -560,13 +565,25 @@ function toggleBlankPicker(){
 
 function startBlank(color){
   bgImg=null;flipH=false;flipV=false;imgRotation=0;imgFilter='none';
-  canvas.width=800;canvas.height=600;canvasScale=1;
-  ctx.fillStyle=color;ctx.fillRect(0,0,800,600);
   openEditor();
-  addLayer();
-  addLayer('BOTTOM TEXT');
-  layers[0].y=80;layers[1].y=canvas.height-60;
-  saveHistory();redraw();renderLayers();setActive(0);
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      const area=document.getElementById('canvasArea');
+      const aW=Math.max(area.clientWidth-32,400);
+      const aH=Math.max(window.innerHeight-140,300);
+      canvas.width=Math.round(Math.min(aW,900));
+      canvas.height=Math.round(Math.min(aH*0.75,600));
+      canvasScale=1;
+      ctx.fillStyle=color;ctx.fillRect(0,0,canvas.width,canvas.height);
+      layers=[];
+      addLayer('TOP TEXT');
+      addLayer('BOTTOM TEXT');
+      layers[0].y=Math.round(canvas.height*0.12)+28;
+      layers[1].y=canvas.height-Math.round(canvas.height*0.1)-28;
+      saveHistory();redraw();renderLayers();setActive(0);
+      toast('Blank canvas ready! Add your text.');
+    },60);
+  });
 }
 
 function loadImage(file){
@@ -575,14 +592,20 @@ function loadImage(file){
     const img=new Image();
     img.onload=()=>{
       bgImg=img;flipH=false;flipV=false;imgRotation=0;imgFilter='none';
-      fitCanvas();
       openEditor();
-      layers=[];
-      addLayer('TOP TEXT');
-      addLayer('BOTTOM TEXT');
-      layers[0].y=80;layers[1].y=canvas.height-60;
-      saveHistory();redraw();renderLayers();setActive(0);
-      toast('Image loaded! Start adding your text.');
+      // Defer fitCanvas so DOM has rendered and clientWidth is correct
+      requestAnimationFrame(()=>{
+        setTimeout(()=>{
+          fitCanvas();
+          layers=[];
+          addLayer('TOP TEXT');
+          addLayer('BOTTOM TEXT');
+          layers[0].y=Math.round(canvas.height*0.1)+28;
+          layers[1].y=canvas.height-Math.round(canvas.height*0.08)-28;
+          saveHistory();redraw();renderLayers();setActive(0);
+          toast('Image loaded! Start adding your text.');
+        },60);
+      });
     };
     img.src=ev.target.result;
   };
@@ -595,14 +618,17 @@ function fitCanvas(){
   const iw=isRot?bgImg.height:bgImg.width;
   const ih=isRot?bgImg.width:bgImg.height;
   const area=document.getElementById('canvasArea');
-  const maxW=Math.min(iw,area.clientWidth-32,1200);
-  const maxH=Math.min(ih,window.innerHeight-200,900);
-  const scaleW=maxW/iw,scaleH=maxH/ih;
-  canvasScale=Math.min(scaleW,scaleH,1);
+  const aW=area.clientWidth-32;
+  const aH=window.innerHeight-140;
+  // Allow upscaling small images up to a reasonable max
+  const maxW=Math.min(Math.max(aW,200),1400);
+  const maxH=Math.min(Math.max(aH,300),1000);
+  const scaleW=maxW/iw;
+  const scaleH=maxH/ih;
+  // Use the smaller scale so image fits within area
+  canvasScale=Math.min(scaleW,scaleH);
   canvas.width=Math.round(iw*canvasScale);
   canvas.height=Math.round(ih*canvasScale);
-  // Sync layer positions
-  layers.forEach(l=>{l.x=Math.round(l.x*canvasScale);l.y=Math.round(l.y*canvasScale);});
   redraw();
 }
 
@@ -885,57 +911,92 @@ function mobTab(tab,btn){
   document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   const panel=document.getElementById('mobPanel');
-  panel.classList.remove('on');
+  panel.innerHTML='';
+  if(tab==='canvas'){panel.classList.remove('on');return;}
   const content=buildMobPanel(tab);
   if(content){panel.innerHTML=content;panel.classList.add('on');}
+  else{panel.classList.remove('on');}
 }
 function buildMobPanel(tab){
+  const l=layers[activeIdx];
+  const LS=`style="padding:8px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--txt);font-size:.76rem;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;"`;
+  const LS2=`style="padding:9px 8px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;"`;
   if(tab==='text'){
-    const l=layers[activeIdx];
-    const txt=l?l.text:'';
-    return `<div style="display:flex;flex-direction:column;gap:8px;">
-      <textarea style="width:100%;padding:8px;border:1.5px solid var(--bd2);border-radius:9px;font-size:.84rem;font-weight:700;font-family:inherit;min-height:60px;outline:none;" id="mobTxt" oninput="layers[activeIdx]&&(layers[activeIdx].text=this.value,updateActiveLayer())">${txt}</textarea>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        ${FONTS.map(f=>`<button style="padding:5px 10px;border:1.5px solid var(--bd2);border-radius:7px;background:var(--g50);font-size:.68rem;font-weight:700;cursor:pointer;font-family:${f};" onclick="layers[activeIdx]&&(layers[activeIdx].font='${f}',document.getElementById('txtFont').value='${f}',updateActiveLayer())">${f.split(' ')[0]}</button>`).join('')}
+    return `<div style="display:flex;flex-direction:column;gap:10px;">
+      <textarea ${LS} style="width:100%;padding:9px;border:1.5px solid var(--bd2);border-radius:9px;font-size:.9rem;font-weight:700;font-family:inherit;min-height:56px;outline:none;resize:vertical;" id="mobTxt" oninput="if(layers[activeIdx]){layers[activeIdx].text=this.value;updateActiveLayer();}">${l?l.text:''}</textarea>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        ${FONTS.map(f=>`<button ${LS} style="padding:5px 9px;font-family:'${f}';font-size:.7rem;" onclick="if(layers[activeIdx]){layers[activeIdx].font='${f.replace(/'/g,'\\x27')}';document.getElementById('txtFont').value='${f.replace(/'/g,'\\x27')}';updateActiveLayer();}">${f.split(' ')[0]}</button>`).join('')}
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <label style="font-size:.64rem;font-weight:700;color:var(--g700);">Size</label>
-        <input type="range" style="flex:1;" min="12" max="150" value="${l?l.size:56}" oninput="layers[activeIdx]&&(layers[activeIdx].size=parseInt(this.value),document.getElementById('txtSize').value=this.value,updateActiveLayer())">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);white-space:nowrap;">Font Size</span>
+        <input type="range" style="flex:1;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--bd);outline:none;" min="12" max="150" value="${l?l.size:56}" oninput="if(layers[activeIdx]){layers[activeIdx].size=parseInt(this.value);document.getElementById('txtSize').value=this.value;document.getElementById('txtSizeVal').textContent=this.value;updateActiveLayer();}">
+        <span style="font-size:.72rem;font-weight:800;color:var(--g700);min-width:30px;">${l?l.size:56}</span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <label style="font-size:.64rem;font-weight:700;color:var(--g700);">Color</label>
-        <input type="color" value="${l?l.color:'#ffffff'}" style="width:40px;height:32px;border:1.5px solid var(--bd2);border-radius:7px;" oninput="layers[activeIdx]&&(layers[activeIdx].color=this.value,updateActiveLayer())">
-        <label style="font-size:.64rem;font-weight:700;color:var(--g700);">Stroke</label>
-        <input type="color" value="${l?l.strokeColor:'#000000'}" style="width:40px;height:32px;border:1.5px solid var(--bd2);border-radius:7px;" oninput="layers[activeIdx]&&(layers[activeIdx].strokeColor=this.value,updateActiveLayer())">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);">Color</span>
+        <input type="color" value="${l?l.color:'#ffffff'}" style="width:38px;height:32px;border:1.5px solid var(--bd2);border-radius:7px;padding:2px;background:none;" oninput="if(layers[activeIdx]){layers[activeIdx].color=this.value;updateActiveLayer();}">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);">Stroke</span>
+        <input type="color" value="${l?l.strokeColor:'#000000'}" style="width:38px;height:32px;border:1.5px solid var(--bd2);border-radius:7px;padding:2px;background:none;" oninput="if(layers[activeIdx]){layers[activeIdx].strokeColor=this.value;updateActiveLayer();}">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);">Stroke W</span>
+        <input type="range" style="flex:1;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--bd);min-width:60px;" min="0" max="15" value="${l?l.strokeWidth:3}" oninput="if(layers[activeIdx]){layers[activeIdx].strokeWidth=parseInt(this.value);document.getElementById('strokeWidth').value=this.value;document.getElementById('strokeWVal').textContent=this.value;updateActiveLayer();}">
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button ${LS} onclick="toggleStyle('bold')" style="padding:8px 14px;${l&&l.bold?'background:var(--g500);color:#fff;border-color:var(--g500);':''}"><b>B</b></button>
+        <button ${LS} onclick="toggleStyle('italic')" style="padding:8px 14px;${l&&l.italic?'background:var(--g500);color:#fff;border-color:var(--g500);':''}"><i>I</i></button>
+        <button ${LS} onclick="toggleStyle('upper')" style="padding:8px 14px;font-weight:900;${l&&l.uppercase?'background:var(--g500);color:#fff;border-color:var(--g500);':''}">AA</button>
+        <button ${LS} onclick="toggleStyle('shadow')" style="padding:8px 14px;${l&&l.shadowStyle?'background:var(--g500);color:#fff;border-color:var(--g500);'':''}">Shadow</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+        ${[['tl','TopL'],['tc','Top C'],['tr','TopR'],['ml','MidL'],['mc','Center'],['mr','MidR'],['bl','BotL'],['bc','Bot C'],['br','BotR']].map(([k,n])=>`<button ${LS} style="padding:6px 4px;font-size:.6rem;" onclick="snapPos('${k}')">${n}</button>`).join('')}
       </div>
     </div>`;
   }
   if(tab==='layers'){
-    return `<div style="display:flex;flex-direction:column;gap:6px;">
-      ${layers.map((l,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid ${i===activeIdx?'var(--g500)':'var(--bd)'};border-radius:10px;background:var(--g50);cursor:pointer;" onclick="setActive(${i})">
-        <span style="flex:1;font-size:.76rem;font-weight:700;">${(l.uppercase?l.text.toUpperCase():l.text).substring(0,20)||'Layer '+(i+1)}</span>
-        <button style="padding:4px 8px;border:none;background:var(--red-lt);color:var(--red);border-radius:6px;cursor:pointer;font-size:.65rem;" onclick="removeLayer(${i});mobTab('layers',document.querySelector('.mob-tab.on'))">Del</button>
-      </div>`).join('')}
-      <button style="padding:8px;border:2px dashed var(--bd2);border-radius:10px;background:none;color:var(--g600);font-size:.76rem;font-weight:700;cursor:pointer;width:100%;" onclick="addLayer();mobTab('layers',document.querySelector('.mob-tab.on'))">+ Add Text Layer</button>
+    return `<div style="display:flex;flex-direction:column;gap:7px;">
+      ${layers.length===0?'<p style="font-size:.78rem;color:var(--gray400);text-align:center;padding:12px;">No layers yet</p>':''}
+      ${layers.map((ly,i)=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;border:1.5px solid ${i===activeIdx?'var(--g500)':'var(--bd)'};border-radius:10px;background:${i===activeIdx?'var(--g100)':'var(--g50)'};cursor:pointer;" onclick="setActive(${i});mobTab('text',document.querySelector('.mob-tab.on'))">
+          <span style="font-size:.7rem;color:var(--g500);">${ly.type==='sticker'?'\uD83D\uDE00':'T'}</span>
+          <span style="flex:1;font-size:.76rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(ly.uppercase&&ly.type!=='sticker'?ly.text.toUpperCase():ly.text).substring(0,18)||'Layer '+(i+1)}</span>
+          <button style="padding:3px 8px;border:none;background:var(--red-lt);color:var(--red);border-radius:6px;cursor:pointer;font-size:.62rem;font-weight:700;" onclick="event.stopPropagation();removeLayer(${i});mobTab('layers',document.querySelector('.mob-tab'))">Del</button>
+        </div>`).join('')}
+      <button style="padding:9px;border:2px dashed var(--bd2);border-radius:10px;background:none;color:var(--g600);font-size:.76rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit;" onclick="addLayer();mobTab('layers',document.querySelector('.mob-tab'))">+ Add Text Layer</button>
     </div>`;
   }
   if(tab==='stickers'){
-    return `<div style="display:flex;flex-wrap:wrap;gap:8px;">${STICKERS.map(s=>`<div style="width:40px;height:40px;border-radius:8px;border:1.5px solid var(--bd);background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;" onclick="addStickerLayer('${s}')">${s}</div>`).join('')}</div>`;
+    return `<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:5px;">${STICKERS.map((s,idx)=>`<div style="aspect-ratio:1;border-radius:8px;border:1.5px solid var(--bd);background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;line-height:1;" onclick="addStickerLayer(STICKERS[${idx}]);mobTab('canvas',document.querySelector('.mob-tab'))">${s}</div>`).join('')}</div>`;
   }
   if(tab==='image'){
-    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="flipImage('h')">Flip H</button>
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="flipImage('v')">Flip V</button>
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="rotateImage(-90)">Rotate L</button>
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="rotateImage(90)">Rotate R</button>
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="applyFilter('grayscale')">Grayscale</button>
-      <button style="padding:9px;border:1.5px solid var(--bd2);border-radius:9px;background:var(--g50);color:var(--g700);font-size:.72rem;font-weight:700;cursor:pointer;" onclick="applyFilter('none')">No Filter</button>
+    return `<div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;">
+        <button ${LS2} onclick="flipImage('h')"><i class="fas fa-arrows-alt-h"></i>Flip H</button>
+        <button ${LS2} onclick="flipImage('v')"><i class="fas fa-arrows-alt-v"></i>Flip V</button>
+        <button ${LS2} onclick="rotateImage(-90)"><i class="fas fa-undo"></i>Rotate L</button>
+        <button ${LS2} onclick="rotateImage(90)"><i class="fas fa-redo"></i>Rotate R</button>
+        <button ${LS2} onclick="applyFilter('grayscale')"><i class="fas fa-circle-half-stroke"></i>Grayscale</button>
+        <button ${LS2} onclick="applyFilter('sepia')"><i class="fas fa-sun"></i>Sepia</button>
+        <button ${LS2} onclick="applyFilter('invert')"><i class="fas fa-adjust"></i>Invert</button>
+        <button ${LS2} onclick="applyFilter('none')"><i class="fas fa-times"></i>No Filter</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);white-space:nowrap;min-width:68px;">Brightness</span>
+        <input type="range" style="flex:1;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--bd);" min="0" max="200" value="${document.getElementById('imgBright')?.value||100}" oninput="document.getElementById('imgBright').value=this.value;document.getElementById('brightVal').textContent=this.value;redraw();">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);white-space:nowrap;min-width:68px;">Contrast</span>
+        <input type="range" style="flex:1;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--bd);" min="0" max="200" value="${document.getElementById('imgContrast')?.value||100}" oninput="document.getElementById('imgContrast').value=this.value;document.getElementById('contrastVal').textContent=this.value;redraw();">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:.64rem;font-weight:700;color:var(--g700);white-space:nowrap;min-width:68px;">Saturation</span>
+        <input type="range" style="flex:1;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--bd);" min="0" max="300" value="${document.getElementById('imgSaturate')?.value||100}" oninput="document.getElementById('imgSaturate').value=this.value;document.getElementById('satVal').textContent=this.value;redraw();">
+      </div>
     </div>`;
   }
   if(tab==='download'){
     return `<div style="display:flex;gap:10px;flex-direction:column;">
-      <a href="${SMARTLINK}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:linear-gradient(135deg,var(--g500),var(--g800));color:#fff;border:none;border-radius:12px;font-size:.88rem;font-weight:800;cursor:pointer;text-decoration:none;" onclick="setTimeout(()=>downloadMeme('png'),300)">Download PNG</a>
-      <a href="${SMARTLINK}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:linear-gradient(135deg,var(--g400),var(--g600));color:#fff;border:none;border-radius:12px;font-size:.88rem;font-weight:800;cursor:pointer;text-decoration:none;" onclick="setTimeout(()=>downloadMeme('jpeg'),300)">Download JPG</a>
+      <a href="${SMARTLINK}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;background:linear-gradient(135deg,var(--g500),var(--g800));color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;text-decoration:none;" onclick="setTimeout(()=>{const lnk=document.createElement('a');lnk.download='meme.png';lnk.href=canvas.toDataURL('image/png');document.body.appendChild(lnk);lnk.click();document.body.removeChild(lnk);},350)"><i class="fas fa-download"></i> Download PNG</a>
+      <a href="${SMARTLINK}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;background:linear-gradient(135deg,var(--g400),var(--g600));color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;text-decoration:none;" onclick="setTimeout(()=>{const lnk=document.createElement('a');lnk.download='meme.jpg';lnk.href=canvas.toDataURL('image/jpeg',0.92);document.body.appendChild(lnk);lnk.click();document.body.removeChild(lnk);},350)"><i class="fas fa-download"></i> Download JPG</a>
+      <button style="padding:12px;border:2px solid var(--bd2);border-radius:12px;background:var(--g50);color:var(--g700);font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy to Clipboard</button>
     </div>`;
   }
   return '';
