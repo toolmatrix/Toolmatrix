@@ -61,7 +61,7 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .nb.pri:hover{transform:translateY(-1px);}
 .nb.ylw{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;}
 .nb.rst{color:#fca5a5;background:rgba(239,68,68,.18);border:1.5px solid rgba(239,68,68,.3);}
-/* UPLOAD PAGE - flex column with sticky footer */
+/* UPLOAD PAGE */
 #pgUpload{flex:1;display:flex;flex-direction:column;background:linear-gradient(160deg,var(--g50) 0%,var(--w) 60%,var(--g50) 100%);}
 .upload-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px 20px;}
 .u-title{font-size:2.1rem;font-weight:900;color:var(--g900);margin-bottom:10px;text-align:center;letter-spacing:-.5px;}
@@ -96,7 +96,15 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .editor-wrap{flex:1;display:flex;overflow:hidden;min-height:0;}
 .canvas-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#111827;overflow:auto;padding:16px;}
 .canvas-label{font-size:.62rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:10px;align-self:flex-start;}
-#memeCanvas{border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);cursor:crosshair;display:block;max-width:100%;height:auto;}
+/* Zoom controls */
+.zoom-controls{display:flex;gap:8px;margin:10px 0;align-items:center;justify-content:center;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:30px;backdrop-filter:blur(4px);}
+.zoom-btn{background:rgba(255,255,255,.2);border:none;border-radius:30px;padding:6px 12px;color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:5px;}
+.zoom-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.02);}
+.zoom-btn.primary{background:var(--g500);}
+#zoomPercent{background:rgba(0,0,0,.6);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;color:#fff;min-width:60px;text-align:center;}
+.canvas-wrapper{position:relative;display:inline-block;transform-origin:0 0;transition:transform 0.1s ease;}
+.canvas-scroll{overflow:auto;width:100%;height:100%;display:flex;justify-content:center;align-items:center;}
+#memeCanvas{display:block;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);cursor:crosshair;}
 .canvas-hints{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;justify-content:center;}
 .hint-pill{font-size:.6rem;font-weight:600;color:rgba(255,255,255,.3);background:rgba(255,255,255,.06);border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:4px;}
 .sidebar{width:320px;min-width:320px;background:var(--w);border-left:1.5px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
@@ -147,7 +155,7 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 .mob-tab.on{background:var(--g500);color:#fff;}
 .mob-panel{display:none;background:var(--w);border-top:1.5px solid var(--bd);padding:12px 14px;max-height:40vh;overflow-y:auto;flex-shrink:0;}
 .mob-panel.on{display:block;}
-/* Footer (both pages) full width and sticky bottom */
+/* Footer */
 #pgUpload footer, #pgEditor footer {
   width: 100%;
   background: var(--g100);
@@ -181,7 +189,7 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
   .sidebar{display:none;}
   .mob-bar{display:flex;}
   .canvas-area{padding:6px;}
-  #memeCanvas{width:100%!important;height:auto!important;}
+  .zoom-controls{scale:0.9;}
 }
 @media(max-width:480px){
   .u-title{font-size:1.5rem;}
@@ -231,7 +239,26 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 <div id="pgEditor">
   <div class="mob-bar" id="mobBar"><button class="mob-tab on" onclick="mobTab('canvas',this)">Canvas</button><button class="mob-tab" onclick="mobTab('text',this)">Text</button><button class="mob-tab" onclick="mobTab('layers',this)">Layers</button><button class="mob-tab" onclick="mobTab('stickers',this)">Emojis</button><button class="mob-tab" onclick="mobTab('image',this)">Image</button><button class="mob-tab" onclick="mobTab('download',this)">Download</button></div>
   <div class="editor-wrap">
-    <div class="canvas-area"><div class="canvas-label">Live Preview -- Click image to select text</div><canvas id="memeCanvas"></canvas><div class="canvas-hints"><span class="hint-pill"><i class="fas fa-mouse-pointer"></i> Click to select text</span><span class="hint-pill"><i class="fas fa-arrows-alt"></i> Drag to move</span><span class="hint-pill"><i class="fas fa-search-plus"></i> Double-click to edit</span></div></div>
+    <div class="canvas-area" id="canvasArea">
+      <div class="canvas-label">Live Preview -- Click image to select text</div>
+      <div class="canvas-scroll" style="overflow:auto; width:100%; display:flex; justify-content:center;">
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="memeCanvas"></canvas>
+        </div>
+      </div>
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomOut()"><i class="fas fa-search-minus"></i> -</button>
+        <span id="zoomPercent">100%</span>
+        <button class="zoom-btn" onclick="zoomIn()"><i class="fas fa-search-plus"></i> +</button>
+        <button class="zoom-btn" onclick="zoomReset()"><i class="fas fa-undo-alt"></i> 100%</button>
+        <button class="zoom-btn primary" onclick="zoomFit()"><i class="fas fa-expand"></i> Fit</button>
+      </div>
+      <div class="canvas-hints">
+        <span class="hint-pill"><i class="fas fa-mouse-pointer"></i> Click to select text</span>
+        <span class="hint-pill"><i class="fas fa-arrows-alt"></i> Drag to move</span>
+        <span class="hint-pill"><i class="fas fa-search-plus"></i> Double-click to edit</span>
+      </div>
+    </div>
     <div class="sidebar" id="sidebar">
       <div class="sb-head"><div class="sb-head-title"><i class="fas fa-edit"></i> Meme Editor</div><div class="sb-acts"><button class="sba go" onclick="downloadMeme('png')"><i class="fas fa-download"></i> PNG</button><button class="sba go" onclick="downloadMeme('jpeg')"><i class="fas fa-download"></i> JPG</button><button class="sba ylw" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy</button><button class="sba sec" onclick="undoAction()"><i class="fas fa-undo"></i></button><button class="sba sec" onclick="redoAction()"><i class="fas fa-redo"></i></button><button class="sba rd" onclick="startOver()"><i class="fas fa-times"></i></button></div></div>
       <div class="sb-section"><div class="sb-sec-title"><i class="fas fa-layer-group"></i> Text Layers</div><div class="layers-list" id="layersList"></div><button class="add-layer-btn" onclick="addLayer()"><i class="fas fa-plus"></i> Add Text Layer</button></div>
@@ -251,9 +278,11 @@ nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));paddin
 const SMARTLINK='https://omg10.com/4/10689787';
 const canvas=document.getElementById('memeCanvas');
 const ctx=canvas.getContext('2d');
+const canvasWrapper=document.getElementById('canvasWrapper');
 let bgImg=null, flipH=false, flipV=false, imgRotation=0, imgFilter='none';
 let layers=[], activeIdx=0, isDragging=false, dragOffX=0, dragOffY=0;
 let history=[], histIdx=-1;
+let zoomLevel=1;
 const BLANK_COLORS=[{color:'#000000'},{color:'#ffffff'},{color:'#1a1a2e'},{color:'#16213e'},{color:'#e63946'},{color:'#457b9d'},{color:'#2d6a4f'},{color:'#e9c46a'},{color:'#f4a261'},{color:'#6a4c93'},{color:'#ff6b6b'},{color:'#4ecdc4'}];
 const STICKERS=['😁','😂','🔥','💀','👀','🤔','😭','💯','😎','🤣','🚀','❤️','😍','👍','🤦','🙄','😤','👌','🎯','⭐','😈','👑','💪','🤯','😇','😏','🤡','😬','💥','👋','🍕','🤖','👻','🎭','🦋','🌈','⚡','🎪','🏆','💎','🙏','🤝','💃','🕺','🍺','🎉','🐱','🐶'];
 function init(){
@@ -273,7 +302,7 @@ function init(){
   canvas.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];onMouseDown({offsetX:t.clientX-canvas.getBoundingClientRect().left,offsetY:t.clientY-canvas.getBoundingClientRect().top});},{passive:false});
   canvas.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];onMouseMove({offsetX:t.clientX-canvas.getBoundingClientRect().left,offsetY:t.clientY-canvas.getBoundingClientRect().top});},{passive:false});
   canvas.addEventListener('touchend',e=>{e.preventDefault();onMouseUp();});
-  window.addEventListener('resize',()=>{if(bgImg)fitCanvas();});
+  window.addEventListener('resize',()=>{if(bgImg)fitCanvas();else if(layers.length)zoomFit();});
 }
 function buildBlankGrid(){
   const g=document.getElementById('blankGrid');
@@ -298,7 +327,7 @@ function startBlank(color){
     layers[0].y=Math.round(canvas.height*0.12)+28;
     layers[1].y=canvas.height-Math.round(canvas.height*0.1)-28;
     saveHistory();redraw();renderLayers();setActive(0);
-    toast('Blank canvas ready!');
+    zoomReset();toast('Blank canvas ready!');
   });
 }
 function loadImage(file){
@@ -308,7 +337,7 @@ function loadImage(file){
     img.onload=()=>{
       bgImg=img;flipH=false;flipV=false;imgRotation=0;imgFilter='none';
       openEditor();
-      requestAnimationFrame(()=>{fitCanvas();layers=[];addLayer('TOP TEXT');addLayer('BOTTOM TEXT');layers[0].y=Math.round(canvas.height*0.1)+28;layers[1].y=canvas.height-Math.round(canvas.height*0.08)-28;saveHistory();redraw();renderLayers();setActive(0);toast('Image loaded!');});
+      requestAnimationFrame(()=>{fitCanvas();layers=[];addLayer('TOP TEXT');addLayer('BOTTOM TEXT');layers[0].y=Math.round(canvas.height*0.1)+28;layers[1].y=canvas.height-Math.round(canvas.height*0.08)-28;saveHistory();redraw();renderLayers();setActive(0);zoomReset();toast('Image loaded!');});
     };
     img.src=ev.target.result;
   };
@@ -321,13 +350,14 @@ function fitCanvas(){
   const ih=isRot?bgImg.width:bgImg.height;
   const area=document.getElementById('canvasArea');
   const aW=area.clientWidth-32;
-  const aH=window.innerHeight-140;
+  const aH=area.clientHeight-140;
   const maxW=Math.min(Math.max(aW,200),1400);
   const maxH=Math.min(Math.max(aH,300),1000);
   const scale=Math.min(maxW/iw,maxH/ih);
   canvas.width=Math.round(iw*scale);
   canvas.height=Math.round(ih*scale);
   redraw();
+  zoomFit();
 }
 function openEditor(){
   document.getElementById('pgUpload').style.display='none';
@@ -571,6 +601,23 @@ function applySnap(s){layers=s.layers;flipH=s.flipH;flipV=s.flipV;imgRotation=s.
 function flipImage(dir){if(dir==='h')flipH=!flipH;else flipV=!flipV;saveHistory();redraw();}
 function rotateImage(deg){imgRotation=(imgRotation+deg+360)%360;saveHistory();redraw();}
 function applyFilter(f){imgFilter=f;redraw();}
+// ZOOM FUNCTIONS
+function updateZoomUI(){document.getElementById('zoomPercent').innerText=Math.round(zoomLevel*100)+'%';canvasWrapper.style.transform=`scale(${zoomLevel})`;}
+function zoomIn(){zoomLevel=Math.min(zoomLevel+0.1,4);updateZoomUI();}
+function zoomOut(){zoomLevel=Math.max(zoomLevel-0.1,0.2);updateZoomUI();}
+function zoomReset(){zoomLevel=1;updateZoomUI();}
+function zoomFit(){
+  const container=document.getElementById('canvasArea');
+  const containerRect=container.getBoundingClientRect();
+  const wrapper=canvasWrapper;
+  const canvasRect=canvas.getBoundingClientRect();
+  if(canvasRect.width===0||canvasRect.height===0)return;
+  const scaleX=containerRect.width/canvasRect.width;
+  const scaleY=containerRect.height/canvasRect.height;
+  zoomLevel=Math.min(scaleX,scaleY,1.5);
+  zoomLevel=Math.max(zoomLevel,0.2);
+  updateZoomUI();
+}
 function downloadMeme(fmt){
   window.open(SMARTLINK,'_blank');
   setTimeout(()=>{
