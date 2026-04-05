@@ -1,786 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode Generator - Generate Code 128, EAN, UPC Barcodes</title>
-  <meta name="description" content="Generate barcodes for products instantly. Support Code 128, EAN-13, EAN-8, UPC-A formats. Free online barcode generator.">
+<!-- Basic SEO -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 
-  <!-- JsBarcode Library -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<title>Free Barcode Generator (Code128, EAN, UPC) – ToolMatrix</title>
 
-  <!-- MONETAG In-Page Push -->
-  <script>
-    (function(d,z,s){
-      s.src='https://nap5k.com/tag.min.js';
-      s.dataset.zone='10689876';
-      try{(document.body||document.documentElement).appendChild(s)}catch(e){}
-    })(document,0,document.createElement('script'));
-  </script>
+<meta name="description" content="Generate professional barcodes online free. Supports Code128, EAN-13, UPC-A, Code39, ITF-14 and more. Download barcode as PNG or SVG. Fast, secure and no signup required.">
 
-  <style>
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+<meta name="keywords" content="barcode generator, free barcode generator, code 128 generator, EAN 13 barcode, UPC barcode generator, online barcode maker, barcode tool, ToolMatrix">
 
-    :root{
-      --g1:#2ecc71;--g2:#27ae60;--g3:#1a9e50;--g4:#15803d;
-      --bg:#f0fbf5;--card:#ffffff;
-      --border:#c3e6cb;--text:#1e3a2f;--muted:#5d8c72;
-      --radius:14px;
-      --shadow:0 4px 20px rgba(22,101,52,.08);
-      --shadow-lg:0 8px 32px rgba(22,101,52,.14);
-      --err:#ef4444;
-    }
+<meta name="author" content="ToolMatrix">
+<meta name="robots" content="index, follow">
 
-    body{
-      font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-      background:var(--bg);color:var(--text);
-      min-height:100vh;display:flex;flex-direction:column;
-    }
-    a{color:var(--g2);text-decoration:none}
-    a:hover{text-decoration:underline}
-    button{font-family:inherit;cursor:pointer}
-    input,select,textarea{font-family:inherit}
+<!-- Canonical -->
+<link rel="canonical" href="https://toolmatrix.space/tools/barcode-generator">
 
-    /* ══════ NAV ══════ */
-    nav{
-      background:#fff;padding:13px 24px;
-      display:flex;align-items:center;
-      border-bottom:2px solid #b2dfdb;
-      box-shadow:0 2px 8px rgba(46,204,113,.08);
-      position:sticky;top:0;z-index:100;
-    }
-    .nav-logo{
-      width:38px;height:38px;
-      background:linear-gradient(135deg,var(--g1),var(--g3));
-      border-radius:10px;display:flex;align-items:center;
-      justify-content:center;color:#fff;font-weight:900;
-      font-size:.88rem;margin-right:10px;flex-shrink:0;
-      letter-spacing:-.5px;
-    }
-    .nav-title{font-weight:800;font-size:1.1rem;color:var(--g3)}
-    .nav-sub{color:#95b8a1;font-size:.76rem;margin-left:8px;font-weight:500}
-    .nav-spacer{flex:1}
-    .nav-badge{
-      background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
-      color:var(--g3);font-size:.72rem;font-weight:700;
-      padding:4px 10px;border-radius:20px;
-    }
+<!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Barcode Generator – Create Professional Barcodes | ToolMatrix">
+<meta property="og:description" content="Create high quality barcodes instantly. Multiple formats supported with PNG and SVG download. Free online barcode generator.">
 
-    /* ══════ ADS ══════ */
-    .ad-banner{
-      display:flex;justify-content:center;align-items:center;
-      background:#e8f5e9;border-bottom:1px solid #c8e6c9;
-      padding:10px 16px;min-height:50px;overflow:hidden;
-    }
-    .ad-banner.bottom-ad{border-bottom:none;border-top:1px solid #c8e6c9}
-    .ad-desktop{display:block}
-    .ad-mobile{display:none}
-    @media(max-width:768px){
-      .ad-desktop{display:none!important}
-      .ad-mobile{display:block!important}
-    }
-    @media(min-width:769px){
-      .ad-desktop{display:block!important}
-      .ad-mobile{display:none!important}
-    }
+<meta property="og:url" content="https://toolmatrix.space/tools/barcode-generator">
 
-    /* ══════ HERO ══════ */
-    .hero{
-      text-align:center;padding:48px 20px 28px;
-      background:linear-gradient(180deg,#e8f8ef 0%,#f0fbf5 100%);
-    }
-    .hero-badge{
-      display:inline-block;background:#d4edda;color:var(--g3);
-      font-size:.72rem;font-weight:700;padding:5px 16px;
-      border-radius:20px;margin-bottom:14px;letter-spacing:.5px;
-    }
-    .hero h1{font-size:2.1rem;font-weight:900;color:#1b5e20;margin-bottom:10px;line-height:1.2}
-    .hero h1 .hl{color:var(--g1)}
-    .hero p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto;line-height:1.6}
-    .hero-features{
-      display:flex;justify-content:center;gap:22px;margin-top:20px;flex-wrap:wrap;
-    }
-    .feat{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted);font-weight:500}
-    .feat-dot{width:7px;height:7px;border-radius:50%;background:var(--g1)}
+<meta property="og:image" content="https://toolmatrix.space/assets/images/barcode-generator.png">
 
-    /* ══════ MAIN LAYOUT ══════ */
-    .main-body{
-      display:flex;gap:20px;padding:20px;
-      max-width:1100px;margin:0 auto;width:100%;
-    }
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
 
-    /* LEFT: Controls */
-    .controls-side{
-      width:380px;flex-shrink:0;display:flex;
-      flex-direction:column;gap:14px;
-    }
+<meta name="twitter:title" content="Free Barcode Generator – ToolMatrix">
 
-    /* RIGHT: Preview */
-    .preview-side{
-      flex:1;min-width:0;display:flex;
-      flex-direction:column;gap:14px;
-    }
+<meta name="twitter:description" content="Generate Code128, EAN, UPC and more barcodes free. Download instantly.">
 
-    /* ══════ CARD STYLES ══════ */
-    .card{
-      background:#fff;border:1.5px solid var(--border);
-      border-radius:16px;box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .card-header{
-      padding:16px 20px;
-      background:linear-gradient(90deg,#f9fef9,#fff);
-      border-bottom:1px solid #e8f5e9;
-      display:flex;align-items:center;gap:10px;
-    }
-    .card-header-icon{
-      width:32px;height:32px;border-radius:10px;
-      background:linear-gradient(135deg,var(--g1),var(--g3));
-      display:flex;align-items:center;justify-content:center;
-      font-size:.9rem;flex-shrink:0;
-    }
-    .card-header-title{font-size:.92rem;font-weight:800;color:#1b5e20}
-    .card-header-sub{font-size:.72rem;color:var(--muted);font-weight:500}
-    .card-body{padding:20px}
+<meta name="twitter:image" content="https://toolmatrix.space/assets/images/barcode-generator.png">
 
-    /* ══════ FORM ELEMENTS ══════ */
-    .form-group{margin-bottom:16px}
-    .form-group:last-child{margin-bottom:0}
-    .form-label{
-      display:flex;align-items:center;gap:6px;
-      font-size:.82rem;font-weight:700;color:#2d6a4f;
-      margin-bottom:8px;
-    }
-    .form-label .req{color:var(--err);font-size:.7rem}
-    .form-hint{font-size:.7rem;color:#95b8a1;margin-top:4px;line-height:1.4}
-    .form-error{font-size:.72rem;color:var(--err);margin-top:4px;display:none;font-weight:600}
-    .form-error.show{display:block}
+<!-- Theme -->
+<meta name="theme-color" content="#0f172a">
 
-    .form-input{
-      width:100%;padding:12px 16px;border:2px solid var(--border);
-      border-radius:12px;font-size:.92rem;outline:none;
-      transition:all .2s;color:var(--text);background:#fff;
-    }
-    .form-input:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
-    .form-input::placeholder{color:#b2d8bc}
-    .form-input.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+<!-- Performance -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
 
-    .form-select{
-      width:100%;padding:12px 16px;border:2px solid var(--border);
-      border-radius:12px;font-size:.92rem;outline:none;
-      transition:all .2s;color:var(--text);background:#fff;
-      cursor:pointer;-webkit-appearance:none;appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235d8c72' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;
-      background-position:right 14px center;
-      padding-right:36px;
-    }
-    .form-select:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
+<link rel="dns-prefetch" href="//www.google-analytics.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-    /* Barcode Type Selector */
-    .type-grid{
-      display:grid;grid-template-columns:1fr 1fr;gap:8px;
-    }
-    .type-option{
-      padding:12px;border:2px solid var(--border);
-      border-radius:12px;background:#fff;cursor:pointer;
-      transition:all .2s;text-align:center;
-    }
-    .type-option:hover{border-color:#a5d6a7;background:#f9fef9}
-    .type-option.active{
-      border-color:var(--g1);background:#f0fbf5;
-      box-shadow:0 0 0 3px rgba(46,204,113,.12);
-    }
-    .type-option-name{font-size:.82rem;font-weight:800;color:#1b5e20}
-    .type-option-desc{font-size:.68rem;color:#95b8a1;margin-top:3px;line-height:1.3}
-    .type-option-icon{font-size:1.3rem;margin-bottom:4px}
+<!-- MONETAG In-Page Push -->
+<script>(function(d,z,s){s.src='https://nap5k.com/tag.min.js';s.dataset.zone='10689876';try{(document.body||document.documentElement).appendChild(s)}catch(e){}})(document,0,document.createElement('script'));</script>
 
-    /* Color Picker */
-    .color-row{display:flex;gap:12px}
-    .color-group{flex:1}
-    .color-picker-wrap{
-      display:flex;align-items:center;gap:8px;
-    }
-    .color-picker-wrap input[type="color"]{
-      width:40px;height:40px;border:2px solid var(--border);
-      border-radius:10px;cursor:pointer;padding:2px;
-      background:#fff;
-    }
-    .color-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
-    .color-picker-wrap input[type="color"]::-webkit-color-swatch{border:none;border-radius:6px}
-    .color-hex{
-      flex:1;padding:10px 14px;border:2px solid var(--border);
-      border-radius:10px;font-size:.82rem;font-weight:600;
-      color:var(--text);background:#f0fbf5;
-      font-family:'SF Mono','Consolas',monospace;outline:none;
-      transition:border-color .2s;
-    }
-    .color-hex:focus{border-color:var(--g1)}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pr:#22c55e;--prd:#16a34a;--prl:#4ade80;--prll:#bbf7d0;--prbg:#f0fdf4;
+  --acc:#0ea5e9;--acc2:#7c3aed;
+  --bg:#f0fdf4;--bg2:#ffffff;--bg3:#f9fef9;--bg4:#ecfdf5;
+  --txt:#14532d;--txt2:#166534;--txt3:#4ade80;--muted:#6b7280;--mutd:#86efac;
+  --bdr:#bbf7d0;--bdr2:#86efac;
+  --sh:0 2px 12px rgba(22,163,74,.08);--shm:0 6px 24px rgba(22,163,74,.14);--shl:0 12px 40px rgba(22,163,74,.18);
+  --r:14px;--r2:10px;--r3:8px;
+  --tr:all .25s cubic-bezier(.4,0,.2,1);
+  --ff:'Inter',system-ui,sans-serif;
+  --err:#ef4444;--warn:#f59e0b;
+  --hh:68px;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--ff);background:var(--bg);color:#1a2e1a;min-height:100vh;line-height:1.6}
+a{color:var(--prd);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:var(--ff);cursor:pointer}
+input,select,textarea{font-family:var(--ff)}
 
-    /* Size Controls */
-    .size-row{display:flex;gap:12px}
-    .size-group{flex:1}
-    .range-wrap{display:flex;align-items:center;gap:10px}
-    .range-wrap input[type="range"]{
-      flex:1;-webkit-appearance:none;height:6px;border-radius:3px;
-      background:linear-gradient(90deg,var(--g1) 50%,#e0e0e0 50%);
-      outline:none;cursor:pointer;
-    }
-    .range-wrap input[type="range"]::-webkit-slider-thumb{
-      -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
-      background:var(--g2);cursor:pointer;border:3px solid #fff;
-      box-shadow:0 1px 5px rgba(46,204,113,.4);
-    }
-    .range-val{
-      font-size:.82rem;font-weight:800;color:var(--g1);
-      min-width:34px;text-align:right;
-    }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg3)}
+::-webkit-scrollbar-thumb{background:var(--prll);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--prd)}
 
-    /* Checkbox */
-    .check-row{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 14px;background:#f9fef9;
-      border-radius:10px;border:1px solid #e8f5e9;
-      cursor:pointer;transition:background .15s;
-    }
-    .check-row:hover{background:#f0fbf5}
-    .check-row input[type="checkbox"]{
-      width:18px;height:18px;accent-color:var(--g1);
-      cursor:pointer;flex-shrink:0;
-    }
-    .check-row label{
-      font-size:.82rem;font-weight:600;color:#2d6a4f;
-      cursor:pointer;flex:1;
-    }
+/* ══ HEADER ══ */
+header{
+  background:#fff;height:var(--hh);display:flex;align-items:center;
+  justify-content:space-between;padding:0 clamp(14px,3vw,40px);
+  border-bottom:2px solid var(--bdr);box-shadow:0 2px 12px rgba(22,163,74,.08);
+  position:sticky;top:0;z-index:1000;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-ico{width:40px;height:40px;background:linear-gradient(135deg,var(--pr),var(--prd));border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;box-shadow:0 4px 14px rgba(34,197,94,.3);flex-shrink:0}
+.logo-txt{font-size:1.4rem;font-weight:900;letter-spacing:-.3px}
+.logo-t{color:#1a2e1a}.logo-m{color:var(--prd)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-links a,.nav-links button{color:var(--muted);font-size:.88rem;font-weight:500;padding:8px 14px;border-radius:var(--r3);text-decoration:none;transition:var(--tr);border:none;background:none;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nav-links a:hover,.nav-links button:hover{color:var(--prd);background:var(--prbg)}
+.nav-links a.active{color:var(--prd);background:var(--prbg)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.btn-li{padding:8px 18px;border:1.5px solid var(--bdr2);border-radius:var(--r3);color:var(--prd);font-weight:600;font-size:.85rem;background:#fff;transition:var(--tr);text-decoration:none}
+.btn-li:hover{background:var(--prbg);border-color:var(--pr)}
+.btn-su{padding:8px 20px;background:linear-gradient(135deg,var(--pr),var(--prd));color:#fff;border:none;border-radius:var(--r3);font-weight:700;font-size:.85rem;box-shadow:0 3px 12px rgba(34,197,94,.3);transition:var(--tr);text-decoration:none}
+.btn-su:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(34,197,94,.35)}
+.hbg{display:none;flex-direction:column;gap:5px;width:40px;height:40px;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid var(--bdr);border-radius:var(--r3);cursor:pointer}
+.hbg span{width:18px;height:2px;background:var(--txt);border-radius:2px;transition:var(--tr)}
+.mmenu{display:none;position:fixed;top:var(--hh);inset-inline:0;background:#fff;border-bottom:2px solid var(--bdr);padding:12px 20px;z-index:999;box-shadow:var(--shm)}
+.mmenu.open{display:block}
+.mmenu a,.mmenu button{display:flex;align-items:center;gap:10px;padding:11px 14px;color:var(--muted);text-decoration:none;border-radius:var(--r3);font-size:.92rem;font-weight:500;transition:var(--tr);border:none;background:none;width:100%}
+.mmenu a:hover,.mmenu button:hover{color:var(--prd);background:var(--prbg)}
 
-    /* Generate Button */
-    .gen-btn{
-      width:100%;padding:16px;
-      background:linear-gradient(135deg,var(--g1),var(--g2));
-      color:#fff;border:none;border-radius:14px;
-      font-size:1.05rem;font-weight:800;
-      transition:all .2s;
-      box-shadow:0 5px 18px rgba(46,204,113,.3);
-      display:flex;align-items:center;justify-content:center;gap:8px;
-    }
-    .gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(46,204,113,.4)}
-    .gen-btn:active{transform:translateY(0)}
-    .gen-btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+/* ══ ADS ══ */
+.ad-strip{background:#fff;border-bottom:1.5px solid var(--bdr);display:flex;justify-content:center;align-items:center;padding:10px 16px;min-height:52px;overflow:hidden}
+.ad-strip.bottom{border-bottom:none;border-top:1.5px solid var(--bdr);margin-top:10px}
+.ad-desktop{display:block}.ad-mobile{display:none}
+@media(max-width:768px){.ad-desktop{display:none!important}.ad-mobile{display:block!important}}
+@media(min-width:769px){.ad-desktop{display:block!important}.ad-mobile{display:none!important}}
 
-    /* ══════ PREVIEW AREA ══════ */
-    .preview-card{
-      background:#fff;border:1.5px solid var(--border);
-      border-radius:16px;box-shadow:var(--shadow);
-    }
-    .preview-canvas{
-      padding:30px;display:flex;align-items:center;
-      justify-content:center;min-height:220px;
-      background:repeating-conic-gradient(#f8fdf9 0% 25%, #fff 0% 50%) 50%/16px 16px;
-      border-radius:16px 16px 0 0;
-      position:relative;
-    }
-    .preview-canvas svg{max-width:100%;height:auto}
-    .preview-placeholder{
-      text-align:center;color:#b2d8bc;
-    }
-    .preview-placeholder-icon{font-size:4rem;opacity:.35;margin-bottom:10px}
-    .preview-placeholder-text{font-size:.95rem;font-weight:700}
-    .preview-placeholder-sub{font-size:.78rem;margin-top:4px;font-weight:500}
+/* ══ HERO ══ */
+.hero{background:linear-gradient(180deg,#dcfce7 0%,var(--bg) 100%);padding:clamp(32px,5vw,52px) clamp(16px,3vw,40px) 22px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60%;left:15%;width:70%;height:180%;background:radial-gradient(ellipse,rgba(34,197,94,.07) 0%,transparent 65%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:var(--prbg);border:1.5px solid var(--bdr2);color:var(--prd);font-size:.73rem;font-weight:700;padding:6px 16px;border-radius:50px;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase}
+.hero h1{font-size:clamp(24px,4vw,42px);font-weight:900;color:#14532d;line-height:1.15;margin-bottom:12px;letter-spacing:-.5px;position:relative}
+.hero h1 .hl{color:var(--pr)}
+.hero p{color:var(--muted);font-size:clamp(.9rem,2vw,1.02rem);max-width:580px;margin:0 auto 22px;position:relative}
+.hero-feats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;position:relative}
+.hfeat{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--bdr);color:var(--muted);font-size:.78rem;font-weight:600;padding:6px 14px;border-radius:50px;box-shadow:0 1px 4px rgba(34,197,94,.07)}
+.hfeat i{color:var(--pr);font-size:.78rem}
 
-    .preview-actions{
-      padding:16px 20px;border-top:1px solid #e8f5e9;
-      display:flex;gap:10px;flex-wrap:wrap;
-      background:#f9fef9;border-radius:0 0 16px 16px;
-    }
-    .prev-btn{
-      padding:10px 20px;border:2px solid var(--border);
-      border-radius:10px;background:#fff;
-      font-size:.82rem;font-weight:700;transition:all .15s;
-      display:flex;align-items:center;gap:6px;color:var(--text);
-    }
-    .prev-btn:hover{border-color:var(--g1);color:var(--g3);background:#f0fbf5}
-    .prev-btn.primary{
-      background:linear-gradient(135deg,var(--g1),var(--g2));
-      color:#fff;border-color:transparent;
-      box-shadow:0 3px 10px rgba(46,204,113,.2);
-    }
-    .prev-btn.primary:hover{box-shadow:0 5px 16px rgba(46,204,113,.3);transform:translateY(-1px)}
-    .prev-btn-spacer{flex:1}
+/* ══ MAIN ══ */
+.main{max-width:1280px;margin:0 auto;padding:16px clamp(12px,2vw,24px) 50px}
+.tool-grid{display:grid;grid-template-columns:360px 1fr 300px;gap:16px;align-items:start}
 
-    /* ══════ BATCH SECTION ══════ */
-    .batch-card .batch-area{
-      width:100%;min-height:100px;padding:14px 16px;
-      border:2px solid var(--border);border-radius:12px;
-      font-size:.85rem;outline:none;resize:vertical;
-      transition:all .2s;line-height:1.8;color:var(--text);
-    }
-    .batch-area:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
-    .batch-area::placeholder{color:#b2d8bc}
-    .batch-results{margin-top:14px}
-    .batch-item{
-      display:flex;align-items:center;gap:14px;
-      padding:14px;background:#f9fef9;border-radius:12px;
-      border:1px solid #e8f5e9;margin-bottom:10px;
-    }
-    .batch-item svg{flex-shrink:0;max-width:200px}
-    .batch-item-info{flex:1;min-width:0}
-    .batch-item-value{
-      font-size:.85rem;font-weight:700;color:#1b5e20;
-      font-family:'SF Mono','Consolas',monospace;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    }
-    .batch-item-type{font-size:.7rem;color:#95b8a1;margin-top:2px}
-    .batch-item-dl{
-      padding:7px 14px;border:1.5px solid var(--border);
-      border-radius:8px;background:#fff;color:var(--g3);
-      font-size:.75rem;font-weight:700;transition:all .15s;
-      white-space:nowrap;
-    }
-    .batch-item-dl:hover{border-color:var(--g1);background:#f0fbf5}
+/* ══ CARD ══ */
+.card{background:#fff;border:1.5px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-h{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1.5px solid var(--bdr);background:linear-gradient(90deg,#f9fef9,#fff)}
+.card-h-ico{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;flex-shrink:0}
+.card-h-title{font-size:.9rem;font-weight:800;color:#1a3a1a}
+.card-h-sub{font-size:.7rem;color:var(--muted);font-weight:500}
+.card-h-extra{margin-left:auto}
+.card-b{padding:18px}
 
-    /* ══════ HISTORY ══════ */
-    .history-card .hist-grid{
-      display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-      gap:12px;max-height:400px;overflow-y:auto;padding:4px;
-    }
-    .hist-swatch{
-      background:#fff;border:1.5px solid var(--border);
-      border-radius:12px;overflow:hidden;
-      transition:all .2s;cursor:pointer;
-    }
-    .hist-swatch:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
-    .hist-swatch-preview{
-      padding:14px;display:flex;align-items:center;justify-content:center;
-      background:#f9fef9;min-height:80px;
-    }
-    .hist-swatch-preview svg{max-width:100%;height:auto;max-height:60px}
-    .hist-swatch-info{
-      padding:10px 12px;border-top:1px solid #e8f5e9;
-    }
-    .hist-swatch-val{
-      font-size:.78rem;font-weight:700;color:#1b5e20;
-      font-family:'SF Mono','Consolas',monospace;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    }
-    .hist-swatch-type{font-size:.66rem;color:#95b8a1;margin-top:2px}
-    .hist-swatch-actions{
-      display:flex;gap:4px;margin-top:6px;
-    }
-    .hist-swatch-btn{
-      flex:1;padding:5px;border:1px solid var(--border);
-      border-radius:6px;background:#fff;color:var(--muted);
-      font-size:.68rem;font-weight:700;transition:all .15s;
-      text-align:center;
-    }
-    .hist-swatch-btn:hover{border-color:var(--g1);color:var(--g1);background:#f0fbf5}
-    .hist-swatch-btn.del:hover{border-color:var(--err);color:var(--err);background:#fef2f2}
+/* ══ SECTION LABEL ══ */
+.slbl{font-size:.7rem;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--prd);margin:16px 0 10px;display:flex;align-items:center;gap:7px}
+.slbl:first-child{margin-top:0}
+.slbl::after{content:'';flex:1;height:1px;background:var(--prll)}
+.slbl i{font-size:.75rem}
+.divider{height:1px;background:var(--prll);margin:14px 0}
 
-    .hist-empty{
-      grid-column:1/-1;text-align:center;padding:30px;color:#b2d8bc;
-    }
-    .hist-empty-icon{font-size:2rem;opacity:.4;margin-bottom:6px}
-    .hist-empty-text{font-size:.82rem;font-weight:600}
+/* ══ TYPE GRID ══ */
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.type-btn{padding:9px 4px;border:1.5px solid var(--bdr);border-radius:var(--r3);background:#fff;cursor:pointer;transition:var(--tr);text-align:center;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.type-btn i{display:block;font-size:15px;margin-bottom:3px;color:var(--pr)}
+.type-btn:hover{border-color:var(--prd);color:var(--prd);background:var(--prbg)}
+.type-btn.act{border-color:var(--pr);background:var(--prbg);color:var(--prd);box-shadow:0 0 0 2px rgba(34,197,94,.12)}
+.type-btn-name{display:block;font-size:.7rem;font-weight:800}
+.type-btn-desc{display:block;font-size:.6rem;color:var(--muted);margin-top:1px;font-weight:400}
 
-    .hist-grid::-webkit-scrollbar{width:6px}
-    .hist-grid::-webkit-scrollbar-track{background:#f0fbf5;border-radius:3px}
-    .hist-grid::-webkit-scrollbar-thumb{background:#c3e6cb;border-radius:3px}
-    .hist-grid::-webkit-scrollbar-thumb:hover{background:var(--g1)}
+/* ══ INPUTS ══ */
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:#2d5a2d;margin-bottom:6px}
+.field label i{color:var(--pr);font-size:.78rem}
+.field-hint{font-size:.68rem;color:var(--muted);margin-top:4px;line-height:1.5}
+.field-err{font-size:.7rem;color:var(--err);margin-top:4px;font-weight:600;display:none}
+.field-err.show{display:block}
+.inp{width:100%;padding:10px 14px;border:1.5px solid var(--bdr);border-radius:var(--r2);font-size:.9rem;color:#1a2e1a;background:#fff;transition:var(--tr);outline:none}
+.inp::placeholder{color:#b2d8b2}
+.inp:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.inp.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+.inp-sel{width:100%;padding:10px 14px;border:1.5px solid var(--bdr);border-radius:var(--r2);font-size:.88rem;color:#1a2e1a;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2316a34a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;padding-right:34px;cursor:pointer;outline:none;transition:var(--tr)}
+.inp-sel:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.inp-sel option{background:#fff;color:#1a2e1a}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ta{min-height:80px;resize:vertical}
 
-    /* ══════ FORMAT INFO BOX ══════ */
-    .format-info{
-      padding:14px 16px;background:#f0fbf5;
-      border-radius:12px;border:1.5px solid #c8e6c9;
-      margin-bottom:16px;
-    }
-    .format-info-title{
-      font-size:.8rem;font-weight:800;color:var(--g3);
-      margin-bottom:6px;display:flex;align-items:center;gap:6px;
-    }
-    .format-info-text{font-size:.74rem;color:var(--muted);line-height:1.6}
-    .format-info-text code{
-      background:#d4edda;padding:1px 6px;border-radius:4px;
-      font-size:.72rem;font-weight:700;color:#166534;
-    }
+/* ══ COLOR PICKER ══ */
+.clr-row{display:flex;align-items:center;gap:8px}
+.clr-row input[type=color]{width:40px;height:40px;border:1.5px solid var(--bdr);border-radius:var(--r3);cursor:pointer;padding:2px;background:#fff;flex-shrink:0}
+.clr-row input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.clr-row input[type=color]::-webkit-color-swatch{border:none;border-radius:6px}
+.clr-hex{flex:1;padding:9px 12px;border:1.5px solid var(--bdr);border-radius:var(--r3);font-size:.82rem;font-weight:600;color:#1a2e1a;background:var(--bg4);font-family:'Courier New',monospace;outline:none;transition:var(--tr)}
+.clr-hex:focus{border-color:var(--pr)}
+.clr-presets{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.cpre{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:var(--tr);flex-shrink:0}
+.cpre:hover{transform:scale(1.2);border-color:var(--pr)}
 
-    /* ══════ TOAST ══════ */
-    .toast{
-      position:fixed;bottom:22px;left:50%;
-      transform:translateX(-50%) translateY(80px);
-      background:#fff;color:var(--text);padding:12px 26px;
-      border-radius:12px;font-size:.88rem;font-weight:600;
-      box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:500;
-      transition:transform .3s ease;border-left:4px solid var(--g1);
-      max-width:90vw;
-    }
-    .toast.err{border-left-color:#e74c3c}
-    .toast.show{transform:translateX(-50%) translateY(0)}
+/* ══ RANGE ══ */
+.rng-row{display:flex;align-items:center;gap:10px}
+.rng-row input[type=range]{flex:1;-webkit-appearance:none;height:5px;border-radius:5px;background:var(--prll);outline:none;cursor:pointer}
+.rng-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));cursor:pointer;box-shadow:0 2px 8px rgba(34,197,94,.35);border:2px solid #fff}
+.rng-val{font-size:.8rem;font-weight:800;color:var(--prd);min-width:38px;text-align:right;font-family:'Courier New',monospace}
 
-    /* ══════ FOOTER ══════ */
-    footer{
-      background:#fff;border-top:1.5px solid var(--border);
-      text-align:center;padding:18px 20px;
-      color:#95b8a1;font-size:.78rem;margin-top:auto;
-    }
-    footer span{color:var(--g2);font-weight:700}
-    footer a{color:var(--g2);font-weight:600}
+/* ══ TOGGLE ══ */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--bg4);border:1px solid var(--bdr);border-radius:var(--r3);margin-bottom:8px;cursor:pointer}
+.tog-row label{font-size:.8rem;font-weight:600;color:#2d5a2d;display:flex;align-items:center;gap:7px;cursor:pointer}
+.tog-row label i{color:var(--pr);font-size:.8rem}
+.tg{position:relative;width:38px;height:21px;flex-shrink:0}
+.tg input{opacity:0;width:0;height:0}
+.tgs{position:absolute;cursor:pointer;inset:0;background:#d1d5db;border-radius:21px;transition:.3s}
+.tgs::before{content:'';position:absolute;width:15px;height:15px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.tg input:checked+.tgs{background:var(--pr)}
+.tg input:checked+.tgs::before{transform:translateX(17px)}
 
-    /* ══════ INFO CARDS ══════ */
-    .info-cards{
-      display:flex;justify-content:center;gap:16px;
-      padding:20px 20px 40px;flex-wrap:wrap;
-    }
-    .info-card{
-      background:#fff;border:1.5px solid var(--border);
-      border-radius:var(--radius);padding:18px 20px;width:175px;
-      text-align:center;box-shadow:0 2px 8px rgba(46,204,113,.06);
-    }
-    .info-card .ic-icon{font-size:1.8rem;margin-bottom:8px}
-    .info-card .ic-title{font-size:.82rem;font-weight:700;color:#2d6a4f;margin-bottom:3px}
-    .info-card .ic-desc{font-size:.74rem;color:var(--muted);line-height:1.5}
+/* ══ STYLE OPTS ══ */
+.sopt-grid{display:grid;gap:5px}
+.sopt-grid.c4{grid-template-columns:repeat(4,1fr)}
+.sopt-grid.c3{grid-template-columns:repeat(3,1fr)}
+.sopt-grid.c2{grid-template-columns:1fr 1fr}
+.sopt{padding:8px 4px;border:1.5px solid var(--bdr);border-radius:var(--r3);background:#fff;cursor:pointer;transition:var(--tr);text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.sopt i{display:block;font-size:14px;margin-bottom:3px;color:var(--pr)}
+.sopt:hover{border-color:var(--prd);color:var(--prd);background:var(--prbg)}
+.sopt.act{border-color:var(--pr);background:var(--prbg);color:var(--prd)}
 
-    /* ══════ RESPONSIVE ══════ */
-    @media(max-width:900px){
-      .main-body{flex-direction:column}
-      .controls-side{width:100%}
-      .type-grid{grid-template-columns:1fr 1fr}
-    }
-    @media(max-width:768px){
-      .hero h1{font-size:1.6rem}
-      .hero p{font-size:.88rem}
-      .hero{padding:34px 16px 22px}
-      .nav-sub{display:none}
-      .info-card{width:140px;padding:14px 12px}
-      .color-row{flex-direction:column;gap:10px}
-      .size-row{flex-direction:column;gap:10px}
-      .batch-item{flex-direction:column;text-align:center}
-      .batch-item svg{max-width:100%}
-      .hist-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-    }
-    @media(max-width:480px){
-      .type-grid{grid-template-columns:1fr}
-      .preview-actions{flex-direction:column}
-      .prev-btn{justify-content:center}
-      .prev-btn-spacer{display:none}
-    }
-  </style>
+/* ══ FORMAT INFO ══ */
+.fmt-info{background:var(--prbg);border:1.5px solid var(--prll);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px}
+.fmt-info-title{font-size:.78rem;font-weight:800;color:var(--prd);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.fmt-info-body{font-size:.72rem;color:var(--muted);line-height:1.6}
+.fmt-info-body code{background:var(--prll);padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:700;color:#166534;font-family:'Courier New',monospace}
+
+/* ══ PREVIEW ══ */
+.preview-sticky{position:sticky;top:calc(var(--hh) + 10px)}
+.qr-canvas{
+  padding:28px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;
+  background-image:linear-gradient(45deg,#f0fdf4 25%,#fff 25%),linear-gradient(-45deg,#f0fdf4 25%,#fff 25%),linear-gradient(45deg,#fff 75%,#f0fdf4 75%),linear-gradient(-45deg,#fff 75%,#f0fdf4 75%);
+  background-size:14px 14px;background-position:0 0,0 7px,7px -7px,-7px 0;
+  border-radius:var(--r) var(--r) 0 0;position:relative;overflow:hidden;
+}
+#barSVG{max-width:100%;height:auto;display:none;border-radius:6px}
+.prev-placeholder{text-align:center;color:#b2d8b2;padding:10px}
+.prev-placeholder i{font-size:3.5rem;opacity:.3;display:block;margin-bottom:10px}
+.prev-placeholder p{font-size:.9rem;font-weight:700}
+.prev-placeholder small{font-size:.75rem;opacity:.7}
+.prev-meta{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:var(--bg4);border-top:1px solid var(--bdr);font-size:.72rem;color:var(--muted);flex-wrap:wrap;gap:5px}
+.prev-meta span{display:flex;align-items:center;gap:4px}
+.prev-meta i{color:var(--pr)}
+.prev-meta strong{color:var(--txt)}
+.dl-area{padding:14px 16px;border-top:1.5px solid var(--bdr)}
+.dl-main{width:100%;padding:13px;background:linear-gradient(135deg,var(--pr),var(--prd));color:#fff;border:none;border-radius:var(--r2);font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:var(--tr);box-shadow:0 4px 16px rgba(34,197,94,.3);margin-bottom:9px;letter-spacing:.2px}
+.dl-main:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(34,197,94,.38)}
+.dl-main:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.dl-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px}
+.dl-btn{padding:9px 4px;border:1.5px solid var(--bdr);border-radius:var(--r3);background:#fff;font-size:.7rem;font-weight:700;color:var(--muted);cursor:pointer;transition:var(--tr);display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.2px}
+.dl-btn i{font-size:14px;color:var(--pr)}
+.dl-btn:hover{border-color:var(--pr);color:var(--prd);background:var(--prbg)}
+.dl-btn:disabled{opacity:.35;cursor:default}
+.dl-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.dl-act{padding:9px;border:1.5px solid var(--bdr);border-radius:var(--r3);background:#fff;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:6px}
+.dl-act:hover{border-color:var(--pr);color:var(--prd);background:var(--prbg)}
+.dl-act:disabled{opacity:.35;cursor:default}
+
+/* ══ RIGHT TABS ══ */
+.rtabs{display:flex;border-bottom:1.5px solid var(--bdr)}
+.rtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:.68rem;font-weight:700;color:var(--muted);cursor:pointer;transition:var(--tr);border-bottom:2px solid transparent;margin-bottom:-1.5px;text-align:center;letter-spacing:.5px;text-transform:uppercase;font-family:var(--ff)}
+.rtab i{display:block;font-size:14px;margin-bottom:3px}
+.rtab:hover{color:var(--prd)}
+.rtab.act{color:var(--prd);border-bottom-color:var(--pr);background:var(--prbg)}
+.rpanel{display:none;padding:16px}
+.rpanel.act{display:block}
+
+/* ══ TEMPLATES ══ */
+.tmpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.tmpl{padding:10px 6px;border:1.5px solid var(--bdr);border-radius:var(--r2);background:#fff;cursor:pointer;transition:var(--tr);text-align:center}
+.tmpl:hover{border-color:var(--prd);transform:translateY(-2px);box-shadow:var(--sh)}
+.tmpl.act{border-color:var(--pr);background:var(--prbg)}
+.tmpl-clrs{display:flex;justify-content:center;gap:3px;margin-bottom:5px}
+.tmpl-clr{width:13px;height:13px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.tmpl span{font-size:.68rem;font-weight:800;color:#1a3a1a;letter-spacing:.3px;text-transform:uppercase}
+
+/* ══ HISTORY ══ */
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;max-height:360px;overflow-y:auto;padding:2px}
+.hist-card{background:#fff;border:1.5px solid var(--bdr);border-radius:var(--r2);overflow:hidden;transition:var(--tr);cursor:pointer}
+.hist-card:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+.hist-thumb{padding:12px;display:flex;align-items:center;justify-content:center;background:var(--bg4);min-height:72px}
+.hist-thumb svg{max-width:100%;max-height:52px;height:auto}
+.hist-info{padding:9px 10px;border-top:1px solid var(--bdr)}
+.hist-val{font-size:.75rem;font-weight:700;color:#1a3a1a;font-family:'Courier New',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-type{font-size:.63rem;color:var(--muted);margin-top:2px}
+.hist-acts{display:flex;gap:4px;margin-top:6px}
+.hist-btn{flex:1;padding:4px;border:1px solid var(--bdr);border-radius:5px;background:#fff;font-size:.62rem;font-weight:700;cursor:pointer;transition:var(--tr);color:var(--muted);text-align:center}
+.hist-btn:hover{border-color:var(--pr);color:var(--prd);background:var(--prbg)}
+.hist-btn.del:hover{border-color:var(--err);color:var(--err);background:#fef2f2}
+.hist-empty{grid-column:1/-1;text-align:center;padding:28px;color:#b2d8b2}
+.hist-empty i{font-size:2.2rem;display:block;margin-bottom:8px;opacity:.35}
+.hist-empty p{font-size:.82rem;font-weight:600}
+
+/* ══ BATCH ══ */
+.batch-res{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.batch-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg4);border:1px solid var(--bdr);border-radius:var(--r2)}
+.batch-row svg{flex-shrink:0;max-width:160px;max-height:50px}
+.batch-info{flex:1;min-width:0}
+.batch-val{font-size:.8rem;font-weight:700;color:#1a3a1a;font-family:'Courier New',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.batch-type{font-size:.65rem;color:var(--muted);margin-top:2px}
+.batch-dl{padding:6px 12px;border:1.5px solid var(--bdr);border-radius:6px;background:#fff;color:var(--prd);font-size:.72rem;font-weight:700;cursor:pointer;transition:var(--tr);flex-shrink:0}
+.batch-dl:hover{border-color:var(--pr);background:var(--prbg)}
+.batch-err{background:#fef2f2;border-color:#fecaca;color:var(--err)}
+.batch-err .batch-val{color:var(--err)}
+
+/* ══ SCAN MODAL ══ */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:5000;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border:1.5px solid var(--bdr);border-radius:var(--r);max-width:500px;width:100%;max-height:90vh;overflow:hidden;box-shadow:var(--shl)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--bdr);background:var(--bg4)}
+.modal-hd h3{font-size:.9rem;font-weight:800;color:#1a3a1a;display:flex;align-items:center;gap:8px}
+.modal-hd h3 i{color:var(--pr)}
+.modal-close{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--bdr);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);transition:var(--tr)}
+.modal-close:hover{border-color:#fca5a5;color:var(--err);background:#fef2f2}
+.modal-bd{padding:18px;overflow-y:auto;max-height:calc(90vh - 60px)}
+.scan-wrap{width:100%;aspect-ratio:1;border-radius:var(--r2);overflow:hidden;background:#0a0a0f;position:relative;margin-bottom:12px}
+.scan-wrap video{width:100%;height:100%;object-fit:cover}
+.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.scan-frame{width:65%;height:65%;border:2px solid var(--pr);border-radius:var(--r2);box-shadow:0 0 0 9999px rgba(0,0,0,.45);animation:scanPulse 2s ease-in-out infinite}
+@keyframes scanPulse{0%,100%{border-color:var(--pr)}50%{border-color:var(--prl)}}
+.scan-line{position:absolute;width:60%;height:2px;background:linear-gradient(90deg,transparent,var(--pr),transparent);animation:scanLine 2s ease-in-out infinite;left:20%}
+@keyframes scanLine{0%{top:20%}50%{top:80%}100%{top:20%}}
+.scan-result{padding:12px 14px;background:var(--prbg);border:1.5px solid var(--prll);border-radius:var(--r2);font-size:.88rem;margin-top:10px;word-break:break-all}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#fff;border:1.5px solid var(--bdr);color:#1a2e1a;padding:11px 24px;border-radius:50px;font-size:.85rem;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:9999;transition:transform .35s cubic-bezier(.175,.885,.32,1.275);display:flex;align-items:center;gap:8px;border-left:4px solid var(--pr);white-space:nowrap;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{border-left-color:var(--err)}
+.toast i{color:var(--pr);font-size:.85rem}
+.toast.err i{color:var(--err)}
+
+/* ══ FOOTER ══ */
+footer{background:#fff;border-top:1.5px solid var(--bdr);text-align:center;padding:18px 20px;color:var(--muted);font-size:.8rem}
+footer span{color:var(--prd);font-weight:700}
+footer a{color:var(--prd);font-weight:600}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1200px){.tool-grid{grid-template-columns:320px 1fr 270px}}
+@media(max-width:1024px){.tool-grid{grid-template-columns:1fr 1fr}.card:first-child{grid-column:1/-1}}
+@media(max-width:768px){
+  .tool-grid{grid-template-columns:1fr}
+  .nav-links,.nav-right{display:none}
+  .hbg{display:flex}
+  .type-grid{grid-template-columns:repeat(4,1fr)}
+  .dl-row{grid-template-columns:repeat(2,1fr)}
+  .hist-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .batch-row svg{max-width:120px}
+}
+@media(max-width:480px){
+  .type-grid{grid-template-columns:repeat(3,1fr)}
+  .field-row,.field-row3{grid-template-columns:1fr}
+  .dl-acts{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">▐▌</div>
-  <span class="nav-title">Barcode Generator</span>
-  <span class="nav-sub">Free Online Tool</span>
-  <div class="nav-spacer"></div>
-  <span class="nav-badge">⚡ Free & Instant</span>
-</nav>
-
-<!-- Ad Top -->
-<div class="ad-banner">
-  <div class="ad-desktop">
-    <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
-    <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-  </div>
-  <div class="ad-mobile">
-    <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
-    <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-  </div>
-</div>
-
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-badge">✨ Free · No Registration · Unlimited Barcodes</div>
-  <h1>Generate <span class="hl">Barcodes</span> Instantly</h1>
-  <p>Create professional barcodes for products, inventory, and packaging. Supports Code 128, EAN-13, EAN-8, and UPC-A formats.</p>
-  <div class="hero-features">
-    <div class="feat"><div class="feat-dot"></div>Code 128</div>
-    <div class="feat"><div class="feat-dot"></div>EAN-13 / EAN-8</div>
-    <div class="feat"><div class="feat-dot"></div>UPC-A</div>
-    <div class="feat"><div class="feat-dot"></div>PNG / SVG Export</div>
-  </div>
-</div>
-
-<!-- Main Body -->
-<div class="main-body">
-
-  <!-- ═══ LEFT: Controls ═══ -->
-  <div class="controls-side">
-
-    <!-- Barcode Type -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon">📊</div>
-        <div>
-          <div class="card-header-title">Barcode Type</div>
-          <div class="card-header-sub">Select format for your barcode</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="type-grid" id="typeGrid">
-          <div class="type-option active" data-type="CODE128" onclick="selectType(this)">
-            <div class="type-option-icon">🔤</div>
-            <div class="type-option-name">Code 128</div>
-            <div class="type-option-desc">Any text/numbers. Most versatile.</div>
-          </div>
-          <div class="type-option" data-type="EAN13" onclick="selectType(this)">
-            <div class="type-option-icon">🏷️</div>
-            <div class="type-option-name">EAN-13</div>
-            <div class="type-option-desc">13-digit product barcode (EU/Intl).</div>
-          </div>
-          <div class="type-option" data-type="EAN8" onclick="selectType(this)">
-            <div class="type-option-icon">📦</div>
-            <div class="type-option-name">EAN-8</div>
-            <div class="type-option-desc">8-digit small products.</div>
-          </div>
-          <div class="type-option" data-type="UPC" onclick="selectType(this)">
-            <div class="type-option-icon">🇺🇸</div>
-            <div class="type-option-name">UPC-A</div>
-            <div class="type-option-desc">12-digit US/Canada product code.</div>
-          </div>
-        </div>
-
-        <!-- Format Info -->
-        <div class="format-info" id="formatInfo" style="margin-top:14px">
-          <div class="format-info-title">ℹ️ Code 128</div>
-          <div class="format-info-text">
-            Accepts any <code>text</code>, <code>numbers</code>, and <code>symbols</code>. 
-            Most versatile barcode — used in shipping, logistics, and internal inventory.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Data Input -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon">✏️</div>
-        <div>
-          <div class="card-header-title">Barcode Data</div>
-          <div class="card-header-sub">Enter value to encode</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <div class="form-label">Value <span class="req">*</span></div>
-          <input type="text" class="form-input" id="barcodeValue" 
-            placeholder="Enter text or numbers..."
-            oninput="livePreview()" maxlength="80">
-          <div class="form-hint" id="valueHint">Enter any text or numbers for Code 128</div>
-          <div class="form-error" id="valueError">Invalid input for selected barcode type</div>
-        </div>
-
-        <!-- Optional Label -->
-        <div class="form-group">
-          <div class="form-label">Display Text (optional)</div>
-          <input type="text" class="form-input" id="displayText" 
-            placeholder="Custom text below barcode..." oninput="livePreview()">
-          <div class="form-hint">Leave empty to show barcode value</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Appearance -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon">🎨</div>
-        <div>
-          <div class="card-header-title">Appearance</div>
-          <div class="card-header-sub">Customize colors and size</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <!-- Colors -->
-        <div class="form-group">
-          <div class="form-label">Colors</div>
-          <div class="color-row">
-            <div class="color-group">
-              <div style="font-size:.72rem;font-weight:600;color:#95b8a1;margin-bottom:6px">Bar Color</div>
-              <div class="color-picker-wrap">
-                <input type="color" id="barColor" value="#000000" onchange="syncColorHex(this,'barHex');livePreview()">
-                <input type="text" class="color-hex" id="barHex" value="#000000" 
-                  onchange="syncHexColor(this,'barColor');livePreview()" maxlength="7">
-              </div>
-            </div>
-            <div class="color-group">
-              <div style="font-size:.72rem;font-weight:600;color:#95b8a1;margin-bottom:6px">Background</div>
-              <div class="color-picker-wrap">
-                <input type="color" id="bgColor" value="#ffffff" onchange="syncColorHex(this,'bgHex');livePreview()">
-                <input type="text" class="color-hex" id="bgHex" value="#ffffff" 
-                  onchange="syncHexColor(this,'bgColor');livePreview()" maxlength="7">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bar Width -->
-        <div class="form-group">
-          <div class="form-label">Bar Width</div>
-          <div class="range-wrap">
-            <input type="range" id="barWidth" min="1" max="5" value="2" step="1"
-              oninput="updateRange(this,'barWidthVal');livePreview()">
-            <span class="range-val" id="barWidthVal">2</span>
-          </div>
-        </div>
-
-        <!-- Height -->
-        <div class="form-group">
-          <div class="form-label">Barcode Height</div>
-          <div class="range-wrap">
-            <input type="range" id="barHeight" min="30" max="200" value="100" step="5"
-              oninput="updateRange(this,'barHeightVal',true);livePreview()">
-            <span class="range-val" id="barHeightVal">100px</span>
-          </div>
-        </div>
-
-        <!-- Font Size -->
-        <div class="form-group">
-          <div class="form-label">Font Size</div>
-          <div class="range-wrap">
-            <input type="range" id="fontSize" min="10" max="30" value="16" step="1"
-              oninput="updateRange(this,'fontSizeVal',true);livePreview()">
-            <span class="range-val" id="fontSizeVal">16px</span>
-          </div>
-        </div>
-
-        <!-- Margin -->
-        <div class="form-group">
-          <div class="form-label">Margin</div>
-          <div class="range-wrap">
-            <input type="range" id="marginSize" min="0" max="40" value="10" step="2"
-              oninput="updateRange(this,'marginVal',true);livePreview()">
-            <span class="range-val" id="marginVal">10px</span>
-          </div>
-        </div>
-
-        <!-- Show Text -->
-        <div class="form-group">
-          <div class="check-row" onclick="this.querySelector('input').click()">
-            <input type="checkbox" id="showText" checked onclick="event.stopPropagation();livePreview()">
-            <label for="showText" onclick="event.stopPropagation()">Show text below barcode</label>
-          </div>
-        </div>
-
-        <!-- Flat Barcode -->
-        <div class="form-group">
-          <div class="check-row" onclick="this.querySelector('input').click()">
-            <input type="checkbox" id="flatMode" onclick="event.stopPropagation();livePreview()">
-            <label for="flatMode" onclick="event.stopPropagation()">Flat barcode (no guard bars)</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Generate Button -->
-    <button class="gen-btn" onclick="generateBarcode()">
-      ▐▌ Generate Barcode
+<!-- ══ HEADER ══ -->
+<header>
+  <a href="https://toolmatrix.space" class="logo">
+    <div class="logo-ico"><i class="fas fa-layer-group"></i></div>
+    <span class="logo-txt"><span class="logo-t">Tool</span><span class="logo-m">Matrix</span></span>
+  </a>
+  <nav class="nav-links">
+    <a href="https://toolmatrix.space"><i class="fas fa-home"></i> Home</a>
+    <a href="#" class="active"><i class="fas fa-barcode"></i> Barcode Generator</a>
+    <button onclick="openModal('scanModal')"><i class="fas fa-camera"></i> Scanner</button>
+    <a href="https://toolmatrix.space/blog.html"><i class="fas fa-newspaper"></i> Blog</a>
+  </nav>
+  <div class="nav-right">
+    <a href="https://toolmatrix.space/login.html" class="btn-li">Log In</a>
+    <a href="https://toolmatrix.space/signup.html" class="btn-su">Sign Up</a>
+    <button class="hbg" id="hbgBtn" aria-label="Menu" onclick="document.getElementById('mmenu').classList.toggle('open')">
+      <span></span><span></span><span></span>
     </button>
-
   </div>
-
-  <!-- ═══ RIGHT: Preview & More ═══ -->
-  <div class="preview-side">
-
-    <!-- Live Preview -->
-    <div class="preview-card">
-      <div class="card-header">
-        <div class="card-header-icon">👁️</div>
-        <div>
-          <div class="card-header-title">Live Preview</div>
-          <div class="card-header-sub">Real-time barcode preview</div>
-        </div>
-      </div>
-      <div class="preview-canvas" id="previewCanvas">
-        <svg id="barcodeSVG"></svg>
-        <div class="preview-placeholder" id="previewPlaceholder">
-          <div class="preview-placeholder-icon">▐▌▐▌</div>
-          <div class="preview-placeholder-text">Your barcode will appear here</div>
-          <div class="preview-placeholder-sub">Enter a value and select format to begin</div>
-        </div>
-      </div>
-      <div class="preview-actions" id="previewActions" style="display:none">
-        <button class="prev-btn primary" onclick="downloadPNG()">⤓ Download PNG</button>
-        <button class="prev-btn" onclick="downloadSVG()">⤓ SVG</button>
-        <button class="prev-btn" onclick="copyBarcodePNG()">📋 Copy Image</button>
-        <div class="prev-btn-spacer"></div>
-        <button class="prev-btn" onclick="printBarcode()">🖨️ Print</button>
-      </div>
-    </div>
-
-    <!-- Batch Generator -->
-    <div class="card batch-card">
-      <div class="card-header">
-        <div class="card-header-icon">📦</div>
-        <div>
-          <div class="card-header-title">Batch Generator</div>
-          <div class="card-header-sub">Generate multiple barcodes at once</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <div class="form-label">Enter values (one per line)</div>
-          <textarea class="batch-area" id="batchInput" 
-            placeholder="12345678&#10;PRODUCT-001&#10;87654321&#10;ITEM-2024-A"></textarea>
-          <div class="form-hint">Max 20 barcodes per batch. Uses current barcode type & style settings.</div>
-        </div>
-        <button class="gen-btn" style="margin-top:10px" onclick="generateBatch()">
-          📦 Generate Batch
-        </button>
-        <div class="batch-results" id="batchResults"></div>
-      </div>
-    </div>
-
-    <!-- History -->
-    <div class="card history-card">
-      <div class="card-header">
-        <div class="card-header-icon">📜</div>
-        <div>
-          <div class="card-header-title">Recent Barcodes</div>
-          <div class="card-header-sub" id="histCountLabel">0 barcodes saved</div>
-        </div>
-        <div style="margin-left:auto">
-          <button class="prev-btn" onclick="clearHistory()" style="font-size:.75rem;padding:6px 12px">🗑️ Clear</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="hist-grid" id="histGrid">
-          <div class="hist-empty">
-            <div class="hist-empty-icon">▐▌</div>
-            <div class="hist-empty-text">No barcodes generated yet</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+</header>
+<div class="mmenu" id="mmenu">
+  <a href="https://toolmatrix.space"><i class="fas fa-home"></i> Home</a>
+  <button onclick="openModal('scanModal');document.getElementById('mmenu').classList.remove('open')"><i class="fas fa-camera"></i> Barcode Scanner</button>
+  <a href="https://toolmatrix.space/blog.html"><i class="fas fa-newspaper"></i> Blog</a>
+  <a href="https://toolmatrix.space/login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+  <a href="https://toolmatrix.space/signup.html"><i class="fas fa-user-plus"></i> Sign Up</a>
 </div>
 
-<!-- Info Cards -->
-<div class="info-cards">
-  <div class="info-card">
-    <div class="ic-icon">🔤</div>
-    <div class="ic-title">Code 128</div>
-    <div class="ic-desc">Text + numbers. Shipping labels, logistics, inventory.</div>
-  </div>
-  <div class="info-card">
-    <div class="ic-icon">🏷️</div>
-    <div class="ic-title">EAN-13</div>
-    <div class="ic-desc">13-digit international product barcode used worldwide.</div>
-  </div>
-  <div class="info-card">
-    <div class="ic-icon">📦</div>
-    <div class="ic-title">EAN-8</div>
-    <div class="ic-desc">8-digit compact barcode for small product packaging.</div>
-  </div>
-  <div class="info-card">
-    <div class="ic-icon">🇺🇸</div>
-    <div class="ic-title">UPC-A</div>
-    <div class="ic-desc">12-digit code used in US & Canada retail products.</div>
-  </div>
-</div>
-
-<!-- Bottom Ad -->
-<div class="ad-banner bottom-ad">
+<!-- ══ TOP AD ══ -->
+<div class="ad-strip">
   <div class="ad-desktop">
     <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
     <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
@@ -791,561 +387,764 @@
   </div>
 </div>
 
-<footer>
-  Made with 💚 by <a href="../../index.html">ToolMatrix</a> — <span>Free Online Barcode Generator</span>
-</footer>
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-badge"><i class="fas fa-bolt"></i> Pro Barcode Generator 2026</div>
+  <h1>Generate <span class="hl">Professional Barcodes</span><br>Instantly & Free</h1>
+  <p>Create barcodes in 9 formats. Custom colors, logos, batch generate. Download PNG, SVG, JPEG, PDF — no signup needed.</p>
+  <div class="hero-feats">
+    <span class="hfeat"><i class="fas fa-check"></i> 9 Barcode Types</span>
+    <span class="hfeat"><i class="fas fa-check"></i> Batch Generate</span>
+    <span class="hfeat"><i class="fas fa-check"></i> PNG / SVG / PDF</span>
+    <span class="hfeat"><i class="fas fa-check"></i> Scanner Included</span>
+    <span class="hfeat"><i class="fas fa-check"></i> Custom Colors</span>
+    <span class="hfeat"><i class="fas fa-check"></i> History Saved</span>
+    <span class="hfeat"><i class="fas fa-check"></i> 100% Free</span>
+  </div>
+</section>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+<div class="tool-grid">
+
+<!-- ════════════════════════════
+     LEFT — INPUT & SETTINGS
+════════════════════════════ -->
+<div style="display:flex;flex-direction:column;gap:14px">
+
+<!-- Barcode Type -->
+<div class="card">
+  <div class="card-h">
+    <div class="card-h-ico"><i class="fas fa-th-large"></i></div>
+    <div><div class="card-h-title">Barcode Format</div><div class="card-h-sub">Choose barcode standard</div></div>
+  </div>
+  <div class="card-b">
+    <div class="type-grid" id="typeGrid">
+      <div class="type-btn act" data-type="CODE128" onclick="setType(this)"><i class="fas fa-font"></i><span class="type-btn-name">Code 128</span><span class="type-btn-desc">Any text</span></div>
+      <div class="type-btn" data-type="CODE39" onclick="setType(this)"><i class="fas fa-text-width"></i><span class="type-btn-name">Code 39</span><span class="type-btn-desc">Alphanumeric</span></div>
+      <div class="type-btn" data-type="EAN13" onclick="setType(this)"><i class="fas fa-tag"></i><span class="type-btn-name">EAN-13</span><span class="type-btn-desc">13 digits</span></div>
+      <div class="type-btn" data-type="EAN8" onclick="setType(this)"><i class="fas fa-box"></i><span class="type-btn-name">EAN-8</span><span class="type-btn-desc">8 digits</span></div>
+      <div class="type-btn" data-type="UPC" onclick="setType(this)"><i class="fas fa-shopping-cart"></i><span class="type-btn-name">UPC-A</span><span class="type-btn-desc">12 digits</span></div>
+      <div class="type-btn" data-type="ITF14" onclick="setType(this)"><i class="fas fa-industry"></i><span class="type-btn-name">ITF-14</span><span class="type-btn-desc">14 digits</span></div>
+      <div class="type-btn" data-type="MSI" onclick="setType(this)"><i class="fas fa-warehouse"></i><span class="type-btn-name">MSI</span><span class="type-btn-desc">Inventory</span></div>
+      <div class="type-btn" data-type="codabar" onclick="setType(this)"><i class="fas fa-hospital"></i><span class="type-btn-name">Codabar</span><span class="type-btn-desc">Medical/lib</span></div>
+      <div class="type-btn" data-type="pharmacode" onclick="setType(this)"><i class="fas fa-pills"></i><span class="type-btn-name">Pharma</span><span class="type-btn-desc">Pharma</span></div>
+    </div>
+    <div class="fmt-info" id="fmtInfo">
+      <div class="fmt-info-title"><i class="fas fa-info-circle"></i> Code 128</div>
+      <div class="fmt-info-body">Accepts any <code>text</code>, <code>numbers</code>, and <code>symbols</code>. Most versatile — used in shipping, logistics, and inventory.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Data Input -->
+<div class="card">
+  <div class="card-h">
+    <div class="card-h-ico"><i class="fas fa-keyboard"></i></div>
+    <div><div class="card-h-title">Barcode Data</div><div class="card-h-sub">Enter value to encode</div></div>
+  </div>
+  <div class="card-b">
+    <div class="field">
+      <label><i class="fas fa-barcode"></i> Value <span style="color:var(--err);font-size:.65rem">*required</span></label>
+      <input class="inp" id="bVal" placeholder="Enter text or numbers..." oninput="liveGen()" maxlength="100">
+      <div class="field-hint" id="valHint">Enter any text or numbers for Code 128</div>
+      <div class="field-err" id="valErr">Invalid input for selected format</div>
+    </div>
+    <div class="field">
+      <label><i class="fas fa-align-left"></i> Custom Label (optional)</label>
+      <input class="inp" id="customLabel" placeholder="Text shown below barcode..." oninput="liveGen()">
+      <div class="field-hint">Leave empty to show barcode value automatically</div>
+    </div>
+    <div class="field">
+      <label><i class="fas fa-heading"></i> Title Above Barcode (optional)</label>
+      <input class="inp" id="bTitle" placeholder="Product Name, Company..." oninput="liveGen()">
+    </div>
+  </div>
+</div>
+
+<!-- Appearance -->
+<div class="card">
+  <div class="card-h">
+    <div class="card-h-ico"><i class="fas fa-palette"></i></div>
+    <div><div class="card-h-title">Appearance</div><div class="card-h-sub">Colors, size & style</div></div>
+  </div>
+  <div class="card-b">
+    <div class="slbl"><i class="fas fa-fill-drip"></i> Colors</div>
+    <div class="field-row">
+      <div class="field">
+        <label><i class="fas fa-bars"></i> Bar Color</label>
+        <div class="clr-row">
+          <input type="color" id="barClr" value="#000000" onchange="syncHex('barClr','barHex');liveGen()">
+          <input type="text" class="clr-hex" id="barHex" value="#000000" onchange="syncClr('barHex','barClr');liveGen()" maxlength="7">
+        </div>
+        <div class="clr-presets">
+          <div class="cpre" style="background:#000000" onclick="setClr('barClr','barHex','#000000')"></div>
+          <div class="cpre" style="background:#14532d" onclick="setClr('barClr','barHex','#14532d')"></div>
+          <div class="cpre" style="background:#1d4ed8" onclick="setClr('barClr','barHex','#1d4ed8')"></div>
+          <div class="cpre" style="background:#991b1b" onclick="setClr('barClr','barHex','#991b1b')"></div>
+          <div class="cpre" style="background:#7c3aed" onclick="setClr('barClr','barHex','#7c3aed')"></div>
+          <div class="cpre" style="background:#92400e" onclick="setClr('barClr','barHex','#92400e')"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label><i class="fas fa-square"></i> Background</label>
+        <div class="clr-row">
+          <input type="color" id="bgClr" value="#ffffff" onchange="syncHex('bgClr','bgHex');liveGen()">
+          <input type="text" class="clr-hex" id="bgHex" value="#ffffff" onchange="syncClr('bgHex','bgClr');liveGen()" maxlength="7">
+        </div>
+        <div class="clr-presets">
+          <div class="cpre" style="background:#ffffff;border:1px solid #ddd" onclick="setClr('bgClr','bgHex','#ffffff')"></div>
+          <div class="cpre" style="background:#f0fdf4" onclick="setClr('bgClr','bgHex','#f0fdf4')"></div>
+          <div class="cpre" style="background:#eff6ff" onclick="setClr('bgClr','bgHex','#eff6ff')"></div>
+          <div class="cpre" style="background:#fef3c7" onclick="setClr('bgClr','bgHex','#fef3c7')"></div>
+          <div class="cpre" style="background:#fdf2f8" onclick="setClr('bgClr','bgHex','#fdf2f8')"></div>
+          <div class="cpre" style="background:#1a1a2e" onclick="setClr('bgClr','bgHex','#1a1a2e')"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slbl"><i class="fas fa-expand-arrows-alt"></i> Dimensions</div>
+    <div class="field">
+      <label><i class="fas fa-arrows-left-right"></i> Bar Width</label>
+      <div class="rng-row">
+        <input type="range" id="barW" min="1" max="6" value="2" step="1" oninput="updRng('barW','barWV','');liveGen()">
+        <span class="rng-val" id="barWV">2</span>
+      </div>
+    </div>
+    <div class="field">
+      <label><i class="fas fa-arrows-up-down"></i> Barcode Height</label>
+      <div class="rng-row">
+        <input type="range" id="barH" min="30" max="220" value="100" step="5" oninput="updRng('barH','barHV','px');liveGen()">
+        <span class="rng-val" id="barHV">100px</span>
+      </div>
+    </div>
+    <div class="field">
+      <label><i class="fas fa-text-height"></i> Font Size</label>
+      <div class="rng-row">
+        <input type="range" id="fntSz" min="8" max="32" value="16" step="1" oninput="updRng('fntSz','fntSzV','px');liveGen()">
+        <span class="rng-val" id="fntSzV">16px</span>
+      </div>
+    </div>
+    <div class="field">
+      <label><i class="fas fa-border-all"></i> Margin / Quiet Zone</label>
+      <div class="rng-row">
+        <input type="range" id="margin" min="0" max="50" value="10" step="2" oninput="updRng('margin','marginV','px');liveGen()">
+        <span class="rng-val" id="marginV">10px</span>
+      </div>
+    </div>
+
+    <div class="slbl"><i class="fas fa-font"></i> Font Family</div>
+    <div class="field">
+      <select class="inp-sel" id="fontFam" onchange="liveGen()">
+        <option value="'Segoe UI',sans-serif">Segoe UI (Default)</option>
+        <option value="monospace">Monospace</option>
+        <option value="'Courier New',monospace">Courier New</option>
+        <option value="Arial,sans-serif">Arial</option>
+        <option value="'Times New Roman',serif">Times New Roman</option>
+      </select>
+    </div>
+
+    <div class="slbl"><i class="fas fa-toggle-on"></i> Options</div>
+    <div class="tog-row" onclick="this.querySelector('input').click()">
+      <label><i class="fas fa-text-slash"></i> Show Text Below</label>
+      <div class="tg"><input type="checkbox" id="showTxt" checked onclick="event.stopPropagation();liveGen()"><span class="tgs"></span></div>
+    </div>
+    <div class="tog-row" onclick="this.querySelector('input').click()">
+      <label><i class="fas fa-layer-group"></i> Flat Mode (no guard bars)</label>
+      <div class="tg"><input type="checkbox" id="flatMode" onclick="event.stopPropagation();liveGen()"><span class="tgs"></span></div>
+    </div>
+    <div class="tog-row" onclick="this.querySelector('input').click()">
+      <label><i class="fas fa-heading"></i> Show Title Above</label>
+      <div class="tg"><input type="checkbox" id="showTitle" onclick="event.stopPropagation();liveGen()"><span class="tgs"></span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Generate Button -->
+<button class="dl-main" onclick="generateAndSave()" style="border-radius:var(--r2);font-size:1rem;border:none">
+  <i class="fas fa-barcode"></i> Generate & Save Barcode
+</button>
+
+</div><!-- /left col -->
+
+<!-- ════════════════════════════
+     CENTER — PREVIEW
+════════════════════════════ -->
+<div class="card preview-sticky">
+  <div class="card-h">
+    <div class="card-h-ico"><i class="fas fa-eye"></i></div>
+    <div><div class="card-h-title">Live Preview</div><div class="card-h-sub">Real-time generation</div></div>
+    <div class="card-h-extra" style="display:flex;gap:5px">
+      <button class="dl-act" style="padding:5px 10px;font-size:.75rem;border-radius:7px" onclick="copyBarcode()" title="Copy"><i class="fas fa-copy"></i></button>
+      <button class="dl-act" style="padding:5px 10px;font-size:.75rem;border-radius:7px" onclick="printBC()" title="Print"><i class="fas fa-print"></i></button>
+      <button class="dl-act" style="padding:5px 10px;font-size:.75rem;border-radius:7px" onclick="shareBC()" title="Share"><i class="fas fa-share-nodes"></i></button>
+    </div>
+  </div>
+  <div class="qr-canvas" id="previewArea">
+    <div id="titleDisplay" style="font-size:14px;font-weight:700;color:#1a2e1a;margin-bottom:8px;display:none"></div>
+    <svg id="barSVG"></svg>
+    <div class="prev-placeholder" id="prevPH">
+      <i class="fas fa-barcode"></i>
+      <p>Your barcode appears here</p>
+      <small>Enter a value above to begin</small>
+    </div>
+  </div>
+  <div class="prev-meta" id="prevMeta" style="display:none">
+    <span><i class="fas fa-tag"></i> <strong id="metaType">CODE128</strong></span>
+    <span><i class="fas fa-ruler-horizontal"></i> <strong id="metaW">300</strong>px</span>
+    <span><i class="fas fa-ruler-vertical"></i> <strong id="metaH">100</strong>px</span>
+    <span><i class="fas fa-font"></i> <strong id="metaLen">0</strong> chars</span>
+  </div>
+  <div class="dl-area">
+    <div class="slbl" style="margin-top:0"><i class="fas fa-download"></i> Export Size</div>
+    <div class="sopt-grid c4" style="margin-bottom:10px">
+      <div class="sopt" onclick="setExpSz(1,this)"><i class="fas fa-image"></i>1x</div>
+      <div class="sopt act" onclick="setExpSz(2,this)"><i class="fas fa-image"></i>2x</div>
+      <div class="sopt" onclick="setExpSz(3,this)"><i class="fas fa-image"></i>3x</div>
+      <div class="sopt" onclick="setExpSz(4,this)"><i class="fas fa-image"></i>4x</div>
+    </div>
+    <button class="dl-main" id="dlMain" onclick="dlPNG()" disabled>
+      <i class="fas fa-download"></i> Download PNG
+    </button>
+    <div class="dl-row">
+      <button class="dl-btn" id="dlSVG" onclick="dlSVG()" disabled><i class="fas fa-file-code"></i>SVG</button>
+      <button class="dl-btn" id="dlJPG" onclick="dlJPEG()" disabled><i class="fas fa-file-image"></i>JPEG</button>
+      <button class="dl-btn" id="dlPDF" onclick="dlPDF()" disabled><i class="fas fa-file-pdf"></i>PDF</button>
+      <button class="dl-btn" id="dlWEBP" onclick="dlWEBP()" disabled><i class="fas fa-file-image"></i>WEBP</button>
+    </div>
+    <div class="dl-acts">
+      <button class="dl-act" id="dlCopy" onclick="copyBarcode()" disabled><i class="fas fa-copy"></i> Copy Image</button>
+      <button class="dl-act" id="dlPrint" onclick="printBC()" disabled><i class="fas fa-print"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     RIGHT — TABS
+════════════════════════════ -->
+<div>
+<div class="card">
+  <div class="rtabs">
+    <button class="rtab act" onclick="showRTab('templates',this)"><i class="fas fa-swatchbook"></i>Style</button>
+    <button class="rtab" onclick="showRTab('batch',this)"><i class="fas fa-layer-group"></i>Batch</button>
+    <button class="rtab" onclick="showRTab('history',this)"><i class="fas fa-history"></i>History</button>
+  </div>
+
+  <!-- TEMPLATES TAB -->
+  <div class="rpanel act" id="rp-templates">
+    <div class="slbl" style="margin-top:0"><i class="fas fa-palette"></i> Color Templates</div>
+    <div class="tmpl-grid" id="tmplGrid">
+      <div class="tmpl" onclick="applyTmpl('classic',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#000"></div><div class="tmpl-clr" style="background:#fff;border:1px solid #ddd"></div></div><span>Classic</span></div>
+      <div class="tmpl" onclick="applyTmpl('forest',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#14532d"></div><div class="tmpl-clr" style="background:#f0fdf4"></div></div><span>Forest</span></div>
+      <div class="tmpl" onclick="applyTmpl('ocean',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#1d4ed8"></div><div class="tmpl-clr" style="background:#eff6ff"></div></div><span>Ocean</span></div>
+      <div class="tmpl" onclick="applyTmpl('sunset',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#dc2626"></div><div class="tmpl-clr" style="background:#fff7ed"></div></div><span>Sunset</span></div>
+      <div class="tmpl" onclick="applyTmpl('royal',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#7c3aed"></div><div class="tmpl-clr" style="background:#f5f3ff"></div></div><span>Royal</span></div>
+      <div class="tmpl" onclick="applyTmpl('dark',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#e2e8f0"></div><div class="tmpl-clr" style="background:#0f172a"></div></div><span>Dark</span></div>
+      <div class="tmpl" onclick="applyTmpl('gold',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#92400e"></div><div class="tmpl-clr" style="background:#fffbeb"></div></div><span>Gold</span></div>
+      <div class="tmpl" onclick="applyTmpl('rose',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#be185d"></div><div class="tmpl-clr" style="background:#fdf2f8"></div></div><span>Rose</span></div>
+      <div class="tmpl" onclick="applyTmpl('retail',this)"><div class="tmpl-clrs"><div class="tmpl-clr" style="background:#000"></div><div class="tmpl-clr" style="background:#fef9c3"></div></div><span>Retail</span></div>
+    </div>
+
+    <div class="slbl"><i class="fas fa-box-open"></i> Presets</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="dl-act" style="justify-content:flex-start;gap:10px" onclick="applyPreset('retail')"><i class="fas fa-shopping-cart" style="color:var(--pr)"></i> Retail Product Label</button>
+      <button class="dl-act" style="justify-content:flex-start;gap:10px" onclick="applyPreset('shipping')"><i class="fas fa-truck" style="color:var(--pr)"></i> Shipping Label</button>
+      <button class="dl-act" style="justify-content:flex-start;gap:10px" onclick="applyPreset('inventory')"><i class="fas fa-warehouse" style="color:var(--pr)"></i> Inventory Tag</button>
+      <button class="dl-act" style="justify-content:flex-start;gap:10px" onclick="applyPreset('small')"><i class="fas fa-box" style="color:var(--pr)"></i> Small Package</button>
+    </div>
+
+    <div class="slbl"><i class="fas fa-camera"></i> Scanner</div>
+    <button class="dl-main" onclick="openModal('scanModal')" style="border:none;border-radius:var(--r3)">
+      <i class="fas fa-camera"></i> Open Barcode Scanner
+    </button>
+  </div>
+
+  <!-- BATCH TAB -->
+  <div class="rpanel" id="rp-batch">
+    <div class="slbl" style="margin-top:0"><i class="fas fa-list"></i> Values (one per line)</div>
+    <div class="field">
+      <textarea class="inp ta" id="batchIn" placeholder="PRODUCT-001&#10;PRODUCT-002&#10;1234567890128&#10;ITEM-2026-A&#10;SKU-98765" style="min-height:120px"></textarea>
+      <div class="field-hint">Max 25 barcodes per batch. Uses current type & style.</div>
+    </div>
+    <button class="dl-main" onclick="batchGen()" style="border:none;border-radius:var(--r3)">
+      <i class="fas fa-layer-group"></i> Generate All Barcodes
+    </button>
+    <div class="batch-res" id="batchRes"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="rpanel" id="rp-history">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <span style="font-size:.72rem;font-weight:700;color:var(--muted)" id="histLbl">0 barcodes</span>
+      <button class="dl-act" style="padding:5px 12px;font-size:.72rem;border-radius:6px" onclick="clearHist()"><i class="fas fa-trash-alt"></i> Clear</button>
+    </div>
+    <div class="hist-grid" id="histGrid">
+      <div class="hist-empty"><i class="fas fa-barcode"></i><p>No barcodes yet</p></div>
+    </div>
+  </div>
+</div>
+</div><!-- /right col -->
+
+</div><!-- /tool-grid -->
+
+<!-- BOTTOM AD -->
+<div class="ad-strip bottom">
+  <div class="ad-desktop">
+    <script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script>
+    <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
+  </div>
+  <div class="ad-mobile">
+    <script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script>
+    <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ══ SCANNER MODAL ══ -->
+<div class="modal-bg" id="scanModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3><i class="fas fa-camera-retro"></i> Barcode Scanner</h3>
+      <button class="modal-close" onclick="closeModal('scanModal');stopCam()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-bd">
+      <div class="scan-wrap"><video id="scanVid" autoplay playsinline></video><div class="scan-overlay"><div class="scan-frame"></div><div class="scan-line"></div></div></div>
+      <button class="dl-main" style="border:none;border-radius:var(--r3);margin-bottom:8px" onclick="document.getElementById('scanFile').click()">
+        <i class="fas fa-image"></i> Or Upload Barcode Image
+      </button>
+      <input type="file" id="scanFile" accept="image/*" hidden>
+      <div class="scan-result" id="scanRes" style="display:none">
+        <strong style="color:var(--prd)"><i class="fas fa-check-circle"></i> Detected:</strong>
+        <span id="scanResText" style="margin-left:6px"></span>
+        <button class="dl-act" style="padding:5px 12px;font-size:.72px;margin-top:8px;width:100%" onclick="loadScannedVal()"><i class="fas fa-arrow-right"></i> Use This Value</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <p>Barcode Generator Pro — by <a href="https://toolmatrix.space">ToolMatrix</a> · <span>100% Free</span> · No Signup Required · <a href="https://toolmatrix.space/blog.html">Blog</a> · <a href="https://toolmatrix.space/privacy-policy.html">Privacy</a></p>
+</footer>
 
 <script>
-/* ═══════════════════════════
-   CONFIG
-═══════════════════════════ */
-const DIRECT_LINK_URL = 'https://www.effectivecpmgate.com/YOUR_DIRECT_LINK_ID';
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+let curType='CODE128', generated=false, expScale=2;
+let histList=JSON.parse(localStorage.getItem('bc_hist')||'[]');
+let scannedVal='';
 
-/* ═══════════════════════════
-   STATE
-═══════════════════════════ */
-let currentType = 'CODE128';
-let barcodeGenerated = false;
-let historyList = JSON.parse(localStorage.getItem('barcode_history') || '[]');
-
-const FORMAT_INFO = {
-  CODE128: {
-    title: 'Code 128',
-    text: 'Accepts any <code>text</code>, <code>numbers</code>, and <code>symbols</code>. Most versatile barcode — used in shipping, logistics, and internal inventory.',
-    hint: 'Enter any text or numbers for Code 128',
-    placeholder: 'e.g. PRODUCT-2024-A',
-    validate: v => v.length > 0,
-    errorMsg: 'Please enter at least 1 character'
-  },
-  EAN13: {
-    title: 'EAN-13',
-    text: 'Requires exactly <code>12 or 13 digits</code>. If 12, checksum is auto-calculated. International standard for retail products.',
-    hint: 'Enter exactly 12 or 13 digits',
-    placeholder: 'e.g. 590123412345',
-    validate: v => /^\d{12,13}$/.test(v),
-    errorMsg: 'EAN-13 requires exactly 12 or 13 digits'
-  },
-  EAN8: {
-    title: 'EAN-8',
-    text: 'Requires exactly <code>7 or 8 digits</code>. If 7, checksum is auto-calculated. Used for small product packages.',
-    hint: 'Enter exactly 7 or 8 digits',
-    placeholder: 'e.g. 9638507',
-    validate: v => /^\d{7,8}$/.test(v),
-    errorMsg: 'EAN-8 requires exactly 7 or 8 digits'
-  },
-  UPC: {
-    title: 'UPC-A',
-    text: 'Requires exactly <code>11 or 12 digits</code>. If 11, checksum is auto-calculated. Standard barcode for US & Canada retail.',
-    hint: 'Enter exactly 11 or 12 digits',
-    placeholder: 'e.g. 01234567890',
-    validate: v => /^\d{11,12}$/.test(v),
-    errorMsg: 'UPC-A requires exactly 11 or 12 digits'
-  }
+const FMT={
+  CODE128:{title:'Code 128',body:'Accepts any <code>text</code>, <code>numbers</code>, and <code>symbols</code>. Most versatile barcode used in shipping, logistics, and inventory.',hint:'Enter any text or numbers for Code 128',ph:'e.g. PRODUCT-2024-A',validate:v=>v.length>0,err:'Please enter at least 1 character'},
+  CODE39:{title:'Code 39',body:'Accepts <code>uppercase letters A–Z</code>, <code>digits 0–9</code>, and special chars <code>- . $ / + % SPACE</code>. Used in automotive and defense.',hint:'Uppercase letters, numbers, and - . $ / + %',ph:'e.g. ITEM-A 123',validate:v=>/^[A-Z0-9\-\.\ \$\/\+\%]+$/.test(v.toUpperCase()),err:'Code 39: uppercase letters, digits and - . $ / + % space only'},
+  EAN13:{title:'EAN-13',body:'Requires exactly <code>12 or 13 digits</code>. 12 digits auto-calculates checksum. International standard for retail products.',hint:'Enter exactly 12 or 13 digits',ph:'e.g. 590123412345',validate:v=>/^\d{12,13}$/.test(v),err:'EAN-13 requires exactly 12 or 13 digits'},
+  EAN8:{title:'EAN-8',body:'Requires exactly <code>7 or 8 digits</code>. Used on small product packaging where space is limited.',hint:'Enter exactly 7 or 8 digits',ph:'e.g. 9638507',validate:v=>/^\d{7,8}$/.test(v),err:'EAN-8 requires exactly 7 or 8 digits'},
+  UPC:{title:'UPC-A',body:'Requires exactly <code>11 or 12 digits</code>. Standard barcode for US & Canada retail products.',hint:'Enter exactly 11 or 12 digits',ph:'e.g. 01234567890',validate:v=>/^\d{11,12}$/.test(v),err:'UPC-A requires exactly 11 or 12 digits'},
+  ITF14:{title:'ITF-14',body:'Requires exactly <code>13 or 14 digits</code>. Used on outer packaging and shipping cartons (GTIN-14).',hint:'Enter exactly 13 or 14 digits',ph:'e.g. 10012345678902',validate:v=>/^\d{13,14}$/.test(v),err:'ITF-14 requires exactly 13 or 14 digits'},
+  MSI:{title:'MSI Plessey',body:'Accepts <code>numeric digits only</code> (0–9). Used in inventory management and library systems.',hint:'Numbers only (0–9)',ph:'e.g. 1234567',validate:v=>/^\d+$/.test(v),err:'MSI requires numeric digits only'},
+  codabar:{title:'Codabar',body:'Accepts <code>0–9</code>, <code>- $ : / . +</code>, and must start/end with A, B, C, or D. Used in medical, blood banks, and libraries.',hint:'Start/end with A-D, digits and - $ : / . +',ph:'e.g. A1234567B',validate:v=>/^[A-Da-d][0-9\-\$\:\/\.\+]*[A-Da-d]$/.test(v),err:'Codabar: start and end with A-D, only digits and - $ : / . + inside'},
+  pharmacode:{title:'Pharmacode',body:'Accepts <code>integers from 3 to 131070</code>. Used in pharmaceutical packaging.',hint:'Enter a number between 3 and 131070',ph:'e.g. 1234',validate:v=>/^\d+$/.test(v)&&parseInt(v)>=3&&parseInt(v)<=131070,err:'Pharmacode: enter a number between 3 and 131070'}
 };
 
-/* ═══════════════════════════
-   INIT
-═══════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  renderHistory();
-  document.getElementById('barcodeSVG').style.display = 'none';
+// ════════════════════════════════════
+//  TYPE
+// ════════════════════════════════════
+function setType(el){
+  curType=el.dataset.type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  const f=FMT[curType];
+  document.getElementById('fmtInfo').innerHTML=`<div class="fmt-info-title"><i class="fas fa-info-circle"></i> ${f.title}</div><div class="fmt-info-body">${f.body}</div>`;
+  document.getElementById('valHint').textContent=f.hint;
+  document.getElementById('bVal').placeholder=f.ph;
+  document.getElementById('bVal').classList.remove('error');
+  document.getElementById('valErr').classList.remove('show');
+  document.getElementById('metaType').textContent=curType;
+  liveGen();
+}
+
+// ════════════════════════════════════
+//  LIVE GENERATE
+// ════════════════════════════════════
+function liveGen(){
+  const val=document.getElementById('bVal').value.trim();
+  const svg=document.getElementById('barSVG');
+  const ph=document.getElementById('prevPH');
+  const meta=document.getElementById('prevMeta');
+  const title=document.getElementById('titleDisplay');
+
+  if(!val){svg.style.display='none';ph.innerHTML='<i class="fas fa-barcode"></i><p>Your barcode appears here</p><small>Enter a value above to begin</small>';ph.style.display='';meta.style.display='none';setDlEnabled(false);generated=false;return;}
+
+  const f=FMT[curType];
+  if(!f.validate(val)){
+    svg.style.display='none';
+    ph.innerHTML=`<i class="fas fa-triangle-exclamation" style="color:var(--warn);opacity:.7"></i><p style="color:var(--warn)">${f.err}</p>`;
+    ph.style.display='';meta.style.display='none';setDlEnabled(false);generated=false;return;
+  }
+
+  try{
+    const opts=getOpts();
+    JsBarcode('#barSVG',curType==='CODE39'?val.toUpperCase():val,opts);
+    svg.style.display='';ph.style.display='none';meta.style.display='flex';
+    // title
+    const showTitle=document.getElementById('showTitle').checked;
+    const titleVal=document.getElementById('bTitle').value.trim();
+    if(showTitle&&titleVal){title.textContent=titleVal;title.style.display='';}
+    else{title.style.display='none';}
+    // meta
+    document.getElementById('metaLen').textContent=val.length;
+    document.getElementById('metaW').textContent=opts.width*val.length+opts.margin*2;
+    document.getElementById('metaH').textContent=opts.height;
+    setDlEnabled(true);generated=true;
+    document.getElementById('bVal').classList.remove('error');
+    document.getElementById('valErr').classList.remove('show');
+  }catch(e){
+    svg.style.display='none';
+    ph.innerHTML=`<i class="fas fa-circle-xmark" style="color:var(--err);opacity:.7"></i><p style="color:var(--err)">Invalid data</p><small>${e.message||'Check your input'}</small>`;
+    ph.style.display='';meta.style.display='none';setDlEnabled(false);generated=false;
+  }
+}
+
+function getOpts(){
+  return{
+    width:parseInt(document.getElementById('barW').value),
+    height:parseInt(document.getElementById('barH').value),
+    displayValue:document.getElementById('showTxt').checked,
+    text:document.getElementById('customLabel').value.trim()||undefined,
+    lineColor:document.getElementById('barClr').value,
+    background:document.getElementById('bgClr').value,
+    fontSize:parseInt(document.getElementById('fntSz').value),
+    margin:parseInt(document.getElementById('margin').value),
+    flat:document.getElementById('flatMode').checked,
+    font:document.getElementById('fontFam').value,
+    textMargin:6,textAlign:'center'
+  };
+}
+
+function setDlEnabled(on){
+  ['dlMain','dlSVG','dlJPG','dlPDF','dlWEBP','dlCopy','dlPrint'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.disabled=!on;
+  });
+}
+
+// ════════════════════════════════════
+//  GENERATE & SAVE
+// ════════════════════════════════════
+function generateAndSave(){
+  const val=document.getElementById('bVal').value.trim();
+  const f=FMT[curType];
+  if(!val){document.getElementById('bVal').classList.add('error');document.getElementById('valErr').textContent='Please enter a value';document.getElementById('valErr').classList.add('show');toast('Enter a value first!',true);return;}
+  if(!f.validate(val)){document.getElementById('bVal').classList.add('error');document.getElementById('valErr').textContent=f.err;document.getElementById('valErr').classList.add('show');toast(f.err,true);return;}
+  document.getElementById('bVal').classList.remove('error');document.getElementById('valErr').classList.remove('show');
+  liveGen();
+  if(generated){addHist(val,curType);toast('Barcode generated & saved! ✓');}
+}
+
+// ════════════════════════════════════
+//  DOWNLOAD UTILS
+// ════════════════════════════════════
+function svgToCanvas(scale){
+  return new Promise(res=>{
+    const svg=document.getElementById('barSVG');
+    const data=new XMLSerializer().serializeToString(svg);
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth*scale;c.height=img.naturalHeight*scale;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle=document.getElementById('bgClr').value;
+      ctx.fillRect(0,0,c.width,c.height);
+      ctx.scale(scale,scale);ctx.drawImage(img,0,0);
+      res(c);
+    };
+    img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(data)));
+  });
+}
+
+async function dlPNG(){
+  if(!generated)return;
+  const c=await svgToCanvas(expScale);
+  c.toBlob(b=>{dl(URL.createObjectURL(b),`barcode-${curType}-${Date.now()}.png`);URL.revokeObjectURL(b);toast('PNG downloaded! ✓');},'image/png');
+}
+function dlSVG(){
+  if(!generated)return;
+  const d=new XMLSerializer().serializeToString(document.getElementById('barSVG'));
+  dl('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(d),`barcode-${curType}-${Date.now()}.svg`);
+  toast('SVG downloaded! ✓');
+}
+async function dlJPEG(){
+  if(!generated)return;
+  const c=await svgToCanvas(expScale);
+  c.toBlob(b=>{dl(URL.createObjectURL(b),`barcode-${curType}-${Date.now()}.jpg`);URL.revokeObjectURL(b);toast('JPEG downloaded! ✓');},'image/jpeg',0.95);
+}
+async function dlWEBP(){
+  if(!generated)return;
+  const c=await svgToCanvas(expScale);
+  c.toBlob(b=>{dl(URL.createObjectURL(b),`barcode-${curType}-${Date.now()}.webp`);URL.revokeObjectURL(b);toast('WEBP downloaded! ✓');},'image/webp',0.95);
+}
+function dlPDF(){
+  if(!generated)return;
+  const svg=document.getElementById('barSVG');
+  const data=new XMLSerializer().serializeToString(svg);
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas');c.width=img.naturalWidth*expScale;c.height=img.naturalHeight*expScale;
+    const ctx=c.getContext('2d');ctx.fillStyle=document.getElementById('bgClr').value;ctx.fillRect(0,0,c.width,c.height);ctx.scale(expScale,expScale);ctx.drawImage(img,0,0);
+    const dataUrl=c.toDataURL('image/png');
+    const val=document.getElementById('bVal').value.trim();
+    const title=document.getElementById('bTitle').value.trim();
+    const w=window.open('','_blank','width=700,height=500');
+    if(!w){toast('Allow popups to download PDF');return;}
+    w.document.write(`<!DOCTYPE html><html><head><title>Barcode PDF - ToolMatrix</title><style>*{margin:0;padding:0;box-sizing:border-box}body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;background:#fff;padding:30px}.wrap{text-align:center;border:1.5px solid #e2e8f0;border-radius:12px;padding:30px 40px}.img{display:block;max-width:400px;margin:0 auto 14px}.t{font-size:16px;font-weight:700;color:#1a2e1a;margin-bottom:4px}.s{font-size:12px;color:#6b7280}.ft{margin-top:20px;font-size:11px;color:#94a3b8}@media print{body{padding:0}.ft{display:none}}</style></head><body><div class="wrap"><img src="${dataUrl}" class="img">${title?`<div class="t">${title}</div>`:''}${val?`<div class="s">${val} · ${curType}</div>`:''}</div><div class="ft">Generated by ToolMatrix.space — Free Barcode Generator</div><script>window.onload=()=>{window.print()}<\/script></body></html>`);
+    toast('PDF ready to print! ✓');
+  };
+  img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svg))));
+}
+async function copyBarcode(){
+  if(!generated)return;
+  const c=await svgToCanvas(expScale);
+  c.toBlob(async b=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);toast('Copied to clipboard! ✓');}catch{toast('Copy failed — use Download',true);}});
+}
+function printBC(){if(!generated)return;dlPDF();}
+async function shareBC(){
+  if(!generated)return;
+  const c=await svgToCanvas(expScale);
+  c.toBlob(async b=>{
+    try{await navigator.share({title:'Barcode — ToolMatrix',files:[new File([b],'barcode.png',{type:'image/png'})]});toast('Shared! ✓');}
+    catch{toast('Share not supported — use Download',true);}
+  });
+}
+function dl(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);}
+function setExpSz(n,el){expScale=n;document.querySelectorAll('.sopt-grid.c4 .sopt').forEach(o=>o.classList.remove('act'));el.classList.add('act');}
+
+// ════════════════════════════════════
+//  TEMPLATES
+// ════════════════════════════════════
+const TMPLS={
+  classic:{bar:'#000000',bg:'#ffffff'},
+  forest:{bar:'#14532d',bg:'#f0fdf4'},
+  ocean:{bar:'#1d4ed8',bg:'#eff6ff'},
+  sunset:{bar:'#dc2626',bg:'#fff7ed'},
+  royal:{bar:'#7c3aed',bg:'#f5f3ff'},
+  dark:{bar:'#e2e8f0',bg:'#0f172a'},
+  gold:{bar:'#92400e',bg:'#fffbeb'},
+  rose:{bar:'#be185d',bg:'#fdf2f8'},
+  retail:{bar:'#000000',bg:'#fef9c3'}
+};
+function applyTmpl(name,el){
+  const t=TMPLS[name];if(!t)return;
+  setClr('barClr','barHex',t.bar);setClr('bgClr','bgHex',t.bg);
+  document.querySelectorAll('.tmpl').forEach(x=>x.classList.remove('act'));el.classList.add('act');
+  liveGen();toast(`${name.charAt(0).toUpperCase()+name.slice(1)} applied! 🎨`);
+}
+
+const PRESETS={
+  retail:{w:2,h:80,fs:14,mg:10,showTxt:true,flat:false},
+  shipping:{w:3,h:150,fs:16,mg:14,showTxt:true,flat:false},
+  inventory:{w:2,h:60,fs:12,mg:8,showTxt:true,flat:false},
+  small:{w:1,h:50,fs:10,mg:6,showTxt:true,flat:true}
+};
+function applyPreset(name){
+  const p=PRESETS[name];if(!p)return;
+  document.getElementById('barW').value=p.w;updRng('barW','barWV','');
+  document.getElementById('barH').value=p.h;updRng('barH','barHV','px');
+  document.getElementById('fntSz').value=p.fs;updRng('fntSz','fntSzV','px');
+  document.getElementById('margin').value=p.mg;updRng('margin','marginV','px');
+  document.getElementById('showTxt').checked=p.showTxt;
+  document.getElementById('flatMode').checked=p.flat;
+  liveGen();toast(`${name.charAt(0).toUpperCase()+name.slice(1)} preset applied! ✓`);
+}
+
+// ════════════════════════════════════
+//  BATCH
+// ════════════════════════════════════
+function batchGen(){
+  const inp=document.getElementById('batchIn').value.trim();
+  if(!inp){toast('Enter values first!',true);return;}
+  const lines=inp.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(lines.length>25){toast('Max 25 barcodes per batch',true);return;}
+  const res=document.getElementById('batchRes');
+  res.innerHTML='';
+  const f=FMT[curType];
+  let ok=0;
+  lines.forEach((val,i)=>{
+    const row=document.createElement('div');
+    if(!f.validate(val)){
+      row.className='batch-row batch-err';
+      row.innerHTML=`<div class="batch-info"><div class="batch-val">${escH(val)}</div><div class="batch-type" style="color:var(--err)">${f.err}</div></div>`;
+      res.appendChild(row);return;
+    }
+    try{
+      const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svgEl.id='bsvg'+i;
+      document.body.appendChild(svgEl);
+      const opts=getOpts();opts.width=1;opts.height=48;opts.fontSize=10;opts.margin=4;
+      JsBarcode(svgEl,curType==='CODE39'?val.toUpperCase():val,opts);
+      document.body.removeChild(svgEl);
+      row.className='batch-row';
+      row.appendChild(svgEl);
+      const info=document.createElement('div');info.className='batch-info';
+      info.innerHTML=`<div class="batch-val">${escH(val)}</div><div class="batch-type">${f.title} · #${i+1}</div>`;
+      row.appendChild(info);
+      const dlb=document.createElement('button');dlb.className='batch-dl';dlb.innerHTML='<i class="fas fa-download"></i> PNG';
+      dlb.onclick=()=>dlBatchItem(svgEl,val);
+      row.appendChild(dlb);
+      addHist(val,curType);ok++;
+    }catch(e){
+      row.className='batch-row batch-err';
+      row.innerHTML=`<div class="batch-info"><div class="batch-val">${escH(val)}</div><div class="batch-type" style="color:var(--err)">${e.message||'Error'}</div></div>`;
+    }
+    res.appendChild(row);
+  });
+  toast(`${ok}/${lines.length} barcodes generated! 🎉`);
+}
+
+async function dlBatchItem(svgEl,val){
+  const data=new XMLSerializer().serializeToString(svgEl);
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas');c.width=img.naturalWidth*2;c.height=img.naturalHeight*2;
+    const ctx=c.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,c.width,c.height);ctx.scale(2,2);ctx.drawImage(img,0,0);
+    c.toBlob(b=>{dl(URL.createObjectURL(b),`barcode-${val}.png`);URL.revokeObjectURL(b);},'image/png');
+  };
+  img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(data)));
+}
+
+// ════════════════════════════════════
+//  HISTORY
+// ════════════════════════════════════
+function addHist(val,type){
+  if(histList.find(h=>h.val===val&&h.type===type))return;
+  histList.unshift({val,type,t:Date.now()});
+  if(histList.length>40)histList=histList.slice(0,40);
+  localStorage.setItem('bc_hist',JSON.stringify(histList));
+  renderHist();
+}
+function renderHist(){
+  const g=document.getElementById('histGrid');
+  document.getElementById('histLbl').textContent=histList.length+' barcode'+(histList.length!==1?'s':'');
+  if(!histList.length){g.innerHTML='<div class="hist-empty"><i class="fas fa-barcode"></i><p>No barcodes yet</p></div>';return;}
+  g.innerHTML='';
+  histList.forEach((h,i)=>{
+    const card=document.createElement('div');card.className='hist-card';
+    const thumb=document.createElement('div');thumb.className='hist-thumb';
+    const svgEl=document.createElementNS('http://www.w3.org/2000/svg','svg');svgEl.id='hsvg'+i;
+    try{
+      document.body.appendChild(svgEl);
+      JsBarcode(svgEl,h.val,{format:h.type,width:1,height:38,displayValue:false,margin:4,lineColor:'#16a34a',background:'#f0fdf4'});
+      document.body.removeChild(svgEl);
+    }catch{document.body.removeChild(svgEl);}
+    thumb.appendChild(svgEl);
+    card.innerHTML=`<div class="hist-info"><div class="hist-val">${escH(h.val)}</div><div class="hist-type">${FMT[h.type]?.title||h.type}</div><div class="hist-acts"><button class="hist-btn" onclick="loadHist(${i})">↻ Load</button><button class="hist-btn" onclick="cpText('${escA(h.val)}')">📋</button><button class="hist-btn del" onclick="delHist(${i})">🗑️</button></div></div>`;
+    card.insertBefore(thumb,card.firstChild);
+    g.appendChild(card);
+  });
+}
+function loadHist(i){
+  const h=histList[i];if(!h)return;
+  const tb=document.querySelector(`.type-btn[data-type="${h.type}"]`);if(tb)setType(tb);
+  document.getElementById('bVal').value=h.val;
+  liveGen();
+  document.getElementById('previewArea').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('Loaded: '+h.val);
+}
+function delHist(i){histList.splice(i,1);localStorage.setItem('bc_hist',JSON.stringify(histList));renderHist();toast('Removed from history');}
+function clearHist(){histList=[];localStorage.setItem('bc_hist','[]');renderHist();toast('History cleared!');}
+
+// ════════════════════════════════════
+//  SCANNER
+// ════════════════════════════════════
+let stream=null;
+async function startCam(){
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=document.getElementById('scanVid');v.srcObject=stream;
+    scanLoop();
+  }catch{toast('Camera access denied',true);}
+}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
+async function scanLoop(){
+  if(!stream)return;
+  const v=document.getElementById('scanVid');
+  if(v.readyState<2){requestAnimationFrame(scanLoop);return;}
+  if('BarcodeDetector' in window){
+    try{const d=new BarcodeDetector({formats:['code_128','ean_13','ean_8','upc_a','code_39','qr_code']});const b=await d.detect(v);if(b.length){showScanRes(b[0].rawValue);return;}}catch{}
+  }
+  requestAnimationFrame(scanLoop);
+}
+function showScanRes(txt){
+  scannedVal=txt;
+  document.getElementById('scanRes').style.display='block';
+  document.getElementById('scanResText').textContent=txt;
+  stopCam();toast('Barcode detected! ✓');
+}
+function loadScannedVal(){
+  if(scannedVal){document.getElementById('bVal').value=scannedVal;closeModal('scanModal');liveGen();toast('Value loaded! ✓');}
+}
+document.getElementById('scanFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image();img.onload=async()=>{
+    if('BarcodeDetector' in window){
+      try{const d=new BarcodeDetector({formats:['code_128','ean_13','ean_8','upc_a','code_39','qr_code']});const b=await d.detect(img);if(b.length){showScanRes(b[0].rawValue);return;}}catch{}
+    }
+    toast('Barcode not detected — try clearer image',true);
+  };
+  img.src=URL.createObjectURL(f);
 });
 
-/* ═══════════════════════════
-   TYPE SELECTION
-═══════════════════════════ */
-function selectType(el) {
-  document.querySelectorAll('.type-option').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  currentType = el.dataset.type;
+// ════════════════════════════════════
+//  TABS & MODALS
+// ════════════════════════════════════
+function showRTab(t,el){
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('act'));el.classList.add('act');
+  document.querySelectorAll('.rpanel').forEach(p=>p.classList.remove('act'));
+  document.getElementById('rp-'+t)?.classList.add('act');
+}
+function openModal(id){document.getElementById(id).classList.add('open');if(id==='scanModal')startCam();if(id==='histModal')renderHist();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-  const info = FORMAT_INFO[currentType];
-  document.getElementById('formatInfo').innerHTML = `
-    <div class="format-info-title">ℹ️ ${info.title}</div>
-    <div class="format-info-text">${info.text}</div>
-  `;
-  document.getElementById('valueHint').textContent = info.hint;
-  document.getElementById('barcodeValue').placeholder = info.placeholder;
-
-  // Clear error
-  document.getElementById('barcodeValue').classList.remove('error');
-  document.getElementById('valueError').classList.remove('show');
-
-  livePreview();
+// ════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════
+function updRng(id,valId,unit){const el=document.getElementById(id);document.getElementById(valId).textContent=el.value+unit;}
+function syncHex(clrId,hexId){document.getElementById(hexId).value=document.getElementById(clrId).value;}
+function syncClr(hexId,clrId){const v=document.getElementById(hexId).value;if(/^#[0-9a-fA-F]{6}$/.test(v))document.getElementById(clrId).value=v;}
+function setClr(clrId,hexId,val){document.getElementById(clrId).value=val;document.getElementById(hexId).value=val;liveGen();}
+function cpText(txt){if(navigator.clipboard)navigator.clipboard.writeText(txt);else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}toast('Copied: '+txt);}
+function escH(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function escA(s){return s.replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+function toast(msg,err){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.className='toast'+(err?' err':'')+' show';
+  t.querySelector('i').className='fas '+(err?'fa-circle-xmark':'fa-check-circle');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-/* ═══════════════════════════
-   LIVE PREVIEW
-═══════════════════════════ */
-function livePreview() {
-  const value = document.getElementById('barcodeValue').value.trim();
-  if (!value) {
-    document.getElementById('barcodeSVG').style.display = 'none';
-    document.getElementById('previewPlaceholder').style.display = '';
-    document.getElementById('previewActions').style.display = 'none';
-    barcodeGenerated = false;
-    return;
-  }
+// ════════════════════════════════════
+//  KEYBOARD
+// ════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='s'){e.preventDefault();generateAndSave();}
+  if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();dlPNG();}
+  if(e.key==='Escape')['scanModal'].forEach(id=>closeModal(id));
+});
+document.addEventListener('paste',e=>{
+  const txt=e.clipboardData?.getData('text');
+  if(txt&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){document.getElementById('bVal').value=txt;liveGen();toast('Pasted! ✓');}
+});
 
-  const info = FORMAT_INFO[currentType];
-  if (!info.validate(value)) {
-    document.getElementById('barcodeSVG').style.display = 'none';
-    document.getElementById('previewPlaceholder').style.display = '';
-    document.getElementById('previewPlaceholder').innerHTML = `
-      <div class="preview-placeholder-icon">⚠️</div>
-      <div class="preview-placeholder-text" style="color:#f59e0b">Invalid format</div>
-      <div class="preview-placeholder-sub">${info.errorMsg}</div>
-    `;
-    document.getElementById('previewActions').style.display = 'none';
-    barcodeGenerated = false;
-    return;
-  }
-
-  try {
-    const opts = getBarcodeOptions();
-    opts.format = currentType === 'UPC' ? 'UPC' : currentType;
-
-    JsBarcode('#barcodeSVG', value, opts);
-
-    document.getElementById('barcodeSVG').style.display = '';
-    document.getElementById('previewPlaceholder').style.display = 'none';
-    document.getElementById('previewActions').style.display = 'flex';
-    barcodeGenerated = true;
-  } catch (e) {
-    document.getElementById('barcodeSVG').style.display = 'none';
-    document.getElementById('previewPlaceholder').style.display = '';
-    document.getElementById('previewPlaceholder').innerHTML = `
-      <div class="preview-placeholder-icon">❌</div>
-      <div class="preview-placeholder-text" style="color:var(--err)">Invalid data</div>
-      <div class="preview-placeholder-sub">${escHTML(e.message || 'Check your input')}</div>
-    `;
-    document.getElementById('previewActions').style.display = 'none';
-    barcodeGenerated = false;
-  }
-}
-
-function getBarcodeOptions() {
-  const displayText = document.getElementById('displayText').value.trim();
-  return {
-    width: parseInt(document.getElementById('barWidth').value),
-    height: parseInt(document.getElementById('barHeight').value),
-    displayValue: document.getElementById('showText').checked,
-    text: displayText || undefined,
-    lineColor: document.getElementById('barColor').value,
-    background: document.getElementById('bgColor').value,
-    fontSize: parseInt(document.getElementById('fontSize').value),
-    margin: parseInt(document.getElementById('marginSize').value),
-    flat: document.getElementById('flatMode').checked,
-    font: 'Segoe UI, system-ui, sans-serif',
-    textMargin: 6,
-    textAlign: 'center',
-  };
-}
-
-/* ═══════════════════════════
-   GENERATE (Save to History)
-═══════════════════════════ */
-function generateBarcode() {
-  const value = document.getElementById('barcodeValue').value.trim();
-  const info = FORMAT_INFO[currentType];
-
-  if (!value) {
-    document.getElementById('barcodeValue').classList.add('error');
-    document.getElementById('valueError').textContent = 'Please enter a value';
-    document.getElementById('valueError').classList.add('show');
-    showToast('Please enter a barcode value', true);
-    return;
-  }
-
-  if (!info.validate(value)) {
-    document.getElementById('barcodeValue').classList.add('error');
-    document.getElementById('valueError').textContent = info.errorMsg;
-    document.getElementById('valueError').classList.add('show');
-    showToast(info.errorMsg, true);
-    return;
-  }
-
-  // Clear errors
-  document.getElementById('barcodeValue').classList.remove('error');
-  document.getElementById('valueError').classList.remove('show');
-
-  livePreview();
-
-  if (barcodeGenerated) {
-    addToHistory(value, currentType);
-    showToast('✓ Barcode generated & saved!');
-    document.getElementById('previewCanvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-}
-
-/* ═══════════════════════════
-   DOWNLOADS
-═══════════════════════════ */
-function downloadPNG() {
-  if (!barcodeGenerated) return;
-  window.open(DIRECT_LINK_URL, '_blank');
-
-  setTimeout(() => {
-    const svg = document.getElementById('barcodeSVG');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const data = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-
-    img.onload = () => {
-      canvas.width = img.naturalWidth * 2;
-      canvas.height = img.naturalHeight * 2;
-      ctx.scale(2, 2);
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `barcode-${currentType}-${Date.now()}.png`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('✓ PNG downloaded!');
-      }, 'image/png');
-    };
-
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
-  }, 300);
-}
-
-function downloadSVG() {
-  if (!barcodeGenerated) return;
-  window.open(DIRECT_LINK_URL, '_blank');
-
-  setTimeout(() => {
-    const svg = document.getElementById('barcodeSVG');
-    const data = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([data], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `barcode-${currentType}-${Date.now()}.svg`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('✓ SVG downloaded!');
-  }, 300);
-}
-
-async function copyBarcodePNG() {
-  if (!barcodeGenerated) return;
-  try {
-    const svg = document.getElementById('barcodeSVG');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const data = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = reject;
-      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
-    });
-
-    canvas.width = img.naturalWidth * 2;
-    canvas.height = img.naturalHeight * 2;
-    ctx.scale(2, 2);
-    ctx.drawImage(img, 0, 0);
-
-    canvas.toBlob(async blob => {
-      try {
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob })
-        ]);
-        showToast('✓ Barcode image copied to clipboard!');
-      } catch {
-        showToast('Copy not supported in this browser', true);
-      }
-    }, 'image/png');
-  } catch {
-    showToast('Failed to copy image', true);
-  }
-}
-
-function printBarcode() {
-  if (!barcodeGenerated) return;
-  const svg = document.getElementById('barcodeSVG');
-  const data = new XMLSerializer().serializeToString(svg);
-  const win = window.open('', '_blank');
-  win.document.write(`
-    <!DOCTYPE html><html><head><title>Print Barcode</title>
-    <style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px}
-    @media print{@page{margin:10mm}}</style></head>
-    <body>${data}<script>setTimeout(()=>{window.print();window.close()},500)<\/script></body></html>
-  `);
-  win.document.close();
-}
-
-/* ═══════════════════════════
-   BATCH GENERATOR
-═══════════════════════════ */
-function generateBatch() {
-  const input = document.getElementById('batchInput').value.trim();
-  if (!input) { showToast('Enter values for batch generation', true); return; }
-
-  const lines = input.split('\n').map(l => l.trim()).filter(l => l);
-  if (lines.length > 20) { showToast('Maximum 20 barcodes per batch', true); return; }
-
-  window.open(DIRECT_LINK_URL, '_blank');
-
-  const results = document.getElementById('batchResults');
-  results.innerHTML = '';
-
-  const info = FORMAT_INFO[currentType];
-  let success = 0;
-
-  lines.forEach((value, i) => {
-    const item = document.createElement('div');
-    item.className = 'batch-item';
-
-    if (!info.validate(value)) {
-      item.innerHTML = `
-        <div style="font-size:1.5rem">❌</div>
-        <div class="batch-item-info">
-          <div class="batch-item-value">${escHTML(value)}</div>
-          <div class="batch-item-type" style="color:var(--err)">Invalid for ${info.title}</div>
-        </div>`;
-      results.appendChild(item);
-      return;
-    }
-
-    try {
-      const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svgEl.id = 'batch-svg-' + i;
-      item.appendChild(svgEl);
-
-      const opts = getBarcodeOptions();
-      opts.format = currentType === 'UPC' ? 'UPC' : currentType;
-      opts.width = 1;
-      opts.height = 50;
-      opts.fontSize = 12;
-      opts.margin = 5;
-
-      // Temporarily add to DOM for JsBarcode
-      document.body.appendChild(svgEl);
-      JsBarcode(svgEl, value, opts);
-      document.body.removeChild(svgEl);
-
-      item.innerHTML = '';
-      item.appendChild(svgEl);
-      item.innerHTML += `
-        <div class="batch-item-info">
-          <div class="batch-item-value">${escHTML(value)}</div>
-          <div class="batch-item-type">${info.title} · #${i + 1}</div>
-        </div>
-        <button class="batch-item-dl" onclick="downloadBatchItem(${i},'${escAttr(value)}')">⤓ PNG</button>
-      `;
-
-      addToHistory(value, currentType);
-      success++;
-    } catch (e) {
-      item.innerHTML = `
-        <div style="font-size:1.5rem">❌</div>
-        <div class="batch-item-info">
-          <div class="batch-item-value">${escHTML(value)}</div>
-          <div class="batch-item-type" style="color:var(--err)">${escHTML(e.message || 'Error')}</div>
-        </div>`;
-    }
-
-    results.appendChild(item);
-  });
-
-  showToast(`✓ ${success}/${lines.length} barcodes generated!`);
-}
-
-function downloadBatchItem(idx, value) {
-  const svg = document.querySelector(`#batchResults .batch-item:nth-child(${idx + 1}) svg`);
-  if (!svg) return;
-
-  const data = new XMLSerializer().serializeToString(svg);
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth * 2;
-    canvas.height = img.naturalHeight * 2;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(2, 2);
-    ctx.drawImage(img, 0, 0);
-    canvas.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `barcode-${value}.png`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 'image/png');
-  };
-  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
-}
-
-/* ═══════════════════════════
-   HISTORY
-═══════════════════════════ */
-function addToHistory(value, type) {
-  // Avoid duplicates
-  const exists = historyList.find(h => h.value === value && h.type === type);
-  if (exists) return;
-
-  historyList.unshift({
-    value,
-    type,
-    date: new Date().toISOString()
-  });
-
-  if (historyList.length > 30) historyList = historyList.slice(0, 30);
-  localStorage.setItem('barcode_history', JSON.stringify(historyList));
-  renderHistory();
-}
-
-function renderHistory() {
-  const grid = document.getElementById('histGrid');
-  document.getElementById('histCountLabel').textContent = historyList.length + ' barcodes saved';
-
-  if (historyList.length === 0) {
-    grid.innerHTML = `
-      <div class="hist-empty">
-        <div class="hist-empty-icon">▐▌</div>
-        <div class="hist-empty-text">No barcodes generated yet</div>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = '';
-  historyList.forEach((item, i) => {
-    const swatch = document.createElement('div');
-    swatch.className = 'hist-swatch';
-
-    // Create mini barcode SVG
-    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgEl.id = 'hist-svg-' + i;
-
-    try {
-      document.body.appendChild(svgEl);
-      JsBarcode(svgEl, item.value, {
-        format: item.type === 'UPC' ? 'UPC' : item.type,
-        width: 1, height: 40, displayValue: false,
-        margin: 4, lineColor: '#1a9e50', background: '#f9fef9'
-      });
-      document.body.removeChild(svgEl);
-    } catch {
-      document.body.removeChild(svgEl);
-      svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" font-size="10" fill="#ccc">Error</text>';
-    }
-
-    const typeLabel = FORMAT_INFO[item.type]?.title || item.type;
-
-    swatch.innerHTML = `
-      <div class="hist-swatch-preview"></div>
-      <div class="hist-swatch-info">
-        <div class="hist-swatch-val">${escHTML(item.value)}</div>
-        <div class="hist-swatch-type">${typeLabel}</div>
-        <div class="hist-swatch-actions">
-          <button class="hist-swatch-btn" onclick="event.stopPropagation();loadFromHistory(${i})">↻ Load</button>
-          <button class="hist-swatch-btn" onclick="event.stopPropagation();copyText('${escAttr(item.value)}')">📋</button>
-          <button class="hist-swatch-btn del" onclick="event.stopPropagation();deleteHistory(${i})">🗑️</button>
-        </div>
-      </div>
-    `;
-
-    swatch.querySelector('.hist-swatch-preview').appendChild(svgEl);
-    grid.appendChild(swatch);
-  });
-}
-
-function loadFromHistory(idx) {
-  const item = historyList[idx];
-  if (!item) return;
-
-  // Set type
-  document.querySelectorAll('.type-option').forEach(t => {
-    t.classList.toggle('active', t.dataset.type === item.type);
-  });
-  currentType = item.type;
-
-  // Update format info
-  const info = FORMAT_INFO[currentType];
-  document.getElementById('formatInfo').innerHTML = `
-    <div class="format-info-title">ℹ️ ${info.title}</div>
-    <div class="format-info-text">${info.text}</div>
-  `;
-  document.getElementById('valueHint').textContent = info.hint;
-  document.getElementById('barcodeValue').placeholder = info.placeholder;
-
-  // Set value
-  document.getElementById('barcodeValue').value = item.value;
-
-  livePreview();
-  document.getElementById('previewCanvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  showToast('✓ Loaded: ' + item.value);
-}
-
-function deleteHistory(idx) {
-  historyList.splice(idx, 1);
-  localStorage.setItem('barcode_history', JSON.stringify(historyList));
-  renderHistory();
-  showToast('Barcode removed from history');
-}
-
-function clearHistory() {
-  if (historyList.length === 0) return;
-  historyList = [];
-  localStorage.setItem('barcode_history', '[]');
-  renderHistory();
-  showToast('History cleared');
-}
-
-/* ═══════════════════════════
-   HELPERS
-═══════════════════════════ */
-function syncColorHex(picker, hexId) {
-  document.getElementById(hexId).value = picker.value;
-}
-function syncHexColor(hex, pickerId) {
-  const val = hex.value;
-  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-    document.getElementById(pickerId).value = val;
-  }
-}
-
-function updateRange(el, valId, px) {
-  document.getElementById(valId).textContent = el.value + (px ? 'px' : '');
-  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
-  el.style.background = `linear-gradient(90deg,var(--g1) ${pct}%,#e0e0e0 ${pct}%)`;
-}
-
-function copyText(text) {
-  if (navigator.clipboard) navigator.clipboard.writeText(text);
-  else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  }
-  showToast('✓ Copied: ' + text);
-}
-
-function escHTML(s) {
-  const d = document.createElement('div');
-  d.textContent = s; return d.innerHTML;
-}
-
-function escAttr(s) {
-  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\\/g, '\\\\');
-}
-
-function showToast(msg, isErr) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (isErr ? ' err' : '');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
-}
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+renderHist();
+document.getElementById('barSVG').style.display='none';
 </script>
 </body>
 </html>
