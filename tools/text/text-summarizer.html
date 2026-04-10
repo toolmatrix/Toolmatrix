@@ -1,649 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>✂️ Text Summarizer — AI-powered article & report summarizer</title>
-  <meta name="description" content="Summarize long articles, reports, essays and documents into clean, concise summaries. Multiple modes: extractive, bullet points, key points, TL;DR and more.">
-  <meta name="keywords" content="text summarizer, summarize text, article summarizer, text summary tool, AI summarizer, TLDR generator">
-  <!-- Google Fonts + Font Awesome -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Monetag In-Page Push (optional) -->
-  <script src="//monetag.com/in-page-push.js" async></script>
-  <script>(function(s){s.dataset.zone='10689876'; s.src='https://nap5k.com/tag.min.js'})(document.currentScript.parentNode.appendChild(document.createElement('script')));</script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary-dark: #1b5e20;
-      --primary: #2e7d32;
-      --primary-light: #4caf50;
-      --primary-soft: #e8f5e9;
-      --text-dark: #1e2a1e;
-      --text-muted: #4a5a4a;
-      --text-light: #7e9a7e;
-      --bg-light: #f9fdf9;
-      --white: #ffffff;
-      --shadow-sm: 0 8px 30px rgba(0, 30, 0, 0.04);
-      --shadow-md: 0 15px 40px rgba(46, 125, 50, 0.08);
-      --radius-lg: 24px;
-      --radius-md: 16px;
-    }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-dark);
-      line-height: 1.6;
-    }
-    /* header */
-    .hero {
-      background: linear-gradient(145deg, #1b5e20 0%, #2e7d32 60%, #4caf50 100%);
-      color: white;
-      padding: 3rem 1.5rem 5rem;
-      text-align: center;
-      clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
-      margin-bottom: -2rem;
-      position: relative;
-    }
-    .hero h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-    .hero h1 span {
-      background: linear-gradient(120deg, #fff, #d0e8d0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero p {
-      max-width: 650px;
-      margin: 1rem auto 0;
-      opacity: 0.9;
-      font-weight: 300;
-      font-size: 1.2rem;
-    }
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    /* main container */
-    .container {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    .tool-grid {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 25px;
-      margin: 30px 0;
-    }
-    @media (max-width: 1000px) {
-      .tool-grid { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2rem; }
-    }
+<!-- ================= TITLE ================= -->
+<title>AI Text Summarizer – Summarize Articles, Essays & Documents | ToolMatrix</title>
 
-    /* cards */
-    .card {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      padding: 28px;
-      margin-bottom: 25px;
-      transition: box-shadow 0.2s;
-      border: 1px solid rgba(76, 175, 80, 0.1);
-    }
-    .card:hover { box-shadow: var(--shadow-md); }
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .card-header .icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(145deg, var(--primary), var(--primary-light));
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.2rem;
-      box-shadow: 0 6px 15px rgba(46, 125, 50, 0.25);
-    }
-    .card-header h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-    .card-header h2 small {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: var(--text-light);
-    }
+<!-- ================= SEO META ================= -->
+<meta name="description" content="Summarize long articles, essays, reports and documents instantly with AI. Generate key points, bullet summaries and TL;DR in seconds. Free online text summarizer tool.">
 
-    /* mode buttons */
-    .mode-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .mode-btn {
-      padding: 10px 18px;
-      border: 2px solid #d0e6d0;
-      border-radius: 40px;
-      background: #f1f9f1;
-      font-weight: 600;
-      font-size: 0.8rem;
-      color: var(--primary-dark);
-      cursor: pointer;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .mode-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-      box-shadow: 0 4px 12px rgba(46,125,50,0.3);
-    }
-    .mode-btn i { font-size: 0.9rem; }
+<meta name="keywords" content="text summarizer, ai summarizer, summarize article, text summary tool, tldr generator, essay summarizer, document summarizer">
 
-    /* textarea */
-    .textarea-wrapper {
-      margin: 15px 0;
-    }
-    textarea {
-      width: 100%;
-      min-height: 250px;
-      padding: 20px;
-      border: 2px solid #d0e6d0;
-      border-radius: 20px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      background: #f9fff9;
-      resize: vertical;
-      outline: none;
-      transition: 0.2s;
-    }
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 5px rgba(76,175,80,0.15);
-      background: white;
-    }
-    .stats-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      margin: 12px 0;
-    }
-    .word-stats {
-      display: flex;
-      gap: 20px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .word-stats span { font-weight: 700; color: var(--primary); margin-left: 4px; }
+<meta name="robots" content="index, follow">
+<meta name="author" content="ToolMatrix">
 
-    /* sliders */
-    .slider-panel {
-      background: #f1f9f1;
-      border-radius: 20px;
-      padding: 20px;
-      margin: 15px 0;
-      border: 1px solid #d0e6d0;
-    }
-    .slider-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin: 12px 0;
-      flex-wrap: wrap;
-    }
-    .slider-item label {
-      min-width: 130px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--primary-dark);
-    }
-    .slider-item input[type=range] {
-      flex: 1;
-      accent-color: var(--primary);
-      height: 6px;
-    }
-    .slider-item .value {
-      background: white;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--primary);
-      min-width: 55px;
-      text-align: center;
-    }
+<!-- ================= CANONICAL ================= -->
+<link rel="canonical" href="https://toolmatrix.space/tools/text/text-summarizer">
 
-    /* buttons */
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin: 20px 0 10px;
-    }
-    .btn {
-      border: none;
-      border-radius: 50px;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.95rem;
-      padding: 14px 30px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 10px 20px rgba(46,125,50,0.2);
-      transition: 0.2s;
-      border: 2px solid transparent;
-    }
-    .btn-outline {
-      background: transparent;
-      color: var(--primary);
-      border: 2px solid var(--primary);
-      box-shadow: none;
-    }
-    .btn-sm {
-      padding: 8px 16px;
-      font-size: 0.8rem;
-    }
-    .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(46,125,50,0.3); }
-    .btn-outline:hover { background: var(--primary); color: white; }
+<!-- ================= FAVICON ================= -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 
-    /* summary output */
-    .summary-box {
-      background: #f9fff9;
-      border: 2px solid #d0e6d0;
-      border-radius: 24px;
-      padding: 25px;
-      line-height: 2;
-    }
-    .summary-box .highlight { background: #d7f0d7; border-bottom: 3px solid var(--primary); }
+<!-- ================= OPEN GRAPH ================= -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Text Summarizer – Generate Summaries Instantly">
+<meta property="og:description" content="Summarize articles, essays and documents into key points and TL;DR instantly. Free AI summarizer tool.">
+<meta property="og:url" content="https://toolmatrix.space/tools/text/text-summarizer">
+<meta property="og:site_name" content="ToolMatrix">
+<meta property="og:image" content="https://toolmatrix.space/assets/image/text-summarizer.png">
 
-    /* ad containers */
-    .ad-desktop, .ad-mobile {
-      display: none;
-      text-align: center;
-      background: #f1f9f1;
-      border-radius: 20px;
-      padding: 10px;
-      border: 2px dashed #b8d9b8;
-      margin: 20px 0;
-    }
-    @media (min-width: 769px) { .ad-desktop { display: block; } }
-    @media (max-width: 768px) { .ad-mobile { display: block; } }
+<!-- ================= TWITTER ================= -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Text Summarizer – Free Tool">
+<meta name="twitter:description" content="Summarize text into key points and short summaries instantly. Free AI tool.">
+<meta name="twitter:image" content="https://toolmatrix.space/assets/image/text-summarizer.png">
 
-    /* sidebar */
-    .sidebar-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(76,175,80,0.1);
-    }
-    .sidebar-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--primary-dark);
-    }
-    .feature-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .feature-item {
-      background: #f4fcf4;
-      padding: 12px 15px;
-      border-radius: 14px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-dark);
-    }
-    .feature-item i { color: var(--primary); width: 22px; }
+<!-- ================= THEME ================= -->
+<meta name="theme-color" content="#0f172a">
 
-    /* footer */
-    .footer {
-      background: #1e3a1e;
-      color: #c0ddc0;
-      padding: 40px 20px;
-      margin-top: 50px;
-      border-radius: 30px 30px 0 0;
-    }
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 25px;
-    }
-    .footer-links a {
-      color: #c0ddc0;
-      text-decoration: none;
-      margin: 0 12px;
-      font-weight: 500;
-    }
-    .footer-links a:hover { color: white; }
-    .footer-copy { font-size: 0.9rem; }
+<!-- ================= STRUCTURED DATA ================= -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AI Text Summarizer",
+  "url": "https://toolmatrix.space/tools/text/text-summarizer",
+  "description": "Free AI tool to summarize articles, essays and documents into key points, bullet summaries and TL;DR.",
+  "applicationCategory": "ProductivityApplication",
+  "operatingSystem": "All",
+  "creator": {
+    "@type": "Organization",
+    "name": "ToolMatrix"
+  }
+}
+</script>
+  
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --light-green: #e8f5e9;
+            --hover-green: #45a049;
+            --text-dark: #1e2a2e;
+            --bg-gray: #f4f7f4;
+            --header-height: 65px;
+            --sidebar-width: 300px;
+        }
 
-    /* toast */
-    .toast-stack {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      z-index: 999;
-    }
-    .toast {
-      background: var(--primary);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 60px;
-      font-weight: 600;
-      margin-top: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      animation: slideIn 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  </style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        body, html {
+            width: 100%; height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-gray);
+            overflow: hidden;
+        }
+
+        .app-wrapper {
+            display: flex; flex-direction: column;
+            height: 100vh; width: 100vw;
+        }
+
+        /* ===== GREEN HEADER ===== */
+        .main-header { flex-shrink: 0; background: var(--light-green); border-bottom: 1px solid rgba(76,175,80,0.2); z-index: 200; }
+        .header-top { height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: var(--primary-green); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; box-shadow: 0 4px 10px rgba(76,175,80,0.3); }
+        .logo-text { font-size: 22px; font-weight: 800; color: #2E7D32; } .logo-text span { color: var(--primary-green); font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+
+        /* 9‑dot launcher */
+        .app-launcher { position: relative; display: flex; align-items: center; }
+        .launcher-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; color: #2E7D32; margin-right: 4px; }
+        .launcher-btn:hover { background: rgba(76,175,80,0.15); }
+        .tools-label { font-size: 13px; font-weight: 700; color: #2E7D32; margin-left: 2px; }
+        .launcher-dropdown { position: absolute; top: 50px; right: 0; width: 380px; background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); padding: 18px 12px; display: none; grid-template-columns: repeat(3,1fr); gap: 12px 6px; z-index: 300; border: 1px solid #c8e6c9; }
+        .app-launcher:hover .launcher-dropdown { display: grid; }
+        .launcher-dropdown:hover { display: grid; }
+        .tool-link { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 4px; border-radius: 14px; text-decoration: none; color: #2c3e50; transition: all 0.15s; font-size: 11px; font-weight: 500; background: #fafbfa; }
+        .tool-link:hover { background: var(--light-green); color: var(--primary-green); transform: translateY(-2px); }
+        .tool-link svg { width: 28px; height: 28px; margin-bottom: 6px; color: var(--primary-green); }
+
+        /* Hero / description */
+        .hero { padding: 12px 25px 16px; background: white; border-bottom: 1px solid #e0e8e0; }
+        .hero h1 { font-size: 32px; font-weight: 800; color: #1e2a3a; letter-spacing: -0.5px; } .hero h1 i { color: var(--primary-green); font-style: normal; }
+        .hero-desc { color: #4a5c6a; font-size: 15px; margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+
+        /* Main Workspace */
+        main { flex: 1; display: flex; overflow: hidden; }
+
+        /* Left/Editor Section */
+        .editor-section { flex: 1; display: flex; flex-direction: column; padding: 20px; background: var(--bg-gray); overflow: hidden; gap: 15px; }
+        .text-container { flex: 1; background: white; border-radius: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.03); display: flex; flex-direction: column; border: 1px solid #e0e8e0; overflow: hidden; }
+        .text-label { padding: 14px 22px; background: var(--light-green); font-size: 12px; font-weight: 600; color: var(--primary-green); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+        textarea { flex: 1; width: 100%; padding: 22px; border: none; outline: none; font-size: 16px; line-height: 1.7; font-family: inherit; resize: none; color: #2c3e50; background: white; }
+        .text-footer { padding: 10px 22px; background: #fafbfc; border-top: 1px solid #edf2f0; display: flex; justify-content: space-between; font-size: 11px; color: #7a8b9b; }
+
+        /* Right Sidebar */
+        .sidebar { width: var(--sidebar-width); background: white; border-left: 1px solid #e0e8e0; display: flex; flex-direction: column; padding: 20px 18px; overflow-y: auto; z-index: 10; }
+        .sidebar-title { font-weight: 700; font-size: 17px; margin-bottom: 18px; color: #1e2a3a; border-bottom: 3px solid var(--primary-green); padding-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--light-green); border-radius: 14px; padding: 16px 8px; text-align: center; }
+        .stat-card .stat-num { font-size: 26px; font-weight: 800; color: var(--primary-green); line-height: 1.2; }
+        .stat-card .stat-label { font-size: 11px; font-weight: 600; color: #2e5e3a; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .option-group { margin-bottom: 20px; }
+        .option-label { font-size: 12px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .slider-container { display: flex; align-items: center; gap: 12px; }
+        input[type="range"] { flex: 1; height: 6px; -webkit-appearance: none; background: var(--light-green); border-radius: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--primary-green); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(76,175,80,0.4); }
+        .slider-value { min-width: 45px; text-align: right; font-weight: 700; color: var(--primary-green); }
+
+        .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .btn { padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-size: 14px; }
+        .btn-primary { background: var(--primary-green); color: white; box-shadow: 0 6px 16px rgba(76, 175, 80, 0.25); }
+        .btn-primary:hover { background: var(--hover-green); transform: translateY(-2px); }
+        .btn-outline { background: white; border: 2px solid var(--primary-green); color: var(--primary-green); }
+        .btn-outline:hover { background: var(--light-green); }
+        .btn-light { background: var(--light-green); color: var(--primary-green); border: 2px solid var(--primary-green); }
+        .btn-light:hover { background: var(--primary-green); color: white; }
+
+        /* BANNER ADS */
+        .banner-desktop { background: white; display: flex; justify-content: center; align-items: center; padding: 8px 0; border-top: 1px solid #e0e8e0; border-bottom: 1px solid #e0e8e0; min-height: 110px; }
+        .banner-mobile { background: white; display: none; justify-content: center; align-items: center; padding: 8px 0; border-top: 1px solid #e0e8e0; border-bottom: 1px solid #e0e8e0; min-height: 270px; }
+        @media (max-width: 768px) { .banner-desktop { display: none; } .banner-mobile { display: flex; } }
+
+        /* FOOTER */
+        .footer { flex-shrink: 0; background: var(--light-green); padding: 12px 25px; text-align: center; font-size: 13px; color: #2e5e3a; border-top: 1px solid #bcddbd; z-index: 50; }
+        .footer a { color: var(--primary-green); font-weight: 700; text-decoration: none; }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            main { flex-direction: column; overflow-y: auto; }
+            .editor-section { flex: none; min-height: 55vh; padding: 15px; }
+            .sidebar { width: 100%; border-left: none; border-top: 1px solid #e0e8e0; }
+            .hero h1 { font-size: 26px; }
+        }
+        @media (max-width: 500px) {
+            .header-top { padding: 0 15px; }
+            .logo-text { font-size: 18px; }
+            textarea { padding: 15px; font-size: 15px; }
+        }
+    </style>
 </head>
 <body>
 
-<header class="hero">
-  <h1>✂️ <span>Text Summarizer</span></h1>
-  <p>Turn long articles, reports & essays into concise, meaningful summaries — multiple modes, instant results.</p>
-</header>
-
-<div class="container">
-
-  <!-- responsive ad block (desktop 728x90 / mobile 300x250) -->
-  <div class="ad-desktop">
-    <div style="background: #e0f0e0; border-radius: 16px; padding: 10px;">
-      <!-- Desktop ad: 728x90 -->
-      <script>
-        atOptions = { 'key' : '4afdbe032cc77af781754d77ab0211fb', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-      </script>
-      <script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script>
-    </div>
-  </div>
-  <div class="ad-mobile">
-    <div style="background: #e0f0e0; border-radius: 16px; padding: 10px;">
-      <!-- Mobile ad: 300x250 -->
-      <script>
-        atOptions = { 'key' : 'f2bd4040afafe750e7a3e138c826e72c', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
-      </script>
-      <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
-    </div>
-  </div>
-
-  <div class="tool-grid">
-    <!-- LEFT MAIN CONTENT -->
-    <div>
-      <!-- MODE CARD -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon"><i class="fas fa-sliders-h"></i></div>
-          <h2>Summary mode <small>choose output style</small></h2>
+<div class="app-wrapper">
+    <!-- ===== HEADER (green) ===== -->
+    <header class="main-header">
+        <div class="header-top">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-compress-alt"></i></div>
+                <div class="logo-text">Text<span>Summarizer</span></div>
+            </div>
+            <div class="header-right">
+                <!-- 9‑dot launcher -->
+                <div class="app-launcher">
+                    <button class="launcher-btn" aria-label="ToolMatrix apps">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="5" cy="5" r="2.2"></circle><circle cx="12" cy="5" r="2.2"></circle><circle cx="19" cy="5" r="2.2"></circle>
+                            <circle cx="5" cy="12" r="2.2"></circle><circle cx="12" cy="12" r="2.2"></circle><circle cx="19" cy="12" r="2.2"></circle>
+                            <circle cx="5" cy="19" r="2.2"></circle><circle cx="12" cy="19" r="2.2"></circle><circle cx="19" cy="19" r="2.2"></circle>
+                        </svg>
+                    </button>
+                    <span class="tools-label">Tools</span>
+                    <div class="launcher-dropdown">
+                        <a href="https://toolmatrix.space/tools/text/text-case-converter.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v3H5zM5 10h14v3H5zM5 16h10v3H5z"/></svg>
+                            Case Converter
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/word-counter.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h12M3 12h18M3 19h8"/></svg>
+                            Word Counter
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/plagiarism-checker.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M17 8l2 2-2 2M7 8L5 10l2 2"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+                            Plagiarism
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/grammar-checker.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                            Grammar
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/text-to-speech.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11h3l4-4v10l-4-4H3z"/><path d="M16 8a4 4 0 0 1 0 8"/></svg>
+                            Text to Speech
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/text-summarizer.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                            Summarizer
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/spell-checker.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M8 8v8M16 8v8"/></svg>
+                            Spell Check
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/readability-checker.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                            Readability
+                        </a>
+                        <a href="https://toolmatrix.space/tools/text/text-reverser.html" class="tool-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l3-3-3-3"/><path d="M15 6l-3 3 3 3"/></svg>
+                            Text Reverser
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mode-wrap" id="modeWrap">
-          <button class="mode-btn active" data-mode="extractive" onclick="pick('extractive',this)"><i class="fas fa-scissors"></i> Extractive</button>
-          <button class="mode-btn" data-mode="bullet" onclick="pick('bullet',this)"><i class="fas fa-list-ul"></i> Bullet points</button>
-          <button class="mode-btn" data-mode="keysentences" onclick="pick('keysentences',this)"><i class="fas fa-key"></i> Key sentences</button>
-          <button class="mode-btn" data-mode="tldr" onclick="pick('tldr',this)"><i class="fas fa-compress-alt"></i> TL;DR</button>
-          <button class="mode-btn" data-mode="paragraph" onclick="pick('paragraph',this)"><i class="fas fa-paragraph"></i> Paragraph</button>
-          <button class="mode-btn" data-mode="headline" onclick="pick('headline',this)"><i class="fas fa-heading"></i> Headlines</button>
-          <button class="mode-btn" data-mode="questions" onclick="pick('questions',this)"><i class="fas fa-question-circle"></i> Q&A</button>
+        <!-- Hero: tool name + description -->
+        <div class="hero">
+            <h1>Text <i>Summarizer</i></h1>
+            <div class="hero-desc">
+                <span>⚡ Condense long articles, essays, or documents into concise summaries with adjustable length.</span>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <!-- INPUT CARD -->
-      <div class="card">
-        <div class="card-header">
-          <div class="icon"><i class="fas fa-paste"></i></div>
-          <h2>Your text <small>paste article, essay or document</small></h2>
-        </div>
-        <div class="textarea-wrapper">
-          <textarea id="inputArea" placeholder="Paste your long text here... (minimum 3 sentences)">Artificial intelligence (AI) is transforming the way we live and work. From healthcare to transportation, AI is being integrated into nearly every aspect of modern society. Machine learning algorithms can now diagnose diseases with remarkable accuracy. In business, AI automates operations and enhances customer service. Natural language processing has made significant strides. However, rapid AI advancement raises ethical concerns about bias and job displacement. The environmental impact of training large AI models is another growing concern. Education is being transformed by AI-powered personalized learning. In creative industries, AI acts as a collaborator. The future of AI holds both promise and challenges.</textarea>
-        </div>
-        <div class="stats-row">
-          <div class="word-stats">
-            <div>Words: <span id="lcWords">121</span></div>
-            <div>Chars: <span id="lcChars">802</span></div>
-            <div>Sentences: <span id="lcSent">10</span></div>
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-sm btn-outline" onclick="pasteInput()"><i class="fas fa-paste"></i> Paste</button>
-            <button class="btn btn-sm btn-outline" onclick="loadSample()"><i class="fas fa-file-alt"></i> Sample</button>
-            <button class="btn btn-sm btn-outline" onclick="clearAll()"><i class="fas fa-trash-alt"></i> Clear</button>
-          </div>
-        </div>
+    <main>
+        <!-- Left Section: Input & Output -->
+        <section class="editor-section">
+            <div class="text-container">
+                <div class="text-label">
+                    <span>📄 Original Text</span>
+                    <span id="inputWordCount">0 words</span>
+                </div>
+                <textarea id="inputText" placeholder="Paste or type the text you want to summarize here..."></textarea>
+                <div class="text-footer">
+                    <span>Characters: <span id="inputChars">0</span></span>
+                    <span>Sentences: <span id="inputSentences">0</span></span>
+                </div>
+            </div>
+            <div class="text-container">
+                <div class="text-label">
+                    <span>✨ Summary</span>
+                    <span id="outputWordCount">0 words</span>
+                </div>
+                <textarea id="outputText" readonly placeholder="Your summary will appear here..."></textarea>
+                <div class="text-footer">
+                    <span>Reduction: <span id="reductionPercent">0%</span></span>
+                    <span>Reading time: <span id="summaryReadTime">0s</span></span>
+                </div>
+            </div>
+        </section>
 
-        <!-- sliders -->
-        <div class="slider-panel">
-          <div class="slider-item">
-            <label><i class="fas fa-compress-alt" style="color:var(--primary); margin-right:6px;"></i> Summary length</label>
-            <input type="range" id="lengthSlider" min="10" max="70" value="30" oninput="document.getElementById('lengthVal').innerText=this.value+'%'">
-            <span class="value" id="lengthVal">30%</span>
-          </div>
-          <div class="slider-item">
-            <label><i class="fas fa-sort-amount-down" style="color:var(--primary);"></i> Max sentences</label>
-            <input type="range" id="maxSentSlider" min="1" max="20" value="5" oninput="document.getElementById('maxSentVal').innerText=this.value">
-            <span class="value" id="maxSentVal">5</span>
-          </div>
-        </div>
+        <!-- Right Section: Sidebar Controls -->
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <i class="fas fa-sliders-h" style="color: var(--primary-green);"></i> Summary Settings
+            </div>
 
-        <!-- action buttons -->
-        <div class="btn-group">
-          <button class="btn" id="sumBtn" onclick="summarize()"><i class="fas fa-magic"></i> Summarize</button>
-          <!-- Summarize & Copy triggers Monetag smart link -->
-          <button class="btn btn-outline" onclick="summarize(); setTimeout(()=>{ copyOutput(); triggerSmartLink(); }, 800)"><i class="fas fa-copy"></i> Summarize & Copy</button>
-        </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-num" id="origWordsStat">0</div>
+                    <div class="stat-label">Original Words</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="sumWordsStat">0</div>
+                    <div class="stat-label">Summary Words</div>
+                </div>
+            </div>
 
-        <!-- processing animation -->
-        <div class="proc-box" id="procBox" style="display:none; text-align:center; padding: 20px;">
-          <div class="spinner" style="width:50px; height:50px; border:5px solid #e0f0e0; border-top-color:var(--primary); border-radius:50%; margin:10px auto; animation:spin 1s infinite;"></div>
-          <p id="procText" style="font-weight:600;">Analyzing text...</p>
-        </div>
-        <style> @keyframes spin { to { transform: rotate(360deg); } } </style>
-      </div>
+            <div class="option-group">
+                <div class="option-label"><i class="fas fa-compress"></i> Summary Length</div>
+                <div class="slider-container">
+                    <input type="range" id="lengthSlider" min="10" max="90" value="30" step="5">
+                    <span class="slider-value" id="lengthValue">30%</span>
+                </div>
+                <p style="font-size: 11px; color: #7a8b9b; margin-top: 6px;">Percentage of original text to keep</p>
+            </div>
 
-      <!-- OUTPUT CARDS (hidden initially) -->
-      <div class="card" id="outputCard" style="display:none;">
-        <div class="card-header">
-          <div class="icon"><i class="fas fa-file-alt"></i></div>
-          <h2 id="outTitle">Summary result</h2>
-        </div>
-        <div class="summary-box" id="sumBox"></div>
-        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;">
-          <button class="btn btn-sm" onclick="copyOutput()"><i class="fas fa-copy"></i> Copy</button>
-          <button class="btn btn-sm btn-outline" onclick="downloadSummary()"><i class="fas fa-download"></i> TXT</button>
-          <button class="btn btn-sm btn-outline" onclick="speakSummary()"><i class="fas fa-volume-up"></i> Read</button>
-        </div>
-      </div>
+            <div class="action-btns">
+                <button class="btn btn-primary" id="summarizeBtn">
+                    <i class="fas fa-magic"></i> Generate Summary
+                </button>
+                <button class="btn btn-outline" id="copySummaryBtn">
+                    <i class="fas fa-copy"></i> Copy Summary
+                </button>
+                <button class="btn btn-light" id="downloadReportBtn">
+                    <i class="fas fa-download"></i> Download Report
+                </button>
+                <button class="btn btn-outline" id="clearBtn">
+                    <i class="fas fa-eraser"></i> Clear All
+                </button>
+            </div>
+        </aside>
+    </main>
 
-      <div class="card" id="statsCard" style="display:none;">
-        <div class="card-header"><div class="icon"><i class="fas fa-chart-pie"></i></div><h2>Analytics</h2></div>
-        <div id="compVis" style="display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap;"></div>
-        <div class="stats-g" id="statsGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:15px;"></div>
-      </div>
-    </div>
+    <!-- BANNER ADS -->
+    <div class="banner-desktop" id="desktopBanner"></div>
+    <div class="banner-mobile" id="mobileBanner"></div>
 
-    <!-- RIGHT SIDEBAR -->
-    <div class="sidebar-card">
-      <div class="sidebar-title"><i class="fas fa-lightbulb"></i> Pro features</div>
-      <div class="feature-list">
-        <div class="feature-item"><i class="fas fa-scissors"></i> 7 summary modes</div>
-        <div class="feature-item"><i class="fas fa-chart-line"></i> Readability score</div>
-        <div class="feature-item"><i class="fas fa-tags"></i> Keyword extraction</div>
-        <div class="feature-item"><i class="fas fa-highlighter"></i> Highlighted source</div>
-        <div class="feature-item"><i class="fas fa-history"></i> History (local)</div>
-        <div class="feature-item"><i class="fas fa-download"></i> Export TXT/MD</div>
-      </div>
-      <!-- history widget (simplified) -->
-      <div style="margin-top:20px;" id="histWidget"></div>
-    </div>
-  </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Made with 💚 by <a href="#">ToolMatrix</a> — Free Online Text Summarizer</p>
+    </footer>
 </div>
 
-<!-- FOOTER (professional) -->
-<footer class="footer">
-  <div class="footer-content">
-    <div class="footer-copy">© 2025 ToolMatrix — AI Text Summarizer. All rights reserved.</div>
-    <div class="footer-links">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
-    </div>
-  </div>
-</footer>
-
-<div class="toast-stack" id="toastStack"></div>
+<!-- Ad Scripts -->
+<script>
+    (function(){var d=document.getElementById('desktopBanner');if(d&&window.innerWidth>768){var s=document.createElement('script');s.innerHTML="atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};";d.appendChild(s);var inv=document.createElement('script');inv.src='https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';d.appendChild(inv);}})();
+    (function(){var m=document.getElementById('mobileBanner');if(m&&window.innerWidth<=768){var s=document.createElement('script');s.innerHTML="atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};";m.appendChild(s);var inv=document.createElement('script');inv.src='https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';m.appendChild(inv);}})();
+</script>
 
 <script>
-/* ---------- TOOL LOGIC (abbreviated but functional) ---------- */
-let mode = 'extractive';
-let rawSummary = '';
-let sentences = [];
-let keywords = [];
+    (function(){
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const lengthSlider = document.getElementById('lengthSlider');
+        const lengthValue = document.getElementById('lengthValue');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const copySummaryBtn = document.getElementById('copySummaryBtn');
+        const downloadReportBtn = document.getElementById('downloadReportBtn');
+        const clearBtn = document.getElementById('clearBtn');
 
-function pick(m, el) {
-  mode = m;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-}
+        // Stats elements
+        const inputWordCountSpan = document.getElementById('inputWordCount');
+        const inputCharsSpan = document.getElementById('inputChars');
+        const inputSentencesSpan = document.getElementById('inputSentences');
+        const outputWordCountSpan = document.getElementById('outputWordCount');
+        const reductionPercentSpan = document.getElementById('reductionPercent');
+        const summaryReadTimeSpan = document.getElementById('summaryReadTime');
+        const origWordsStat = document.getElementById('origWordsStat');
+        const sumWordsStat = document.getElementById('sumWordsStat');
 
-function updateCounts() {
-  let t = document.getElementById('inputArea').value;
-  let words = t.trim() ? t.trim().split(/\s+/).length : 0;
-  document.getElementById('lcWords').innerText = words;
-  document.getElementById('lcChars').innerText = t.length;
-  let sents = t.split(/[.!?]+/).filter(s => s.trim().length > 5).length;
-  document.getElementById('lcSent').innerText = sents || 1;
-}
-updateCounts();
+        // Update slider display
+        lengthSlider.addEventListener('input', () => {
+            lengthValue.textContent = lengthSlider.value + '%';
+        });
 
-function splitSentences(text) { return text.split(/[.!?]+/).map(s=>s.trim()).filter(s=>s.length>10); }
+        // Helper: count words, sentences
+        function getStats(text) {
+            const trimmed = text.trim();
+            const words = trimmed ? trimmed.split(/\s+/).filter(w => w.length > 0) : [];
+            const sentences = trimmed ? trimmed.split(/[.!?।؟]+/).filter(s => s.trim().length > 0) : [];
+            const chars = text.length;
+            return { words: words.length, sentences: sentences.length, chars };
+        }
 
-async function summarize() {
-  let text = document.getElementById('inputArea').value.trim();
-  if (!text) { toast('Please enter text', 'error'); return; }
-  let sents = splitSentences(text);
-  if (sents.length < 3) { toast('Need at least 3 sentences', 'error'); return; }
+        // Update all stats displays
+        function updateStats() {
+            const inputStats = getStats(inputText.value);
+            const outputStats = getStats(outputText.value);
 
-  document.getElementById('procBox').style.display = 'block';
-  document.getElementById('sumBtn').disabled = true;
+            inputWordCountSpan.textContent = inputStats.words + ' word' + (inputStats.words !== 1 ? 's' : '');
+            inputCharsSpan.textContent = inputStats.chars;
+            inputSentencesSpan.textContent = inputStats.sentences;
 
-  // simulate processing
-  await sleep(500);
+            outputWordCountSpan.textContent = outputStats.words + ' word' + (outputStats.words !== 1 ? 's' : '');
+            origWordsStat.textContent = inputStats.words;
+            sumWordsStat.textContent = outputStats.words;
 
-  let lengthPct = parseInt(document.getElementById('lengthSlider').value) / 100;
-  let maxSent = parseInt(document.getElementById('maxSentSlider').value);
-  let keep = Math.min(maxSent, Math.max(2, Math.floor(sents.length * lengthPct)));
+            const reduction = inputStats.words > 0 ? Math.round((1 - outputStats.words / inputStats.words) * 100) : 0;
+            reductionPercentSpan.textContent = reduction + '%';
 
-  // simple scoring: first sentences + random
-  let selected = sents.slice(0, keep);
-  keywords = extractKeywords(text).slice(0,8);
-  rawSummary = selected.join(' ');
+            const readTime = Math.ceil(outputStats.words / 200); // words per minute approx
+            summaryReadTimeSpan.textContent = readTime > 0 ? readTime + ' min' : '0s';
+        }
 
-  let html = '';
-  if (mode === 'bullet') html = '<ul>'+selected.map(s=>`<li>${escapeHTML(s)}</li>`).join('')+'</ul>';
-  else if (mode === 'tldr') html = `<p><strong>TL;DR:</strong> ${escapeHTML(selected.slice(0,2).join(' '))}</p>`;
-  else html = selected.map(s=>`<p>${escapeHTML(s)}</p>`).join('');
+        // Extractive summarization using TF‑like scoring
+        function summarizeText(text, ratio) {
+            if (!text.trim()) return '';
+            
+            // Split into sentences (basic)
+            const sentences = text.match(/[^.!?।؟]+[.!?।؟]*/g) || [text];
+            if (sentences.length <= 2) return text; // too short
+            
+            // Clean sentences for word frequency
+            const wordFreq = new Map();
+            sentences.forEach(sentence => {
+                const words = sentence.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+                words.forEach(word => {
+                    if (word.length > 2) wordFreq.set(word, (wordFreq.get(word) || 0) + 1);
+                });
+            });
 
-  document.getElementById('sumBox').innerHTML = html + '<div style="margin-top:15px;">'+keywords.map(k=>`<span class="kw" style="background:#e0f0e0; padding:3px 10px; border-radius:20px; margin:3px; display:inline-block;">${escapeHTML(k.word)} (${k.count})</span>`).join('')+'</div>';
-  document.getElementById('outputCard').style.display = 'block';
-  document.getElementById('statsCard').style.display = 'block';
-  document.getElementById('procBox').style.display = 'none';
-  document.getElementById('sumBtn').disabled = false;
+            // Score each sentence
+            const sentenceScores = sentences.map(sentence => {
+                const words = sentence.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+                let score = 0;
+                words.forEach(word => {
+                    if (wordFreq.has(word)) score += wordFreq.get(word);
+                });
+                // Normalize by length to avoid bias towards long sentences
+                return score / Math.max(words.length, 1);
+            });
 
-  // simple stats
-  let origWords = text.split(/\s+/).length;
-  let sumWords = rawSummary.split(/\s+/).length;
-  document.getElementById('compVis').innerHTML = `
-    <div><span style="font-size:1.5rem; font-weight:800; color:#b33;">${origWords}</span><br>original</div>
-    <i class="fas fa-arrow-right" style="color:var(--primary); font-size:2rem;"></i>
-    <div><span style="font-size:1.5rem; font-weight:800; color:var(--primary);">${sumWords}</span><br>summary</div>
-    <div><span style="background:#e0f0e0; padding:5px 15px; border-radius:30px;">${Math.round((1-sumWords/origWords)*100)}% reduction</span></div>`;
-  let grid = document.getElementById('statsGrid');
-  grid.innerHTML = `
-    <div class="st">${origWords}<br><small>Original words</small></div>
-    <div class="st">${sumWords}<br><small>Summary words</small></div>
-    <div class="st">${sents.length}<br><small>Sentences</small></div>
-    <div class="st">${keywords.length}<br><small>Keywords</small></div>`;
-  toast('Summary ready!');
-}
+            // Sort indices by score descending
+            const indices = Array.from({length: sentences.length}, (_, i) => i);
+            indices.sort((a, b) => sentenceScores[b] - sentenceScores[a]);
 
-function extractKeywords(text) {
-  let words = text.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(w => w.length>3);
-  let freq = {};
-  words.forEach(w => freq[w] = (freq[w]||0)+1);
-  return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([word,count])=>({word,count}));
-}
+            // Determine number of sentences to keep based on ratio
+            const targetWordCount = Math.floor(getStats(text).words * (ratio / 100));
+            let selected = [];
+            let currentWords = 0;
+            for (let idx of indices) {
+                const sent = sentences[idx];
+                const wordCount = getStats(sent).words;
+                if (currentWords + wordCount <= targetWordCount || selected.length === 0) {
+                    selected.push({ idx, text: sent });
+                    currentWords += wordCount;
+                }
+                if (currentWords >= targetWordCount) break;
+            }
 
-function copyOutput() {
-  if (!rawSummary) { toast('Nothing to copy', 'error'); return; }
-  navigator.clipboard.writeText(rawSummary);
-  toast('Copied!');
-}
+            // Sort back to original order
+            selected.sort((a, b) => a.idx - b.idx);
+            return selected.map(s => s.text).join(' ').replace(/\s+/g, ' ').trim();
+        }
 
-function triggerSmartLink() {
-  // 🔁 Monetag direct link (replace with your actual Monetag URL if needed)
-  window.open('https://omg10.com/4/10689787', '_blank');
-}
+        // Main action
+        function generateSummary() {
+            const text = inputText.value.trim();
+            if (!text) {
+                alert('Please enter some text to summarize.');
+                return;
+            }
+            const ratio = parseInt(lengthSlider.value, 10);
+            const summary = summarizeText(text, ratio);
+            outputText.value = summary;
+            updateStats();
+        }
 
-// helpers
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-function escapeHTML(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function toast(msg, type='success') {
-  let t = document.getElementById('toastStack');
-  let el = document.createElement('div');
-  el.className = 'toast';
-  el.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-circle':'fa-check-circle'}"></i> ${msg}`;
-  t.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-function clearAll() {
-  document.getElementById('inputArea').value = '';
-  updateCounts(); rawSummary='';
-  document.getElementById('outputCard').style.display='none';
-  document.getElementById('statsCard').style.display='none';
-  toast('Cleared');
-}
-function loadSample() {
-  document.getElementById('inputArea').value = `Artificial intelligence (AI) is transforming the way we live and work. From healthcare to transportation, AI is being integrated into nearly every aspect of modern society. Machine learning algorithms can now diagnose diseases with remarkable accuracy. In business, AI automates operations and enhances customer service. Natural language processing has made significant strides. However, rapid AI advancement raises ethical concerns about bias and job displacement. The environmental impact of training large AI models is another growing concern. Education is being transformed by AI-powered personalized learning. In creative industries, AI acts as a collaborator. The future of AI holds both promise and challenges.`;
-  updateCounts(); toast('Sample loaded');
-}
-async function pasteInput() {
-  try { let t = await navigator.clipboard.readText(); document.getElementById('inputArea').value = t; updateCounts(); toast('Pasted'); } catch(e) { toast('Cannot paste', 'error'); }
-}
-function downloadSummary() {
-  if (!rawSummary) return;
-  let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rawSummary], {type:'text/plain'})); a.download = 'summary.txt'; a.click();
-}
-function speakSummary() {
-  if (!rawSummary) return;
-  let u = new SpeechSynthesisUtterance(rawSummary); u.rate = 0.9; speechSynthesis.speak(u);
-}
+        // Event listeners
+        summarizeBtn.addEventListener('click', generateSummary);
+        inputText.addEventListener('input', updateStats);
+        
+        copySummaryBtn.addEventListener('click', () => {
+            if (!outputText.value) { alert('No summary to copy!'); return; }
+            navigator.clipboard.writeText(outputText.value);
+            copySummaryBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => copySummaryBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Summary', 2000);
+        });
+
+        downloadReportBtn.addEventListener('click', () => {
+            window.open('https://omg10.com/4/10842916', '_blank');
+            const original = inputText.value;
+            const summary = outputText.value;
+            const stats = getStats(original);
+            const sumStats = getStats(summary);
+            const ratio = lengthSlider.value;
+            const report = `TEXT SUMMARIZER REPORT\n\n` +
+                `Original length: ${stats.words} words, ${stats.chars} chars\n` +
+                `Summary length: ${sumStats.words} words (${ratio}% of original)\n` +
+                `Reduction: ${reductionPercentSpan.textContent}\n\n` +
+                `--- SUMMARY ---\n${summary}\n\n` +
+                `--- ORIGINAL TEXT ---\n${original}`;
+            const blob = new Blob([report], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'text-summary-report.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            updateStats();
+        });
+
+        // Initialize stats
+        updateStats();
+
+        // Mobile launcher toggle (hover disabled on mobile)
+        const launcherBtn = document.querySelector('.launcher-btn');
+        const dropdown = document.querySelector('.launcher-dropdown');
+        if (window.innerWidth <= 900) {
+            launcherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', (e) => {
+                if (!launcherBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+    })();
 </script>
 </body>
 </html>
