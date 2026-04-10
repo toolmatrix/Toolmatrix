@@ -56,6 +56,7 @@
   }
 }
 </script>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
@@ -188,6 +189,11 @@
   .stat-card .s-val{font-size:26px;font-weight:900;color:var(--primary)}
   .stat-card .s-label{font-size:12px;color:var(--text-light);font-weight:600}
 
+  /* Ad containers */
+  .ad-container{text-align:center;margin:20px auto;max-width:800px;background:#FEF9E6;border-radius:20px;padding:12px;border:1px solid #FFE0A3}
+  .ad-banner{margin:12px auto;text-align:center}
+  .inline-ad{text-align:center;margin:16px auto;}
+
   .toast{position:fixed;bottom:30px;right:30px;padding:12px 22px;border-radius:12px;font-weight:600;color:#fff;z-index:999;transform:translateY(80px);opacity:0;transition:.3s;background:var(--green);box-shadow:0 5px 18px rgba(0,0,0,.2)}
   .toast.show{transform:translateY(0);opacity:1}
   .toast-error{background:var(--red)}
@@ -232,9 +238,7 @@
     <div class="tools-modal" id="toolsModal">
       <div class="modal-content">
         <h3>🔧 SEO Toolkit</h3>
-        <div class="tools-grid" id="toolsGrid">
-          <!-- Tools will be populated by JS, hiding current tool, arranged horizontally -->
-        </div>
+        <div class="tools-grid" id="toolsGrid"></div>
       </div>
     </div>
   </div>
@@ -319,6 +323,11 @@
   <div class="stat-card"><div class="s-icon">✅</div><div class="s-val" id="statValid">Valid</div><div class="s-label">XML Status</div></div>
 </div>
 
+<!-- Ad Banner (728x90) -->
+<div class="ad-container" style="max-width:960px;">
+  <div id="bannerAdContainer"></div>
+</div>
+
 <!-- Preview -->
 <div class="preview-section" id="previewSection"><div class="preview-card"><div class="preview-hdr"><h3>📝 XML Sitemap Preview</h3><button class="btn btn-outline" onclick="document.getElementById('previewSection').classList.remove('active')">✕ Close</button></div><div class="preview-body"><pre id="previewCode"></pre></div></div></div>
 </div>
@@ -327,6 +336,30 @@
   <p>Made with <span class="heart">❤️</span> by <a href="https://toolmatrix.space" target="_self">ToolMatrix</a> — Free XML Sitemap Generator & SEO Toolkit</p>
 </footer>
 <div class="toast" id="toast"></div>
+
+<!-- All Ad Scripts (push, banner, download ad) -->
+<script>
+  // Push notification ad (zone 10689876)
+  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+  
+  // Banner 728x90 ad
+  window.atOptions = {
+    'key' : '4afdbe032cc77af781754d77ab0211fb',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+  const bannerScript = document.createElement('script');
+  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
+  
+  // Download button ad (OMG)
+  const omgScript = document.createElement('script');
+  omgScript.src = 'https://omg10.com/4/10842916';
+  omgScript.async = true;
+  document.body.appendChild(omgScript);
+</script>
 
 <script>
 // ============ DATA ============
@@ -361,7 +394,7 @@ toolsModal.addEventListener('mouseenter', () => {
 });
 toolsModal.addEventListener('mouseleave', hideModal);
 
-// ============ TOOLS LIST (Current tool "Sitemap Gen" will be hidden, horizontal layout) ============
+// ============ TOOLS LIST (Current tool "Sitemap Gen" hidden, horizontal layout) ============
 const allTools = [
   { name: 'Meta Analyzer', icon: '🏷️', url: 'https://toolmatrix.space/tools/seo/meta-analyzer.html' },
   { name: 'Sitemap Gen', icon: '🗺️', url: 'https://toolmatrix.space/tools/seo/sitemap-generator.html' },
@@ -376,7 +409,6 @@ const allTools = [
   { name: 'SEO Audit Tool', icon: '📈', url: 'https://toolmatrix.space/tools/seo/seo-audit-tool.html' }
 ];
 
-// Current page is Sitemap Generator -> hide "Sitemap Gen" from the list
 const currentToolName = 'Sitemap Gen';
 
 function buildToolsGrid() {
@@ -384,7 +416,7 @@ function buildToolsGrid() {
   if (!grid) return;
   grid.innerHTML = '';
   allTools.forEach(tool => {
-    if (tool.name === currentToolName) return; // hide current tool
+    if (tool.name === currentToolName) return;
     const a = document.createElement('a');
     a.href = tool.url;
     a.target = '_self';
