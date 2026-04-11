@@ -3,7 +3,7 @@
 <head>
 <!-- ================= BASIC ================= -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
 <!-- ================= TITLE ================= -->
 <title>Meta Tag Analyzer – SEO Meta Checker & Website | ToolMatrix</title>
@@ -150,8 +150,34 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:
 .tags-table th{background:var(--primary-lighter);padding:10px 12px;font-size:11px;font-weight:700;text-align:left}
 .tags-table td{padding:10px 12px;border-bottom:1px solid #EDF7EA}
 .results-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:28px 0 20px}
-.ad-container{text-align:center;margin:20px auto;max-width:800px;background:#FEF9E6;border-radius:20px;padding:12px;border:1px solid #FFE0A3}
-.ad-banner{margin:12px auto;text-align:center}
+
+/* Ad containers - conditional */
+.ad-desktop {
+  display: none;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 800px;
+  background: #FEF9E6;
+  border-radius: 20px;
+  padding: 12px;
+  border: 1px solid #FFE0A3;
+}
+.ad-mobile {
+  display: none;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 340px;
+  background: transparent;
+  border-radius: 16px;
+  padding: 8px;
+}
+@media (min-width: 769px) {
+  .ad-desktop { display: block; }
+}
+@media (max-width: 768px) {
+  .ad-mobile { display: block; }
+}
+
 .footer{background:var(--primary-lighter);padding:24px;text-align:center;font-size:13px;color:var(--text-light);border-top:1px solid var(--border);margin-top:40px}
 .footer a{color:var(--primary);font-weight:600;text-decoration:none}
 .toast{position:fixed;bottom:30px;right:30px;padding:12px 22px;border-radius:12px;font-weight:600;color:#fff;z-index:300;transform:translateY(80px);opacity:0;transition:.3s;background:var(--green);box-shadow:0 5px 18px rgba(0,0,0,.2)}
@@ -215,10 +241,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:
   </div>
 </div>
 
-<!-- Banner Ad Container (728x90) -->
-<div class="ad-container" style="max-width:980px;">
-  <div id="bannerAdContainer"></div>
-</div>
+<!-- Conditional Banner Ads (Desktop/Mobile) -->
+<div class="ad-desktop" id="desktopAdContainer"></div>
+<div class="ad-mobile" id="mobileAdContainer"></div>
 
 <div class="loading-overlay" id="loadingOverlay"><div class="loader-ring"></div><h3>Scanning meta data...</h3><p id="loadingMsg"></p></div>
 
@@ -234,11 +259,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:
   <div id="sectionsWrap"></div>
   <div class="section-card" id="allTagsCard"><div class="section-hdr" onclick="toggleSection(this)"><h3>📋 All Detected Tags <span class="badge-count" id="allTagsCount">0</span></h3><span class="arrow">▼</span></div><div class="section-body"><div style="max-height:450px;overflow:auto"><table class="tags-table"><thead><tr><th>#</th><th>Tag / Property</th><th>Value</th></tr></thead><tbody id="allTagsBody"></tbody></table></div></div></div>
   
-  <!-- Ad Zone before download -->
-  <div class="ad-container">
+  <!-- Support Ad Zone (no push ad) -->
+  <div style="text-align:center; margin: 20px auto;">
     <span style="font-size:12px; color:#a57c1c;">⭐ SUPPORT US ⭐</span>
     <div id="adUnit1" style="min-height:90px;"></div>
-    <div id="adOmgContainer"></div>
   </div>
   
   <div class="results-actions">
@@ -246,7 +270,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:
     <button class="btn btn-blue" onclick="copyReport()">📋 Copy Summary</button>
     <button class="btn btn-outline" onclick="resetTool()">🔄 New Analysis</button>
   </div>
-  <div class="ad-banner" id="bannerAdContainer2"></div>
 </div>
 </div>
 
@@ -256,24 +279,38 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;color:
 <div class="toast" id="toast"></div>
 
 <script>
-// ---------- ADS (No push ad) ----------
+// ========== CONDITIONAL BANNER ADS (no push ad) ==========
 (function() {
-  // 728x90 banner ad (first banner container)
-  window.atOptions = {
-    'key' : '4afdbe032cc77af781754d77ab0211fb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
-  
-  // Second banner container
-  const bannerScript2 = document.createElement('script');
-  bannerScript2.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer2')?.appendChild(bannerScript2);
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (!isMobile) {
+    const desktopDiv = document.getElementById('desktopAdContainer');
+    if (desktopDiv) {
+      window.atOptions = {
+        key: '4afdbe032cc77af781754d77ab0211fb',
+        format: 'iframe',
+        height: 90,
+        width: 728,
+        params: {}
+      };
+      const script = document.createElement('script');
+      script.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+      desktopDiv.appendChild(script);
+    }
+  } else {
+    const mobileDiv = document.getElementById('mobileAdContainer');
+    if (mobileDiv) {
+      window.atOptions = {
+        key: 'f2bd4040afafe750e7a3e138c826e72c',
+        format: 'iframe',
+        height: 250,
+        width: 300,
+        params: {}
+      };
+      const script = document.createElement('script');
+      script.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+      mobileDiv.appendChild(script);
+    }
+  }
 })();
 
 // ============ 9-DOT HOVER DROPDOWN ============
@@ -455,7 +492,7 @@ function runAnalysis(html, source){
   hideLoading();
   renderResults(data);
   document.getElementById('results').classList.add('active');
-  document.getElementById('overallCard').scrollIntoView({behavior:'smooth'});
+  document.querySelector('.overall-card').scrollIntoView({behavior:'smooth'});
 }
 
 function renderResults(d){
@@ -523,7 +560,7 @@ function renderResults(d){
 function escapeHtml(str){ return String(str).replace(/[&<>]/g, m=>m==='&'?'&amp;':m==='<'?'&lt;':'>'); }
 function handleDownloadWithAd(){ 
   if(!analysisData.source){ showToast('No analysis data','error'); return; } 
-  // Open ad link in new tab BEFORE download
+  // Open ad link in new tab (OMG download ad)
   window.open('https://omg10.com/4/10842916', '_blank');
   downloadReport(); 
   showToast('✅ Report downloaded — thanks for supporting!','success'); 
