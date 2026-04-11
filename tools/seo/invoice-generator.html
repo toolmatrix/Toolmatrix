@@ -3,16 +3,14 @@
 <head>
 <!-- ================= BASIC ================= -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
 <!-- ================= TITLE ================= -->
 <title>Free Invoice Generator – Create & Download Invoices Online | ToolMatrix</title>
 
 <!-- ================= SEO META ================= -->
 <meta name="description" content="Create professional invoices online for free. Add logo, items, taxes, and download invoices instantly as PDF. Fast, easy and no signup required.">
-
 <meta name="keywords" content="invoice generator, free invoice maker, create invoice online, invoice template, pdf invoice generator, billing tool, online invoice creator">
-
 <meta name="robots" content="index, follow">
 <meta name="author" content="ToolMatrix">
 
@@ -49,10 +47,7 @@
   "description": "Free online invoice generator to create professional invoices with logo, taxes and downloadable PDF.",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "All",
-  "creator": {
-    "@type": "Organization",
-    "name": "ToolMatrix"
-  }
+  "creator": { "@type": "Organization", "name": "ToolMatrix" }
 }
 </script>
   
@@ -186,7 +181,7 @@ body{
 .tool-item:hover{background:var(--g500);color:white;border-color:var(--g500);transform:translateY(-2px)}
 .tool-item span{font-size:1.1rem}
 
-/* ══ TOOLBAR (existing) ══ */
+/* ══ TOOLBAR ══ */
 .toolbar{
   background:var(--card);border-bottom:1.5px solid var(--border2);
   padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
@@ -234,7 +229,6 @@ body{
   max-width:1400px;margin:0 auto;padding:16px;
   display:grid;grid-template-columns:1fr 1fr;gap:16px;
 }
-/* Card styles (unchanged) */
 .card{
   background:var(--card);border-radius:16px;
   border:1.5px solid var(--border2);
@@ -371,6 +365,34 @@ textarea.inp{resize:vertical;min-height:50px}
 .inv-signature{margin-top:30px;display:flex;justify-content:flex-end}
 .inv-sig-box{text-align:center;min-width:180px}
 .inv-sig-line{border-top:1.5px solid #333;padding-top:6px;font-weight:700}
+
+/* Ad containers */
+.ad-desktop {
+  display: none;
+  text-align: center;
+  margin: 24px auto;
+  max-width: 800px;
+  background: #FEF9E6;
+  border-radius: 24px;
+  padding: 12px;
+  border: 1px solid #FFE0A3;
+}
+.ad-mobile {
+  display: none;
+  text-align: center;
+  margin: 24px auto;
+  max-width: 340px;
+  background: transparent;
+  border-radius: 16px;
+  padding: 8px;
+}
+@media (min-width: 769px) {
+  .ad-desktop { display: block; }
+}
+@media (max-width: 768px) {
+  .ad-mobile { display: block; }
+}
+
 .toast{
   position:fixed;bottom:24px;left:50%;
   transform:translateX(-50%) translateY(80px);
@@ -381,18 +403,6 @@ textarea.inp{resize:vertical;min-height:50px}
 .toast-ok{background:rgba(22,163,74,.92)}
 .toast-err{background:rgba(220,38,38,.92)}
 .toast-info{background:rgba(37,99,235,.92)}
-
-/* Ad container */
-.ad-container{
-  text-align:center;
-  margin:20px auto;
-  background:#FEF9E6;
-  border-radius:24px;
-  padding:12px;
-  border:1px solid #FFE0A3;
-  max-width:800px;
-  width:100%;
-}
 
 /* Footer */
 .footer{
@@ -461,7 +471,7 @@ textarea.inp{resize:vertical;min-height:50px}
   <p>Create beautiful, professional invoices in minutes. Customize business details, add line items, apply taxes & discounts, and download as PDF or save as JSON. Perfect for freelancers, small businesses, and agencies.</p>
 </div>
 
-<!-- Toolbar (original) -->
+<!-- Toolbar -->
 <div class="toolbar">
   <div class="tpl-pills">
     <button class="tpl-pill active" onclick="setTemplate(this,'modern')">🎨 Modern</button>
@@ -497,7 +507,7 @@ textarea.inp{resize:vertical;min-height:50px}
 
 <!-- Main Grid -->
 <div class="main-grid">
-  <!-- LEFT: FORM (same as original) -->
+  <!-- LEFT: FORM -->
   <div style="display:flex;flex-direction:column;gap:16px">
     <!-- Business Info Card -->
     <div class="card">
@@ -585,8 +595,9 @@ textarea.inp{resize:vertical;min-height:50px}
   </div>
 </div>
 
-<!-- Banner Ad -->
-<div class="ad-container" id="bannerAdContainer"></div>
+<!-- AD BANNERS: conditional desktop & mobile -->
+<div class="ad-desktop" id="desktopAdContainer"></div>
+<div class="ad-mobile" id="mobileAdContainer"></div>
 
 <!-- Footer -->
 <footer class="footer">
@@ -595,21 +606,50 @@ textarea.inp{resize:vertical;min-height:50px}
 
 <div class="toast" id="toast"></div>
 
-<!-- Ad Scripts -->
+<!-- AD SCRIPTS (conditional banners + download ad) -->
 <script>
-  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  window.atOptions = { 'key' : '4afdbe032cc77af781754d77ab0211fb', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
-  const omgScript = document.createElement('script');
-  omgScript.src = 'https://omg10.com/4/10842916';
-  omgScript.async = true;
-  document.body.appendChild(omgScript);
+  (function() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) {
+      const desktopDiv = document.getElementById('desktopAdContainer');
+      if (desktopDiv) {
+        window.atOptions = {
+          key: '4afdbe032cc77af781754d77ab0211fb',
+          format: 'iframe',
+          height: 90,
+          width: 728,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+        desktopDiv.appendChild(script);
+      }
+    } else {
+      const mobileDiv = document.getElementById('mobileAdContainer');
+      if (mobileDiv) {
+        window.atOptions = {
+          key: 'f2bd4040afafe750e7a3e138c826e72c',
+          format: 'iframe',
+          height: 250,
+          width: 300,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+        mobileDiv.appendChild(script);
+      }
+    }
+
+    // Download ad (OMG)
+    const omgScript = document.createElement('script');
+    omgScript.src = 'https://omg10.com/4/10842916';
+    omgScript.async = true;
+    document.body.appendChild(omgScript);
+  })();
 </script>
 
 <script>
-  // ================= 9-DOT HOVER DROPDOWN (exclude current tool) =================
+  // ================= 9-DOT HOVER DROPDOWN =================
   const wrapper = document.getElementById('nineDotsWrapper');
   const toolsModal = document.getElementById('toolsModal');
   let hoverTimeout;
@@ -620,7 +660,7 @@ textarea.inp{resize:vertical;min-height:50px}
   toolsModal.addEventListener('mouseenter', () => { if (hoverTimeout) clearTimeout(hoverTimeout); toolsModal.classList.add('active'); });
   toolsModal.addEventListener('mouseleave', hideModal);
 
-  // All SEO tools (excluding current: "Invoice Generator")
+  // All SEO tools (excluding current)
   const allSeoTools = [
     { name: 'Meta Analyzer', icon: '🏷️', url: 'https://toolmatrix.space/tools/seo/meta-analyzer.html' },
     { name: 'Sitemap Generator', icon: '🗺️', url: 'https://toolmatrix.space/tools/seo/sitemap-generator.html' },
@@ -646,7 +686,7 @@ textarea.inp{resize:vertical;min-height:50px}
     toolsGrid.appendChild(a);
   });
 
-  // ================= ORIGINAL INVOICE GENERATOR LOGIC (unchanged) =================
+  // ================= INVOICE GENERATOR LOGIC =================
   let items = [];
   let template = 'modern';
   let logoDataURL = '';
