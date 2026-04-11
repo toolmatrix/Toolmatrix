@@ -358,6 +358,7 @@
   .alert.visible { display: flex; gap: 10px; align-items: center; }
   .alert-error { background: var(--danger-bg); border: 1px solid #fed7d7; color: #c53030; }
 
+  /* Ad containers */
   .ad-container {
     text-align: center;
     margin: 32px auto 20px;
@@ -368,6 +369,13 @@
     width: 100%;
     max-width: 100%;
   }
+  .banner-desktop { display: block; }
+  .banner-mobile { display: none; }
+  @media (max-width: 768px) {
+    .banner-desktop { display: none; }
+    .banner-mobile { display: block; }
+  }
+
   .footer {
     background: #d0e8d4;
     text-align: center;
@@ -459,7 +467,7 @@
     <div class="stat-card stat-broken"><div class="stat-num" id="stBroken">0</div><div class="stat-label">Broken (4xx/5xx)</div></div>
     <div class="stat-card stat-ok"><div class="stat-num" id="stOk">0</div><div class="stat-label">Working</div></div>
     <div class="stat-card stat-redirect"><div class="stat-num" id="stRedirect">0</div><div class="stat-label">Redirects</div></div>
-    <class="stat-card stat-skip"><div class="stat-num" id="stSkip">0</div><div class="stat-label">Timeout/Error</div></div>
+    <div class="stat-card stat-skip"><div class="stat-num" id="stSkip">0</div><div class="stat-label">Timeout/Error</div></div>
   </div>
 
   <div class="results-card" id="resultsCard">
@@ -486,20 +494,60 @@
     </div>
   </div>
 
-  <div class="ad-container" id="bannerAdContainer"></div>
+  <!-- Banner Ads (Desktop & Mobile) -->
+  <div class="ad-container banner-desktop" id="desktopBannerContainer"></div>
+  <div class="ad-container banner-mobile" id="mobileBannerContainer"></div>
 </main>
 
 <footer class="footer">
   <p>Made with 💚 by <a href="https://toolmatrix.space" target="_blank">ToolMatrix</a> — Professional Backlink & Link Health Checker</p>
 </footer>
 
-<!-- Ads scripts -->
+<!-- Ads scripts (push removed, desktop & mobile banners + download ad) -->
 <script>
-  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  window.atOptions = { 'key' : '4afdbe032cc77af781754d77ab0211fb', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
+  // Desktop Banner (728x90) – shown when width > 768px
+  (function() {
+    var desktopDiv = document.getElementById('desktopBannerContainer');
+    if (desktopDiv && window.innerWidth > 768) {
+      var script = document.createElement('script');
+      script.innerHTML = `
+        atOptions = {
+          'key' : '4afdbe032cc77af781754d77ab0211fb',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      `;
+      desktopDiv.appendChild(script);
+      var invoke = document.createElement('script');
+      invoke.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+      desktopDiv.appendChild(invoke);
+    }
+  })();
+
+  // Mobile Banner (300x250) – shown when width <= 768px
+  (function() {
+    var mobileDiv = document.getElementById('mobileBannerContainer');
+    if (mobileDiv && window.innerWidth <= 768) {
+      var script = document.createElement('script');
+      script.innerHTML = `
+        atOptions = {
+          'key' : 'f2bd4040afafe750e7a3e138c826e72c',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      `;
+      mobileDiv.appendChild(script);
+      var invoke = document.createElement('script');
+      invoke.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+      mobileDiv.appendChild(invoke);
+    }
+  })();
+
+  // Download ad (OMG)
   const omgScript = document.createElement('script');
   omgScript.src = 'https://omg10.com/4/10842916';
   omgScript.async = true;
