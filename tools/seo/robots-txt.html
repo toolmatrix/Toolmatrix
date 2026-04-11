@@ -3,16 +3,14 @@
 <head>
 <!-- ================= BASIC ================= -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
 <!-- ================= TITLE ================= -->
 <title>Robots.txt Generator – Create SEO-Friendly Robots File | ToolMatrix</title>
 
 <!-- ================= SEO META ================= -->
 <meta name="description" content="Generate a perfect robots.txt file for your website. Control search engine crawlers, block unwanted bots, and add sitemap easily. Free robots.txt generator tool.">
-
 <meta name="keywords" content="robots.txt generator, create robots.txt, seo robots file, block bots, allow disallow robots, sitemap robots txt, free seo tools">
-
 <meta name="robots" content="index, follow">
 <meta name="author" content="ToolMatrix">
 
@@ -49,10 +47,7 @@
   "description": "Free tool to generate SEO-friendly robots.txt files and control search engine crawlers.",
   "applicationCategory": "UtilityApplication",
   "operatingSystem": "All",
-  "creator": {
-    "@type": "Organization",
-    "name": "ToolMatrix"
-  }
+  "creator": { "@type": "Organization", "name": "ToolMatrix" }
 }
 </script>
 <style>
@@ -99,8 +94,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
 
 /* ===== LAYOUT: 2 COL ===== */
 .layout{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;margin-top:24px}
-
-/* ===== LEFT: BUILDER ===== */
 .builder{background:var(--white);border-right:1.5px solid var(--border);min-height:calc(100vh - 200px)}
 .builder-hdr{background:var(--primary-light);padding:16px 28px;border-bottom:1.5px solid #C8E6C0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .builder-hdr .hdr-left{display:flex;align-items:center;gap:10px}
@@ -166,8 +159,32 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
 .stat-item .si-val{font-size:22px;font-weight:900;color:var(--primary)}
 .stat-item .si-label{font-size:11px;font-weight:600;color:var(--text-light)}
 
-/* ===== AD CONTAINER ===== */
-.ad-container{text-align:center;margin:24px auto;max-width:800px;background:#FEF9E6;border-radius:20px;padding:12px;border:1px solid #FFE0A3}
+/* ===== AD CONTAINERS ===== */
+.ad-desktop {
+  display: none;
+  text-align: center;
+  margin: 24px auto;
+  max-width: 800px;
+  background: #FEF9E6;
+  border-radius: 20px;
+  padding: 12px;
+  border: 1px solid #FFE0A3;
+}
+.ad-mobile {
+  display: none;
+  text-align: center;
+  margin: 24px auto;
+  max-width: 340px;
+  background: transparent;
+  border-radius: 16px;
+  padding: 8px;
+}
+@media (min-width: 769px) {
+  .ad-desktop { display: block; }
+}
+@media (max-width: 768px) {
+  .ad-mobile { display: block; }
+}
 
 /* ===== FOOTER ===== */
 .footer{text-align:center;padding:24px 30px;color:var(--text-light);font-size:13px;border-top:1px solid var(--border);background:var(--primary-lighter);width:100%}
@@ -326,8 +343,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
   <div class="stat-item"><div class="si-icon">📄</div><div class="si-val" id="statLines">0</div><div class="si-label">Lines</div></div>
 </div>
 
-<!-- AD BANNER -->
-<div class="ad-container" id="bannerAdContainer"></div>
+<!-- AD BANNERS: desktop & mobile conditionally -->
+<div class="ad-desktop" id="desktopAdContainer"></div>
+<div class="ad-mobile" id="mobileAdContainer"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -335,17 +353,49 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
 </footer>
 <div class="toast" id="toast"></div>
 
-<!-- ADS SCRIPTS -->
+<!-- ADS SCRIPTS (conditional banners + download ad) -->
 <script>
-  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  window.atOptions = { 'key' : '4afdbe032cc77af781754d77ab0211fb', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
-  const omgScript = document.createElement('script');
-  omgScript.src = 'https://omg10.com/4/10842916';
-  omgScript.async = true;
-  document.body.appendChild(omgScript);
+  // Conditional banner ads (no push ad)
+  (function() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) {
+      // Desktop: 728x90
+      const desktopDiv = document.getElementById('desktopAdContainer');
+      if (desktopDiv) {
+        window.atOptions = {
+          key: '4afdbe032cc77af781754d77ab0211fb',
+          format: 'iframe',
+          height: 90,
+          width: 728,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+        desktopDiv.appendChild(script);
+      }
+    } else {
+      // Mobile: 300x250
+      const mobileDiv = document.getElementById('mobileAdContainer');
+      if (mobileDiv) {
+        window.atOptions = {
+          key: 'f2bd4040afafe750e7a3e138c826e72c',
+          format: 'iframe',
+          height: 250,
+          width: 300,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+        mobileDiv.appendChild(script);
+      }
+    }
+
+    // Download ad (OMG) – always load
+    const omgScript = document.createElement('script');
+    omgScript.src = 'https://omg10.com/4/10842916';
+    omgScript.async = true;
+    document.body.appendChild(omgScript);
+  })();
 </script>
 
 <script>
