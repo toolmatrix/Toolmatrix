@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Broken Link Finder · Check Dead Links | ToolMatrix</title>
+  <meta name="description" content="Find broken links, 404 errors, and redirects on any website. Free online broken link checker to improve SEO and user experience.">
+  <meta name="keywords" content="broken link checker, dead link finder, 404 checker, link audit, SEO tool">
+  <meta name="theme-color" content="#1e6f3f">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ================= TITLE ================= -->
@@ -55,792 +61,726 @@
   }
 }
 </script>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f4fbf7;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1a3a24;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      width: 100%;
+      flex: 1;
+    }
+    /* header */
+    .tool-header {
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .tool-header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1e6f3f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .tool-header h1 span {
+      background: #e2f3e4;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-size: 1rem;
+      color: #0e4d2b;
+    }
+    .subhead {
+      color: #3b6e4e;
+      max-width: 700px;
+      margin: 10px auto 0;
+      font-size: 1rem;
+    }
 
-  :root {
-    --bg: #f0faf2;
-    --card: #ffffff;
-    --primary: #2e9e55;
-    --primary-dark: #1f7a40;
-    --primary-light: #d4f5e0;
-    --accent: #57c97a;
-    --border: #b2e8c2;
-    --text: #1a3a24;
-    --text-muted: #5a8c6a;
-    --danger: #e53e3e;
-    --danger-bg: #fff5f5;
-    --warning: #d69e2e;
-    --redirect: #3182ce;
-    --shadow: 0 4px 24px rgba(46,158,85,0.10);
-    --radius: 14px;
-  }
+    /* card style */
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 10px 30px rgba(46, 125, 70, 0.08);
+      border: 1px solid #c8e6d4;
+      margin-bottom: 24px;
+    }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .url-input {
+      flex: 1 1 260px;
+      padding: 16px 20px;
+      border: 2px solid #bcddc9;
+      border-radius: 60px;
+      font-size: 1rem;
+      background: #fafffc;
+      transition: 0.2s;
+      outline: none;
+    }
+    .url-input:focus {
+      border-color: #1e6f3f;
+      box-shadow: 0 0 0 4px rgba(30,111,63,0.1);
+    }
+    .btn {
+      background: #1e6f3f;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.15s;
+      border: 1px solid #1e6f3f;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: #15592f;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(30,111,63,0.2);
+    }
+    .btn-outline {
+      background: transparent;
+      color: #1e6f3f;
+      border: 2px solid #bcddc9;
+    }
+    .btn-outline:hover {
+      background: #e2f3e4;
+      border-color: #1e6f3f;
+    }
+    .btn-stop {
+      background: #bc3f3f;
+      border-color: #bc3f3f;
+      display: none;
+    }
+    .btn-stop.visible { display: flex; }
+    .btn:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
 
-  body {
-    background: var(--bg);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+    .option-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #2a523a;
+    }
+    .max-input {
+      width: 90px;
+      padding: 8px 12px;
+      border: 2px solid #bcddc9;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      background: white;
+      text-align: center;
+    }
 
-  /* Header (light green) with 9-dot menu - full width */
-  .main-header {
-    background: linear-gradient(135deg, #e8f5e9 0%, #d0e8d4 100%);
-    border-bottom: 2px solid var(--border);
-    padding: 0 5%;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-    width: 100%;
-  }
-  .header-container {
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 12px 0;
-    gap: 12px;
-  }
-  .logo-area { display: flex; align-items: center; gap: 12px; }
-  .logo-icon {
-    background: var(--primary);
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    color: white;
-    box-shadow: 0 2px 8px rgba(46,158,85,0.25);
-  }
-  .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); }
-  .logo-text span { color: var(--primary); }
+    /* progress */
+    .progress-card {
+      background: #e6f3ea;
+      border-radius: 20px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      border: 1px solid #b2dbc0;
+      display: none;
+    }
+    .progress-card.visible { display: block; }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .progress-bar {
+      background: #c0dbc9;
+      height: 12px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: #1e6f3f;
+      width: 0%;
+      height: 100%;
+      transition: width 0.2s;
+    }
 
-  /* 9-dot wrapper */
-  .nine-dots-wrapper { position: relative; display: inline-block; }
-  .nine-dots {
-    background: rgba(46,158,85,0.12);
-    border: 2px solid var(--border);
-    border-radius: 40px;
-    padding: 8px 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary-dark);
-    font-weight: 700;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-  }
-  .nine-dots:hover { background: var(--primary); border-color: var(--primary); color: white; transform: translateY(-2px); }
-  .nine-dots svg { width: 20px; height: 20px; fill: currentColor; }
+    /* stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+      display: none;
+    }
+    .stats-grid.visible { display: grid; }
+    .stat-item {
+      background: white;
+      border-radius: 18px;
+      padding: 18px 8px;
+      text-align: center;
+      border: 1px solid #cfe6d9;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    }
+    .stat-num {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #487558;
+      font-weight: 600;
+    }
+    .total .stat-num { color: #1e6f3f; }
+    .broken .stat-num { color: #c73a3a; }
+    .ok .stat-num { color: #2b8c5e; }
+    .redirect .stat-num { color: #2b6f9c; }
 
-  /* Tools dropdown (hover) – horizontal */
-  .tools-modal {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 10px;
-    background: var(--card);
-    border-radius: 28px;
-    min-width: 680px;
-    padding: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    border: 1.5px solid var(--border);
-    z-index: 200;
-    white-space: nowrap;
-  }
-  .tools-modal.active { display: block; }
-  .tools-modal h3 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; white-space: normal; }
-  .tools-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
-  .tool-item {
-    background: var(--primary-light);
-    padding: 8px 18px;
-    border-radius: 40px;
-    text-decoration: none;
-    color: var(--text);
-    font-weight: 600;
-    font-size: 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    white-space: nowrap;
-  }
-  .tool-item:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); }
-  .tool-item span { font-size: 1.1rem; }
+    /* results table */
+    .results-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 15px;
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: white;
+      border: 1.5px solid #bcddc9;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .filter-btn.active {
+      background: #1e6f3f;
+      color: white;
+      border-color: #1e6f3f;
+    }
+    .export-btn {
+      background: #1e6f3f;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid #c8e6d4;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    th {
+      background: #e2f3e4;
+      padding: 16px 16px;
+      text-align: left;
+      font-weight: 700;
+      color: #1a4f2e;
+      font-size: 0.85rem;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #d9eee1;
+      vertical-align: middle;
+    }
+    .url-cell {
+      max-width: 380px;
+      word-break: break-word;
+    }
+    .url-cell a {
+      color: #1e6f3f;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-broken { background: #fee9e7; color: #bc3f3f; }
+    .badge-ok { background: #e2f3e4; color: #1e6f3f; }
+    .badge-redirect { background: #e3f0fd; color: #2b6f9c; }
+    .badge-timeout { background: #fef1e0; color: #b56f1a; }
+    .empty-message {
+      text-align: center;
+      padding: 48px;
+      color: #678b74;
+      font-weight: 500;
+      display: none;
+    }
 
-  /* Hero section - full width content */
-  .hero-desc {
-    background: var(--card);
-    border-radius: 24px;
-    padding: 28px 5%;
-    margin-bottom: 32px;
-    text-align: center;
-    border: 1.5px solid var(--border);
-    box-shadow: var(--shadow);
-    width: 100%;
-  }
-  .hero-desc h1 { font-size: 2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
-  .hero-desc p { color: var(--text-muted); max-width: 800px; margin: 0 auto; line-height: 1.5; font-size: 1rem; }
+    /* ad container */
+    .mobile-ad {
+      margin: 32px auto 16px;
+      text-align: center;
+      max-width: 340px;
+      background: transparent;
+      border-radius: 20px;
+      padding: 8px;
+    }
 
-  main {
-    flex: 1;
-    width: 100%;
-    margin: 0;
-    padding: 28px 5%;
-  }
+    .footer-note {
+      text-align: center;
+      margin-top: 40px;
+      color: #4f7a60;
+      font-size: 0.85rem;
+      border-top: 1px solid #c8e6d4;
+      padding-top: 28px;
+    }
+    .footer-note a { color: #1e6f3f; font-weight: 600; text-decoration: none; }
 
-  /* Search card */
-  .search-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 28px;
-    border: 1.5px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .search-card label { font-weight: 700; font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 12px; display: block; }
-  .input-row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .url-input {
-    flex: 1;
-    padding: 14px 18px;
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    font-size: 1rem;
-    background: var(--bg);
-    transition: all 0.2s;
-    outline: none;
-  }
-  .url-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,158,85,0.13); }
-  .scan-btn {
-    padding: 14px 32px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-  }
-  .scan-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(46,158,85,0.35); }
-  .stop-btn {
-    padding: 14px 24px;
-    background: linear-gradient(135deg, #e53e3e, #c53030);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    gap: 8px;
-  }
-  .stop-btn.visible { display: flex; }
-
-  .options-row { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
-  .option-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
-  .max-links-input { width: 80px; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; background: var(--bg); text-align: center; }
-
-  /* Progress */
-  .progress-section {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 22px 28px;
-    margin-bottom: 28px;
-    border: 1.5px solid var(--border);
-    display: none;
-  }
-  .progress-section.visible { display: block; }
-  .progress-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
-  .progress-title { font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--primary-dark); }
-  .spinner { width: 18px; height: 18px; border: 2.5px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .progress-bar-wrap { background: var(--primary-light); border-radius: 99px; height: 10px; overflow: hidden; margin-bottom: 8px; }
-  .progress-bar-fill { background: linear-gradient(90deg, var(--accent), var(--primary)); width: 0%; height: 100%; transition: width 0.3s ease; }
-  .progress-status { font-size: 0.8rem; color: var(--text-muted); }
-
-  /* Stats */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-    display: none;
-  }
-  .stats-grid.visible { display: grid; }
-  .stat-card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 18px;
-    text-align: center;
-    border: 1.5px solid var(--border);
-    transition: all 0.2s;
-  }
-  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-  .stat-num { font-size: 2.2rem; font-weight: 800; line-height: 1; }
-  .stat-total .stat-num { color: var(--primary); }
-  .stat-broken .stat-num { color: var(--danger); }
-  .stat-ok .stat-num { color: var(--primary); }
-  .stat-redirect .stat-num { color: var(--redirect); }
-  .stat-skip .stat-num { color: var(--warning); }
-  .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-top: 6px; }
-
-  /* Results table */
-  .results-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 1.5px solid var(--border);
-    overflow: hidden;
-    display: none;
-  }
-  .results-card.visible { display: block; }
-  .results-toolbar {
-    padding: 18px 24px;
-    background: var(--primary-light);
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    border-bottom: 1.5px solid var(--border);
-  }
-  .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-  .filter-tab {
-    padding: 6px 16px;
-    border-radius: 40px;
-    border: 1.5px solid var(--border);
-    background: white;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .filter-tab.active, .filter-tab:hover { background: var(--primary); color: white; border-color: var(--primary); }
-  .export-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 40px;
-    font-weight: 700;
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { background: var(--bg); padding: 14px 16px; text-align: left; font-weight: 700; color: var(--primary-dark); border-bottom: 1.5px solid var(--border); }
-  td { padding: 12px 16px; border-bottom: 1px solid #eaf7ee; }
-  .td-url { max-width: 380px; word-break: break-all; }
-  .td-url a { color: var(--primary-dark); text-decoration: none; font-weight: 500; }
-  .badge { display: inline-block; padding: 3px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
-  .badge-broken { background: var(--danger-bg); color: var(--danger); border: 1px solid #fed7d7; }
-  .badge-ok { background: var(--bg); color: var(--primary); border: 1px solid var(--border); }
-  .badge-redirect { background: #ebf8ff; color: var(--redirect); border: 1px solid #bee3f8; }
-  .badge-timeout { background: #fff8f0; color: #c05621; border: 1px solid #fbd38d; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-  .empty-state { text-align: center; padding: 50px; color: var(--text-muted); }
-  .alert { padding: 12px 18px; border-radius: 14px; margin-bottom: 20px; display: none; font-weight: 500; }
-  .alert.visible { display: flex; gap: 10px; align-items: center; }
-  .alert-error { background: var(--danger-bg); border: 1px solid #fed7d7; color: #c53030; }
-
-  /* Ad containers */
-  .ad-container {
-    text-align: center;
-    margin: 32px auto 20px;
-    background: #FEF9E6;
-    border-radius: 24px;
-    padding: 12px;
-    border: 1px solid #FFE0A3;
-    width: 100%;
-    max-width: 100%;
-  }
-  .banner-desktop { display: block; }
-  .banner-mobile { display: none; }
-  @media (max-width: 768px) {
-    .banner-desktop { display: none; }
-    .banner-mobile { display: block; }
-  }
-
-  .footer {
-    background: #d0e8d4;
-    text-align: center;
-    padding: 24px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    border-top: 2px solid var(--border);
-    margin-top: 40px;
-    width: 100%;
-  }
-  .footer a { color: var(--primary-dark); font-weight: 600; text-decoration: none; }
-
-  /* Responsive full screen adjustments */
-  @media (max-width: 768px) {
-    .header-container { flex-direction: column; align-items: flex-start; }
-    .input-row { flex-direction: column; }
-    .scan-btn, .stop-btn { width: 100%; justify-content: center; }
-    .tools-modal { min-width: 90vw; right: 0; left: auto; }
-    .hero-desc h1 { font-size: 1.6rem; }
-    main { padding: 20px 4%; }
-    .search-card { padding: 20px; }
-    .results-toolbar { flex-direction: column; align-items: stretch; }
-    .filter-tabs { justify-content: center; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  }
-  @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: 1fr; }
-    .hero-desc h1 { font-size: 1.4rem; }
-    .option-label { font-size: 0.75rem; }
-  }
-</style>
+    .alert {
+      background: #fee9e7;
+      border-left: 6px solid #bc3f3f;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 500;
+    }
+    .alert.visible { display: block; }
+  </style>
 </head>
 <body>
-
-<!-- Header with 9-dot menu -->
-<header class="main-header">
-  <div class="header-container">
-    <div class="logo-area">
-      <div class="logo-icon">🔗</div>
-      <div class="logo-text">Backlink<span>Checker</span></div>
-    </div>
-    <div class="nine-dots-wrapper" id="nineDotsWrapper">
-      <button class="nine-dots" id="nineDotsBtn">
-        <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="20" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="20" cy="20" r="2"/></svg>
-        SEO Tools
-      </button>
-      <div class="tools-modal" id="toolsModal">
-        <h3>🔧 Professional SEO Toolkit</h3>
-        <div class="tools-grid" id="toolsGrid"></div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<main>
-  <div class="hero-desc">
-    <h1>🔍 Backlink & Link Health Checker</h1>
-    <p>Scan any website for backlinks, dead links, redirects, timeouts and server errors. Improve SEO and user experience instantly.</p>
+<div class="container">
+  <div class="tool-header">
+    <h1>🔗 Broken Link Finder <span>dead link checker</span></h1>
+    <div class="subhead">Scan any website for broken links, redirects & 404 errors. Improve SEO instantly.</div>
   </div>
 
-  <div class="search-card">
-    <label>🌐 Enter website URL to audit</label>
-    <div class="input-row">
-      <input type="url" id="urlInput" class="url-input" placeholder="https://example.com" autocomplete="off" />
-      <button class="scan-btn" id="scanBtn">🔍 Start Scan</button>
-      <button class="stop-btn" id="stopBtn">⏹ Stop Scan</button>
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="input-group">
+      <input type="url" id="urlInput" class="url-input" placeholder="https://example.com" autocomplete="off" value="">
+      <button class="btn" id="scanBtn">🔍 Start Scan</button>
+      <button class="btn btn-stop" id="stopBtn">⏹ Stop</button>
     </div>
-    <div class="options-row">
-      <label class="option-label"><input type="checkbox" id="optExternal" checked> Check External Links</label>
-      <label class="option-label"><input type="checkbox" id="optInternal" checked> Check Internal Links</label>
-      <label class="option-label"><input type="checkbox" id="optImages"> Include Image SRC</label>
-      <label class="option-label">Max links: <input type="number" id="maxLinks" class="max-links-input" value="100" min="5" max="350" step="5"></label>
+    <div class="option-bar">
+      <label class="option-label"><input type="checkbox" id="optInternal" checked> Internal links</label>
+      <label class="option-label"><input type="checkbox" id="optExternal" checked> External links</label>
+      <label class="option-label"><input type="checkbox" id="optImages"> Image sources</label>
+      <label class="option-label">🔢 Max links: <input type="number" id="maxLinks" class="max-input" value="120" min="5" max="300" step="5"></label>
     </div>
   </div>
 
-  <div class="alert alert-error" id="alertBox"><span>⚠️</span><span id="alertMsg"></span></div>
+  <div class="alert" id="alertBox"></div>
 
-  <div class="progress-section" id="progressSection">
+  <!-- PROGRESS -->
+  <div class="progress-card" id="progressCard">
     <div class="progress-header">
-      <span class="progress-title"><span class="spinner"></span> Auditing links...</span>
-      <span id="progressInfo">0 / 0</span>
+      <span>⏳ Scanning links...</span>
+      <span id="progressCount">0/0</span>
     </div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
-    <div class="progress-status" id="progressStatus">Preparing...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
 
+  <!-- STATS -->
   <div class="stats-grid" id="statsGrid">
-    <div class="stat-card stat-total"><div class="stat-num" id="stTotal">0</div><div class="stat-label">Total Links</div></div>
-    <div class="stat-card stat-broken"><div class="stat-num" id="stBroken">0</div><div class="stat-label">Broken (4xx/5xx)</div></div>
-    <div class="stat-card stat-ok"><div class="stat-num" id="stOk">0</div><div class="stat-label">Working</div></div>
-    <div class="stat-card stat-redirect"><div class="stat-num" id="stRedirect">0</div><div class="stat-label">Redirects</div></div>
-    <div class="stat-card stat-skip"><div class="stat-num" id="stSkip">0</div><div class="stat-label">Timeout/Error</div></div>
+    <div class="stat-item total"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total links</div></div>
+    <div class="stat-item broken"><div class="stat-num" id="statBroken">0</div><div class="stat-label">Broken (4xx/5xx)</div></div>
+    <div class="stat-item ok"><div class="stat-num" id="statOk">0</div><div class="stat-label">Working</div></div>
+    <div class="stat-item redirect"><div class="stat-num" id="statRedirect">0</div><div class="stat-label">Redirects</div></div>
+    <div class="stat-item"><div class="stat-num" id="statTimeout">0</div><div class="stat-label">Timeout/Error</div></div>
   </div>
 
-  <div class="results-card" id="resultsCard">
+  <!-- RESULTS -->
+  <div class="card" style="padding: 20px;" id="resultsCard" style="display:none;">
     <div class="results-toolbar">
-      <span class="results-title">📋 Detailed Report</span>
       <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">All Links</button>
-        <button class="filter-tab" data-filter="broken">🔴 Broken</button>
-        <button class="filter-tab" data-filter="ok">🟢 Working</button>
-        <button class="filter-tab" data-filter="redirect">🔵 Redirects</button>
-        <button class="filter-tab" data-filter="timeout">🟠 Timeouts</button>
+        <button class="filter-btn active" data-filter="all">📋 All</button>
+        <button class="filter-btn" data-filter="broken">❌ Broken</button>
+        <button class="filter-btn" data-filter="ok">✅ OK</button>
+        <button class="filter-btn" data-filter="redirect">↪️ Redirect</button>
+        <button class="filter-btn" data-filter="timeout">⏱ Timeout</button>
       </div>
-      <div class="toolbar-actions">
-        <button class="export-btn" id="exportCsvBtn">⬇️ CSV Export</button>
-        <button class="export-btn" id="exportJsonBtn">⬇️ JSON Export</button>
+      <div>
+        <button class="export-btn" id="exportCsv">📄 Export CSV</button>
+        <button class="export-btn" id="exportJson" style="margin-left:8px;">📦 JSON</button>
       </div>
     </div>
-    <div class="table-wrap">
-      <table id="resultsTable">
+    <div class="table-wrapper">
+      <table id="resultTable">
         <thead><tr><th>#</th><th>URL</th><th>Status</th><th>Result</th><th>Type</th></tr></thead>
-        <tbody id="resultsBody"></tbody>
+        <tbody id="tableBody"></tbody>
       </table>
-      <div class="empty-state" id="emptyState" style="display:none;">✨ No links match this filter</div>
+      <div class="empty-message" id="emptyMsg">✨ No links match this filter</div>
     </div>
   </div>
 
-  <!-- Banner Ads (Desktop & Mobile) -->
-  <div class="ad-container banner-desktop" id="desktopBannerContainer"></div>
-  <div class="ad-container banner-mobile" id="mobileBannerContainer"></div>
-</main>
+  <!-- MOBILE BANNER AD (300x250) exactly as provided -->
+  <div class="mobile-ad">
+    <script>
+      atOptions = {
+        'key' : 'f2bd4040afafe750e7a3e138c826e72c',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script>
+  </div>
 
-<footer class="footer">
-  <p>Made with 💚 by <a href="https://toolmatrix.space" target="_blank">ToolMatrix</a> — Professional Backlink & Link Health Checker</p>
-</footer>
-
-<!-- Ads scripts (push removed, desktop & mobile banners + download ad) -->
-<script>
-  // Desktop Banner (728x90) – shown when width > 768px
-  (function() {
-    var desktopDiv = document.getElementById('desktopBannerContainer');
-    if (desktopDiv && window.innerWidth > 768) {
-      var script = document.createElement('script');
-      script.innerHTML = `
-        atOptions = {
-          'key' : '4afdbe032cc77af781754d77ab0211fb',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      `;
-      desktopDiv.appendChild(script);
-      var invoke = document.createElement('script');
-      invoke.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-      desktopDiv.appendChild(invoke);
-    }
-  })();
-
-  // Mobile Banner (300x250) – shown when width <= 768px
-  (function() {
-    var mobileDiv = document.getElementById('mobileBannerContainer');
-    if (mobileDiv && window.innerWidth <= 768) {
-      var script = document.createElement('script');
-      script.innerHTML = `
-        atOptions = {
-          'key' : 'f2bd4040afafe750e7a3e138c826e72c',
-          'format' : 'iframe',
-          'height' : 250,
-          'width' : 300,
-          'params' : {}
-        };
-      `;
-      mobileDiv.appendChild(script);
-      var invoke = document.createElement('script');
-      invoke.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
-      mobileDiv.appendChild(invoke);
-    }
-  })();
-
-  // Download ad (OMG)
-  const omgScript = document.createElement('script');
-  omgScript.src = 'https://omg10.com/4/10842916';
-  omgScript.async = true;
-  document.body.appendChild(omgScript);
-</script>
+  <div class="footer-note">
+    🔍 <a href="https://toolmatrix.space" target="_blank">ToolMatrix</a> · Free Broken Link Checker · No signup required
+  </div>
+</div>
 
 <script>
-  // ================= 9-DOT HOVER DROPDOWN (exclude current tool) =================
-  const wrapper = document.getElementById('nineDotsWrapper');
-  const toolsModal = document.getElementById('toolsModal');
-  let hoverTimeout;
-  function showModal() { if (hoverTimeout) clearTimeout(hoverTimeout); toolsModal.classList.add('active'); }
-  function hideModal() { hoverTimeout = setTimeout(() => { toolsModal.classList.remove('active'); }, 200); }
-  wrapper.addEventListener('mouseenter', showModal);
-  wrapper.addEventListener('mouseleave', hideModal);
-  toolsModal.addEventListener('mouseenter', () => { if (hoverTimeout) clearTimeout(hoverTimeout); toolsModal.classList.add('active'); });
-  toolsModal.addEventListener('mouseleave', hideModal);
+  (function(){
+    "use strict";
 
-  // All SEO tools (excluding current: "Backlink Checker")
-  const allSeoTools = [
-    { name: 'Meta Analyzer', icon: '🏷️', url: 'https://toolmatrix.space/tools/seo/meta-analyzer.html' },
-    { name: 'Sitemap Generator', icon: '🗺️', url: 'https://toolmatrix.space/tools/seo/sitemap-generator.html' },
-    { name: 'Backlink Checker', icon: '🔁', url: 'https://toolmatrix.space/tools/seo/backlink-checker.html' },
-    { name: 'Broken Link Finder', icon: '🔗', url: 'https://toolmatrix.space/tools/seo/broken-link-finder.html' },
-    { name: 'Robots.txt Generator', icon: '🤖', url: 'https://toolmatrix.space/tools/seo/robots-txt.html' },
-    { name: 'Invoice Generator', icon: '🧾', url: 'https://toolmatrix.space/tools/seo/invoice-generator.html' },
-    { name: 'Voice Generator', icon: '🎙️', url: 'https://toolmatrix.space/tools/seo/voice-generator.html' },
-    { name: 'Keyword Density', icon: '📊', url: 'https://toolmatrix.space/tools/seo/keyword-density.html' },
-    { name: 'Speed Test', icon: '⚡', url: 'https://toolmatrix.space/tools/seo/speed-test.html' },
-    { name: 'Domain Age Checker', icon: '📅', url: 'https://toolmatrix.space/tools/seo/domain-age.html' },
-    { name: 'SEO Audit Tool', icon: '📈', url: 'https://toolmatrix.space/tools/seo/seo-audit-tool.html' }
-  ];
-  const currentToolName = 'Backlink Checker';
-  const toolsGrid = document.getElementById('toolsGrid');
-  allSeoTools.forEach(tool => {
-    if (tool.name === currentToolName) return;
-    const a = document.createElement('a');
-    a.href = tool.url;
-    a.target = '_self';
-    a.className = 'tool-item';
-    a.innerHTML = `<span>${tool.icon}</span> ${tool.name}`;
-    toolsGrid.appendChild(a);
-  });
+    // DOM elements
+    const $ = id => document.getElementById(id);
+    const urlInput = $('urlInput');
+    const scanBtn = $('scanBtn');
+    const stopBtn = $('stopBtn');
+    const progressCard = $('progressCard');
+    const progressFill = $('progressFill');
+    const progressCount = $('progressCount');
+    const statsGrid = $('statsGrid');
+    const resultsCard = $('resultsCard');
+    const tableBody = $('tableBody');
+    const emptyMsg = $('emptyMsg');
+    const alertBox = $('alertBox');
 
-  // ================= LINK CHECKER ENGINE =================
-  let allResults = [];
-  let isStopped = false;
-  let currentFilter = 'all';
-  const PROXY = url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    // checkboxes
+    const optInternal = $('optInternal');
+    const optExternal = $('optExternal');
+    const optImages = $('optImages');
+    const maxLinksInput = $('maxLinks');
 
-  const $ = id => document.getElementById(id);
-  function showAlert(msg, isError = true) {
-    const box = $('alertBox');
-    $('alertMsg').innerText = msg;
-    box.classList.add('visible');
-    if (isError) box.className = 'alert alert-error visible';
-    setTimeout(() => box.classList.remove('visible'), 5000);
-  }
+    // state
+    let allResults = [];
+    let isStopped = false;
+    let currentFilter = 'all';
+    let baseUrl = '';
 
-  function updateProgress(done, total, currentUrl = '') {
-    const percent = total ? (done / total) * 100 : 0;
-    $('progressFill').style.width = `${percent}%`;
-    $('progressInfo').innerText = `${done} / ${total}`;
-    if (currentUrl) $('progressStatus').innerText = `Checking: ${currentUrl.substring(0, 70)}...`;
-  }
+    // proxy for CORS (allorigins)
+    const PROXY = url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
-  function updateStats() {
-    const broken = allResults.filter(r => r.category === 'broken').length;
-    const ok = allResults.filter(r => r.category === 'ok').length;
-    const redirect = allResults.filter(r => r.category === 'redirect').length;
-    const timeout = allResults.filter(r => r.category === 'timeout').length;
-    $('stTotal').innerText = allResults.length;
-    $('stBroken').innerText = broken;
-    $('stOk').innerText = ok;
-    $('stRedirect').innerText = redirect;
-    $('stSkip').innerText = timeout;
-  }
+    // Helper: show alert
+    function showAlert(msg) {
+      alertBox.textContent = `⚠️ ${msg}`;
+      alertBox.classList.add('visible');
+      setTimeout(() => alertBox.classList.remove('visible'), 4500);
+    }
 
-  function badgeFor(cat) {
-    const map = {
-      broken:   ['badge-broken',   '❌ Broken'],
-      ok:       ['badge-ok',       '✅ Working'],
-      redirect: ['badge-redirect', '↪️ Redirect'],
-      timeout:  ['badge-timeout',  '⏱ Timeout'],
-    };
-    const [cls, label] = map[cat] || ['badge-timeout', '⚠️ Error'];
-    return `<span class="badge ${cls}">${label}</span>`;
-  }
-  function dotFor(cat) { return `<span class="status-dot dot-${cat}"></span>`; }
-  function typeLabel(url, base) {
-    try {
-      const u = new URL(url);
-      const b = new URL(base);
-      return u.hostname === b.hostname ? '<span style="color:#2e9e55;font-weight:600;">Internal</span>' : '<span style="color:#718096;">External</span>';
-    } catch { return '—'; }
-  }
+    // Update progress
+    function updateProgress(done, total, currentUrl = '') {
+      const percent = total ? (done / total) * 100 : 0;
+      progressFill.style.width = `${percent}%`;
+      progressCount.textContent = `${done} / ${total}`;
+    }
 
-  function renderTable(filter = currentFilter) {
-    currentFilter = filter;
-    const tbody = $('resultsBody');
-    tbody.innerHTML = '';
-    let filtered = allResults;
-    if (filter !== 'all') filtered = allResults.filter(r => r.category === filter);
-    $('emptyState').style.display = filtered.length ? 'none' : 'block';
-    $('resultsTable').style.display = filtered.length ? '' : 'none';
-    filtered.forEach((r, i) => {
-      const row = tbody.insertRow();
-      row.innerHTML = `
-        <td style="color:var(--text-muted);font-weight:600;">${i+1}</td>
-        <td class="td-url"><a href="${r.url}" target="_blank" rel="noopener">${r.url}</a></td>
-        <td>${dotFor(r.category)}<strong>${r.code || '—'}</strong></td>
-        <td>${badgeFor(r.category)}</td>
-        <td>${typeLabel(r.url, $('urlInput').value)}</div></td>
-      `;
+    // Stats
+    function updateStats() {
+      const broken = allResults.filter(r => r.category === 'broken').length;
+      const ok = allResults.filter(r => r.category === 'ok').length;
+      const redirect = allResults.filter(r => r.category === 'redirect').length;
+      const timeout = allResults.filter(r => r.category === 'timeout').length;
+      $('statTotal').textContent = allResults.length;
+      $('statBroken').textContent = broken;
+      $('statOk').textContent = ok;
+      $('statRedirect').textContent = redirect;
+      $('statTimeout').textContent = timeout;
+    }
+
+    // badge / label
+    function getBadge(cat) {
+      const map = {
+        broken: ['badge-broken', '❌ Broken'],
+        ok: ['badge-ok', '✅ Working'],
+        redirect: ['badge-redirect', '↪️ Redirect'],
+        timeout: ['badge-timeout', '⏱ Timeout']
+      };
+      const [cls, label] = map[cat] || ['badge-timeout', '⚠️ Error'];
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function renderTable(filter = currentFilter) {
+      currentFilter = filter;
+      let filtered = allResults;
+      if (filter !== 'all') filtered = allResults.filter(r => r.category === filter);
+      
+      const tbody = tableBody;
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        emptyMsg.style.display = 'block';
+        return;
+      }
+      emptyMsg.style.display = 'none';
+      
+      filtered.forEach((item, idx) => {
+        const row = tbody.insertRow();
+        const typeLabel = (() => {
+          try {
+            return new URL(item.url).hostname === new URL(baseUrl).hostname ? 'Internal' : 'External';
+          } catch { return '—'; }
+        })();
+        row.innerHTML = `
+          <td>${idx+1}</td>
+          <td class="url-cell"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.url}</a></td>
+          <td><strong>${item.code || '—'}</strong></td>
+          <td>${getBadge(item.category)}</td>
+          <td>${typeLabel}</td>
+        `;
+      });
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderTable(btn.dataset.filter);
+      });
     });
-  }
 
-  function applyFilter(filter, btn) {
-    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderTable(filter);
-  }
-
-  async function fetchHTML(url) {
-    const res = await fetch(PROXY(url), { signal: AbortSignal.timeout(20000) });
-    if (!res.ok) throw new Error('Proxy fetch failed');
-    const data = await res.json();
-    return { html: data.contents, code: data.status?.http_code || 200 };
-  }
-
-  async function checkLink(url) {
-    try {
-      const res = await fetch(PROXY(url), { signal: AbortSignal.timeout(14000) });
-      if (!res.ok) return { code: 0, category: 'timeout' };
-      const data = await res.json();
-      const code = data.status?.http_code || 0;
-      if (!code) return { code: 0, category: 'timeout' };
-      if (code >= 200 && code < 300) return { code, category: 'ok' };
-      if (code >= 300 && code < 400) return { code, category: 'redirect' };
-      if (code >= 400) return { code, category: 'broken' };
-      return { code, category: 'timeout' };
-    } catch { return { code: 0, category: 'timeout' }; }
-  }
-
-  function extractLinks(html, base, options) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const baseUrl = new URL(base);
-    const links = new Set();
-    if (options.anchors) {
-      doc.querySelectorAll('a[href]').forEach(a => {
-        try {
-          const abs = new URL(a.getAttribute('href'), base).href;
-          if (abs.startsWith('http')) links.add(abs);
-        } catch {}
-      });
-    }
-    if (options.images) {
-      doc.querySelectorAll('img[src]').forEach(img => {
-        try {
-          const abs = new URL(img.getAttribute('src'), base).href;
-          if (abs.startsWith('http')) links.add(abs);
-        } catch {}
-      });
-    }
-    const checkExt = options.external;
-    const checkInt = options.internal;
-    return [...links].filter(url => {
+    // Check a single link via proxy
+    async function checkLink(url) {
       try {
-        const isInt = new URL(url).hostname === baseUrl.hostname;
-        return isInt ? checkInt : checkExt;
-      } catch { return false; }
-    });
-  }
-
-  async function startScan() {
-    let rawUrl = $('urlInput').value.trim();
-    if (!rawUrl) { showAlert('Please enter a website URL.'); return; }
-    if (!/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
-    try { new URL(rawUrl); } catch { showAlert('Invalid URL format.'); return; }
-    $('urlInput').value = rawUrl;
-    isStopped = false;
-    allResults = [];
-    $('scanBtn').disabled = true;
-    $('stopBtn').classList.add('visible');
-    $('progressSection').classList.add('visible');
-    $('statsGrid').classList.remove('visible');
-    $('resultsCard').classList.remove('visible');
-    $('progressFill').style.width = '0%';
-    $('progressStatus').innerText = 'Fetching page HTML...';
-
-    const options = {
-      external: $('optExternal').checked,
-      internal: $('optInternal').checked,
-      images: $('optImages').checked,
-      anchors: true,
-    };
-    const maxLinks = Math.min(350, Math.max(5, parseInt($('maxLinks').value) || 100));
-
-    let html;
-    try {
-      const fetched = await fetchHTML(rawUrl);
-      html = fetched.html;
-      if (!html || html.length < 50) throw new Error('Empty response');
-    } catch (e) {
-      showAlert(`Cannot fetch page: ${e.message}. The site may block external requests.`);
-      finalizeScan();
-      return;
+        const res = await fetch(PROXY(url), { signal: AbortSignal.timeout(12000) });
+        if (!res.ok) return { code: 0, category: 'timeout' };
+        const data = await res.json();
+        const code = data.status?.http_code || 0;
+        if (!code) return { code: 0, category: 'timeout' };
+        if (code >= 200 && code < 300) return { code, category: 'ok' };
+        if (code >= 300 && code < 400) return { code, category: 'redirect' };
+        if (code >= 400) return { code, category: 'broken' };
+        return { code, category: 'timeout' };
+      } catch {
+        return { code: 0, category: 'timeout' };
+      }
     }
-    if (isStopped) { finalizeScan(); return; }
 
-    let links = extractLinks(html, rawUrl, options);
-    if (links.length === 0) {
-      showAlert('No links found with current settings.', false);
-      finalizeScan();
-      return;
+    // Extract links from HTML string
+    function extractLinks(html, base, options) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const baseUrl = new URL(base);
+      const links = new Set();
+
+      if (options.anchors) {
+        doc.querySelectorAll('a[href]').forEach(a => {
+          try {
+            const abs = new URL(a.getAttribute('href'), base).href;
+            if (abs.startsWith('http')) links.add(abs);
+          } catch {}
+        });
+      }
+      if (options.images) {
+        doc.querySelectorAll('img[src]').forEach(img => {
+          try {
+            const abs = new URL(img.getAttribute('src'), base).href;
+            if (abs.startsWith('http')) links.add(abs);
+          } catch {}
+        });
+      }
+
+      return [...links].filter(url => {
+        try {
+          const isInternal = new URL(url).hostname === baseUrl.hostname;
+          return isInternal ? options.internal : options.external;
+        } catch { return false; }
+      });
     }
-    links = [...new Set(links)].slice(0, maxLinks);
-    allResults = links.map(url => ({ url, code: null, category: 'pending' }));
-    $('statsGrid').classList.add('visible');
-    $('resultsCard').classList.add('visible');
-    updateStats();
-    renderTable('all');
 
-    const CONCURRENCY = 6;
-    let done = 0;
-    async function checkOne(idx) {
-      if (isStopped) return;
-      const url = links[idx];
-      updateProgress(done, links.length, url);
-      const res = await checkLink(url);
-      allResults[idx] = { url, code: res.code, category: res.category };
-      done++;
-      updateProgress(done, links.length);
+    // Fetch HTML via proxy
+    async function fetchPageHTML(url) {
+      const res = await fetch(PROXY(url), { signal: AbortSignal.timeout(18000) });
+      if (!res.ok) throw new Error('Failed to fetch page');
+      const data = await res.json();
+      if (!data.contents) throw new Error('No content');
+      return data.contents;
+    }
+
+    // Main scan
+    async function startScan() {
+      let rawUrl = urlInput.value.trim();
+      if (!rawUrl) { showAlert('Please enter a website URL'); return; }
+      if (!/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
+      try { baseUrl = new URL(rawUrl).href; } catch { showAlert('Invalid URL format'); return; }
+      urlInput.value = baseUrl;
+
+      // reset
+      isStopped = false;
+      allResults = [];
+      scanBtn.disabled = true;
+      stopBtn.classList.add('visible');
+      progressCard.classList.add('visible');
+      statsGrid.classList.remove('visible');
+      resultsCard.style.display = 'none';
+      progressFill.style.width = '0%';
+      progressCount.textContent = '0/0';
+      
+      const options = {
+        internal: optInternal.checked,
+        external: optExternal.checked,
+        images: optImages.checked,
+        anchors: true
+      };
+      const maxLinks = Math.min(300, Math.max(5, parseInt(maxLinksInput.value) || 120));
+
+      let html;
+      try {
+        html = await fetchPageHTML(baseUrl);
+        if (!html || html.length < 100) throw new Error('Empty or blocked');
+      } catch (e) {
+        showAlert(`Cannot fetch page: ${e.message}. The site may block external access.`);
+        finalizeScan();
+        return;
+      }
+      if (isStopped) { finalizeScan(); return; }
+
+      let links = extractLinks(html, baseUrl, options);
+      if (links.length === 0) {
+        showAlert('No links found with current settings.');
+        finalizeScan();
+        return;
+      }
+      links = [...new Set(links)].slice(0, maxLinks);
+      
+      // Initialize results
+      allResults = links.map(url => ({ url, code: null, category: 'pending' }));
+      statsGrid.classList.add('visible');
+      resultsCard.style.display = 'block';
       updateStats();
-      renderTable(currentFilter);
+      renderTable('all');
+
+      const CONCURRENCY = 5;
+      let completed = 0;
+      
+      async function processOne(index) {
+        if (isStopped) return;
+        const url = links[index];
+        updateProgress(completed, links.length);
+        const res = await checkLink(url);
+        allResults[index] = { url, code: res.code, category: res.category };
+        completed++;
+        updateProgress(completed, links.length);
+        updateStats();
+        renderTable(currentFilter);
+      }
+
+      for (let i = 0; i < links.length; i += CONCURRENCY) {
+        if (isStopped) break;
+        const batch = [];
+        for (let j = i; j < Math.min(i + CONCURRENCY, links.length); j++) {
+          batch.push(processOne(j));
+        }
+        await Promise.all(batch);
+      }
+      finalizeScan();
     }
 
-    for (let i = 0; i < links.length; i += CONCURRENCY) {
-      if (isStopped) break;
-      const batch = [];
-      for (let j = i; j < Math.min(i + CONCURRENCY, links.length); j++) batch.push(checkOne(j));
-      await Promise.all(batch);
+    function finalizeScan() {
+      scanBtn.disabled = false;
+      stopBtn.classList.remove('visible');
+      progressCard.classList.remove('visible');
+      if (allResults.length) {
+        statsGrid.classList.add('visible');
+        resultsCard.style.display = 'block';
+      }
+      isStopped = false;
     }
-    finalizeScan();
-  }
 
-  function finalizeScan() {
-    $('scanBtn').disabled = false;
-    $('stopBtn').classList.remove('visible');
-    $('progressSection').classList.remove('visible');
-    $('progressStatus').innerText = 'Scan completed.';
-    if (allResults.length) {
-      $('statsGrid').classList.add('visible');
-      $('resultsCard').classList.add('visible');
+    function stopScan() {
+      isStopped = true;
+      finalizeScan();
     }
-    isStopped = false;
-  }
 
-  function stopScan() { isStopped = true; finalizeScan(); }
+    // Export CSV
+    function exportCSV() {
+      if (!allResults.length) return;
+      const rows = [['#','URL','Status','Result','Type']];
+      allResults.forEach((r, i) => {
+        let type = '—';
+        try { type = new URL(r.url).hostname === new URL(baseUrl).hostname ? 'Internal' : 'External'; } catch {}
+        rows.push([i+1, r.url, r.code || 0, r.category, type]);
+      });
+      const csv = rows.map(row => row.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `broken_links_${Date.now()}.csv`;
+      a.click();
+    }
 
-  function exportCSV() {
-    if (!allResults.length) return;
-    const rows = [['#','URL','Status Code','Result','Type']];
-    const base = $('urlInput').value;
-    allResults.forEach((r, i) => {
-      let type = '—';
-      try { type = new URL(r.url).hostname === new URL(base).hostname ? 'Internal' : 'External'; } catch {}
-      rows.push([i+1, r.url, r.code || 0, r.category, type]);
-    });
-    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
-    a.download = `link_audit_${Date.now()}.csv`;
-    a.click();
-  }
-  function exportJSON() {
-    if (!allResults.length) return;
-    const data = allResults.map((r, i) => ({ index: i+1, url: r.url, status: r.code, result: r.category }));
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
-    a.download = `link_audit_${Date.now()}.json`;
-    a.click();
-  }
+    function exportJSON() {
+      if (!allResults.length) return;
+      const data = allResults.map((r,i) => ({ index:i+1, url:r.url, status:r.code, result:r.category }));
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `link_audit_${Date.now()}.json`;
+      a.click();
+    }
 
-  $('scanBtn').onclick = startScan;
-  $('stopBtn').onclick = stopScan;
-  $('exportCsvBtn').onclick = exportCSV;
-  $('exportJsonBtn').onclick = exportJSON;
-  document.querySelectorAll('.filter-tab').forEach(btn => {
-    btn.onclick = () => applyFilter(btn.getAttribute('data-filter'), btn);
-  });
-  $('urlInput').addEventListener('keypress', e => { if (e.key === 'Enter') startScan(); });
+    // Event listeners
+    scanBtn.addEventListener('click', startScan);
+    stopBtn.addEventListener('click', stopScan);
+    $('exportCsv').addEventListener('click', exportCSV);
+    $('exportJson').addEventListener('click', exportJSON);
+    urlInput.addEventListener('keypress', e => { if (e.key === 'Enter') startScan(); });
+
+    // initial hide results
+    resultsCard.style.display = 'none';
+  })();
 </script>
 </body>
 </html>
