@@ -3,16 +3,14 @@
 <head>
 <!-- ================= BASIC ================= -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
 <!-- ================= TITLE ================= -->
 <title>Keyword Density Checker – Analyze SEO Keywords Online | ToolMatrix</title>
 
 <!-- ================= SEO META ================= -->
 <meta name="description" content="Check keyword density of any text or webpage instantly. Analyze keyword frequency, exclude stop words and optimize your content for better SEO rankings. Free keyword density checker tool.">
-
 <meta name="keywords" content="keyword density checker, keyword analysis tool, seo keyword checker, keyword frequency, content optimization tool, seo tools free">
-
 <meta name="robots" content="index, follow">
 <meta name="author" content="ToolMatrix">
 
@@ -391,17 +389,33 @@ body{
 .toast-err{background:rgba(220,38,38,.92)}
 .toast-info{background:rgba(37,99,235,.92)}
 
-/* Ad */
-.ad-container{
-  text-align:center;
-  margin:16px auto;
-  background:#FEF9E6;
-  border-radius:24px;
-  padding:12px;
-  border:1px solid #FFE0A3;
-  max-width:800px;
-  width:100%;
+/* Ad containers - conditional */
+.ad-desktop {
+  display: none;
+  text-align: center;
+  margin: 16px auto;
+  max-width: 800px;
+  background: #FEF9E6;
+  border-radius: 24px;
+  padding: 12px;
+  border: 1px solid #FFE0A3;
 }
+.ad-mobile {
+  display: none;
+  text-align: center;
+  margin: 16px auto;
+  max-width: 340px;
+  background: transparent;
+  border-radius: 16px;
+  padding: 8px;
+}
+@media (min-width: 769px) {
+  .ad-desktop { display: block; }
+}
+@media (max-width: 768px) {
+  .ad-mobile { display: block; }
+}
+
 /* Footer */
 .footer{
   background:#d0e8d4;
@@ -495,7 +509,9 @@ body{
   </div>
 </div>
 
-<div class="ad-container" id="bannerAdContainer"></div>
+<!-- Conditional Banner Ads -->
+<div class="ad-desktop" id="desktopAdContainer"></div>
+<div class="ad-mobile" id="mobileAdContainer"></div>
 
 <footer class="footer">
   <p>Made with <span class="heart">❤️</span> by <a href="https://toolmatrix.space" target="_blank">ToolMatrix</a> — Free Keyword Density Tool & SEO Toolkit</p>
@@ -503,17 +519,46 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<!-- Ads scripts -->
+<!-- Ad Scripts (conditional banners + download ad) -->
 <script>
-  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  window.atOptions = { 'key' : '4afdbe032cc77af781754d77ab0211fb', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
-  const omgScript = document.createElement('script');
-  omgScript.src = 'https://omg10.com/4/10842916';
-  omgScript.async = true;
-  document.body.appendChild(omgScript);
+  (function() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) {
+      const desktopDiv = document.getElementById('desktopAdContainer');
+      if (desktopDiv) {
+        window.atOptions = {
+          key: '4afdbe032cc77af781754d77ab0211fb',
+          format: 'iframe',
+          height: 90,
+          width: 728,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+        desktopDiv.appendChild(script);
+      }
+    } else {
+      const mobileDiv = document.getElementById('mobileAdContainer');
+      if (mobileDiv) {
+        window.atOptions = {
+          key: 'f2bd4040afafe750e7a3e138c826e72c',
+          format: 'iframe',
+          height: 250,
+          width: 300,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+        mobileDiv.appendChild(script);
+      }
+    }
+
+    // Download ad (OMG)
+    const omgScript = document.createElement('script');
+    omgScript.src = 'https://omg10.com/4/10842916';
+    omgScript.async = true;
+    document.body.appendChild(omgScript);
+  })();
 </script>
 
 <script>
@@ -551,7 +596,6 @@ body{
   });
 
   // ================= KEYWORD DENSITY ENGINE =================
-  // Common stop words list (English)
   const STOP_WORDS = new Set([
     'a','an','and','the','of','to','in','for','on','with','by','is','are','was','were','be','been',
     'being','have','has','had','having','do','does','did','doing','but','or','so','for','yet','at',
@@ -564,7 +608,6 @@ body{
   ]);
 
   function cleanText(text, caseSensitive, excludeStopwords) {
-    // Normalize: remove punctuation, extra spaces, lowercase if not case sensitive
     let cleaned = text.replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ');
     if (!caseSensitive) cleaned = cleaned.toLowerCase();
     let words = cleaned.split(' ').filter(w => w.length > 0);
@@ -594,7 +637,6 @@ body{
     const caseSensitive = document.getElementById('caseSensitive').checked;
     const ngramVal = parseInt(document.getElementById('ngram').value) || 1;
 
-    // Clean words
     let words = cleanText(text, caseSensitive, excludeStopwords);
     if (words.length === 0) {
       toast('No meaningful words after filtering stop words.', 'err');
@@ -607,18 +649,15 @@ body{
       return;
     }
 
-    // Count frequencies
     const freq = new Map();
     for (const ng of ngrams) {
       freq.set(ng, (freq.get(ng) || 0) + 1);
     }
 
-    // Convert to array and sort by frequency desc
     let items = Array.from(freq.entries()).map(([word, count]) => ({ word, count }));
     items.sort((a, b) => b.count - a.count);
     const totalNgrams = ngrams.length;
 
-    // Update stats
     document.getElementById('statWords').textContent = words.length;
     document.getElementById('statUnique').textContent = items.length;
     const topDensity = items.length ? ((items[0].count / totalNgrams) * 100).toFixed(1) : 0;
@@ -626,13 +665,12 @@ body{
     document.getElementById('statChars').textContent = text.length;
     document.getElementById('statsRow').style.display = 'grid';
 
-    // Render table
     const tbody = document.getElementById('tableBody');
     tbody.innerHTML = '';
     items.slice(0, 100).forEach((item, idx) => {
       const density = (item.count / totalNgrams) * 100;
       const percent = density.toFixed(1);
-      const barWidth = Math.min(100, density * 3); // scale for visual
+      const barWidth = Math.min(100, density * 3);
       const row = tbody.insertRow();
       row.innerHTML = `
         <td style="font-weight:600;color:var(--g600)">${idx+1}</td>
@@ -666,7 +704,6 @@ body{
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       let html = await res.text();
-      // Extract text from HTML body
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const bodyText = doc.body ? doc.body.innerText : html;
@@ -701,7 +738,6 @@ body{
     t._toast = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  // Initial sample (optional)
   window.analyze = analyze;
   window.fetchFromUrl = fetchFromUrl;
   window.loadSample = loadSample;
