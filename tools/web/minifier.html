@@ -1,1196 +1,446 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HTML Minifier Tool</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
-  --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
-  --g800:#166534;--g900:#14532d;
-  --card:#fff;--text:#14532d;
-  --border:#bbf7d0;--border2:#dcfce7;
-  --red:#dc2626;--orange:#ea580c;--blue:#2563eb;--purple:#9333ea;
-  --cyan:#0891b2;--yellow:#ca8a04;--pink:#db2777;
-  --mono:'Cascadia Code','Fira Code','Consolas','Monaco',monospace;
-}
-html,body{height:100%;width:100%;overflow:hidden}
-body{
-  min-height:100vh;
-  background:linear-gradient(145deg,var(--g50) 0%,var(--g100) 40%,var(--g200) 100%);
-  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-  color:var(--text);display:flex;flex-direction:column;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>HTML/CSS/JS Minifier – Online Code Compressor | ToolMatrix</title>
+  <meta name="description" content="Minify HTML, CSS, and JavaScript online. Remove comments, whitespace, and optimize your code for faster loading. Free, secure, and no signup required.">
+  <meta name="keywords" content="html minifier, css minifier, js minifier, code minifier, minify online, javascript compressor, css compressor">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="ToolMatrix">
+  <link rel="canonical" href="https://toolmatrix.space/tools/web/minifier">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HTML/CSS/JS Minifier – Online Code Compressor">
+  <meta property="og:description" content="Minify HTML, CSS, and JavaScript instantly. Free online tool to compress and optimize your code.">
+  <meta property="og:url" content="https://toolmatrix.space/tools/web/minifier">
+  <meta property="og:image" content="https://toolmatrix.space/assets/image/minifier.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Code Minifier – Free Online Tool">
+  <meta name="twitter:description" content="Compress HTML, CSS, and JS with our free minifier.">
+  <meta name="twitter:image" content="https://toolmatrix.space/assets/image/minifier.png">
+  <meta name="theme-color" content="#166534">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g300:#86efac;
+      --g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;
+      --g800:#166534;--g900:#14532d;
+      --w:#fff;--bd:#bbf7d0;--bd2:#86efac;--bg:#f0fdf4;
+      --txt:#14532d;--txtl:#166534;
+      --gray100:#f1f5f9;--gray200:#e2e8f0;--gray300:#cbd5e1;
+      --gray400:#94a3b8;--gray500:#64748b;--gray600:#475569;
+      --red:#ef4444;--blue:#3b82f6;
+      --sh:0 4px 20px rgba(22,163,74,.10);--shL:0 20px 60px rgba(22,163,74,.15);
+      --tr:.2s;
+    }
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;}
+    /* Header */
+    nav{background:linear-gradient(90deg,var(--g800),var(--g700),var(--g600));padding:0 22px;height:62px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:300;box-shadow:0 3px 18px rgba(22,163,74,.22);}
+    .nav-ic{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;}
+    .nav-nm{font-size:1rem;font-weight:800;color:#fff;}.nav-nm span{color:#bbf7d0;}
+    .nav-right{margin-left:auto;display:flex;gap:7px;align-items:center;}
+    .tools-dropdown{position:relative;display:inline-block;}
+    .nine-dots-btn{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;padding:5px 8px;border-radius:8px;transition:var(--tr);}
+    .nine-dots-btn:hover{background:rgba(255,255,255,0.15);}
+    .tools-panel{
+      display:none; position:absolute; top:100%; right:0; margin-top:8px;
+      background:var(--w); border-radius:16px; min-width:260px; padding:12px;
+      box-shadow:var(--shL); border:1.5px solid var(--bd); z-index:500;
+      max-height:400px; overflow-y:auto;
+    }
+    .tools-panel.show{display:block;}
+    .tool-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:var(--txt);text-decoration:none;font-size:0.8rem;font-weight:600;transition:var(--tr);}
+    .tool-link:hover{background:var(--g100);color:var(--g700);}
+    .tool-link i{width:18px;color:var(--g500);}
 
-/* ══ HEADER ══ */
-.hdr{
-  background:linear-gradient(135deg,var(--g500),var(--g700));
-  padding:16px 22px 13px;text-align:center;
-  position:relative;overflow:hidden;flex-shrink:0;
-}
-.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
-.hdr .ic{font-size:32px;animation:bob 2.5s ease infinite;vertical-align:middle;margin-right:8px}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.hdr h1{color:#fff;font-size:21px;font-weight:800;display:inline;vertical-align:middle}
-.hdr p{color:var(--g200);font-size:12px;margin-top:3px}
+    /* Main */
+    .container{max-width:1400px;margin:0 auto;padding:24px 20px;flex:1;width:100%;}
+    .hero{text-align:center;margin-bottom:28px;}
+    .hero h1{font-size:2.2rem;font-weight:900;color:var(--g900);}
+    .hero h1 em{color:var(--g600);font-style:normal;}
+    .hero p{color:var(--gray500);font-size:0.95rem;max-width:600px;margin:8px auto 0;}
 
-/* ══ TOOLBAR ══ */
-.toolbar{
-  background:var(--card);border-bottom:1.5px solid var(--border2);
-  padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
-  flex-shrink:0;
-}
-.t-grp{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.t-chk{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none}
-.t-chk input{width:15px;height:15px;accent-color:var(--g600);cursor:pointer}
-.t-chk span{font-size:11px;font-weight:700;color:var(--g800)}
-.spacer{flex:1}
+    /* Main card */
+    .main-card{background:var(--w);border-radius:24px;border:1.5px solid var(--bd);box-shadow:var(--shL);overflow:hidden;margin-bottom:24px;}
+    .card-hd{padding:16px 24px;background:var(--g50);border-bottom:1.5px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .lang-tabs{display:flex;gap:6px;}
+    .lang-btn{padding:8px 18px;border:1.5px solid var(--bd2);background:var(--w);border-radius:30px;font-family:inherit;font-size:0.8rem;font-weight:700;color:var(--txtl);cursor:pointer;transition:var(--tr);}
+    .lang-btn.active{background:var(--g500);color:#fff;border-color:var(--g500);}
+    .card-body{padding:24px;}
+    .textarea-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.75rem;font-weight:700;color:var(--g700);}
+    textarea{width:100%;padding:18px;border:2px solid var(--bd);border-radius:16px;font-family:'Courier New',monospace;font-size:14px;line-height:1.6;background:var(--w);resize:vertical;min-height:280px;outline:none;transition:border-color var(--tr);}
+    textarea:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.15);}
+    .options-bar{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0;align-items:center;}
+    .check-label{display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;color:var(--txtl);cursor:pointer;}
+    .check-label input{accent-color:var(--g500);width:16px;height:16px;}
+    .action-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+    .btn{padding:12px 28px;border:none;border-radius:30px;font-family:inherit;font-weight:700;font-size:0.9rem;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .btn-primary{background:linear-gradient(135deg,var(--g500),var(--g800));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(22,163,74,.4);}
+    .btn-outline{background:var(--w);border:1.5px solid var(--bd2);color:var(--txtl);}
+    .btn-outline:hover{background:var(--g50);border-color:var(--g500);}
+    .btn-success{background:var(--g500);color:#fff;}
+    .btn-success:hover{background:var(--g600);}
+    .stats{display:flex;gap:24px;margin-top:12px;font-size:0.75rem;color:var(--gray500);}
+    .stats span i{margin-right:4px;color:var(--g500);}
 
-/* Buttons */
-.btn{
-  padding:7px 14px;border:none;border-radius:8px;
-  font-size:11.5px;font-weight:700;cursor:pointer;
-  display:inline-flex;align-items:center;gap:4px;
-  transition:all .25s;white-space:nowrap;
-}
-.btn:active{transform:scale(.96)!important}
-.btn-go{background:linear-gradient(135deg,var(--g500),var(--g700));color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3)}
-.btn-go:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.4)}
-.btn-copy{background:#ecfdf5;color:var(--g700);border:1.5px solid var(--g300)}
-.btn-copy:hover{background:#d1fae5;transform:translateY(-1px)}
-.btn-clear{background:#fef2f2;color:var(--red);border:1.5px solid #fecaca}
-.btn-clear:hover{background:#fee2e2;transform:translateY(-1px)}
-.btn-paste{background:var(--g50);color:var(--g700);border:1.5px solid var(--border)}
-.btn-paste:hover{background:var(--g100);transform:translateY(-1px)}
-.btn-sample{background:#fffbeb;color:var(--yellow);border:1.5px solid #fde68a}
-.btn-sample:hover{background:#fef9c3;transform:translateY(-1px)}
-.btn-dl{background:var(--g50);color:var(--g700);border:1.5px solid var(--g300)}
-.btn-dl:hover{background:var(--g100);transform:translateY(-1px)}
-.btn-beautify{background:#faf5ff;color:var(--purple);border:1.5px solid #e9d5ff}
-.btn-beautify:hover{background:#f3e8ff;transform:translateY(-1px)}
-.btn-file{background:#f0f9ff;color:var(--blue);border:1.5px solid #bfdbfe;position:relative;overflow:hidden}
-.btn-file:hover{background:#dbeafe;transform:translateY(-1px)}
-.btn-file input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.btn-preview{background:#fff7ed;color:var(--orange);border:1.5px solid #fed7aa}
-.btn-preview:hover{background:#ffedd5;transform:translateY(-1px)}
+    /* Ad containers */
+    .ad-desktop{display:none!important}.ad-mobile{display:none!important}
+    @media(min-width:769px){.ad-desktop{display:block!important}}
+    @media(max-width:768px){.ad-mobile{display:block!important}}
+    .ad-wrap{width:100%;display:flex;flex-direction:column;align-items:center;background:var(--w);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:8px 0;margin:16px 0;}
+    .ad-lbl{font-size:.5rem;color:var(--bd2);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
 
-/* ══ OPTIONS BAR ══ */
-.opts-bar{
-  background:var(--card);border-bottom:1.5px solid var(--border2);
-  padding:0 16px;max-height:0;opacity:0;overflow:hidden;
-  transition:all .3s ease;flex-shrink:0;
-}
-.opts-bar.open{max-height:120px;opacity:1;padding:10px 16px}
-.opts-grid{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
-.opts-title{font-size:11.5px;font-weight:800;color:var(--g600);width:100%;margin-bottom:2px}
+    /* Footer */
+    footer{text-align:center;padding:14px 20px;border-top:1.5px solid var(--bd2);background:var(--g100);margin-top:auto;}
+    footer p{color:var(--g700);font-size:.78rem;font-weight:600;}
+    footer a{color:var(--g700);font-weight:800;text-decoration:none;}
+    .fheart{display:inline-block;color:var(--g500);animation:hbeat 1.1s ease-in-out infinite;}
+    @keyframes hbeat{0%,100%{transform:scale(1)}30%{transform:scale(1.55)}60%{transform:scale(1.1)}}
 
-/* ══ SAVINGS BANNER ══ */
-.savings{
-  display:none;padding:10px 16px;
-  background:var(--g50);border-bottom:1.5px solid var(--border2);
-  flex-shrink:0;animation:slideIn .3s ease;
-}
-.savings.show{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.sv-item{
-  padding:6px 14px;border-radius:10px;font-size:11.5px;font-weight:700;
-  display:flex;align-items:center;gap:5px;
-}
-.sv-orig{background:var(--g100);color:var(--g800)}
-.sv-min{background:#ede9fe;color:var(--purple)}
-.sv-saved{background:#fce7f3;color:var(--pink)}
-.sv-pct{
-  background:linear-gradient(135deg,var(--g500),var(--g700));
-  color:#fff;font-weight:800;font-size:13px;padding:6px 16px;border-radius:10px;
-  box-shadow:0 3px 10px rgba(22,163,74,.2);
-}
-/* Savings bar animation */
-.sv-bar-wrap{
-  flex:1 1 200px;height:14px;background:var(--g100);border-radius:10px;overflow:hidden;
-  min-width:120px;position:relative;
-}
-.sv-bar{
-  height:100%;border-radius:10px;
-  background:linear-gradient(90deg,var(--g400),var(--g600));
-  transition:width .8s cubic-bezier(.25,.8,.25,1);
-  position:relative;
-}
-.sv-bar::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-  animation:shimmer 2s infinite;
-}
-@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+    /* Toast */
+    .toast-wrap{position:fixed;top:74px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px;}
+    .toast{padding:11px 18px;background:var(--w);border:1.5px solid var(--bd2);border-radius:14px;box-shadow:var(--shL);display:flex;align-items:center;gap:9px;font-size:.76rem;font-weight:600;color:var(--txt);animation:tIn .3s ease;min-width:260px;}
+    .toast.success{border-left:4px solid var(--g500);}
+    .toast.error{border-left:4px solid var(--red);}
+    @keyframes tIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* ══ ERROR BOX ══ */
-.err-box{
-  display:none;padding:10px 14px;
-  background:#fef2f2;border-bottom:1.5px solid #fecaca;
-  font-size:12px;color:var(--red);font-weight:600;
-  flex-shrink:0;animation:shake .4s;
-}
-.err-box.show{display:flex;align-items:center;gap:6px}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
-/* ══ MAIN ══ */
-.main{display:flex;flex-wrap:wrap;flex:1;overflow:hidden;background:var(--card)}
-.panel{flex:1 1 350px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.panel+.panel{border-left:1.5px solid var(--border2)}
-.p-head{
-  padding:8px 14px;background:var(--g50);border-bottom:1.5px solid var(--border2);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.p-head h3{font-size:12.5px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:5px}
-.badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g700);font-weight:700}
-
-/* Input */
-.ta{
-  flex:1;width:100%;padding:14px;border:none;outline:none;
-  font-family:var(--mono);font-size:13px;line-height:1.7;
-  color:var(--text);background:transparent;resize:none;tab-size:2;
-}
-.ta::placeholder{color:var(--g400)}
-.ta:focus{background:rgba(240,253,244,.3)}
-
-/* Output */
-.out-wrap{flex:1;overflow:auto;position:relative;background:#fafffe}
-.out-pre{
-  width:100%;min-height:100%;padding:14px;margin:0;
-  font-family:var(--mono);font-size:13px;line-height:1.7;
-  white-space:pre-wrap;word-break:break-all;
-  overflow:auto;background:transparent;color:var(--text);border:none;
-}
-
-/* Syntax Highlight */
-.hl-tag{color:var(--g700);font-weight:700}
-.hl-attr{color:var(--orange);font-weight:600}
-.hl-val{color:var(--blue)}
-.hl-str{color:var(--g600)}
-.hl-com{color:#94a3b8;font-style:italic}
-.hl-dtd{color:var(--purple);font-weight:700}
-.hl-ent{color:var(--pink);font-weight:600}
-.hl-css{color:var(--cyan)}
-.hl-js{color:var(--yellow)}
-
-/* ══ DIFF VIEW ══ */
-.diff-panel{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden}
-.diff-panel.show{display:flex}
-.diff-wrap{flex:1;overflow:auto;padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.7}
-.diff-line{padding:1px 6px;border-radius:3px;margin:1px 0}
-.diff-rem{background:#fef2f2;color:var(--red);text-decoration:line-through}
-.diff-add{background:#f0fdf4;color:var(--g700)}
-.diff-same{color:var(--g400)}
-
-/* ══ PREVIEW MODAL ══ */
-.modal-ov{
-  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(4px);
-}
-.modal-ov.open{display:flex}
-.modal{
-  background:var(--card);border-radius:16px;width:100%;max-width:800px;
-  max-height:85vh;display:flex;flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;
-  animation:modalIn .3s ease;
-}
-@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-.modal-hdr{
-  padding:14px 20px;background:var(--g50);border-bottom:1.5px solid var(--border2);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.modal-hdr h3{font-size:15px;font-weight:800;color:var(--g800);display:flex;align-items:center;gap:6px}
-.modal-close{
-  width:32px;height:32px;border-radius:8px;border:none;
-  background:var(--g100);color:var(--g700);font-size:18px;
-  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;
-}
-.modal-close:hover{background:var(--red);color:#fff}
-.modal-body{flex:1;overflow:auto}
-.modal-body iframe{width:100%;height:100%;min-height:400px;border:none}
-
-/* ══ CENTER ARROW ══ */
-.arrow-col{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:0 4px;flex-shrink:0;gap:8px;background:var(--g50);
-  border-left:1.5px solid var(--border2);border-right:1.5px solid var(--border2);
-}
-.arrow-btn{
-  width:38px;height:38px;border-radius:50%;border:2px solid var(--g300);
-  background:var(--card);color:var(--g600);font-size:16px;font-weight:800;
-  cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;
-}
-.arrow-btn:hover{background:var(--g500);color:#fff;border-color:var(--g500);transform:scale(1.1)}
-.arrow-lbl{font-size:8.5px;font-weight:800;color:var(--g500);text-transform:uppercase;letter-spacing:1px}
-
-/* ══ TABS for output ══ */
-.out-tabs{display:flex;border-bottom:1.5px solid var(--border2);flex-shrink:0}
-.out-tab{
-  padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;
-  color:var(--g600);border-bottom:2.5px solid transparent;
-  background:transparent;border-top:none;border-left:none;border-right:none;transition:.2s;
-}
-.out-tab:hover{color:var(--g800);background:var(--g50)}
-.out-tab.active{color:var(--g700);border-bottom-color:var(--g500);background:var(--g50)}
-.out-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
-.out-panel.active{display:flex}
-
-/* ══ STATUSBAR ══ */
-.statusbar{
-  background:var(--card);padding:8px 16px;
-  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
-  border-top:1.5px solid var(--border2);flex-shrink:0;
-}
-.stat{font-size:10.5px;color:var(--g700);font-weight:600;display:flex;align-items:center;gap:4px}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.dot-g{background:var(--g500)}.dot-b{background:var(--blue)}.dot-r{background:var(--red)}.dot-p{background:var(--purple)}.dot-o{background:var(--orange)}
-.stat-sep{width:1px;height:12px;background:var(--border)}
-.sc-hint{font-size:10px;color:var(--g400);font-weight:500;margin-left:auto}
-.sc-hint kbd{background:var(--g100);padding:1px 5px;border-radius:4px;font-size:9.5px;border:1px solid var(--border);color:var(--g700);font-family:var(--mono)}
-
-/* ══ TOAST ══ */
-.toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  padding:10px 22px;border-radius:12px;font-size:13px;
-  font-weight:700;color:#fff;z-index:200;
-  pointer-events:none;transition:all .4s;opacity:0;
-  backdrop-filter:blur(8px);
-}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.toast-ok{background:rgba(22,163,74,.92);box-shadow:0 6px 24px rgba(22,163,74,.3)}
-.toast-err{background:rgba(220,38,38,.92);box-shadow:0 6px 24px rgba(220,38,38,.3)}
-.toast-info{background:rgba(37,99,235,.92);box-shadow:0 6px 24px rgba(37,99,235,.3)}
-
-/* ══ SCROLLBAR ══ */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--g50)}
-::-webkit-scrollbar-thumb{background:var(--g300);border-radius:10px}
-::-webkit-scrollbar-thumb:hover{background:var(--g400)}
-
-/* ══ RESPONSIVE ══ */
-@media(max-width:768px){
-  html,body{overflow:auto}
-  .hdr{padding:13px 12px 10px}
-  .hdr h1{font-size:18px}.hdr .ic{font-size:26px}
-  .toolbar{padding:8px 10px;gap:6px}
-  .main{flex-direction:column;overflow:auto}
-  .panel+.panel{border-left:none;border-top:1.5px solid var(--border2)}
-  .panel{flex:1 1 auto;min-height:180px}
-  .arrow-col{flex-direction:row;padding:6px 0;
-    border-left:none;border-right:none;
-    border-top:1.5px solid var(--border2);border-bottom:1.5px solid var(--border2);
-  }
-  .statusbar{padding:7px 10px}
-  .btn{padding:6px 10px;font-size:10.5px}
-  .sc-hint{display:none}
-}
-@media(max-width:480px){
-  .hdr{padding:10px 8px 8px}
-  .hdr h1{font-size:15.5px}.hdr .ic{font-size:22px}
-  .hdr p{font-size:10.5px}
-  .toolbar{padding:7px 7px;gap:4px}
-  .t-chk span{font-size:10px}
-  .p-head{padding:7px 10px}
-  .p-head h3{font-size:11.5px}
-  .ta,.out-pre{padding:10px;font-size:11.5px}
-  .statusbar{padding:6px 7px;gap:6px}
-  .stat{font-size:9.5px}
-  .btn{padding:5px 8px;font-size:10px;gap:3px}
-  .arrow-btn{width:32px;height:32px;font-size:14px}
-  .sv-item{padding:4px 10px;font-size:10.5px}
-}
-</style>
+    @media(max-width:600px){.container{padding:16px 12px;}.hero h1{font-size:1.8rem;}}
+  </style>
 </head>
 <body>
-
-<!-- ═══ HEADER ═══ -->
-<div class="hdr">
-  <div><span class="ic">✂️</span><h1>HTML Minifier & Beautifier</h1></div>
-  <p>Minify, Beautify, Compare & Preview your HTML instantly</p>
-</div>
-
-<!-- ═══ TOOLBAR ═══ -->
-<div class="toolbar">
-  <button class="btn btn-go" onclick="minify()">⚡ Minify</button>
-  <button class="btn btn-beautify" onclick="beautify()">🎨 Beautify</button>
-  <button class="btn" onclick="toggleOpts()" style="background:var(--g100);color:var(--g700);border:1.5px solid var(--g300)">⚙️ Options</button>
-  <button class="btn btn-file">📁 Upload<input type="file" accept=".html,.htm,.txt" onchange="loadFile(event)"></button>
-  <button class="btn btn-sample" onclick="loadSample()">📄 Sample</button>
-  <button class="btn btn-paste" onclick="pasteIn()">📋 Paste</button>
-  <button class="btn btn-preview" onclick="openPreview()">👁️ Preview</button>
-  <div class="spacer"></div>
-  <button class="btn btn-copy" onclick="copyOut()">📑 Copy</button>
-  <button class="btn btn-dl" onclick="downloadOut()">⬇️ Save</button>
-  <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear</button>
-</div>
-
-<!-- ═══ OPTIONS ═══ -->
-<div class="opts-bar" id="optsBar">
-  <div class="opts-grid">
-    <div class="opts-title">⚙️ Minification Options</div>
-    <label class="t-chk"><input type="checkbox" id="optComments" checked><span>🗑️ Remove Comments</span></label>
-    <label class="t-chk"><input type="checkbox" id="optWhitespace" checked><span>📏 Collapse Whitespace</span></label>
-    <label class="t-chk"><input type="checkbox" id="optNewlines" checked><span>↩️ Remove Newlines</span></label>
-    <label class="t-chk"><input type="checkbox" id="optQuotes" checked><span>🔤 Remove Optional Quotes</span></label>
-    <label class="t-chk"><input type="checkbox" id="optBoolAttrs" checked><span>✅ Shorten Bool Attrs</span></label>
-    <label class="t-chk"><input type="checkbox" id="optEmptyAttrs" checked><span>🧹 Remove Empty Attrs</span></label>
-    <label class="t-chk"><input type="checkbox" id="optCSS" checked><span>🎨 Minify Inline CSS</span></label>
-    <label class="t-chk"><input type="checkbox" id="optJS" checked><span>⚡ Minify Inline JS</span></label>
-    <label class="t-chk"><input type="checkbox" id="optType" checked><span>🏷️ Remove type Attrs</span></label>
-    <label class="t-chk"><input type="checkbox" id="optProtocol"><span>🔗 Remove Protocols</span></label>
-    <label class="t-chk"><input type="checkbox" id="optDoctype" checked><span>📄 Shorten DOCTYPE</span></label>
-    <label class="t-chk"><input type="checkbox" id="optMeta"><span>🧬 Remove Meta Info</span></label>
-  </div>
-</div>
-
-<!-- ═══ SAVINGS BANNER ═══ -->
-<div class="savings" id="savings">
-  <span class="sv-item sv-orig">📝 Original: <span id="svOrig">0 B</span></span>
-  <span class="sv-item sv-min">✂️ Minified: <span id="svMin">0 B</span></span>
-  <span class="sv-item sv-saved">💾 Saved: <span id="svSaved">0 B</span></span>
-  <span class="sv-item sv-pct" id="svPct">0%</span>
-  <div class="sv-bar-wrap"><div class="sv-bar" id="svBar" style="width:0%"></div></div>
-</div>
-
-<!-- ═══ ERROR ═══ -->
-<div class="err-box" id="errBox"><span id="errMsg"></span></div>
-
-<!-- ═══ MAIN ═══ -->
-<div class="main">
-  <!-- INPUT -->
-  <div class="panel">
-    <div class="p-head">
-      <h3>📝 Input HTML</h3>
-      <span class="badge" id="inLen">0 chars</span>
+<nav>
+  <div class="nav-ic"><i class="fas fa-code"></i></div>
+  <span class="nav-nm">Code<span>Minifier</span></span>
+  <div class="nav-right">
+    <div class="tools-dropdown" id="toolsDropdown">
+      <button class="nine-dots-btn" id="nineDotsBtn" aria-label="Tools menu"><i class="fas fa-th"></i></button>
+      <div class="tools-panel" id="toolsPanel"></div>
     </div>
-    <textarea class="ta" id="inputArea" spellcheck="false" placeholder='Paste or type your HTML here…&#10;&#10;💡 Click "📄 Sample" to load example&#10;📁 Or drag & drop an HTML file&#10;⌨️ Press Ctrl + Enter to Minify'></textarea>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <h1>HTML, CSS & JS <em>Minifier</em></h1>
+    <p>Compress and optimize your code by removing comments, whitespace, and unnecessary characters. Improve load times instantly.</p>
   </div>
 
-  <!-- CENTER ARROW -->
-  <div class="arrow-col">
-    <div class="arrow-lbl">MINIFY</div>
-    <button class="arrow-btn" onclick="minify()" title="Minify">✂️</button>
-    <button class="arrow-btn" onclick="beautify()" title="Beautify" style="font-size:14px">🎨</button>
-  </div>
-
-  <!-- OUTPUT -->
-  <div class="panel">
-    <div class="p-head">
-      <h3>✨ Output</h3>
-      <span class="badge" id="outLen">0 chars</span>
-    </div>
-    <!-- Output Tabs -->
-    <div class="out-tabs">
-      <button class="out-tab active" onclick="switchOutTab(this,'minified')">✂️ Minified</button>
-      <button class="out-tab" onclick="switchOutTab(this,'highlighted')">🎨 Highlighted</button>
-      <button class="out-tab" onclick="switchOutTab(this,'diff')">🔍 Diff</button>
-    </div>
-    <!-- Minified -->
-    <div class="out-panel active" id="panelMinified">
-      <div class="out-wrap">
-        <pre class="out-pre" id="outRaw"><span style="color:var(--g400)">Minified HTML will appear here…</span></pre>
+  <div class="main-card">
+    <div class="card-hd">
+      <div class="lang-tabs">
+        <button class="lang-btn active" data-lang="html" onclick="setLanguage('html')"><i class="fab fa-html5"></i> HTML</button>
+        <button class="lang-btn" data-lang="css" onclick="setLanguage('css')"><i class="fab fa-css3-alt"></i> CSS</button>
+        <button class="lang-btn" data-lang="js" onclick="setLanguage('js')"><i class="fab fa-js"></i> JavaScript</button>
+      </div>
+      <div>
+        <button class="btn btn-outline" onclick="loadSample()"><i class="fas fa-file-code"></i> Sample</button>
       </div>
     </div>
-    <!-- Highlighted -->
-    <div class="out-panel" id="panelHighlighted">
-      <div class="out-wrap">
-        <pre class="out-pre" id="outHL"></pre>
+    <div class="card-body">
+      <div class="textarea-label"><span><i class="fas fa-arrow-right"></i> Input Code</span> <span id="inputStats">0 chars</span></div>
+      <textarea id="inputCode" placeholder="Paste your HTML, CSS, or JavaScript here..."></textarea>
+      
+      <div class="options-bar">
+        <label class="check-label"><input type="checkbox" id="removeComments" checked> Remove Comments</label>
+        <label class="check-label"><input type="checkbox" id="removeWhitespace" checked> Remove Whitespace</label>
+        <label class="check-label"><input type="checkbox" id="aggressive" title="More aggressive minification (may break complex code)"> Aggressive</label>
       </div>
+
+      <div class="action-btns">
+        <button class="btn btn-primary" onclick="minifyCode()"><i class="fas fa-compress-alt"></i> Minify</button>
+        <button class="btn btn-outline" onclick="clearAll()"><i class="fas fa-trash-alt"></i> Clear</button>
+        <button class="btn btn-success" onclick="copyOutput()"><i class="fas fa-copy"></i> Copy</button>
+        <!-- Fixed: Download is now a proper button, not an ad link -->
+        <button class="btn btn-primary" style="background:linear-gradient(135deg,var(--g600),var(--g800));" onclick="downloadOutput()"><i class="fas fa-download"></i> Download</button>
+      </div>
+
+      <div class="textarea-label" style="margin-top:20px;"><span><i class="fas fa-check-circle"></i> Minified Output</span> <span id="outputStats">0 chars</span></div>
+      <textarea id="outputCode" placeholder="Minified code will appear here..." readonly></textarea>
+      <div class="stats"><span><i class="fas fa-weight-hanging"></i> Original: <span id="originalSize">0 B</span></span><span><i class="fas fa-weight-scale"></i> Minified: <span id="minifiedSize">0 B</span></span><span><i class="fas fa-chart-line"></i> Savings: <span id="savings">0%</span></span></div>
     </div>
-    <!-- Diff -->
-    <div class="out-panel" id="panelDiff">
-      <div class="diff-wrap" id="diffWrap"></div>
-    </div>
+  </div>
+
+  <!-- Ad Banners (unchanged) -->
+  <div class="ad-wrap">
+    <span class="ad-lbl">Advertisement</span>
+    <div class="ad-desktop"><script>atOptions={'key':'4afdbe032cc77af781754d77ab0211fb','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js"></script></div>
+    <div class="ad-mobile"><script>atOptions={'key':'f2bd4040afafe750e7a3e138c826e72c','format':'iframe','height':250,'width':300,'params':{}};</script><script src="https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js"></script></div>
   </div>
 </div>
 
-<!-- ═══ STATUSBAR ═══ -->
-<div class="statusbar">
-  <div class="stat" id="sStatus"><span class="dot dot-g"></span> Ready</div>
-  <div class="stat-sep"></div>
-  <div class="stat" id="sInSize"><span class="dot dot-b"></span> In: 0 B</div>
-  <div class="stat-sep"></div>
-  <div class="stat" id="sOutSize"><span class="dot dot-o"></span> Out: 0 B</div>
-  <div class="stat-sep"></div>
-  <div class="stat" id="sTags"><span class="dot dot-p"></span> Tags: 0</div>
-  <div class="stat-sep"></div>
-  <div class="stat" id="sComments"><span class="dot dot-r"></span> Comments: 0</div>
-  <div class="stat-sep"></div>
-  <div class="stat" id="sTime"><span class="dot dot-b"></span> 0 ms</div>
-  <div class="sc-hint">
-    <kbd>Ctrl</kbd>+<kbd>Enter</kbd> Minify &nbsp;|&nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> Copy
-  </div>
-</div>
+<footer>
+  <p>Made with <span class="fheart">💚</span> by <a href="https://toolmatrix.space">ToolMatrix</a> — Free Online Code Minifier Tool</p>
+</footer>
 
-<!-- ═══ PREVIEW MODAL ═══ -->
-<div class="modal-ov" id="previewModal">
-  <div class="modal">
-    <div class="modal-hdr">
-      <h3>👁️ Live Preview</h3>
-      <button class="modal-close" onclick="closePreview()">✕</button>
-    </div>
-    <div class="modal-body">
-      <iframe id="previewFrame" sandbox="allow-scripts"></iframe>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ══════════════════════════════════════
-   ELEMENTS
-   ══════════════════════════════════════ */
-const $in   = document.getElementById('inputArea');
-const $raw  = document.getElementById('outRaw');
-const $hl   = document.getElementById('outHL');
-const $diff = document.getElementById('diffWrap');
+  (function() {
+    // ================= 9-DOT TOOLS PANEL (with click toggle for mobile) =================
+    const toolsList = [
+      { name: 'Favicon Generator', url: 'https://toolmatrix.space/tools/web/favicon-generator.html', icon: 'fa-star' },
+      { name: 'JSON Formatter', url: 'https://toolmatrix.space/tools/web/json-formatter.html', icon: 'fa-brackets-curly' },
+      { name: 'Base64 Encoder', url: 'https://toolmatrix.space/tools/web/base64.html', icon: 'fa-code' },
+      { name: 'Regex Tester', url: 'https://toolmatrix.space/tools/web/regex-tester.html', icon: 'fa-regular fa-regex' },
+      { name: 'SQL Formatter', url: 'https://toolmatrix.space/tools/web/sql-formatter.html', icon: 'fa-database' },
+      { name: 'CSS Formatter', url: 'https://toolmatrix.space/tools/web/css-formatter.html', icon: 'fa-paint-brush' },
+      { name: 'Color Picker', url: 'https://toolmatrix.space/tools/web/color-picker.html', icon: 'fa-palette' },
+      { name: 'URL Encoder/Decoder', url: 'https://toolmatrix.space/tools/web/url-encoder.html', icon: 'fa-link' },
+      { name: 'HTTP Status Checker', url: 'https://toolmatrix.space/tools/web/http-status-checker.html', icon: 'fa-server' }
+    ];
 
-let lastOutput = '';
-let lastAction = '';
+    const panel = document.getElementById('toolsPanel');
+    toolsList.forEach(tool => {
+      const a = document.createElement('a');
+      a.href = tool.url;
+      a.target = '_self';
+      a.className = 'tool-link';
+      a.innerHTML = `<i class="fas ${tool.icon}"></i> ${tool.name}`;
+      panel.appendChild(a);
+    });
 
-$in.addEventListener('input', () => {
-  document.getElementById('inLen').textContent = $in.value.length + ' chars';
-});
+    // Toggle tools panel on button click (mobile friendly)
+    const toolsBtn = document.getElementById('nineDotsBtn');
+    const toolsPanel = document.getElementById('toolsPanel');
+    
+    toolsBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toolsPanel.classList.toggle('show');
+    });
 
-/* ══════════════════════════════════════
-   OPTIONS TOGGLE
-   ══════════════════════════════════════ */
-function toggleOpts() {
-  document.getElementById('optsBar').classList.toggle('open');
-}
-
-/* ══════════════════════════════════════
-   TAB SWITCH
-   ══════════════════════════════════════ */
-function switchOutTab(btn, tab) {
-  document.querySelectorAll('.out-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.out-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-}
-
-/* ══════════════════════════════════════
-   CORE: MINIFY HTML
-   ══════════════════════════════════════ */
-function minify() {
-  const t0 = performance.now();
-  const raw = $in.value;
-  if (!raw.trim()) { toast('⚠️ Enter HTML first!', 'err'); return; }
-
-  hideErr();
-  let html = raw;
-  const opts = getOpts();
-  const stats = { comments: 0, tags: 0 };
-
-  try {
-    /* 1. Remove comments */
-    if (opts.comments) {
-      html = html.replace(/<!--[\s\S]*?-->/g, (m) => { stats.comments++; return ''; });
-      /* Keep conditional comments */
-      raw.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/g, m => { html = html + ''; });
-    }
-
-    /* 2. Minify inline CSS (<style>) */
-    if (opts.css) {
-      html = html.replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/gi, (_, open, css, close) => {
-        return open + minifyCSS(css) + close;
-      });
-    }
-
-    /* 3. Minify inline JS (<script>) */
-    if (opts.js) {
-      html = html.replace(/(<script[^>]*>)([\s\S]*?)(<\/script>)/gi, (_, open, js, close) => {
-        if (open.includes('src=')) return open + js + close;
-        return open + minifyJS(js) + close;
-      });
-    }
-
-    /* 4. Collapse whitespace */
-    if (opts.whitespace) {
-      /* Preserve <pre>, <code>, <textarea> */
-      const preserved = [];
-      let pi = 0;
-      html = html.replace(/<(pre|code|textarea)(\s[^>]*)?>[\s\S]*?<\/\1>/gi, m => {
-        preserved.push(m);
-        return `<!--PRESERVE${pi++}-->`;
-      });
-
-      html = html.replace(/\s+/g, ' ');
-      html = html.replace(/>\s+</g, '><');
-      html = html.replace(/\s+>/g, '>');
-      html = html.replace(/\s+\/>/g, '/>');
-
-      /* Restore preserved */
-      for (let i = 0; i < preserved.length; i++) {
-        html = html.replace(`<!--PRESERVE${i}-->`, preserved[i]);
-      }
-    }
-
-    /* 5. Remove newlines */
-    if (opts.newlines) {
-      html = html.replace(/[\r\n]+/g, '');
-    }
-
-    /* 6. Remove optional quotes from attributes */
-    if (opts.quotes) {
-      html = html.replace(/=\s*"([a-zA-Z0-9_\-\.\/:#]+)"/g, '=$1');
-      html = html.replace(/=\s*'([a-zA-Z0-9_\-\.\/:#]+)'/g, '=$1');
-    }
-
-    /* 7. Shorten boolean attributes */
-    if (opts.boolAttrs) {
-      const bools = ['checked','disabled','readonly','required','autofocus','autoplay',
-        'controls','loop','muted','defer','async','hidden','multiple','selected',
-        'novalidate','formnovalidate','open','reversed','allowfullscreen'];
-      bools.forEach(attr => {
-        const re = new RegExp(`(\\s${attr})\\s*=\\s*["']?${attr}["']?`, 'gi');
-        html = html.replace(re, ' ' + attr);
-      });
-    }
-
-    /* 8. Remove empty attributes */
-    if (opts.emptyAttrs) {
-      html = html.replace(/\s+(class|id|style|title|alt|action|lang|dir)\s*=\s*(""|'')/gi, '');
-    }
-
-    /* 9. Remove type attributes */
-    if (opts.type) {
-      html = html.replace(/\s*type\s*=\s*["']?text\/javascript["']?/gi, '');
-      html = html.replace(/\s*type\s*=\s*["']?text\/css["']?/gi, '');
-    }
-
-    /* 10. Remove protocols */
-    if (opts.protocol) {
-      html = html.replace(/https?:\/\//g, '//');
-    }
-
-    /* 11. Shorten DOCTYPE */
-    if (opts.doctype) {
-      html = html.replace(/<!DOCTYPE[^>]*>/gi, '<!DOCTYPE html>');
-    }
-
-    /* 12. Remove meta generator, etc */
-    if (opts.meta) {
-      html = html.replace(/<meta\s+name\s*=\s*["']?(generator|author|copyright|robots)["']?\s+[^>]*\/?>/gi, '');
-    }
-
-    /* Final trim */
-    html = html.trim();
-
-    /* Count tags */
-    const tagMatches = html.match(/<[a-zA-Z][^>]*>/g);
-    stats.tags = tagMatches ? tagMatches.length : 0;
-
-    lastOutput = html;
-    lastAction = 'minify';
-    const ms = performance.now() - t0;
-
-    /* Render */
-    $raw.textContent = html;
-    $hl.innerHTML = highlightHTML(html);
-    renderDiff(raw, html);
-
-    /* Stats & Savings */
-    const origSize = new Blob([raw]).size;
-    const minSize = new Blob([html]).size;
-    const saved = origSize - minSize;
-    const pct = origSize > 0 ? ((saved / origSize) * 100).toFixed(1) : 0;
-
-    showSavings(origSize, minSize, saved, pct);
-    updateStats(origSize, minSize, stats, ms);
-    setStatus('✅ Minified', 'dot-g');
-    toast('✅ HTML Minified! Saved ' + pct + '%', 'ok');
-
-  } catch (e) {
-    showErr('❌ ' + e.message);
-    setStatus('❌ Error', 'dot-r');
-    toast('❌ Error!', 'err');
-  }
-}
-
-/* ══════════════════════════════════════
-   CORE: BEAUTIFY HTML
-   ══════════════════════════════════════ */
-function beautify() {
-  const t0 = performance.now();
-  const raw = $in.value;
-  if (!raw.trim()) { toast('⚠️ Enter HTML first!', 'err'); return; }
-
-  hideErr();
-
-  try {
-    let html = raw;
-    const indent = '  ';
-    let level = 0;
-    let result = '';
-
-    /* Normalize */
-    html = html.replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim();
-
-    /* Tokenize */
-    const tokens = html.match(/<!--[\s\S]*?-->|<\/?\w[^>]*\/?>|[^<]+/g) || [];
-
-    const voidTags = new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
-    const rawTags = new Set(['script','style','pre','code','textarea']);
-    let inRawTag = '';
-
-    tokens.forEach(token => {
-      const trimmed = token.trim();
-      if (!trimmed) return;
-
-      if (inRawTag) {
-        result += token;
-        if (new RegExp(`<\\/${inRawTag}>`, 'i').test(token)) {
-          inRawTag = '';
-          result += '\n';
-        }
-        return;
-      }
-
-      /* Comment */
-      if (trimmed.startsWith('<!--')) {
-        result += indent.repeat(level) + trimmed + '\n';
-        return;
-      }
-
-      /* Closing tag */
-      if (trimmed.startsWith('</')) {
-        level = Math.max(0, level - 1);
-        result += indent.repeat(level) + trimmed + '\n';
-        return;
-      }
-
-      /* Opening tag */
-      if (trimmed.startsWith('<')) {
-        const tagName = (trimmed.match(/<([a-zA-Z][a-zA-Z0-9-]*)/)||[])[1] || '';
-        const isVoid = voidTags.has(tagName.toLowerCase());
-        const isSelfClose = trimmed.endsWith('/>');
-        const isRaw = rawTags.has(tagName.toLowerCase());
-
-        result += indent.repeat(level) + trimmed;
-
-        if (isRaw && !isSelfClose) {
-          inRawTag = tagName.toLowerCase();
-        } else {
-          result += '\n';
-        }
-
-        if (!isVoid && !isSelfClose && !isRaw) {
-          level++;
-        }
-        return;
-      }
-
-      /* Text node */
-      if (trimmed) {
-        result += indent.repeat(level) + trimmed + '\n';
+    // Close panel when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!toolsBtn.contains(e.target) && !toolsPanel.contains(e.target)) {
+        toolsPanel.classList.remove('show');
       }
     });
 
-    result = result.replace(/\n{3,}/g, '\n\n').trim();
+    // ================= MINIFIER STATE =================
+    let currentLang = 'html';
+    const inputEl = document.getElementById('inputCode');
+    const outputEl = document.getElementById('outputCode');
+    const inputStats = document.getElementById('inputStats');
+    const outputStats = document.getElementById('outputStats');
+    const originalSizeSpan = document.getElementById('originalSize');
+    const minifiedSizeSpan = document.getElementById('minifiedSize');
+    const savingsSpan = document.getElementById('savings');
 
-    lastOutput = result;
-    lastAction = 'beautify';
-    const ms = performance.now() - t0;
+    window.setLanguage = function(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      inputEl.placeholder = `Paste your ${lang.toUpperCase()} code here...`;
+    };
 
-    $raw.textContent = result;
-    $hl.innerHTML = highlightHTML(result);
-    renderDiff(raw, result);
-
-    const origSize = new Blob([raw]).size;
-    const outSize = new Blob([result]).size;
-    const tagMatches = result.match(/<[a-zA-Z][^>]*>/g);
-    const stats = { tags: tagMatches ? tagMatches.length : 0, comments: 0 };
-
-    showSavings(origSize, outSize, origSize - outSize, origSize > 0 ? (((origSize - outSize) / origSize) * 100).toFixed(1) : 0);
-    updateStats(origSize, outSize, stats, ms);
-    setStatus('✅ Beautified', 'dot-g');
-    toast('🎨 HTML Beautified!', 'ok');
-
-  } catch (e) {
-    showErr('❌ ' + e.message);
-    toast('❌ Error!', 'err');
-  }
-}
-
-/* ══════════════════════════════════════
-   MINIFY CSS (inline)
-   ══════════════════════════════════════ */
-function minifyCSS(css) {
-  return css
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*([{}:;,>~+])\s*/g, '$1')
-    .replace(/;}/g, '}')
-    .replace(/\s*!important/g, '!important')
-    .trim();
-}
-
-/* ══════════════════════════════════════
-   MINIFY JS (inline — basic)
-   ══════════════════════════════════════ */
-function minifyJS(js) {
-  /* Preserve strings */
-  const strings = [];
-  let si = 0;
-  js = js.replace(/(["'`])(?:(?!\1|\\).|\\.)*\1/g, m => { strings.push(m); return `__S${si++}__`; });
-  /* Remove single-line comments */
-  js = js.replace(/\/\/.*$/gm, '');
-  /* Remove multi-line comments */
-  js = js.replace(/\/\*[\s\S]*?\*\//g, '');
-  /* Collapse whitespace */
-  js = js.replace(/\s+/g, ' ');
-  /* Remove spaces around operators */
-  js = js.replace(/\s*([=+\-*/<>!&|,;{}()[\]:?])\s*/g, '$1');
-  /* Restore strings */
-  for (let i = strings.length - 1; i >= 0; i--) {
-    js = js.replace(`__S${i}__`, strings[i]);
-  }
-  return js.trim();
-}
-
-/* ══════════════════════════════════════
-   SYNTAX HIGHLIGHT
-   ══════════════════════════════════════ */
-function highlightHTML(html) {
-  let h = escH(html);
-
-  /* Comments */
-  h = h.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="hl-com">$1</span>');
-  /* DOCTYPE */
-  h = h.replace(/(&lt;!DOCTYPE[^&]*&gt;)/gi, '<span class="hl-dtd">$1</span>');
-  /* Closing tags */
-  h = h.replace(/(&lt;\/[a-zA-Z][a-zA-Z0-9-]*&gt;)/g, '<span class="hl-tag">$1</span>');
-  /* Opening tags with attributes */
-  h = h.replace(/(&lt;[a-zA-Z][a-zA-Z0-9-]*)(\s[^&]*?)?(\/?\s*&gt;)/g, (m, tag, attrs, close) => {
-    let result = '<span class="hl-tag">' + tag + '</span>';
-    if (attrs) {
-      /* Highlight attributes */
-      attrs = attrs.replace(/([a-zA-Z\-:]+)\s*=\s*/g, '<span class="hl-attr">$1</span>=');
-      attrs = attrs.replace(/(&quot;[^&]*?&quot;|&#39;[^&]*?&#39;|[a-zA-Z0-9_\-\.\/:#]+(?=[\s&]))/g, '<span class="hl-val">$1</span>');
-      result += attrs;
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(2) + ' MB';
     }
-    result += '<span class="hl-tag">' + close + '</span>';
-    return result;
-  });
-  /* Entities */
-  h = h.replace(/(&amp;[a-zA-Z0-9#]+;)/g, '<span class="hl-ent">$1</span>');
 
-  return h;
-}
-
-/* ══════════════════════════════════════
-   DIFF VIEW
-   ══════════════════════════════════════ */
-function renderDiff(original, modified) {
-  const origLines = original.split('\n');
-  const modLines = modified.split('\n');
-  let html = '';
-
-  const maxLen = Math.max(origLines.length, modLines.length);
-
-  /* Simple line-by-line diff */
-  const origSet = new Set(origLines.map(l => l.trim()));
-  const modSet = new Set(modLines.map(l => l.trim()));
-
-  origLines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    if (!modSet.has(trimmed)) {
-      html += `<div class="diff-line diff-rem">- ${escH(trimmed)}</div>`;
+    function updateStats() {
+      const input = inputEl.value;
+      const output = outputEl.value;
+      inputStats.textContent = input.length + ' chars';
+      outputStats.textContent = output.length + ' chars';
+      const origSize = new Blob([input]).size;
+      const miniSize = new Blob([output]).size;
+      originalSizeSpan.textContent = formatBytes(origSize);
+      minifiedSizeSpan.textContent = formatBytes(miniSize);
+      const saved = origSize ? ((origSize - miniSize) / origSize * 100).toFixed(1) : 0;
+      savingsSpan.textContent = (saved >= 0 ? saved : 0) + '%';
     }
-  });
 
-  modLines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    if (!origSet.has(trimmed)) {
-      html += `<div class="diff-line diff-add">+ ${escH(trimmed)}</div>`;
-    } else {
-      html += `<div class="diff-line diff-same">  ${escH(trimmed)}</div>`;
+    // Improved minification functions (preserve URLs in JS)
+    function minifyHTML(code, removeComments, removeWhitespace, aggressive) {
+      let result = code;
+      if (removeComments) result = result.replace(/<!--[\s\S]*?-->/g, '');
+      if (removeWhitespace) {
+        result = result.replace(/>\s+</g, '><');
+        result = result.replace(/\s{2,}/g, ' ');
+        result = result.trim();
+      }
+      if (aggressive) {
+        result = result.replace(/\s*([{};:,])\s*/g, '$1');
+      }
+      return result;
     }
-  });
 
-  $diff.innerHTML = html || '<div style="color:var(--g400);text-align:center;padding:40px">No differences</div>';
-}
+    function minifyCSS(code, removeComments, removeWhitespace, aggressive) {
+      let result = code;
+      if (removeComments) result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+      if (removeWhitespace) {
+        result = result.replace(/\s+/g, ' ');
+        result = result.replace(/\s*([{};:,>+~])\s*/g, '$1');
+        result = result.replace(/;}/g, '}');
+        result = result.trim();
+      }
+      if (aggressive) {
+        result = result.replace(/0(\.\d+)/g, '$1');
+        result = result.replace(/#([0-9a-f])\1([0-9a-f])\2([0-9a-f])\3/i, '#$1$2$3');
+      }
+      return result;
+    }
 
-/* ══════════════════════════════════════
-   SAVINGS DISPLAY
-   ══════════════════════════════════════ */
-function showSavings(orig, out, saved, pct) {
-  document.getElementById('svOrig').textContent = fmtSize(orig);
-  document.getElementById('svMin').textContent = fmtSize(out);
-  document.getElementById('svSaved').textContent = (saved >= 0 ? '-' : '+') + fmtSize(Math.abs(saved));
-  document.getElementById('svPct').textContent = (saved >= 0 ? '-' : '+') + Math.abs(pct) + '%';
-  document.getElementById('savings').classList.add('show');
-  setTimeout(() => {
-    document.getElementById('svBar').style.width = Math.min(100, Math.abs(pct)) + '%';
-  }, 50);
-}
+    function minifyJS(code, removeComments, removeWhitespace, aggressive) {
+      let result = code;
+      if (removeComments) {
+        // Remove block comments
+        result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+        // Remove line comments, but avoid removing URLs (e.g., http://)
+        result = result.replace(/(?<!:)\/\/.*$/gm, '');
+      }
+      if (removeWhitespace) {
+        result = result.replace(/\s+/g, ' ');
+        result = result.replace(/\s*([{}();,:])\s*/g, '$1');
+        result = result.trim();
+      }
+      return result;
+    }
 
-/* ══════════════════════════════════════
-   OPTIONS
-   ══════════════════════════════════════ */
-function getOpts() {
-  return {
-    comments:   document.getElementById('optComments').checked,
-    whitespace: document.getElementById('optWhitespace').checked,
-    newlines:   document.getElementById('optNewlines').checked,
-    quotes:     document.getElementById('optQuotes').checked,
-    boolAttrs:  document.getElementById('optBoolAttrs').checked,
-    emptyAttrs: document.getElementById('optEmptyAttrs').checked,
-    css:        document.getElementById('optCSS').checked,
-    js:         document.getElementById('optJS').checked,
-    type:       document.getElementById('optType').checked,
-    protocol:   document.getElementById('optProtocol').checked,
-    doctype:    document.getElementById('optDoctype').checked,
-    meta:       document.getElementById('optMeta').checked,
-  };
-}
+    window.minifyCode = function() {
+      const input = inputEl.value;
+      if (!input.trim()) {
+        toast('Please enter some code', 'error');
+        return;
+      }
+      const removeComments = document.getElementById('removeComments').checked;
+      const removeWhitespace = document.getElementById('removeWhitespace').checked;
+      const aggressive = document.getElementById('aggressive').checked;
+      let output;
+      if (currentLang === 'html') output = minifyHTML(input, removeComments, removeWhitespace, aggressive);
+      else if (currentLang === 'css') output = minifyCSS(input, removeComments, removeWhitespace, aggressive);
+      else output = minifyJS(input, removeComments, removeWhitespace, aggressive);
+      outputEl.value = output;
+      updateStats();
+      toast('Minification complete!', 'success');
+    };
 
-/* ══════════════════════════════════════
-   PREVIEW
-   ══════════════════════════════════════ */
-function openPreview() {
-  const src = lastOutput || $in.value;
-  if (!src.trim()) { toast('⚠️ Nothing to preview!', 'err'); return; }
-  const frame = document.getElementById('previewFrame');
-  frame.srcdoc = src;
-  document.getElementById('previewModal').classList.add('open');
-}
-function closePreview() { document.getElementById('previewModal').classList.remove('open'); }
+    window.clearAll = function() {
+      inputEl.value = '';
+      outputEl.value = '';
+      updateStats();
+      toast('Cleared', 'info');
+    };
 
-/* ══════════════════════════════════════
-   FILE LOAD
-   ══════════════════════════════════════ */
-function loadFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    $in.value = ev.target.result;
-    document.getElementById('inLen').textContent = ev.target.result.length + ' chars';
-    toast('📁 File loaded: ' + file.name, 'info');
-  };
-  reader.readAsText(file);
-}
+    window.copyOutput = function() {
+      if (!outputEl.value) {
+        toast('Nothing to copy', 'error');
+        return;
+      }
+      navigator.clipboard.writeText(outputEl.value).then(() => {
+        toast('Copied to clipboard!', 'success');
+      }).catch(() => {
+        outputEl.select();
+        document.execCommand('copy');
+        toast('Copied!', 'success');
+      });
+    };
 
-/* ══════════════════════════════════════
-   COPY / PASTE / CLEAR / DOWNLOAD / SAMPLE
-   ══════════════════════════════════════ */
-function copyOut() {
-  if (!lastOutput) { toast('⚠️ Nothing to copy!', 'err'); return; }
-  navigator.clipboard.writeText(lastOutput).then(() => toast('📋 Copied!', 'ok'))
-    .catch(() => { fbCopy(lastOutput); toast('📋 Copied!', 'ok'); });
-}
-function fbCopy(t) {
-  const a = document.createElement('textarea'); a.value = t;
-  document.body.appendChild(a); a.select(); document.execCommand('copy');
-  document.body.removeChild(a);
-}
+    window.downloadOutput = function() {
+      if (!outputEl.value) {
+        toast('No output to download', 'error');
+        return;
+      }
+      const blob = new Blob([outputEl.value], {type: 'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `minified.${currentLang === 'js' ? 'js' : currentLang}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    };
 
-function pasteIn() {
-  navigator.clipboard.readText().then(t => {
-    $in.value = t;
-    document.getElementById('inLen').textContent = t.length + ' chars';
-    toast('📋 Pasted!', 'info');
-  }).catch(() => toast('⚠️ Clipboard denied', 'err'));
-}
-
-function clearAll() {
-  $in.value = ''; lastOutput = '';
-  $raw.innerHTML = '<span style="color:var(--g400)">Minified HTML will appear here…</span>';
-  $hl.innerHTML = ''; $diff.innerHTML = '';
-  hideErr();
-  document.getElementById('savings').classList.remove('show');
-  document.getElementById('svBar').style.width = '0%';
-  document.getElementById('inLen').textContent = '0 chars';
-  document.getElementById('outLen').textContent = '0 chars';
-  setStat('sInSize', 'dot-b', 'In: 0 B');
-  setStat('sOutSize', 'dot-o', 'Out: 0 B');
-  setStat('sTags', 'dot-p', 'Tags: 0');
-  setStat('sComments', 'dot-r', 'Comments: 0');
-  setStat('sTime', 'dot-b', '0 ms');
-  setStatus('Ready', 'dot-g');
-  toast('🗑️ Cleared!', 'info');
-}
-
-function downloadOut() {
-  if (!lastOutput) { toast('⚠️ Nothing to download!', 'err'); return; }
-  const name = lastAction === 'minify' ? 'minified.html' : 'beautified.html';
-  const blob = new Blob([lastOutput], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = name; a.click();
-  URL.revokeObjectURL(a.href);
-  toast('⬇️ Downloaded!', 'ok');
-}
-
-function loadSample() {
-  $in.value = `<!DOCTYPE html>
-<html lang="en">
+    window.loadSample = function() {
+      if (currentLang === 'html') {
+        inputEl.value = `<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Some Editor">
-    <meta name="author" content="Developer">
-    <title>  Sample Page  </title>
-
-    <!-- Main Styles -->
-    <style type="text/css">
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-            color: #333333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #16a34a;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #22c55e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn:hover {
-            background: #16a34a;
-        }
-    </style>
+  <title>Sample Page</title>
+  <!-- This is a comment -->
+  <style>
+    body { margin: 0; padding: 0; background: #fff; }
+    .container { max-width: 1200px; margin: 0 auto; }
+  </style>
 </head>
 <body>
-
-    <!-- Main Content -->
-    <div class="container">
-
-        <!-- Header Section -->
-        <header>
-            <h1>  Welcome to Sample Page  </h1>
-            <p class="" id="">
-                This is a sample HTML page with various elements
-                that can be minified to reduce file size.
-            </p>
-        </header>
-
-        <!-- Navigation -->
-        <nav>
-            <a href="https://www.example.com/home">Home</a>
-            <a href="https://www.example.com/about">About</a>
-            <a href="https://www.example.com/contact">Contact</a>
-        </nav>
-
-        <!-- Form Section -->
-        <section>
-            <h2>Contact Form</h2>
-            <form action="" method="post">
-                <div>
-                    <label for="name">Name:</label>
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           required="required"
-                           autofocus="autofocus"
-                           placeholder="Enter your name">
-                </div>
-                <div>
-                    <label for="email">Email:</label>
-                    <input type="email"
-                           id="email"
-                           name="email"
-                           required="required"
-                           placeholder="Enter your email">
-                </div>
-                <div>
-                    <label for="message">Message:</label>
-                    <textarea id="message"
-                              name="message"
-                              rows="5"
-                              required="required"></textarea>
-                </div>
-                <button type="submit"
-                        class="btn"
-                        disabled="disabled">
-                    Submit Form
-                </button>
-            </form>
-        </section>
-
-        <!-- Image Gallery -->
-        <section>
-            <h2>Gallery</h2>
-            <img src="https://www.example.com/image1.jpg"
-                 alt="Image 1"
-                 width="300"
-                 height="200"  />
-            <img src="https://www.example.com/image2.jpg"
-                 alt="Image 2"
-                 width="300"
-                 height="200"  />
-        </section>
-
-        <!-- Video -->
-        <section>
-            <h2>Video</h2>
-            <video controls="controls"
-                   autoplay="autoplay"
-                   muted="muted"
-                   loop="loop"
-                   width="600">
-                <source src="https://www.example.com/video.mp4"
-                        type="video/mp4">
-            </video>
-        </section>
-
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Sample Page. All rights reserved.</p>
-    </footer>
-
-    <!-- Scripts -->
-    <script type="text/javascript">
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // Get form element
-            const form = document.querySelector('form');
-
-            // Handle submit
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                // Get values
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const message = document.getElementById('message').value;
-
-                // Validate
-                if (name && email && message) {
-                    console.log('Form submitted:', {
-                        name: name,
-                        email: email,
-                        message: message
-                    });
-                    alert('Thank you, ' + name + '!');
-                }
-            });
-
-            // Button hover effects
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(function(btn) {
-                btn.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.05)';
-                });
-                btn.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                });
-            });
-
-        });
-    <\/script>
-
+  <h1>Hello World</h1>
+  <p>This is a sample HTML file.</p>
+  <script>
+    // Single line comment
+    function greet(name) {
+      console.log('Hello, ' + name);
+    }
+    greet('User');
+  </script>
 </body>
 </html>`;
-  document.getElementById('inLen').textContent = $in.value.length + ' chars';
-  toast('📄 Sample loaded!', 'ok');
+      } else if (currentLang === 'css') {
+        inputEl.value = `/* Sample CSS */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: #22c55e;
+  color: white;
+}`;
+      } else {
+        inputEl.value = `// Sample JavaScript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-/* ══════════════════════════════════════
-   STATS
-   ══════════════════════════════════════ */
-function updateStats(inSize, outSize, stats, ms) {
-  document.getElementById('outLen').textContent = lastOutput.length + ' chars';
-  setStat('sInSize', 'dot-b', 'In: ' + fmtSize(inSize));
-  setStat('sOutSize', 'dot-o', 'Out: ' + fmtSize(outSize));
-  setStat('sTags', 'dot-p', 'Tags: ' + stats.tags);
-  setStat('sComments', 'dot-r', 'Comments: ' + stats.comments);
-  setStat('sTime', 'dot-b', ms.toFixed(1) + ' ms');
-}
+const result = fibonacci(10);
+console.log('Fibonacci(10) =', result);
 
-/* ══════════════════════════════════════
-   HELPERS
-   ══════════════════════════════════════ */
-function fmtSize(b) {
-  if (b < 1024) return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-  return (b / 1048576).toFixed(1) + ' MB';
-}
-function escH(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-function setStatus(t, c) { document.getElementById('sStatus').innerHTML = `<span class="dot ${c}"></span> ${t}`; }
-function setStat(id, c, t) { document.getElementById(id).innerHTML = `<span class="dot ${c}"></span> ${t}`; }
-function showErr(m) { document.getElementById('errMsg').textContent = m; document.getElementById('errBox').classList.add('show'); }
-function hideErr() { document.getElementById('errBox').classList.remove('show'); }
-function toast(m, t = 'ok') {
-  const el = document.getElementById('toast');
-  el.textContent = m; el.className = 'toast toast-' + t + ' show';
-  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400);
-}
-
-/* ══════════════════════════════════════
-   KEYBOARD SHORTCUTS
-   ══════════════════════════════════════ */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { minify(); e.preventDefault(); }
-  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) { copyOut(); e.preventDefault(); }
-  if (e.key === 'Escape') closePreview();
-});
-
-/* Tab support */
-$in.addEventListener('keydown', e => {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const s = $in.selectionStart, en = $in.selectionEnd;
-    $in.value = $in.value.substring(0, s) + '  ' + $in.value.substring(en);
-    $in.selectionStart = $in.selectionEnd = s + 2;
-  }
-});
-
-/* Drag & Drop */
-const inputPanel = $in.parentElement;
-inputPanel.addEventListener('dragover', e => { e.preventDefault(); inputPanel.style.background = 'var(--g100)'; });
-inputPanel.addEventListener('dragleave', () => inputPanel.style.background = '');
-inputPanel.addEventListener('drop', e => {
-  e.preventDefault(); inputPanel.style.background = '';
-  const file = e.dataTransfer.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      $in.value = ev.target.result;
-      document.getElementById('inLen').textContent = ev.target.result.length + ' chars';
-      toast('📁 Dropped: ' + file.name, 'info');
+// This is a comment
+/* Multi-line
+   comment */
+const greet = (name) => {
+  return \`Hello, \${name}!\`;
+};`;
+      }
+      outputEl.value = '';
+      updateStats();
+      toast('Sample loaded', 'info');
     };
-    reader.readAsText(file);
-  }
-});
 
-/* Close modal on overlay */
-document.getElementById('previewModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('previewModal')) closePreview();
-});
+    inputEl.addEventListener('input', () => {
+      inputStats.textContent = inputEl.value.length + ' chars';
+    });
+    outputEl.addEventListener('input', updateStats);
+
+    function toast(msg, type = 'info') {
+      const wrap = document.getElementById('toastWrap');
+      const colors = {success:'var(--g500)', error:'var(--red)', info:'var(--blue)'};
+      const icons = {success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle'};
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.innerHTML = `<i class="fas ${icons[type]||'fa-info-circle'}" style="color:${colors[type]||colors.info}"></i>${msg}`;
+      wrap.appendChild(t);
+      setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100%)'; t.style.transition='.3s'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    // Initialize stats
+    updateStats();
+  })();
 </script>
 </body>
 </html>
