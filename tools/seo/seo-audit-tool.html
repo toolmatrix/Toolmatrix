@@ -3,7 +3,7 @@
 <head>
 <!-- ================= BASIC ================= -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
 <!-- ================= TITLE ================= -->
 <title>SEO Audit Tool – Free Website SEO Checker & Analysis | ToolMatrix</title>
@@ -148,8 +148,32 @@
   .audit-value{background:var(--primary-lighter);padding:8px 12px;border-radius:12px;font-size:12px;font-family:monospace;word-break:break-all;margin-top:6px}
   .suggestion{background:#FFF8E1;border-left:3px solid var(--orange);padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px;color:#8D6E00}
 
-  .ad-container{text-align:center;margin:20px auto;max-width:800px;background:#FEF9E6;border-radius:20px;padding:12px;border:1px solid #FFE0A3}
-  .ad-banner{margin:12px auto;text-align:center}
+  /* Ad containers - conditional */
+  .ad-desktop {
+    display: none;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 1100px;
+    background: #FEF9E6;
+    border-radius: 20px;
+    padding: 12px;
+    border: 1px solid #FFE0A3;
+  }
+  .ad-mobile {
+    display: none;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 340px;
+    background: transparent;
+    border-radius: 16px;
+    padding: 8px;
+  }
+  @media (min-width: 769px) {
+    .ad-desktop { display: block; }
+  }
+  @media (max-width: 768px) {
+    .ad-mobile { display: block; }
+  }
 
   .footer{text-align:center;padding:24px;color:var(--text-light);font-size:13px;border-top:1px solid var(--border);background:#DCF0D4;margin-top:40px}
   .footer .heart{display:inline-block;color:#2E7D1E;animation:heartBeat 1.2s infinite;margin:0 4px}
@@ -211,10 +235,9 @@
   </div>
 </div>
 
-<!-- Banner Ad Container (728x90) -->
-<div class="ad-container" style="max-width:1100px; margin:16px auto;">
-  <div id="bannerAdContainer"></div>
-</div>
+<!-- Conditional Banner Ads -->
+<div class="ad-desktop" id="desktopAdContainer"></div>
+<div class="ad-mobile" id="mobileAdContainer"></div>
 
 <div class="loading-overlay" id="loadingOverlay"><div class="loader-ring"></div><h3>Auditing Website...</h3><p id="loadingMsg">Analyzing SEO factors</p></div>
 
@@ -224,22 +247,46 @@
 <footer class="footer"><p>Made with <span class="heart">❤️</span> by <a href="https://toolmatrix.space" target="_blank" class="black-link">ToolMatrix</a> — Free SEO Audit Tool | Improve your rankings</p></footer>
 <div class="toast" id="toast"></div>
 
-<!-- All Ad Scripts (push + banner) -->
+<!-- Ad Scripts (conditional banners + download ad) -->
 <script>
-  // Push notification ad (zone 10689876)
-  (function(s){s.dataset.zone='10689876',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  
-  // Banner 728x90 ad (using the provided key)
-  window.atOptions = {
-    'key' : '4afdbe032cc77af781754d77ab0211fb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-  const bannerScript = document.createElement('script');
-  bannerScript.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
-  document.getElementById('bannerAdContainer')?.appendChild(bannerScript);
+  (function() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) {
+      const desktopDiv = document.getElementById('desktopAdContainer');
+      if (desktopDiv) {
+        window.atOptions = {
+          key: '4afdbe032cc77af781754d77ab0211fb',
+          format: 'iframe',
+          height: 90,
+          width: 728,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/4afdbe032cc77af781754d77ab0211fb/invoke.js';
+        desktopDiv.appendChild(script);
+      }
+    } else {
+      const mobileDiv = document.getElementById('mobileAdContainer');
+      if (mobileDiv) {
+        window.atOptions = {
+          key: 'f2bd4040afafe750e7a3e138c826e72c',
+          format: 'iframe',
+          height: 250,
+          width: 300,
+          params: {}
+        };
+        const script = document.createElement('script');
+        script.src = 'https://onsetcab.com/f2bd4040afafe750e7a3e138c826e72c/invoke.js';
+        mobileDiv.appendChild(script);
+      }
+    }
+
+    // Download ad (OMG)
+    const omgScript = document.createElement('script');
+    omgScript.src = 'https://omg10.com/4/10842916';
+    omgScript.async = true;
+    document.body.appendChild(omgScript);
+  })();
 </script>
 
 <script>
@@ -265,7 +312,7 @@ toolsModal.addEventListener('mouseenter', () => {
 });
 toolsModal.addEventListener('mouseleave', hideModal);
 
-// ============ TOOLS LIST (Current tool "SEO Audit Tool" hidden, horizontal layout) ============
+// ============ TOOLS LIST (Current tool "SEO Audit Tool" hidden) ============
 const allTools = [
   { name: 'Meta Analyzer', icon: '🏷️', url: 'https://toolmatrix.space/tools/seo/meta-analyzer.html' },
   { name: 'Sitemap Gen', icon: '🗺️', url: 'https://toolmatrix.space/tools/seo/sitemap-generator.html' },
@@ -280,7 +327,6 @@ const allTools = [
   { name: 'SEO Audit Tool', icon: '📈', url: 'https://toolmatrix.space/tools/seo/seo-audit-tool.html' }
 ];
 
-// Current page is SEO Audit Tool -> hide "SEO Audit Tool" from the list
 const currentToolName = 'SEO Audit Tool';
 
 function buildToolsGrid() {
@@ -288,7 +334,7 @@ function buildToolsGrid() {
   if (!grid) return;
   grid.innerHTML = '';
   allTools.forEach(tool => {
-    if (tool.name === currentToolName) return; // hide current tool
+    if (tool.name === currentToolName) return;
     const a = document.createElement('a');
     a.href = tool.url;
     a.target = '_self';
